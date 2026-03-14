@@ -14,9 +14,7 @@ const {
 const isIntegrationBranch = Boolean(
   INTEGRATION_BRANCH && CURRENT_BRANCH === INTEGRATION_BRANCH,
 );
-const isNextBranch = Boolean(
-  NEXT_BRANCH && CURRENT_BRANCH === NEXT_BRANCH,
-);
+const isNextBranch = Boolean(NEXT_BRANCH && CURRENT_BRANCH === NEXT_BRANCH);
 const isNightlyBranch = Boolean(
   NIGHTLY_BRANCH && CURRENT_BRANCH === NIGHTLY_BRANCH,
 );
@@ -30,8 +28,7 @@ const isReleaseBranch = Boolean(
   RELEASE_BRANCH && CURRENT_BRANCH === RELEASE_BRANCH,
 );
 const isReleaseKeepVersionBranch = Boolean(
-  RELEASE_KEEP_VERSION_BRANCH &&
-    CURRENT_BRANCH === RELEASE_KEEP_VERSION_BRANCH,
+  RELEASE_KEEP_VERSION_BRANCH && CURRENT_BRANCH === RELEASE_KEEP_VERSION_BRANCH,
 );
 const [, target = undefined] =
   isIntegrationBranch || isNextBranch || isNightlyBranch
@@ -39,10 +36,7 @@ const [, target = undefined] =
     : [];
 
 const branchAllowsRelease =
-  isReleaseBranch ||
-  isNextBranch ||
-  isIntegrationBranch ||
-  isNightlyBranch;
+  isReleaseBranch || isNextBranch || isIntegrationBranch || isNightlyBranch;
 
 export {
   CURRENT_BRANCH,

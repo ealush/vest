@@ -1,0 +1,1869 @@
+﻿2026-03-14T22:57:10.0814914Z ##[group]Run yarn release
+2026-03-14T22:57:10.0815201Z [36;1myarn release[0m
+2026-03-14T22:57:10.0864220Z shell: /usr/bin/bash -e {0}
+2026-03-14T22:57:10.0864477Z env:
+2026-03-14T22:57:10.0864668Z   NIGHTLY_BRANCH: nightly
+2026-03-14T22:57:10.0864895Z   RELEASE_BRANCH: release
+2026-03-14T22:57:10.0865160Z   RELEASE_KEEP_VERSION_BRANCH: release-keep-version
+2026-03-14T22:57:10.0865459Z   INTEGRATION_BRANCH: integration
+2026-03-14T22:57:10.0865689Z   NEXT_BRANCH: next
+2026-03-14T22:57:10.0865876Z   STABLE_BRANCH: stable
+2026-03-14T22:57:10.0866072Z   LATEST_BRANCH: latest
+2026-03-14T22:57:10.0866513Z   PUBLIC_REPO_TOKEN: ***
+2026-03-14T22:57:10.0867110Z   EMAIL_ADDRESS: ***
+2026-03-14T22:57:10.0867330Z   GIT_NAME: ***
+2026-03-14T22:57:10.0867579Z   NPM_CONFIG_USERCONFIG: /home/runner/work/_temp/.npmrc
+2026-03-14T22:57:10.0867923Z   NODE_AUTH_TOKEN: XXXXX-XXXXX-XXXXX-XXXXX
+2026-03-14T22:57:10.0868177Z ##[endgroup]
+2026-03-14T22:57:11.6011947Z Preparing packages...
+2026-03-14T22:57:11.6014446Z Generating .npmignore files...
+2026-03-14T22:57:11.6017430Z ✅ vest-utils .npmignore is up to date. Skipping.
+2026-03-14T22:57:11.6018432Z ✅ context .npmignore is up to date. Skipping.
+2026-03-14T22:57:11.6019323Z ✅ vestjs-runtime .npmignore is up to date. Skipping.
+2026-03-14T22:57:11.6020154Z ✅ vast .npmignore is up to date. Skipping.
+2026-03-14T22:57:11.6020906Z ✅ n4s .npmignore is up to date. Skipping.
+2026-03-14T22:57:11.6021621Z ✅ vest .npmignore is up to date. Skipping.
+2026-03-14T22:57:11.6022335Z ✅ anyone .npmignore is up to date. Skipping.
+2026-03-14T22:57:11.6024839Z 👌 Done generating .npmignore files.
+2026-03-14T22:57:11.6025209Z 
+2026-03-14T22:57:11.6037225Z ✅ Main tsconfig.json is up to date. Skipping.
+2026-03-14T22:57:11.6040343Z ✅ tsConfig for package 'vest-utils' is up to date. Skipping.
+2026-03-14T22:57:11.6042080Z ✅ tsConfig for package 'context' is up to date. Skipping.
+2026-03-14T22:57:11.6043903Z ✅ tsConfig for package 'vestjs-runtime' is up to date. Skipping.
+2026-03-14T22:57:11.6045429Z ✅ tsConfig for package 'vast' is up to date. Skipping.
+2026-03-14T22:57:11.6047503Z ✅ tsConfig for package 'n4s' is up to date. Skipping.
+2026-03-14T22:57:11.6048853Z ✅ tsConfig for package 'vest' is up to date. Skipping.
+2026-03-14T22:57:11.6050778Z ✅ tsConfig for package 'anyone' is up to date. Skipping.
+2026-03-14T22:57:11.6051357Z 👌 Done generating tsconfig files.
+2026-03-14T22:57:11.6051543Z 
+2026-03-14T22:57:11.6051697Z Generating vitest.config.ts files...
+2026-03-14T22:57:11.6052491Z 📝 Writing main vitest.config file
+2026-03-14T22:57:11.6056990Z 🎬 Executing command: "yarn prettier /home/runner/work/vest/vest/vitest.config.ts -w"
+2026-03-14T22:57:12.3271891Z vitest.config.ts 46ms
+2026-03-14T22:57:12.3508385Z 👌 Done generating vitest.config files.
+2026-03-14T22:57:12.3508699Z 
+2026-03-14T22:57:12.3508853Z Running command release
+2026-03-14T22:57:12.5386401Z 🏃 Running release script.
+2026-03-14T22:57:12.6895802Z From https://github.com/***/vest
+2026-03-14T22:57:12.6896376Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:12.6897118Z    b14139a4..f8bce217  stable     -> origin/stable
+2026-03-14T22:57:12.6951522Z All changes between origin/stable..origin/release:  ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)
+2026-03-14T22:57:12.6952285Z packages/anyone/package.json
+2026-03-14T22:57:12.6952578Z packages/context/package.json
+2026-03-14T22:57:12.6952844Z packages/n4s/package.json
+2026-03-14T22:57:12.6953091Z packages/vast/package.json
+2026-03-14T22:57:12.6953366Z packages/vest-utils/package.json
+2026-03-14T22:57:12.6953618Z packages/vest/package.json
+2026-03-14T22:57:12.6953895Z packages/vestjs-runtime/package.json
+2026-03-14T22:57:12.6954160Z yarn.lock
+2026-03-14T22:57:12.6954260Z 
+2026-03-14T22:57:12.6956125Z 💡 The following packages were changed: 
+2026-03-14T22:57:12.6956818Z   - anyone
+2026-03-14T22:57:12.6957161Z   - context
+2026-03-14T22:57:12.6957483Z   - n4s
+2026-03-14T22:57:12.6957657Z   - vast
+2026-03-14T22:57:12.6957834Z   - vest-utils
+2026-03-14T22:57:12.6958663Z   - vest
+2026-03-14T22:57:12.6958999Z   - vestjs-runtime
+2026-03-14T22:57:12.6959227Z 
+2026-03-14T22:57:12.6959818Z ✅ The packages will be released in the following order: 
+2026-03-14T22:57:12.6960370Z   - vest-utils
+2026-03-14T22:57:12.6960689Z   - context
+2026-03-14T22:57:12.6960996Z   - n4s
+2026-03-14T22:57:12.6961308Z   - vast
+2026-03-14T22:57:12.6961611Z   - vestjs-runtime
+2026-03-14T22:57:12.6961923Z   - anyone
+2026-03-14T22:57:12.6962201Z   - vest
+2026-03-14T22:57:12.6962364Z 
+2026-03-14T22:57:12.6962683Z Releasing package: 📦 vest-utils
+2026-03-14T22:57:12.6963302Z 🔍 Finding diffs for package: vest-utils
+2026-03-14T22:57:12.8435944Z From https://github.com/***/vest
+2026-03-14T22:57:12.8436442Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:12.8497463Z All changes between origin/stable..origin/release:  ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)
+2026-03-14T22:57:12.8498248Z packages/anyone/package.json
+2026-03-14T22:57:12.8498555Z packages/context/package.json
+2026-03-14T22:57:12.8498818Z packages/n4s/package.json
+2026-03-14T22:57:12.8499064Z packages/vast/package.json
+2026-03-14T22:57:12.8499335Z packages/vest-utils/package.json
+2026-03-14T22:57:12.8499603Z packages/vest/package.json
+2026-03-14T22:57:12.8499886Z packages/vestjs-runtime/package.json
+2026-03-14T22:57:12.8500136Z yarn.lock
+2026-03-14T22:57:12.8500236Z 
+2026-03-14T22:57:12.8508698Z Picking tag id. Current branch: release
+2026-03-14T22:57:12.8509476Z ⚙️ Generated diff data: {
+2026-03-14T22:57:12.8509868Z   "changeLevel": "patch",
+2026-03-14T22:57:12.8510238Z   "messages": [
+2026-03-14T22:57:12.8511096Z     "ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)"
+2026-03-14T22:57:12.8512219Z   ],
+2026-03-14T22:57:12.8512517Z   "nextVersion": "2.0.12",
+2026-03-14T22:57:12.8512952Z   "packageName": "vest-utils",
+2026-03-14T22:57:12.8513338Z   "tagId": "2.0.12",
+2026-03-14T22:57:12.8513679Z   "version": "2.0.11",
+2026-03-14T22:57:12.8514065Z   "versionToPublish": "2.0.12"
+2026-03-14T22:57:12.8514435Z }
+2026-03-14T22:57:12.8515071Z 🔢 Setting next version for vest-utils. From 2.0.11 to 2.0.12
+2026-03-14T22:57:12.8516556Z Updating local dependencies to latest version
+2026-03-14T22:57:12.8518375Z 🛠 Building package: vest-utils
+2026-03-14T22:57:12.8537982Z 🎬 Executing command: "./node_modules/.bin/tsdown --config /home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts"
+2026-03-14T22:57:13.1829985Z (node:5033) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+2026-03-14T22:57:13.1832424Z --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("/home/runner/work/vest/vest/vx/ts-loader.js", pathToFileURL("./"));'
+2026-03-14T22:57:13.1834308Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-14T22:57:13.1983477Z [34mℹ[39m tsdown [2mv0.17.0-beta.5[22m powered by rolldown [2mv1.0.0-beta.52[22m
+2026-03-14T22:57:13.3681236Z [34mℹ[39m config file: [4m/home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts[24m 
+2026-03-14T22:57:13.3759051Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m entry: [38;2;180;100;127msrc/vest-utils.ts, src/exports/minifyObject.ts, src/exports/standardSchemaSpec.ts[39m
+2026-03-14T22:57:13.3761335Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m tsconfig: [38;2;180;100;127mtsconfig.json[39m
+2026-03-14T22:57:13.3764802Z [34mℹ[39m Build start
+2026-03-14T22:57:13.3790187Z [34mℹ[39m Cleaning 15 files
+2026-03-14T22:57:14.7788824Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22m[1mvest-utils.cjs[22m                  [2m13.35 kB[22m [2m│ gzip: 3.68 kB[22m
+2026-03-14T22:57:14.7790956Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22m[1mexports/minifyObject.cjs[22m        [2m 3.56 kB[22m [2m│ gzip: 1.22 kB[22m
+2026-03-14T22:57:14.7792927Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22m[1mexports/standardSchemaSpec.cjs[22m  [2m 0.00 kB[22m [2m│ gzip: 0.02 kB[22m
+2026-03-14T22:57:14.7794134Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22mvest-utils.cjs.map              [2m26.93 kB[22m [2m│ gzip: 7.75 kB[22m
+2026-03-14T22:57:14.7795286Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22mexports/minifyObject.cjs.map    [2m 7.51 kB[22m [2m│ gzip: 2.48 kB[22m
+2026-03-14T22:57:14.7796439Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22misEmpty-BuEa-96Q.cjs.map        [2m 5.19 kB[22m [2m│ gzip: 1.67 kB[22m
+2026-03-14T22:57:14.7797882Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22misEmpty-BuEa-96Q.cjs            [2m 4.96 kB[22m [2m│ gzip: 0.94 kB[22m
+2026-03-14T22:57:14.7799198Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m 7 files, total: 61.50 kB
+2026-03-14T22:57:14.8217995Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22mvest-utils.d.cts.map                  [2m 4.59 kB[22m [2m│ gzip: 1.91 kB[22m
+2026-03-14T22:57:14.8220086Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22mexports/standardSchemaSpec.d.cts.map  [2m 1.11 kB[22m [2m│ gzip: 0.52 kB[22m
+2026-03-14T22:57:14.8221986Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22mexports/minifyObject.d.cts.map        [2m 0.34 kB[22m [2m│ gzip: 0.22 kB[22m
+2026-03-14T22:57:14.8224096Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22m[32m[1mvest-utils.d.cts[22m[39m                      [2m12.67 kB[22m [2m│ gzip: 3.19 kB[22m
+2026-03-14T22:57:14.8226998Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/standardSchemaSpec.d.cts[22m[39m      [2m 2.38 kB[22m [2m│ gzip: 0.74 kB[22m
+2026-03-14T22:57:14.8229451Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/minifyObject.d.cts[22m[39m            [2m 0.39 kB[22m [2m│ gzip: 0.23 kB[22m
+2026-03-14T22:57:14.8230481Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [33m[CJS][39m 6 files, total: 21.47 kB
+2026-03-14T22:57:14.8232296Z [32m✔[39m [38;2;180;100;127m[vest-utils][39m Build complete in [32m1446ms[39m
+2026-03-14T22:57:14.8283519Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22m[1mvest-utils.mjs[22m                        [2m11.47 kB[22m [2m│ gzip: 3.37 kB[22m
+2026-03-14T22:57:14.8285826Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22m[1mexports/minifyObject.mjs[22m              [2m 3.45 kB[22m [2m│ gzip: 1.24 kB[22m
+2026-03-14T22:57:14.8288128Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22m[1mexports/standardSchemaSpec.mjs[22m        [2m 0.01 kB[22m [2m│ gzip: 0.03 kB[22m
+2026-03-14T22:57:14.8289385Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22mvest-utils.mjs.map                    [2m26.74 kB[22m [2m│ gzip: 7.70 kB[22m
+2026-03-14T22:57:14.8291215Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22mexports/minifyObject.mjs.map          [2m 7.40 kB[22m [2m│ gzip: 2.43 kB[22m
+2026-03-14T22:57:14.8292431Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22mvest-utils.d.mts.map                  [2m 7.38 kB[22m [2m│ gzip: 2.92 kB[22m
+2026-03-14T22:57:14.8293564Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22misEmpty-BBxAFjjm.mjs.map              [2m 5.19 kB[22m [2m│ gzip: 1.67 kB[22m
+2026-03-14T22:57:14.8294692Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22misEmpty-BBxAFjjm.mjs                  [2m 2.71 kB[22m [2m│ gzip: 0.83 kB[22m
+2026-03-14T22:57:14.8295856Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22mexports/standardSchemaSpec.d.mts.map  [2m 1.11 kB[22m [2m│ gzip: 0.52 kB[22m
+2026-03-14T22:57:14.8297547Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22mchunk-CLMFDpHK.mjs                    [2m 0.36 kB[22m [2m│ gzip: 0.25 kB[22m
+2026-03-14T22:57:14.8299583Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22mexports/minifyObject.d.mts.map        [2m 0.34 kB[22m [2m│ gzip: 0.22 kB[22m
+2026-03-14T22:57:14.8300891Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22m[32m[1mvest-utils.d.mts[22m[39m                      [2m12.66 kB[22m [2m│ gzip: 3.19 kB[22m
+2026-03-14T22:57:14.8302162Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/standardSchemaSpec.d.mts[22m[39m      [2m 2.38 kB[22m [2m│ gzip: 0.74 kB[22m
+2026-03-14T22:57:14.8303473Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/minifyObject.d.mts[22m[39m            [2m 0.39 kB[22m [2m│ gzip: 0.23 kB[22m
+2026-03-14T22:57:14.8304374Z [34mℹ[39m [38;2;180;100;127m[vest-utils][39m [34m[ESM][39m 14 files, total: 81.57 kB
+2026-03-14T22:57:14.8305028Z [32m✔[39m [38;2;180;100;127m[vest-utils][39m Build complete in [32m1452ms[39m
+2026-03-14T22:57:14.9062708Z 🚀 Publishing package vest-utils.
+2026-03-14T22:57:14.9063287Z     Version: 2.0.12
+2026-03-14T22:57:14.9063625Z     Tag Id: 2.0.12
+2026-03-14T22:57:14.9063966Z     Publish Tag: undefined
+2026-03-14T22:57:14.9064302Z Configuring git identity for release publish.
+2026-03-14T22:57:14.9165510Z 🎬 Executing command: "cd /home/runner/work/vest/vest/packages/vest-utils && npm publish --provenance"
+2026-03-14T22:57:15.1532809Z npm warn Unknown user config "always-auth". This will stop working in the next major version of npm.
+2026-03-14T22:57:16.2843994Z npm notice
+2026-03-14T22:57:16.2847056Z npm notice 📦  vest-utils@2.0.12
+2026-03-14T22:57:16.2847626Z npm notice Tarball Contents
+2026-03-14T22:57:16.2870262Z npm notice 1.1kB LICENSE
+2026-03-14T22:57:16.2870790Z npm notice 766B README.md
+2026-03-14T22:57:16.2871357Z npm notice 359B dist/chunk-CLMFDpHK.mjs
+2026-03-14T22:57:16.2872027Z npm notice 3.6kB dist/exports/minifyObject.cjs
+2026-03-14T22:57:16.2872762Z npm notice 7.5kB dist/exports/minifyObject.cjs.map
+2026-03-14T22:57:16.2873488Z npm notice 3.4kB dist/exports/minifyObject.mjs
+2026-03-14T22:57:16.2874214Z npm notice 7.4kB dist/exports/minifyObject.mjs.map
+2026-03-14T22:57:16.2874961Z npm notice 0B dist/exports/standardSchemaSpec.cjs
+2026-03-14T22:57:16.2875695Z npm notice 12B dist/exports/standardSchemaSpec.mjs
+2026-03-14T22:57:16.2876403Z npm notice 2.7kB dist/isEmpty-BBxAFjjm.mjs
+2026-03-14T22:57:16.2877374Z npm notice 5.2kB dist/isEmpty-BBxAFjjm.mjs.map
+2026-03-14T22:57:16.2878098Z npm notice 5.0kB dist/isEmpty-BuEa-96Q.cjs
+2026-03-14T22:57:16.2878777Z npm notice 5.2kB dist/isEmpty-BuEa-96Q.cjs.map
+2026-03-14T22:57:16.2879448Z npm notice 13.4kB dist/vest-utils.cjs
+2026-03-14T22:57:16.2880077Z npm notice 26.9kB dist/vest-utils.cjs.map
+2026-03-14T22:57:16.2880703Z npm notice 11.5kB dist/vest-utils.mjs
+2026-03-14T22:57:16.2881274Z npm notice 26.7kB dist/vest-utils.mjs.map
+2026-03-14T22:57:16.2881874Z npm notice 415B minifyObject/package.json
+2026-03-14T22:57:16.2882420Z npm notice 1.9kB package.json
+2026-03-14T22:57:16.2883035Z npm notice 2.1kB src/__tests__/Architecture.test.ts
+2026-03-14T22:57:16.2883737Z npm notice 386B src/__tests__/asArray.test.ts
+2026-03-14T22:57:16.2884418Z npm notice 1.2kB src/__tests__/bindNot.test.ts
+2026-03-14T22:57:16.2885050Z npm notice 3.9kB src/__tests__/bus.test.ts
+2026-03-14T22:57:16.2885648Z npm notice 6.0kB src/__tests__/cache.test.ts
+2026-03-14T22:57:16.2886269Z npm notice 551B src/__tests__/callEach.test.ts
+2026-03-14T22:57:16.2887210Z npm notice 1.7kB src/__tests__/defaultTo.test.ts
+2026-03-14T22:57:16.2887899Z npm notice 677B src/__tests__/deferThrow.test.ts
+2026-03-14T22:57:16.2888531Z npm notice 565B src/__tests__/either.test.ts
+2026-03-14T22:57:16.2889172Z npm notice 715B src/__tests__/freezeAssign.test.ts
+2026-03-14T22:57:16.2890223Z npm notice 1.8kB src/__tests__/greaterThan.test.ts
+2026-03-14T22:57:16.2890903Z npm notice 1.2kB src/__tests__/invariant.test.ts
+2026-03-14T22:57:16.2891555Z npm notice 432B src/__tests__/isArray.test.ts
+2026-03-14T22:57:16.2892203Z npm notice 493B src/__tests__/isBoolean.test.ts
+2026-03-14T22:57:16.2892847Z npm notice 1.4kB src/__tests__/isEmpty.test.ts
+2026-03-14T22:57:16.2893539Z npm notice 621B src/__tests__/isEmptySet.test.ts
+2026-03-14T22:57:16.2894259Z npm notice 467B src/__tests__/isNull.test.ts
+2026-03-14T22:57:16.2894925Z npm notice 634B src/__tests__/isNumeric.test.ts
+2026-03-14T22:57:16.2895608Z npm notice 1.3kB src/__tests__/isPositive.test.ts
+2026-03-14T22:57:16.2896289Z npm notice 503B src/__tests__/isPromise.test.ts
+2026-03-14T22:57:16.2897168Z npm notice 400B src/__tests__/isString.test.ts
+2026-03-14T22:57:16.2898153Z npm notice 532B src/__tests__/isUndefined.test.ts
+2026-03-14T22:57:16.2899015Z npm notice 647B src/__tests__/isUnsafeKey.test.ts
+2026-03-14T22:57:16.2899965Z npm notice 2.0kB src/__tests__/lengthEquals.test.ts
+2026-03-14T22:57:16.2914367Z npm notice 2.0kB src/__tests__/longerThan.test.ts
+2026-03-14T22:57:16.2915165Z npm notice 767B src/__tests__/mapFirst.test.ts
+2026-03-14T22:57:16.2915877Z npm notice 776B src/__tests__/nonnullish.test.ts
+2026-03-14T22:57:16.2916546Z npm notice 277B src/__tests__/noop.test.ts
+2026-03-14T22:57:16.2917442Z npm notice 1.8kB src/__tests__/numberEquals.test.ts
+2026-03-14T22:57:16.2918279Z npm notice 905B src/__tests__/optionalFunctionValue.test.ts
+2026-03-14T22:57:16.2919079Z npm notice 3.1kB src/__tests__/Predicates.test.ts
+2026-03-14T22:57:16.2919781Z npm notice 9.3kB src/__tests__/Result.test.ts
+2026-03-14T22:57:16.2920419Z npm notice 867B src/__tests__/seq.test.ts
+2026-03-14T22:57:16.2921484Z npm notice 11.0kB src/__tests__/SimpleStateMachine.test.ts
+2026-03-14T22:57:16.2922252Z npm notice 580B src/__tests__/StringObject.test.ts
+2026-03-14T22:57:16.2922934Z npm notice 1.3kB src/__tests__/text.test.ts
+2026-03-14T22:57:16.2923613Z npm notice 1.9kB src/__tests__/tinyState.test.ts
+2026-03-14T22:57:16.2924278Z npm notice 912B src/__tests__/toNumber.test.ts
+2026-03-14T22:57:16.2924938Z npm notice 481B src/__tests__/vest-utils.test.ts
+2026-03-14T22:57:16.2925543Z npm notice 479B src/__tests__/withCatch.test.ts
+2026-03-14T22:57:16.2926240Z npm notice 1.4kB src/__tests__/withResolvers.test.ts
+2026-03-14T22:57:16.2927134Z npm notice 108B src/asArray.ts
+2026-03-14T22:57:16.2927605Z npm notice 30B src/assign.ts
+2026-03-14T22:57:16.2928087Z npm notice 142B src/bindNot.ts
+2026-03-14T22:57:16.2928533Z npm notice 383B src/Brand.ts
+2026-03-14T22:57:16.2928974Z npm notice 1.4kB src/bus.ts
+2026-03-14T22:57:16.2929414Z npm notice 2.7kB src/cache.ts
+2026-03-14T22:57:16.2929906Z npm notice 131B src/callEach.ts
+2026-03-14T22:57:16.2930413Z npm notice 275B src/defaultTo.ts
+2026-03-14T22:57:16.2930935Z npm notice 169B src/deferThrow.ts
+2026-03-14T22:57:16.2931496Z npm notice 237B src/dynamicValue.ts
+2026-03-14T22:57:16.2932019Z npm notice 90B src/either.ts
+2026-03-14T22:57:16.2932763Z npm notice 2.4kB src/exports/__tests__/minifyObject.security.test.ts
+2026-03-14T22:57:16.2933672Z npm notice 6.5kB src/exports/__tests__/minifyObject.test.ts
+2026-03-14T22:57:16.2934398Z npm notice 4.7kB src/exports/minifyObject.ts
+2026-03-14T22:57:16.2935079Z npm notice 2.4kB src/exports/standardSchemaSpec.ts
+2026-03-14T22:57:16.2935711Z npm notice 168B src/freezeAssign.ts
+2026-03-14T22:57:16.2936200Z npm notice 107B src/globals.d.ts
+2026-03-14T22:57:16.2936932Z npm notice 209B src/greaterThan.ts
+2026-03-14T22:57:16.2937495Z npm notice 205B src/hasOwnProperty.ts
+2026-03-14T22:57:16.2938047Z npm notice 518B src/invariant.ts
+2026-03-14T22:57:16.2938497Z npm notice 114B src/IO.ts
+2026-03-14T22:57:16.2938979Z npm notice 330B src/isArrayValue.ts
+2026-03-14T22:57:16.2939525Z npm notice 100B src/isBooleanValue.ts
+2026-03-14T22:57:16.2940050Z npm notice 536B src/isEmpty.ts
+2026-03-14T22:57:16.2940563Z npm notice 330B src/isEmptySet.ts
+2026-03-14T22:57:16.2941344Z npm notice 140B src/isFunction.ts
+2026-03-14T22:57:16.2941786Z npm notice 160B src/isNull.ts
+2026-03-14T22:57:16.2942243Z npm notice 311B src/isNullish.ts
+2026-03-14T22:57:16.2942712Z npm notice 318B src/isNumeric.ts
+2026-03-14T22:57:16.2943185Z npm notice 142B src/isPositive.ts
+2026-03-14T22:57:16.2943660Z npm notice 161B src/isPromise.ts
+2026-03-14T22:57:16.2944174Z npm notice 93B src/isStringValue.ts
+2026-03-14T22:57:16.2944720Z npm notice 186B src/isUndefined.ts
+2026-03-14T22:57:16.2945268Z npm notice 140B src/isUnsafeKey.ts
+2026-03-14T22:57:16.2945803Z npm notice 278B src/lengthEquals.ts
+2026-03-14T22:57:16.2946346Z npm notice 185B src/longerThan.ts
+2026-03-14T22:57:16.2947070Z npm notice 514B src/mapFirst.ts
+2026-03-14T22:57:16.2947582Z npm notice 249B src/nonnullish.ts
+2026-03-14T22:57:16.2948085Z npm notice 26B src/noop.ts
+2026-03-14T22:57:16.2948588Z npm notice 300B src/numberEquals.ts
+2026-03-14T22:57:16.2949142Z npm notice 485B src/Predicates.ts
+2026-03-14T22:57:16.2949677Z npm notice 3.3kB src/Result.ts
+2026-03-14T22:57:16.2950120Z npm notice 277B src/seq.ts
+2026-03-14T22:57:16.2950646Z npm notice 4.0kB src/SimpleStateMachine.ts
+2026-03-14T22:57:16.2951241Z npm notice 197B src/StringObject.ts
+2026-03-14T22:57:16.2951736Z npm notice 521B src/text.ts
+2026-03-14T22:57:16.2952225Z npm notice 610B src/tinyState.ts
+2026-03-14T22:57:16.2952725Z npm notice 267B src/toNumber.ts
+2026-03-14T22:57:16.2953235Z npm notice 631B src/utilityTypes.ts
+2026-03-14T22:57:16.2953787Z npm notice 151B src/valueIsObject.ts
+2026-03-14T22:57:16.2954346Z npm notice 2.7kB src/vest-utils.ts
+2026-03-14T22:57:16.2954863Z npm notice 200B src/withCatch.ts
+2026-03-14T22:57:16.2955357Z npm notice 717B src/withResolvers.ts
+2026-03-14T22:57:16.2955934Z npm notice 457B standardSchemaSpec/package.json
+2026-03-14T22:57:16.2957034Z npm notice 385B types/exports/minifyObject.d.cts
+2026-03-14T22:57:16.2957756Z npm notice 335B types/exports/minifyObject.d.cts.map
+2026-03-14T22:57:16.2958465Z npm notice 385B types/exports/minifyObject.d.mts
+2026-03-14T22:57:16.2959179Z npm notice 335B types/exports/minifyObject.d.mts.map
+2026-03-14T22:57:16.2959963Z npm notice 2.4kB types/exports/standardSchemaSpec.d.cts
+2026-03-14T22:57:16.2960741Z npm notice 1.1kB types/exports/standardSchemaSpec.d.cts.map
+2026-03-14T22:57:16.2961506Z npm notice 2.4kB types/exports/standardSchemaSpec.d.mts
+2026-03-14T22:57:16.2962266Z npm notice 1.1kB types/exports/standardSchemaSpec.d.mts.map
+2026-03-14T22:57:16.2962939Z npm notice 12.7kB types/vest-utils.d.cts
+2026-03-14T22:57:16.2963518Z npm notice 4.6kB types/vest-utils.d.cts.map
+2026-03-14T22:57:16.2964088Z npm notice 12.7kB types/vest-utils.d.mts
+2026-03-14T22:57:16.2964661Z npm notice 7.4kB types/vest-utils.d.mts.map
+2026-03-14T22:57:16.2965224Z npm notice 12.7kB types/vest-utils.d.ts
+2026-03-14T22:57:16.2965761Z npm notice 516B vitest.config.ts
+2026-03-14T22:57:16.2966208Z npm notice Tarball Details
+2026-03-14T22:57:16.2966847Z npm notice name: vest-utils
+2026-03-14T22:57:16.2967295Z npm notice version: 2.0.12
+2026-03-14T22:57:16.2967810Z npm notice filename: vest-utils-2.0.12.tgz
+2026-03-14T22:57:16.2968367Z npm notice package size: 68.1 kB
+2026-03-14T22:57:16.2968870Z npm notice unpacked size: 292.0 kB
+2026-03-14T22:57:16.2969505Z npm notice shasum: 05ad187e9801c540b4764c1001706f6bf3c09f28
+2026-03-14T22:57:16.2970300Z npm notice integrity: sha512-+CsL34AyigtR+[...]b3k3BfcbkwFdg==
+2026-03-14T22:57:16.2970902Z npm notice total files: 128
+2026-03-14T22:57:16.2971263Z npm notice
+2026-03-14T22:57:17.0141123Z npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+2026-03-14T22:57:17.5780987Z npm notice publish Signed provenance statement with source and build information from GitHub Actions
+2026-03-14T22:57:17.5782650Z npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=1105917517
+2026-03-14T22:57:18.7654101Z + vest-utils@2.0.12
+2026-03-14T22:57:18.8144898Z Releasing package: 📦 context
+2026-03-14T22:57:18.8145379Z 🔍 Finding diffs for package: context
+2026-03-14T22:57:18.9650533Z From https://github.com/***/vest
+2026-03-14T22:57:18.9651207Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:18.9707439Z All changes between origin/stable..origin/release:  ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)
+2026-03-14T22:57:18.9708251Z packages/anyone/package.json
+2026-03-14T22:57:18.9708540Z packages/context/package.json
+2026-03-14T22:57:18.9708791Z packages/n4s/package.json
+2026-03-14T22:57:18.9709033Z packages/vast/package.json
+2026-03-14T22:57:18.9709303Z packages/vest-utils/package.json
+2026-03-14T22:57:18.9709563Z packages/vest/package.json
+2026-03-14T22:57:18.9709839Z packages/vestjs-runtime/package.json
+2026-03-14T22:57:18.9710106Z yarn.lock
+2026-03-14T22:57:18.9710214Z 
+2026-03-14T22:57:18.9711787Z Picking tag id. Current branch: release
+2026-03-14T22:57:18.9712575Z ⚙️ Generated diff data: {
+2026-03-14T22:57:18.9713039Z   "changeLevel": "patch",
+2026-03-14T22:57:18.9713567Z   "messages": [
+2026-03-14T22:57:18.9714608Z     "ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)"
+2026-03-14T22:57:18.9715484Z   ],
+2026-03-14T22:57:18.9715789Z   "nextVersion": "4.0.12",
+2026-03-14T22:57:18.9716191Z   "packageName": "context",
+2026-03-14T22:57:18.9716573Z   "tagId": "4.0.12",
+2026-03-14T22:57:18.9717207Z   "version": "4.0.11",
+2026-03-14T22:57:18.9717604Z   "versionToPublish": "4.0.12"
+2026-03-14T22:57:18.9717983Z }
+2026-03-14T22:57:18.9718651Z 🔢 Setting next version for context. From 4.0.11 to 4.0.12
+2026-03-14T22:57:18.9719331Z Updating local dependencies to latest version
+2026-03-14T22:57:18.9720853Z 🛠 Building package: context
+2026-03-14T22:57:18.9734759Z 🎬 Executing command: "./node_modules/.bin/tsdown --config /home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts"
+2026-03-14T22:57:19.3067014Z (node:5112) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+2026-03-14T22:57:19.3070475Z --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("/home/runner/work/vest/vest/vx/ts-loader.js", pathToFileURL("./"));'
+2026-03-14T22:57:19.3072308Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-14T22:57:19.3217252Z [34mℹ[39m tsdown [2mv0.17.0-beta.5[22m powered by rolldown [2mv1.0.0-beta.52[22m
+2026-03-14T22:57:19.4839936Z [34mℹ[39m config file: [4m/home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts[24m 
+2026-03-14T22:57:19.4912015Z [34mℹ[39m [38;2;100;180;163m[context][39m entry: [38;2;100;180;163msrc/context.ts[39m
+2026-03-14T22:57:19.4915598Z [34mℹ[39m [38;2;100;180;163m[context][39m tsconfig: [38;2;100;180;163mtsconfig.json[39m
+2026-03-14T22:57:19.4919609Z [34mℹ[39m Build start
+2026-03-14T22:57:19.4946282Z [34mℹ[39m Cleaning 6 files
+2026-03-14T22:57:20.6082409Z [34mℹ[39m [38;2;100;180;163m[context][39m [33m[CJS][39m [2mdist/[22m[1mcontext.cjs[22m      [2m1.73 kB[22m [2m│ gzip: 0.71 kB[22m
+2026-03-14T22:57:20.6084173Z [34mℹ[39m [38;2;100;180;163m[context][39m [33m[CJS][39m [2mdist/[22mcontext.cjs.map  [2m3.47 kB[22m [2m│ gzip: 1.36 kB[22m
+2026-03-14T22:57:20.6087051Z [34mℹ[39m [38;2;100;180;163m[context][39m [33m[CJS][39m 2 files, total: 5.20 kB
+2026-03-14T22:57:20.6230398Z [34mℹ[39m [38;2;100;180;163m[context][39m [33m[CJS][39m [2mdist/[22mcontext.d.cts.map  [2m1.06 kB[22m [2m│ gzip: 0.47 kB[22m
+2026-03-14T22:57:20.6231752Z [34mℹ[39m [38;2;100;180;163m[context][39m [33m[CJS][39m [2mdist/[22m[32m[1mcontext.d.cts[22m[39m      [2m1.01 kB[22m [2m│ gzip: 0.50 kB[22m
+2026-03-14T22:57:20.6233287Z [34mℹ[39m [38;2;100;180;163m[context][39m [33m[CJS][39m 2 files, total: 2.06 kB
+2026-03-14T22:57:20.6234936Z [34mℹ[39m [38;2;100;180;163m[context][39m [34m[ESM][39m [2mdist/[22m[1mcontext.mjs[22m        [2m1.66 kB[22m [2m│ gzip: 0.70 kB[22m
+2026-03-14T22:57:20.6237211Z [34mℹ[39m [38;2;100;180;163m[context][39m [34m[ESM][39m [2mdist/[22mcontext.mjs.map    [2m3.48 kB[22m [2m│ gzip: 1.36 kB[22m
+2026-03-14T22:57:20.6238505Z [34mℹ[39m [38;2;100;180;163m[context][39m [34m[ESM][39m [2mdist/[22mcontext.d.mts.map  [2m1.06 kB[22m [2m│ gzip: 0.47 kB[22m
+2026-03-14T22:57:20.6239748Z [34mℹ[39m [38;2;100;180;163m[context][39m [34m[ESM][39m [2mdist/[22m[32m[1mcontext.d.mts[22m[39m      [2m1.01 kB[22m [2m│ gzip: 0.50 kB[22m
+2026-03-14T22:57:20.6241369Z [34mℹ[39m [38;2;100;180;163m[context][39m [34m[ESM][39m 4 files, total: 7.20 kB
+2026-03-14T22:57:20.6242609Z [32m✔[39m [38;2;100;180;163m[context][39m Build complete in [32m1131ms[39m
+2026-03-14T22:57:20.6243801Z [32m✔[39m [38;2;100;180;163m[context][39m Build complete in [32m1132ms[39m
+2026-03-14T22:57:20.6834844Z 🚀 Publishing package context.
+2026-03-14T22:57:20.6835414Z     Version: 4.0.12
+2026-03-14T22:57:20.6835756Z     Tag Id: 4.0.12
+2026-03-14T22:57:20.6836097Z     Publish Tag: undefined
+2026-03-14T22:57:20.6836895Z Configuring git identity for release publish.
+2026-03-14T22:57:20.6931258Z 🎬 Executing command: "cd /home/runner/work/vest/vest/packages/context && npm publish --provenance"
+2026-03-14T22:57:20.8030370Z npm warn Unknown user config "always-auth". This will stop working in the next major version of npm.
+2026-03-14T22:57:21.0343136Z npm notice
+2026-03-14T22:57:21.0345634Z npm notice 📦  context@4.0.12
+2026-03-14T22:57:21.0346131Z npm notice Tarball Contents
+2026-03-14T22:57:21.0351683Z npm notice 1.1kB CHANGELOG.md
+2026-03-14T22:57:21.0352154Z npm notice 1.1kB LICENSE
+2026-03-14T22:57:21.0352601Z npm notice 2.7kB README.md
+2026-03-14T22:57:21.0353117Z npm notice 1.7kB dist/context.cjs
+2026-03-14T22:57:21.0353626Z npm notice 3.5kB dist/context.cjs.map
+2026-03-14T22:57:21.0354450Z npm notice 1.7kB dist/context.mjs
+2026-03-14T22:57:21.0354982Z npm notice 3.5kB dist/context.mjs.map
+2026-03-14T22:57:21.0355563Z npm notice 1.0kB package.json
+2026-03-14T22:57:21.0356388Z npm notice 463B src/__tests__/__snapshots__/cascade.test.ts.snap
+2026-03-14T22:57:21.0357308Z npm notice 9.3kB src/__tests__/cascade.test.ts
+2026-03-14T22:57:21.0357927Z npm notice 3.0kB src/__tests__/context.test.ts
+2026-03-14T22:57:21.0358551Z npm notice 2.4kB src/context.ts
+2026-03-14T22:57:21.0359104Z npm notice 1.0kB types/context.d.cts
+2026-03-14T22:57:21.0359655Z npm notice 1.1kB types/context.d.cts.map
+2026-03-14T22:57:21.0360197Z npm notice 1.0kB types/context.d.mts
+2026-03-14T22:57:21.0360827Z npm notice 1.1kB types/context.d.mts.map
+2026-03-14T22:57:21.0361394Z npm notice 1.0kB types/context.d.ts
+2026-03-14T22:57:21.0361907Z npm notice 508B vitest.config.ts
+2026-03-14T22:57:21.0362351Z npm notice Tarball Details
+2026-03-14T22:57:21.0362784Z npm notice name: context
+2026-03-14T22:57:21.0363094Z npm notice version: 4.0.12
+2026-03-14T22:57:21.0363416Z npm notice filename: context-4.0.12.tgz
+2026-03-14T22:57:21.0363752Z npm notice package size: 8.0 kB
+2026-03-14T22:57:21.0364028Z npm notice unpacked size: 37.0 kB
+2026-03-14T22:57:21.0364415Z npm notice shasum: 1cec7ca914bb67d1e42bfbd003c63497b6dd2eaf
+2026-03-14T22:57:21.0364891Z npm notice integrity: sha512-vWwx085m1fJVL[...]6Xh8iVgm8ucrA==
+2026-03-14T22:57:21.0365233Z npm notice total files: 18
+2026-03-14T22:57:21.0365444Z npm notice
+2026-03-14T22:57:21.7041555Z npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+2026-03-14T22:57:22.3913756Z npm notice publish Signed provenance statement with source and build information from GitHub Actions
+2026-03-14T22:57:22.3915106Z npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=1105917625
+2026-03-14T22:57:23.5983748Z + context@4.0.12
+2026-03-14T22:57:23.6068025Z Releasing package: 📦 n4s
+2026-03-14T22:57:23.6068694Z 🔍 Finding diffs for package: n4s
+2026-03-14T22:57:23.7520887Z From https://github.com/***/vest
+2026-03-14T22:57:23.7521521Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:23.7577247Z All changes between origin/stable..origin/release:  ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)
+2026-03-14T22:57:23.7578502Z packages/anyone/package.json
+2026-03-14T22:57:23.7579025Z packages/context/package.json
+2026-03-14T22:57:23.7579507Z packages/n4s/package.json
+2026-03-14T22:57:23.7579937Z packages/vast/package.json
+2026-03-14T22:57:23.7580430Z packages/vest-utils/package.json
+2026-03-14T22:57:23.7580919Z packages/vest/package.json
+2026-03-14T22:57:23.7581405Z packages/vestjs-runtime/package.json
+2026-03-14T22:57:23.7581830Z yarn.lock
+2026-03-14T22:57:23.7581996Z 
+2026-03-14T22:57:23.7582258Z Picking tag id. Current branch: release
+2026-03-14T22:57:23.7583036Z ⚙️ Generated diff data: {
+2026-03-14T22:57:23.7583495Z   "changeLevel": "patch",
+2026-03-14T22:57:23.7583909Z   "messages": [
+2026-03-14T22:57:23.7584793Z     "ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)"
+2026-03-14T22:57:23.7585747Z   ],
+2026-03-14T22:57:23.7586066Z   "nextVersion": "6.1.9",
+2026-03-14T22:57:23.7586494Z   "packageName": "n4s",
+2026-03-14T22:57:23.7587081Z   "tagId": "6.1.9",
+2026-03-14T22:57:23.7587449Z   "version": "6.1.8",
+2026-03-14T22:57:23.7587854Z   "versionToPublish": "6.1.9"
+2026-03-14T22:57:23.7588280Z }
+2026-03-14T22:57:23.7588912Z 🔢 Setting next version for n4s. From 6.1.8 to 6.1.9
+2026-03-14T22:57:23.7589598Z Updating local dependencies to latest version
+2026-03-14T22:57:23.7590177Z 🛠 Building package: n4s
+2026-03-14T22:57:23.7610877Z 🎬 Executing command: "./node_modules/.bin/tsdown --config /home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts"
+2026-03-14T22:57:24.0972013Z (node:5166) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+2026-03-14T22:57:24.0973807Z --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("/home/runner/work/vest/vest/vx/ts-loader.js", pathToFileURL("./"));'
+2026-03-14T22:57:24.0974872Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-14T22:57:24.1127135Z [34mℹ[39m tsdown [2mv0.17.0-beta.5[22m powered by rolldown [2mv1.0.0-beta.52[22m
+2026-03-14T22:57:24.2794051Z [34mℹ[39m config file: [4m/home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts[24m 
+2026-03-14T22:57:24.2873587Z [34mℹ[39m [38;2;100;180;150m[n4s][39m entry: [38;2;100;180;150msrc/n4s.ts, src/exports/date.ts, src/exports/email.ts, src/exports/isURL.ts[39m
+2026-03-14T22:57:24.2875806Z [34mℹ[39m [38;2;100;180;150m[n4s][39m tsconfig: [38;2;100;180;150mtsconfig.json[39m
+2026-03-14T22:57:24.2880643Z [34mℹ[39m Build start
+2026-03-14T22:57:24.2907717Z [34mℹ[39m Cleaning 23 files
+2026-03-14T22:57:27.6237099Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22m[1mexports/date.cjs[22m        [2m  7.57 kB[22m [2m│ gzip:  2.58 kB[22m
+2026-03-14T22:57:27.6244041Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22m[1mexports/email.cjs[22m       [2m  5.08 kB[22m [2m│ gzip:  1.79 kB[22m
+2026-03-14T22:57:27.6246254Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22m[1mexports/isURL.cjs[22m       [2m  5.05 kB[22m [2m│ gzip:  1.87 kB[22m
+2026-03-14T22:57:27.6248292Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22m[1mn4s.cjs[22m                 [2m  0.16 kB[22m [2m│ gzip:  0.11 kB[22m
+2026-03-14T22:57:27.6250207Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mn4s-CoDF5Fg6.cjs.map    [2m133.32 kB[22m [2m│ gzip: 28.27 kB[22m
+2026-03-14T22:57:27.6252320Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mn4s-CoDF5Fg6.cjs        [2m 69.82 kB[22m [2m│ gzip: 14.78 kB[22m
+2026-03-14T22:57:27.6254358Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mexports/date.cjs.map    [2m 13.91 kB[22m [2m│ gzip:  4.60 kB[22m
+2026-03-14T22:57:27.6256335Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mexports/email.cjs.map   [2m 10.39 kB[22m [2m│ gzip:  3.62 kB[22m
+2026-03-14T22:57:27.6261998Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mexports/isURL.cjs.map   [2m  9.92 kB[22m [2m│ gzip:  3.33 kB[22m
+2026-03-14T22:57:27.6263907Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22misIP-BBSgBWBl.cjs.map   [2m  6.94 kB[22m [2m│ gzip:  2.07 kB[22m
+2026-03-14T22:57:27.6265875Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22misIP-BBSgBWBl.cjs       [2m  4.18 kB[22m [2m│ gzip:  1.39 kB[22m
+2026-03-14T22:57:27.6267985Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mmerge-Co1t_slP.cjs.map  [2m  2.00 kB[22m [2m│ gzip:  0.90 kB[22m
+2026-03-14T22:57:27.6269835Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mmerge-Co1t_slP.cjs      [2m  1.43 kB[22m [2m│ gzip:  0.61 kB[22m
+2026-03-14T22:57:27.6271188Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m 13 files, total: 269.77 kB
+2026-03-14T22:57:27.8224533Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mn4s.d.cts.map                [2m 26.66 kB[22m [2m│ gzip: 5.71 kB[22m
+2026-03-14T22:57:27.8226563Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mn4sTypes-ChCugpFQ.d.cts.map  [2m 21.09 kB[22m [2m│ gzip: 6.81 kB[22m
+2026-03-14T22:57:27.8228684Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mexports/date.d.cts.map       [2m  0.45 kB[22m [2m│ gzip: 0.27 kB[22m
+2026-03-14T22:57:27.8230546Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mexports/email.d.cts.map      [2m  0.18 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-03-14T22:57:27.8232448Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22mexports/isURL.d.cts.map      [2m  0.18 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-03-14T22:57:27.8234740Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22m[32m[1mn4s.d.cts[22m[39m                    [2m298.58 kB[22m [2m│ gzip: 7.71 kB[22m
+2026-03-14T22:57:27.8236335Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/date.d.cts[22m[39m           [2m  0.73 kB[22m [2m│ gzip: 0.30 kB[22m
+2026-03-14T22:57:27.8237906Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/email.d.cts[22m[39m          [2m  0.26 kB[22m [2m│ gzip: 0.18 kB[22m
+2026-03-14T22:57:27.8239037Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/isURL.d.cts[22m[39m          [2m  0.26 kB[22m [2m│ gzip: 0.18 kB[22m
+2026-03-14T22:57:27.8240170Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m [2mdist/[22m[32mn4sTypes-ChCugpFQ.d.cts[39m      [2m 47.62 kB[22m [2m│ gzip: 9.32 kB[22m
+2026-03-14T22:57:27.8241006Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [33m[CJS][39m 10 files, total: 396.02 kB
+2026-03-14T22:57:27.8241612Z [32m✔[39m [38;2;100;180;150m[n4s][39m Build complete in [32m3534ms[39m
+2026-03-14T22:57:27.8320595Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22m[1mexports/date.mjs[22m             [2m  7.51 kB[22m [2m│ gzip:  2.58 kB[22m
+2026-03-14T22:57:27.8322561Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22m[1mexports/email.mjs[22m            [2m  5.02 kB[22m [2m│ gzip:  1.80 kB[22m
+2026-03-14T22:57:27.8324459Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22m[1mexports/isURL.mjs[22m            [2m  5.01 kB[22m [2m│ gzip:  1.88 kB[22m
+2026-03-14T22:57:27.8326358Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22m[1mn4s.mjs[22m                      [2m  0.11 kB[22m [2m│ gzip:  0.10 kB[22m
+2026-03-14T22:57:27.8328434Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mn4s-KWquSyTb.mjs.map         [2m134.09 kB[22m [2m│ gzip: 28.33 kB[22m
+2026-03-14T22:57:27.8330271Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mn4s-KWquSyTb.mjs             [2m 68.65 kB[22m [2m│ gzip: 14.77 kB[22m
+2026-03-14T22:57:27.8332350Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mn4s.d.mts.map                [2m 23.06 kB[22m [2m│ gzip:  4.93 kB[22m
+2026-03-14T22:57:27.8333534Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mn4sTypes-Bb1zNxyv.d.mts.map  [2m 22.70 kB[22m [2m│ gzip:  7.38 kB[22m
+2026-03-14T22:57:27.8335210Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mexports/date.mjs.map         [2m 13.88 kB[22m [2m│ gzip:  4.59 kB[22m
+2026-03-14T22:57:27.8336239Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mexports/email.mjs.map        [2m 10.34 kB[22m [2m│ gzip:  3.59 kB[22m
+2026-03-14T22:57:27.8337547Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mexports/isURL.mjs.map        [2m  9.88 kB[22m [2m│ gzip:  3.30 kB[22m
+2026-03-14T22:57:27.8338656Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22misIP-CfWqYYV7.mjs.map        [2m  6.93 kB[22m [2m│ gzip:  2.07 kB[22m
+2026-03-14T22:57:27.8340527Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22misIP-CfWqYYV7.mjs            [2m  3.97 kB[22m [2m│ gzip:  1.34 kB[22m
+2026-03-14T22:57:27.8341586Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mmerge-WxNyiiA8.mjs.map       [2m  2.00 kB[22m [2m│ gzip:  0.90 kB[22m
+2026-03-14T22:57:27.8342586Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mmerge-WxNyiiA8.mjs           [2m  1.24 kB[22m [2m│ gzip:  0.56 kB[22m
+2026-03-14T22:57:27.8343569Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mexports/date.d.mts.map       [2m  0.45 kB[22m [2m│ gzip:  0.27 kB[22m
+2026-03-14T22:57:27.8344806Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mexports/email.d.mts.map      [2m  0.18 kB[22m [2m│ gzip:  0.16 kB[22m
+2026-03-14T22:57:27.8345836Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22mexports/isURL.d.mts.map      [2m  0.18 kB[22m [2m│ gzip:  0.16 kB[22m
+2026-03-14T22:57:27.8347054Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22m[32m[1mn4s.d.mts[22m[39m                    [2m298.23 kB[22m [2m│ gzip:  7.45 kB[22m
+2026-03-14T22:57:27.8348149Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/date.d.mts[22m[39m           [2m  0.73 kB[22m [2m│ gzip:  0.31 kB[22m
+2026-03-14T22:57:27.8349254Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/email.d.mts[22m[39m          [2m  0.26 kB[22m [2m│ gzip:  0.18 kB[22m
+2026-03-14T22:57:27.8350381Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/isURL.d.mts[22m[39m          [2m  0.26 kB[22m [2m│ gzip:  0.18 kB[22m
+2026-03-14T22:57:27.8351503Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m [2mdist/[22m[32mn4sTypes-Bb1zNxyv.d.mts[39m      [2m 49.19 kB[22m [2m│ gzip:  9.62 kB[22m
+2026-03-14T22:57:27.8352312Z [34mℹ[39m [38;2;100;180;150m[n4s][39m [34m[ESM][39m 23 files, total: 663.89 kB
+2026-03-14T22:57:27.8352909Z [32m✔[39m [38;2;100;180;150m[n4s][39m Build complete in [32m3544ms[39m
+2026-03-14T22:57:27.9268000Z 🚀 Publishing package n4s.
+2026-03-14T22:57:27.9268654Z     Version: 6.1.9
+2026-03-14T22:57:27.9269070Z     Tag Id: 6.1.9
+2026-03-14T22:57:27.9269496Z     Publish Tag: undefined
+2026-03-14T22:57:27.9269943Z Configuring git identity for release publish.
+2026-03-14T22:57:27.9375784Z 🎬 Executing command: "cd /home/runner/work/vest/vest/packages/n4s && npm publish --provenance"
+2026-03-14T22:57:28.0485581Z npm warn Unknown user config "always-auth". This will stop working in the next major version of npm.
+2026-03-14T22:57:28.6175126Z npm notice
+2026-03-14T22:57:28.6177766Z npm notice 📦  n4s@6.1.9
+2026-03-14T22:57:28.6178313Z npm notice Tarball Contents
+2026-03-14T22:57:28.6234636Z npm notice 1.1kB LICENSE
+2026-03-14T22:57:28.6237573Z npm notice 2.7kB README.md
+2026-03-14T22:57:28.6237972Z npm notice 359B date/package.json
+2026-03-14T22:57:28.6238554Z npm notice 7.6kB dist/exports/date.cjs
+2026-03-14T22:57:28.6239167Z npm notice 13.9kB dist/exports/date.cjs.map
+2026-03-14T22:57:28.6239760Z npm notice 7.5kB dist/exports/date.mjs
+2026-03-14T22:57:28.6240363Z npm notice 13.9kB dist/exports/date.mjs.map
+2026-03-14T22:57:28.6240813Z npm notice 5.1kB dist/exports/email.cjs
+2026-03-14T22:57:28.6241149Z npm notice 10.4kB dist/exports/email.cjs.map
+2026-03-14T22:57:28.6241631Z npm notice 5.0kB dist/exports/email.mjs
+2026-03-14T22:57:28.6241965Z npm notice 10.3kB dist/exports/email.mjs.map
+2026-03-14T22:57:28.6242425Z npm notice 5.1kB dist/exports/isURL.cjs
+2026-03-14T22:57:28.6242777Z npm notice 9.9kB dist/exports/isURL.cjs.map
+2026-03-14T22:57:28.6243089Z npm notice 5.0kB dist/exports/isURL.mjs
+2026-03-14T22:57:28.6243672Z npm notice 9.9kB dist/exports/isURL.mjs.map
+2026-03-14T22:57:28.6244194Z npm notice 4.2kB dist/isIP-BBSgBWBl.cjs
+2026-03-14T22:57:28.6244752Z npm notice 6.9kB dist/isIP-BBSgBWBl.cjs.map
+2026-03-14T22:57:28.6245137Z npm notice 4.0kB dist/isIP-CfWqYYV7.mjs
+2026-03-14T22:57:28.6245460Z npm notice 6.9kB dist/isIP-CfWqYYV7.mjs.map
+2026-03-14T22:57:28.6245788Z npm notice 1.4kB dist/merge-Co1t_slP.cjs
+2026-03-14T22:57:28.6246128Z npm notice 2.0kB dist/merge-Co1t_slP.cjs.map
+2026-03-14T22:57:28.6246459Z npm notice 1.2kB dist/merge-WxNyiiA8.mjs
+2026-03-14T22:57:28.6247037Z npm notice 2.0kB dist/merge-WxNyiiA8.mjs.map
+2026-03-14T22:57:28.6247385Z npm notice 69.8kB dist/n4s-CoDF5Fg6.cjs
+2026-03-14T22:57:28.6247714Z npm notice 133.3kB dist/n4s-CoDF5Fg6.cjs.map
+2026-03-14T22:57:28.6248039Z npm notice 68.7kB dist/n4s-KWquSyTb.mjs
+2026-03-14T22:57:28.6248594Z npm notice 134.1kB dist/n4s-KWquSyTb.mjs.map
+2026-03-14T22:57:28.6248887Z npm notice 160B dist/n4s.cjs
+2026-03-14T22:57:28.6249131Z npm notice 109B dist/n4s.mjs
+2026-03-14T22:57:28.6249386Z npm notice 4.7kB docs/schema.md
+2026-03-14T22:57:28.6249666Z npm notice 366B email/package.json
+2026-03-14T22:57:28.6249950Z npm notice 366B isURL/package.json
+2026-03-14T22:57:28.6250205Z npm notice 2.2kB package.json
+2026-03-14T22:57:28.6250511Z npm notice 15.8kB src/__tests__/compose.test.ts
+2026-03-14T22:57:28.6250868Z npm notice 23.7kB src/__tests__/context.test.ts
+2026-03-14T22:57:28.6251278Z npm notice 10.8kB src/__tests__/documentation-examples.test.ts
+2026-03-14T22:57:28.6251677Z npm notice 42.2kB src/__tests__/extend.test.ts
+2026-03-14T22:57:28.6252036Z npm notice 4.1kB src/__tests__/extend.types.test.ts
+2026-03-14T22:57:28.6252437Z npm notice 7.5kB src/__tests__/integration.eager.test.ts
+2026-03-14T22:57:28.6252847Z npm notice 13.1kB src/__tests__/integration.lazy.test.ts
+2026-03-14T22:57:28.6253238Z npm notice 1.3kB src/__tests__/lazyParsers.test.ts
+2026-03-14T22:57:28.6253597Z npm notice 14.2kB src/__tests__/message.test.ts
+2026-03-14T22:57:28.6253932Z npm notice 1.9kB src/__tests__/parse.test.ts
+2026-03-14T22:57:28.6254286Z npm notice 2.4kB src/__tests__/ruleResult.test.ts
+2026-03-14T22:57:28.6254676Z npm notice 9.6kB src/__tests__/standardSchema.test.ts
+2026-03-14T22:57:28.6255035Z npm notice 8.8kB src/__tests__/types.test.ts
+2026-03-14T22:57:28.6255334Z npm notice 2.2kB src/compose.ts
+2026-03-14T22:57:28.6255582Z npm notice 2.4kB src/eager.ts
+2026-03-14T22:57:28.6255858Z npm notice 1.2kB src/eager/allRules.ts
+2026-03-14T22:57:28.6256165Z npm notice 2.0kB src/eager/eagerTypes.ts
+2026-03-14T22:57:28.6256539Z npm notice 1.1kB src/eager/ruleCallGenerator.ts
+2026-03-14T22:57:28.6257111Z npm notice 849B src/eager/ruleRegistry.ts
+2026-03-14T22:57:28.6257426Z npm notice 839B src/eager/typeUtils.ts
+2026-03-14T22:57:28.6257718Z npm notice 1.7kB src/enforceContext.ts
+2026-03-14T22:57:28.6258058Z npm notice 11.7kB src/exports/__tests__/date.test.ts
+2026-03-14T22:57:28.6258443Z npm notice 4.0kB src/exports/__tests__/email.test.ts
+2026-03-14T22:57:28.6258811Z npm notice 5.0kB src/exports/__tests__/isUrl.test.ts
+2026-03-14T22:57:28.6259290Z npm notice 714B src/exports/date.ts
+2026-03-14T22:57:28.6259575Z npm notice 224B src/exports/email.ts
+2026-03-14T22:57:28.6259852Z npm notice 214B src/exports/isURL.ts
+2026-03-14T22:57:28.6260130Z npm notice 1.9kB src/extendLogic.ts
+2026-03-14T22:57:28.6260387Z npm notice 4.9kB src/lazy.ts
+2026-03-14T22:57:28.6260662Z npm notice 892B src/lazy/ruleAdapter.ts
+2026-03-14T22:57:28.6260962Z npm notice 2.6kB src/lazy/typeRules.ts
+2026-03-14T22:57:28.6261221Z npm notice 3.7kB src/n4s.ts
+2026-03-14T22:57:28.6261479Z npm notice 2.1kB src/n4sTypes.ts
+2026-03-14T22:57:28.6261756Z npm notice 1.3kB src/ruleResult.ts
+2026-03-14T22:57:28.6262103Z npm notice 482B src/rules/__tests__/booleanRules.test.ts
+2026-03-14T22:57:28.6262578Z npm notice 5.7kB src/rules/__tests__/compoundAndSchemaRuleTypes.test.ts
+2026-03-14T22:57:28.6263061Z npm notice 403B src/rules/__tests__/compoundRules.test.ts
+2026-03-14T22:57:28.6263474Z npm notice 1.2kB src/rules/__tests__/generalRules.test.ts
+2026-03-14T22:57:28.6263882Z npm notice 1.5kB src/rules/__tests__/genRuleChain.test.ts
+2026-03-14T22:57:28.6264290Z npm notice 345B src/rules/__tests__/nullishRules.test.ts
+2026-03-14T22:57:28.6264690Z npm notice 390B src/rules/__tests__/objectRules.test.ts
+2026-03-14T22:57:28.6265109Z npm notice 1.4kB src/rules/array/__tests__/arrayRules.test.ts
+2026-03-14T22:57:28.6265538Z npm notice 734B src/rules/array/__tests__/includes.test.ts
+2026-03-14T22:57:28.6265944Z npm notice 6.8kB src/rules/array/__tests__/isArray.test.ts
+2026-03-14T22:57:28.6266352Z npm notice 659B src/rules/array/__tests__/isEmpty.test.ts
+2026-03-14T22:57:28.6266989Z npm notice 1.8kB src/rules/array/__tests__/isNotArray.test.ts
+2026-03-14T22:57:28.6267433Z npm notice 698B src/rules/array/__tests__/isNotEmpty.test.ts
+2026-03-14T22:57:28.6267870Z npm notice 788B src/rules/array/__tests__/lengthEquals.test.ts
+2026-03-14T22:57:28.6268475Z npm notice 824B src/rules/array/__tests__/lengthNotEquals.test.ts
+2026-03-14T22:57:28.6268921Z npm notice 795B src/rules/array/__tests__/longerThan.test.ts
+2026-03-14T22:57:28.6269395Z npm notice 868B src/rules/array/__tests__/longerThanOrEquals.test.ts
+2026-03-14T22:57:28.6269851Z npm notice 732B src/rules/array/__tests__/maxLength.test.ts
+2026-03-14T22:57:28.6270273Z npm notice 723B src/rules/array/__tests__/minLength.test.ts
+2026-03-14T22:57:28.6270695Z npm notice 788B src/rules/array/__tests__/shorterThan.test.ts
+2026-03-14T22:57:28.6271164Z npm notice 789B src/rules/array/__tests__/shorterThanOrEquals.test.ts
+2026-03-14T22:57:28.6271569Z npm notice 154B src/rules/array/includes.ts
+2026-03-14T22:57:28.6271906Z npm notice 520B src/rules/array/isArrayRule.ts
+2026-03-14T22:57:28.6272231Z npm notice 1.2kB src/rules/arrayRules.ts
+2026-03-14T22:57:28.6272624Z npm notice 694B src/rules/boolean/__tests__/booleanRules.test.ts
+2026-03-14T22:57:28.6273071Z npm notice 507B src/rules/boolean/__tests__/equals.test.ts
+2026-03-14T22:57:28.6273498Z npm notice 2.3kB src/rules/boolean/__tests__/isBoolean.test.ts
+2026-03-14T22:57:28.6273920Z npm notice 568B src/rules/boolean/__tests__/isFalse.test.ts
+2026-03-14T22:57:28.6274342Z npm notice 563B src/rules/boolean/__tests__/isFalsy.test.ts
+2026-03-14T22:57:28.6274761Z npm notice 572B src/rules/boolean/__tests__/isTrue.test.ts
+2026-03-14T22:57:28.6275182Z npm notice 557B src/rules/boolean/__tests__/isTruthy.test.ts
+2026-03-14T22:57:28.6275559Z npm notice 742B src/rules/boolean/isBoolean.ts
+2026-03-14T22:57:28.6275889Z npm notice 125B src/rules/boolean/isFalse.ts
+2026-03-14T22:57:28.6276203Z npm notice 122B src/rules/boolean/isTrue.ts
+2026-03-14T22:57:28.6276516Z npm notice 1.0kB src/rules/booleanRules.ts
+2026-03-14T22:57:28.6277079Z npm notice 3.4kB src/rules/chainBuilder/chainBuilder.ts
+2026-03-14T22:57:28.6277481Z npm notice 755B src/rules/chainBuilder/chainExecutor.ts
+2026-03-14T22:57:28.6277870Z npm notice 380B src/rules/chainBuilder/lazyRegistry.ts
+2026-03-14T22:57:28.6278278Z npm notice 2.4kB src/rules/chainBuilder/proxyHandlers.ts
+2026-03-14T22:57:28.6278646Z npm notice 629B src/rules/commonComparison.ts
+2026-03-14T22:57:28.6279173Z npm notice 1.3kB src/rules/commonContainer.ts
+2026-03-14T22:57:28.6279500Z npm notice 1.0kB src/rules/commonLength.ts
+2026-03-14T22:57:28.6279894Z npm notice 2.2kB src/rules/compoundRules/__tests__/allOf.test.ts
+2026-03-14T22:57:28.6280349Z npm notice 2.1kB src/rules/compoundRules/__tests__/anyOf.test.ts
+2026-03-14T22:57:28.6280811Z npm notice 1.8kB src/rules/compoundRules/__tests__/noneOf.test.ts
+2026-03-14T22:57:28.6281263Z npm notice 2.3kB src/rules/compoundRules/__tests__/oneOf.test.ts
+2026-03-14T22:57:28.6281665Z npm notice 1.3kB src/rules/compoundRules/allOf.ts
+2026-03-14T22:57:28.6282029Z npm notice 1.4kB src/rules/compoundRules/anyOf.ts
+2026-03-14T22:57:28.6282793Z npm notice 330B src/rules/compoundRules/compoundRules.ts
+2026-03-14T22:57:28.6283377Z npm notice 758B src/rules/compoundRules/compoundRulesTypes.ts
+2026-03-14T22:57:28.6283805Z npm notice 1.4kB src/rules/compoundRules/noneOf.ts
+2026-03-14T22:57:28.6284164Z npm notice 1.9kB src/rules/compoundRules/oneOf.ts
+2026-03-14T22:57:28.6284576Z npm notice 2.1kB src/rules/general/__tests__/condition.test.ts
+2026-03-14T22:57:28.6285041Z npm notice 3.3kB src/rules/general/__tests__/generalRules.test.ts
+2026-03-14T22:57:28.6285484Z npm notice 4.1kB src/rules/general/__tests__/isBlank.test.ts
+2026-03-14T22:57:28.6285907Z npm notice 2.1kB src/rules/general/__tests__/isEmpty.test.ts
+2026-03-14T22:57:28.6286329Z npm notice 1.4kB src/rules/general/__tests__/isFalsy.test.ts
+2026-03-14T22:57:28.6287069Z npm notice 1.8kB src/rules/general/__tests__/isNotBoolean.test.ts
+2026-03-14T22:57:28.6287551Z npm notice 2.4kB src/rules/general/__tests__/isNotEmpty.test.ts
+2026-03-14T22:57:28.6287999Z npm notice 2.0kB src/rules/general/__tests__/isNotNaN.test.ts
+2026-03-14T22:57:28.6288443Z npm notice 2.3kB src/rules/general/__tests__/isNotNumber.test.ts
+2026-03-14T22:57:28.6289073Z npm notice 2.3kB src/rules/general/__tests__/isNotNumeric.test.ts
+2026-03-14T22:57:28.6289525Z npm notice 1.9kB src/rules/general/__tests__/isNotString.test.ts
+2026-03-14T22:57:28.6289956Z npm notice 1.5kB src/rules/general/__tests__/isTruthy.test.ts
+2026-03-14T22:57:28.6290388Z npm notice 575B src/rules/general/__tests__/notEquals.test.ts
+2026-03-14T22:57:28.6290766Z npm notice 232B src/rules/general/condition.ts
+2026-03-14T22:57:28.6291093Z npm notice 131B src/rules/general/equals.ts
+2026-03-14T22:57:28.6291416Z npm notice 286B src/rules/general/isBlank.ts
+2026-03-14T22:57:28.6291745Z npm notice 219B src/rules/general/isEmpty.ts
+2026-03-14T22:57:28.6292066Z npm notice 141B src/rules/general/isFalsy.ts
+2026-03-14T22:57:28.6292384Z npm notice 341B src/rules/general/isNaN.ts
+2026-03-14T22:57:28.6292724Z npm notice 406B src/rules/general/isNotArray.ts
+2026-03-14T22:57:28.6293095Z npm notice 459B src/rules/general/isNotBoolean.ts
+2026-03-14T22:57:28.6293454Z npm notice 244B src/rules/general/isNotEmpty.ts
+2026-03-14T22:57:28.6293803Z npm notice 184B src/rules/general/isNotNaN.ts
+2026-03-14T22:57:28.6294132Z npm notice 521B src/rules/general/isNotNull.ts
+2026-03-14T22:57:28.6294475Z npm notice 606B src/rules/general/isNotNullish.ts
+2026-03-14T22:57:28.6294831Z npm notice 525B src/rules/general/isNotNumber.ts
+2026-03-14T22:57:28.6295182Z npm notice 853B src/rules/general/isNotNumeric.ts
+2026-03-14T22:57:28.6295532Z npm notice 409B src/rules/general/isNotString.ts
+2026-03-14T22:57:28.6295889Z npm notice 571B src/rules/general/isNotUndefined.ts
+2026-03-14T22:57:28.6296235Z npm notice 148B src/rules/general/isTruthy.ts
+2026-03-14T22:57:28.6296565Z npm notice 138B src/rules/general/notEquals.ts
+2026-03-14T22:57:28.6297159Z npm notice 1.2kB src/rules/generalRules.ts
+2026-03-14T22:57:28.6297486Z npm notice 649B src/rules/genRuleChain.ts
+2026-03-14T22:57:28.6297873Z npm notice 680B src/rules/nullish/__tests__/isNotNull.test.ts
+2026-03-14T22:57:28.6298329Z npm notice 859B src/rules/nullish/__tests__/isNotNullish.test.ts
+2026-03-14T22:57:28.6298808Z npm notice 797B src/rules/nullish/__tests__/isNotUndefined.test.ts
+2026-03-14T22:57:28.6299256Z npm notice 2.1kB src/rules/nullish/__tests__/isNull.test.ts
+2026-03-14T22:57:28.6299836Z npm notice 2.3kB src/rules/nullish/__tests__/isNullish.test.ts
+2026-03-14T22:57:28.6300286Z npm notice 2.4kB src/rules/nullish/__tests__/isUndefined.test.ts
+2026-03-14T22:57:28.6300741Z npm notice 1.4kB src/rules/nullish/__tests__/nullishRules.test.ts
+2026-03-14T22:57:28.6301133Z npm notice 589B src/rules/nullish/isNull.ts
+2026-03-14T22:57:28.6301459Z npm notice 792B src/rules/nullish/isNullish.ts
+2026-03-14T22:57:28.6301800Z npm notice 786B src/rules/nullish/isUndefined.ts
+2026-03-14T22:57:28.6302126Z npm notice 544B src/rules/nullishRules.ts
+2026-03-14T22:57:28.6302494Z npm notice 761B src/rules/number/__tests__/between.test.ts
+2026-03-14T22:57:28.6302925Z npm notice 731B src/rules/number/__tests__/greaterThan.test.ts
+2026-03-14T22:57:28.6303401Z npm notice 793B src/rules/number/__tests__/greaterThanOrEquals.test.ts
+2026-03-14T22:57:28.6303857Z npm notice 796B src/rules/number/__tests__/isEven.test.ts
+2026-03-14T22:57:28.6304277Z npm notice 801B src/rules/number/__tests__/isNegative.test.ts
+2026-03-14T22:57:28.6304715Z npm notice 7.3kB src/rules/number/__tests__/isNumber.test.ts
+2026-03-14T22:57:28.6305126Z npm notice 785B src/rules/number/__tests__/isOdd.test.ts
+2026-03-14T22:57:28.6305544Z npm notice 800B src/rules/number/__tests__/isPositive.test.ts
+2026-03-14T22:57:28.6305968Z npm notice 698B src/rules/number/__tests__/lessThan.test.ts
+2026-03-14T22:57:28.6306421Z npm notice 768B src/rules/number/__tests__/lessThanOrEquals.test.ts
+2026-03-14T22:57:28.6307084Z npm notice 786B src/rules/number/__tests__/notBetween.test.ts
+2026-03-14T22:57:28.6307528Z npm notice 738B src/rules/number/__tests__/numberEquals.test.ts
+2026-03-14T22:57:28.6307990Z npm notice 763B src/rules/number/__tests__/numberNotEquals.test.ts
+2026-03-14T22:57:28.6308449Z npm notice 1.7kB src/rules/number/__tests__/numberRules.test.ts
+2026-03-14T22:57:28.6309001Z npm notice 296B src/rules/number/greaterThanOrEquals.ts
+2026-03-14T22:57:28.6309362Z npm notice 445B src/rules/number/isBetween.ts
+2026-03-14T22:57:28.6309684Z npm notice 336B src/rules/number/isEven.ts
+2026-03-14T22:57:28.6310019Z npm notice 113B src/rules/number/isNegative.ts
+2026-03-14T22:57:28.6310366Z npm notice 120B src/rules/number/isNotBetween.ts
+2026-03-14T22:57:28.6310708Z npm notice 761B src/rules/number/isNumber.ts
+2026-03-14T22:57:28.6311018Z npm notice 333B src/rules/number/isOdd.ts
+2026-03-14T22:57:28.6311334Z npm notice 116B src/rules/number/isPositive.ts
+2026-03-14T22:57:28.6311663Z npm notice 258B src/rules/number/lessThan.ts
+2026-03-14T22:57:28.6312014Z npm notice 314B src/rules/number/lessThanOrEquals.ts
+2026-03-14T22:57:28.6312391Z npm notice 288B src/rules/number/numberNotEquals.ts
+2026-03-14T22:57:28.6312731Z npm notice 1.9kB src/rules/numberRules.ts
+2026-03-14T22:57:28.6313102Z npm notice 899B src/rules/numeric/__tests__/between.test.ts
+2026-03-14T22:57:28.6313539Z npm notice 883B src/rules/numeric/__tests__/greaterThan.test.ts
+2026-03-14T22:57:28.6314025Z npm notice 991B src/rules/numeric/__tests__/greaterThanOrEquals.test.ts
+2026-03-14T22:57:28.6314502Z npm notice 939B src/rules/numeric/__tests__/isEven.test.ts
+2026-03-14T22:57:28.6314939Z npm notice 948B src/rules/numeric/__tests__/isNegative.test.ts
+2026-03-14T22:57:28.6315382Z npm notice 8.7kB src/rules/numeric/__tests__/isNumeric.test.ts
+2026-03-14T22:57:28.6315804Z npm notice 927B src/rules/numeric/__tests__/isOdd.test.ts
+2026-03-14T22:57:28.6316220Z npm notice 944B src/rules/numeric/__tests__/isPositive.test.ts
+2026-03-14T22:57:28.6316902Z npm notice 847B src/rules/numeric/__tests__/lessThan.test.ts
+2026-03-14T22:57:28.6317396Z npm notice 935B src/rules/numeric/__tests__/lessThanOrEquals.test.ts
+2026-03-14T22:57:28.6317885Z npm notice 941B src/rules/numeric/__tests__/notBetween.test.ts
+2026-03-14T22:57:28.6318353Z npm notice 820B src/rules/numeric/__tests__/numberEquals.test.ts
+2026-03-14T22:57:28.6318844Z npm notice 853B src/rules/numeric/__tests__/numberNotEquals.test.ts
+2026-03-14T22:57:28.6319320Z npm notice 1.2kB src/rules/numeric/__tests__/numericRules.test.ts
+2026-03-14T22:57:28.6319728Z npm notice 1.2kB src/rules/numeric/isNumeric.ts
+2026-03-14T22:57:28.6320218Z npm notice 367B src/rules/numeric/toNumber.ts
+2026-03-14T22:57:28.6320607Z npm notice 4.7kB src/rules/object/__tests__/isKeyOf.test.ts
+2026-03-14T22:57:28.6321043Z npm notice 4.9kB src/rules/object/__tests__/isValueOf.test.ts
+2026-03-14T22:57:28.6321488Z npm notice 821B src/rules/object/__tests__/objectRules.test.ts
+2026-03-14T22:57:28.6321861Z npm notice 447B src/rules/object/isKeyOf.ts
+2026-03-14T22:57:28.6322194Z npm notice 458B src/rules/object/isValueOf.ts
+2026-03-14T22:57:28.6322512Z npm notice 553B src/rules/objectRules.ts
+2026-03-14T22:57:28.6322920Z npm notice 558B src/rules/parsers/__tests__/arrayParsers.test.ts
+2026-03-14T22:57:28.6323399Z npm notice 1.1kB src/rules/parsers/__tests__/generalParsers.test.ts
+2026-03-14T22:57:28.6323893Z npm notice 3.6kB src/rules/parsers/__tests__/numberParsers.test.ts
+2026-03-14T22:57:28.6324357Z npm notice 418B src/rules/parsers/__tests__/parserUtils.test.ts
+2026-03-14T22:57:28.6324825Z npm notice 3.1kB src/rules/parsers/__tests__/stringParsers.test.ts
+2026-03-14T22:57:28.6325299Z npm notice 832B src/rules/parsers/__tests__/toBoolean.test.ts
+2026-03-14T22:57:28.6325703Z npm notice 344B src/rules/parsers/arrayParsers.ts
+2026-03-14T22:57:28.6326082Z npm notice 783B src/rules/parsers/generalParsers.ts
+2026-03-14T22:57:28.6326458Z npm notice 2.2kB src/rules/parsers/numberParsers.ts
+2026-03-14T22:57:28.6327113Z npm notice 504B src/rules/parsers/parserUtils.ts
+2026-03-14T22:57:28.6327499Z npm notice 4.1kB src/rules/parsers/stringParsers.ts
+2026-03-14T22:57:28.6327863Z npm notice 1.1kB src/rules/parsers/toBoolean.ts
+2026-03-14T22:57:28.6328224Z npm notice 1.1kB src/rules/RuleInstanceBuilder.ts
+2026-03-14T22:57:28.6328698Z npm notice 19.9kB src/rules/schemaRules/__tests__/eager.schemaRules.test.ts
+2026-03-14T22:57:28.6329489Z npm notice 7.8kB src/rules/schemaRules/__tests__/integrationSchemaRules.deep.test.ts
+2026-03-14T22:57:28.6330098Z npm notice 2.5kB src/rules/schemaRules/__tests__/integrationSchemaRules.test.ts
+2026-03-14T22:57:28.6330727Z npm notice 6.1kB src/rules/schemaRules/__tests__/integrationSchemaRules.types.test.ts
+2026-03-14T22:57:28.6331280Z npm notice 2.8kB src/rules/schemaRules/__tests__/isArrayOf.test.ts
+2026-03-14T22:57:28.6331799Z npm notice 2.7kB src/rules/schemaRules/__tests__/loose.test.ts
+2026-03-14T22:57:28.6332262Z npm notice 4.3kB src/rules/schemaRules/__tests__/omit.test.ts
+2026-03-14T22:57:28.6332718Z npm notice 1.8kB src/rules/schemaRules/__tests__/optional.test.ts
+2026-03-14T22:57:28.6333195Z npm notice 4.2kB src/rules/schemaRules/__tests__/partial.test.ts
+2026-03-14T22:57:28.6333637Z npm notice 4.9kB src/rules/schemaRules/__tests__/pick.test.ts
+2026-03-14T22:57:28.6334162Z npm notice 4.4kB src/rules/schemaRules/__tests__/schema.parse.integration.test.ts
+2026-03-14T22:57:28.6334747Z npm notice 2.9kB src/rules/schemaRules/__tests__/schemaObjectUtils.test.ts
+2026-03-14T22:57:28.6335237Z npm notice 5.0kB src/rules/schemaRules/__tests__/shape.test.ts
+2026-03-14T22:57:28.6335645Z npm notice 3.1kB src/rules/schemaRules/isArrayOf.ts
+2026-03-14T22:57:28.6336012Z npm notice 3.0kB src/rules/schemaRules/loose.ts
+2026-03-14T22:57:28.6336349Z npm notice 1.6kB src/rules/schemaRules/omit.ts
+2026-03-14T22:57:28.6336961Z npm notice 1.8kB src/rules/schemaRules/optional.ts
+2026-03-14T22:57:28.6337355Z npm notice 4.3kB src/rules/schemaRules/partial.ts
+2026-03-14T22:57:28.6337709Z npm notice 1.7kB src/rules/schemaRules/pick.ts
+2026-03-14T22:57:28.6338102Z npm notice 2.4kB src/rules/schemaRules/schemaObjectUtils.ts
+2026-03-14T22:57:28.6338512Z npm notice 521B src/rules/schemaRules/schemaRules.ts
+2026-03-14T22:57:28.6338933Z npm notice 1.4kB src/rules/schemaRules/schemaRulesLazyTypes.ts
+2026-03-14T22:57:28.6339371Z npm notice 2.3kB src/rules/schemaRules/schemaRulesTypes.ts
+2026-03-14T22:57:28.6339765Z npm notice 2.5kB src/rules/schemaRules/shape.ts
+2026-03-14T22:57:28.6340182Z npm notice 619B src/rules/string/__tests__/doesNotEndWith.test.ts
+2026-03-14T22:57:28.6340667Z npm notice 646B src/rules/string/__tests__/doesNotStartWith.test.ts
+2026-03-14T22:57:28.6341290Z npm notice 624B src/rules/string/__tests__/endsWith.test.ts
+2026-03-14T22:57:28.6341731Z npm notice 1.0kB src/rules/string/__tests__/isBlankString.test.ts
+2026-03-14T22:57:28.6342185Z npm notice 1.0kB src/rules/string/__tests__/isNotBlank.test.ts
+2026-03-14T22:57:28.6342618Z npm notice 8.3kB src/rules/string/__tests__/isString.test.ts
+2026-03-14T22:57:28.6343211Z npm notice 810B src/rules/string/__tests__/lengthEquals.test.ts
+2026-03-14T22:57:28.6343713Z npm notice 835B src/rules/string/__tests__/lengthNotEquals.test.ts
+2026-03-14T22:57:28.6344171Z npm notice 705B src/rules/string/__tests__/longerThan.test.ts
+2026-03-14T22:57:28.6344640Z npm notice 841B src/rules/string/__tests__/longerThanOrEquals.test.ts
+2026-03-14T22:57:28.6345102Z npm notice 808B src/rules/string/__tests__/matches.test.ts
+2026-03-14T22:57:28.6345526Z npm notice 780B src/rules/string/__tests__/maxLength.test.ts
+2026-03-14T22:57:28.6345947Z npm notice 776B src/rules/string/__tests__/minLength.test.ts
+2026-03-14T22:57:28.6346385Z npm notice 754B src/rules/string/__tests__/notMatches.test.ts
+2026-03-14T22:57:28.6346995Z npm notice 708B src/rules/string/__tests__/shorterThan.test.ts
+2026-03-14T22:57:28.6347476Z npm notice 768B src/rules/string/__tests__/shorterThanOrEquals.test.ts
+2026-03-14T22:57:28.6347942Z npm notice 640B src/rules/string/__tests__/startsWith.test.ts
+2026-03-14T22:57:28.6348382Z npm notice 4.0kB src/rules/string/__tests__/stringRules.test.ts
+2026-03-14T22:57:28.6348790Z npm notice 201B src/rules/string/doesNotEndWith.ts
+2026-03-14T22:57:28.6349169Z npm notice 209B src/rules/string/doesNotStartWith.ts
+2026-03-14T22:57:28.6349529Z npm notice 145B src/rules/string/endsWith.ts
+2026-03-14T22:57:28.6349897Z npm notice 249B src/rules/string/isBlankString.ts
+2026-03-14T22:57:28.6350372Z npm notice 140B src/rules/string/isNotBlank.ts
+2026-03-14T22:57:28.6350702Z npm notice 625B src/rules/string/isString.ts
+2026-03-14T22:57:28.6351024Z npm notice 244B src/rules/string/matches.ts
+2026-03-14T22:57:28.6351359Z npm notice 255B src/rules/string/notMatches.ts
+2026-03-14T22:57:28.6351695Z npm notice 149B src/rules/string/startsWith.ts
+2026-03-14T22:57:28.6352008Z npm notice 1.6kB src/rules/stringRules.ts
+2026-03-14T22:57:28.6352380Z npm notice 3.3kB src/utils/__tests__/RuleInstance.test.ts
+2026-03-14T22:57:28.6352799Z npm notice 4.0kB src/utils/__tests__/RuleRunReturn.test.ts
+2026-03-14T22:57:28.6353182Z npm notice 927B src/utils/__tests__/utils.test.ts
+2026-03-14T22:57:28.6353501Z npm notice 227B src/utils/regex.ts
+2026-03-14T22:57:28.6353798Z npm notice 4.1kB src/utils/RuleInstance.ts
+2026-03-14T22:57:28.6354114Z npm notice 3.4kB src/utils/RuleRunReturn.ts
+2026-03-14T22:57:28.6354431Z npm notice 735B types/exports/date.d.cts
+2026-03-14T22:57:28.6354751Z npm notice 452B types/exports/date.d.cts.map
+2026-03-14T22:57:28.6355070Z npm notice 735B types/exports/date.d.mts
+2026-03-14T22:57:28.6355386Z npm notice 452B types/exports/date.d.mts.map
+2026-03-14T22:57:28.6355699Z npm notice 264B types/exports/email.d.cts
+2026-03-14T22:57:28.6356023Z npm notice 183B types/exports/email.d.cts.map
+2026-03-14T22:57:28.6356379Z npm notice 264B types/exports/email.d.mts
+2026-03-14T22:57:28.6356822Z npm notice 183B types/exports/email.d.mts.map
+2026-03-14T22:57:28.6357141Z npm notice 256B types/exports/isURL.d.cts
+2026-03-14T22:57:28.6357461Z npm notice 183B types/exports/isURL.d.cts.map
+2026-03-14T22:57:28.6357777Z npm notice 256B types/exports/isURL.d.mts
+2026-03-14T22:57:28.6358088Z npm notice 183B types/exports/isURL.d.mts.map
+2026-03-14T22:57:28.6358390Z npm notice 298.6kB types/n4s.d.cts
+2026-03-14T22:57:28.6358673Z npm notice 26.7kB types/n4s.d.cts.map
+2026-03-14T22:57:28.6358956Z npm notice 298.2kB types/n4s.d.mts
+2026-03-14T22:57:28.6359238Z npm notice 23.1kB types/n4s.d.mts.map
+2026-03-14T22:57:28.6359521Z npm notice 298.6kB types/n4s.d.ts
+2026-03-14T22:57:28.6359839Z npm notice 49.2kB types/n4sTypes-Bb1zNxyv.d.mts
+2026-03-14T22:57:28.6360211Z npm notice 22.7kB types/n4sTypes-Bb1zNxyv.d.mts.map
+2026-03-14T22:57:28.6360710Z npm notice 47.6kB types/n4sTypes-ChCugpFQ.d.cts
+2026-03-14T22:57:28.6361076Z npm notice 21.1kB types/n4sTypes-ChCugpFQ.d.cts.map
+2026-03-14T22:57:28.6361406Z npm notice 500B vitest.config.ts
+2026-03-14T22:57:28.6361655Z npm notice Tarball Details
+2026-03-14T22:57:28.6361885Z npm notice name: n4s
+2026-03-14T22:57:28.6362126Z npm notice version: 6.1.9
+2026-03-14T22:57:28.6362387Z npm notice filename: n4s-6.1.9.tgz
+2026-03-14T22:57:28.6362671Z npm notice package size: 268.8 kB
+2026-03-14T22:57:28.6362943Z npm notice unpacked size: 2.2 MB
+2026-03-14T22:57:28.6363294Z npm notice shasum: eaad53832b350d35698d01b172a595fed9065f5e
+2026-03-14T22:57:28.6363742Z npm notice integrity: sha512-FJsvr6QsWkrNM[...]+bKXQK7u/opNA==
+2026-03-14T22:57:28.6364081Z npm notice total files: 304
+2026-03-14T22:57:28.6364296Z npm notice
+2026-03-14T22:57:29.3327866Z npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+2026-03-14T22:57:30.1409263Z npm notice publish Signed provenance statement with source and build information from GitHub Actions
+2026-03-14T22:57:30.1410583Z npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=1105917798
+2026-03-14T22:57:31.5156329Z + n4s@6.1.9
+2026-03-14T22:57:31.5252727Z Releasing package: 📦 vast
+2026-03-14T22:57:31.5253234Z 🔍 Finding diffs for package: vast
+2026-03-14T22:57:31.6735048Z From https://github.com/***/vest
+2026-03-14T22:57:31.6735694Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:31.6789696Z All changes between origin/stable..origin/release:  ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)
+2026-03-14T22:57:31.6790454Z packages/anyone/package.json
+2026-03-14T22:57:31.6791262Z packages/context/package.json
+2026-03-14T22:57:31.6791694Z packages/n4s/package.json
+2026-03-14T22:57:31.6792092Z packages/vast/package.json
+2026-03-14T22:57:31.6792541Z packages/vest-utils/package.json
+2026-03-14T22:57:31.6793002Z packages/vest/package.json
+2026-03-14T22:57:31.6793484Z packages/vestjs-runtime/package.json
+2026-03-14T22:57:31.6793951Z yarn.lock
+2026-03-14T22:57:31.6794149Z 
+2026-03-14T22:57:31.6794333Z Picking tag id. Current branch: release
+2026-03-14T22:57:31.6794862Z ⚙️ Generated diff data: {
+2026-03-14T22:57:31.6795098Z   "changeLevel": "patch",
+2026-03-14T22:57:31.6795306Z   "messages": [
+2026-03-14T22:57:31.6795799Z     "ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)"
+2026-03-14T22:57:31.6796281Z   ],
+2026-03-14T22:57:31.6796460Z   "nextVersion": "2.0.12",
+2026-03-14T22:57:31.6796978Z   "packageName": "vast",
+2026-03-14T22:57:31.6797250Z   "tagId": "2.0.12",
+2026-03-14T22:57:31.6797533Z   "version": "2.0.11",
+2026-03-14T22:57:31.6797941Z   "versionToPublish": "2.0.12"
+2026-03-14T22:57:31.6798171Z }
+2026-03-14T22:57:31.6798559Z 🔢 Setting next version for vast. From 2.0.11 to 2.0.12
+2026-03-14T22:57:31.6798957Z Updating local dependencies to latest version
+2026-03-14T22:57:31.6800219Z 🛠 Building package: vast
+2026-03-14T22:57:31.6812548Z 🎬 Executing command: "./node_modules/.bin/tsdown --config /home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts"
+2026-03-14T22:57:32.0160500Z (node:5238) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+2026-03-14T22:57:32.0163656Z --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("/home/runner/work/vest/vest/vx/ts-loader.js", pathToFileURL("./"));'
+2026-03-14T22:57:32.0165475Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-14T22:57:32.0309219Z [34mℹ[39m tsdown [2mv0.17.0-beta.5[22m powered by rolldown [2mv1.0.0-beta.52[22m
+2026-03-14T22:57:32.1987018Z [34mℹ[39m config file: [4m/home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts[24m 
+2026-03-14T22:57:32.2057686Z [34mℹ[39m [38;2;180;100;105m[vast][39m entry: [38;2;180;100;105msrc/vast.ts[39m
+2026-03-14T22:57:32.2061289Z [34mℹ[39m [38;2;180;100;105m[vast][39m tsconfig: [38;2;180;100;105mtsconfig.json[39m
+2026-03-14T22:57:32.2064928Z [34mℹ[39m Build start
+2026-03-14T22:57:32.2090693Z [34mℹ[39m Cleaning 6 files
+2026-03-14T22:57:33.3540131Z [34mℹ[39m [38;2;180;100;105m[vast][39m [33m[CJS][39m [2mdist/[22m[1mvast.cjs[22m      [2m1.61 kB[22m [2m│ gzip: 0.64 kB[22m
+2026-03-14T22:57:33.3542189Z [34mℹ[39m [38;2;180;100;105m[vast][39m [33m[CJS][39m [2mdist/[22mvast.cjs.map  [2m3.65 kB[22m [2m│ gzip: 1.34 kB[22m
+2026-03-14T22:57:33.3544567Z [34mℹ[39m [38;2;180;100;105m[vast][39m [33m[CJS][39m 2 files, total: 5.26 kB
+2026-03-14T22:57:33.3598832Z [34mℹ[39m [38;2;180;100;105m[vast][39m [33m[CJS][39m [2mdist/[22mvast.d.cts.map  [2m0.70 kB[22m [2m│ gzip: 0.37 kB[22m
+2026-03-14T22:57:33.3601235Z [34mℹ[39m [38;2;180;100;105m[vast][39m [33m[CJS][39m [2mdist/[22m[32m[1mvast.d.cts[22m[39m      [2m0.71 kB[22m [2m│ gzip: 0.35 kB[22m
+2026-03-14T22:57:33.3602697Z [34mℹ[39m [38;2;180;100;105m[vast][39m [33m[CJS][39m 2 files, total: 1.41 kB
+2026-03-14T22:57:33.3607205Z [32m✔[39m [38;2;180;100;105m[vast][39m Build complete in [32m1154ms[39m
+2026-03-14T22:57:33.3618444Z [34mℹ[39m [38;2;180;100;105m[vast][39m [34m[ESM][39m [2mdist/[22m[1mvast.mjs[22m        [2m1.55 kB[22m [2m│ gzip: 0.63 kB[22m
+2026-03-14T22:57:33.3620424Z [34mℹ[39m [38;2;180;100;105m[vast][39m [34m[ESM][39m [2mdist/[22mvast.mjs.map    [2m3.67 kB[22m [2m│ gzip: 1.34 kB[22m
+2026-03-14T22:57:33.3622337Z [34mℹ[39m [38;2;180;100;105m[vast][39m [34m[ESM][39m [2mdist/[22mvast.d.mts.map  [2m0.70 kB[22m [2m│ gzip: 0.37 kB[22m
+2026-03-14T22:57:33.3624295Z [34mℹ[39m [38;2;180;100;105m[vast][39m [34m[ESM][39m [2mdist/[22m[32m[1mvast.d.mts[22m[39m      [2m0.71 kB[22m [2m│ gzip: 0.35 kB[22m
+2026-03-14T22:57:33.3626142Z [34mℹ[39m [38;2;180;100;105m[vast][39m [34m[ESM][39m 4 files, total: 6.62 kB
+2026-03-14T22:57:33.3627597Z [32m✔[39m [38;2;180;100;105m[vast][39m Build complete in [32m1155ms[39m
+2026-03-14T22:57:33.4195318Z 🚀 Publishing package vast.
+2026-03-14T22:57:33.4195711Z     Version: 2.0.12
+2026-03-14T22:57:33.4195931Z     Tag Id: 2.0.12
+2026-03-14T22:57:33.4196148Z     Publish Tag: undefined
+2026-03-14T22:57:33.4196488Z Configuring git identity for release publish.
+2026-03-14T22:57:33.4298155Z 🎬 Executing command: "cd /home/runner/work/vest/vest/packages/vast && npm publish --provenance"
+2026-03-14T22:57:33.5433016Z npm warn Unknown user config "always-auth". This will stop working in the next major version of npm.
+2026-03-14T22:57:33.7649180Z npm notice
+2026-03-14T22:57:33.7651440Z npm notice 📦  vast@2.0.12
+2026-03-14T22:57:33.7651943Z npm notice Tarball Contents
+2026-03-14T22:57:33.7656895Z npm notice 748B CHANGELOG.md
+2026-03-14T22:57:33.7657496Z npm notice 1.1kB LICENSE
+2026-03-14T22:57:33.7658132Z npm notice 1.8kB README.md
+2026-03-14T22:57:33.7658978Z npm notice 1.6kB dist/vast.cjs
+2026-03-14T22:57:33.7669722Z npm notice 3.7kB dist/vast.cjs.map
+2026-03-14T22:57:33.7670362Z npm notice 1.5kB dist/vast.mjs
+2026-03-14T22:57:33.7670896Z npm notice 3.7kB dist/vast.mjs.map
+2026-03-14T22:57:33.7671313Z npm notice 988B package.json
+2026-03-14T22:57:33.7671633Z npm notice 7.0kB src/__tests__/vast.test.ts
+2026-03-14T22:57:33.7671941Z npm notice 2.6kB src/vast.ts
+2026-03-14T22:57:33.7672221Z npm notice 714B types/vast.d.cts
+2026-03-14T22:57:33.7672516Z npm notice 696B types/vast.d.cts.map
+2026-03-14T22:57:33.7672804Z npm notice 714B types/vast.d.mts
+2026-03-14T22:57:33.7673080Z npm notice 696B types/vast.d.mts.map
+2026-03-14T22:57:33.7673357Z npm notice 714B types/vast.d.ts
+2026-03-14T22:57:33.7673626Z npm notice 502B vitest.config.ts
+2026-03-14T22:57:33.7673883Z npm notice Tarball Details
+2026-03-14T22:57:33.7674128Z npm notice name: vast
+2026-03-14T22:57:33.7674368Z npm notice version: 2.0.12
+2026-03-14T22:57:33.7674641Z npm notice filename: vast-2.0.12.tgz
+2026-03-14T22:57:33.7674936Z npm notice package size: 6.7 kB
+2026-03-14T22:57:33.7675460Z npm notice unpacked size: 28.6 kB
+2026-03-14T22:57:33.7675834Z npm notice shasum: d33532fab43b78de43de3f40324b41f96d4f93db
+2026-03-14T22:57:33.7676291Z npm notice integrity: sha512-EzQq4jLDqu8+g[...]ko6V2Mr9L2gJA==
+2026-03-14T22:57:33.7676787Z npm notice total files: 16
+2026-03-14T22:57:33.7677005Z npm notice
+2026-03-14T22:57:34.4385319Z npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+2026-03-14T22:57:35.0938652Z npm notice publish Signed provenance statement with source and build information from GitHub Actions
+2026-03-14T22:57:35.0940359Z npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=1105917914
+2026-03-14T22:57:36.3108160Z + vast@2.0.12
+2026-03-14T22:57:36.3201122Z Releasing package: 📦 vestjs-runtime
+2026-03-14T22:57:36.3201823Z 🔍 Finding diffs for package: vestjs-runtime
+2026-03-14T22:57:36.4674178Z From https://github.com/***/vest
+2026-03-14T22:57:36.4674616Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:36.4733259Z All changes between origin/stable..origin/release:  ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)
+2026-03-14T22:57:36.4734577Z packages/anyone/package.json
+2026-03-14T22:57:36.4735080Z packages/context/package.json
+2026-03-14T22:57:36.4735575Z packages/n4s/package.json
+2026-03-14T22:57:36.4736034Z packages/vast/package.json
+2026-03-14T22:57:36.4736515Z packages/vest-utils/package.json
+2026-03-14T22:57:36.4737283Z packages/vest/package.json
+2026-03-14T22:57:36.4737801Z packages/vestjs-runtime/package.json
+2026-03-14T22:57:36.4738241Z yarn.lock
+2026-03-14T22:57:36.4738410Z 
+2026-03-14T22:57:36.4738689Z Picking tag id. Current branch: release
+2026-03-14T22:57:36.4739797Z ⚙️ Generated diff data: {
+2026-03-14T22:57:36.4740232Z   "changeLevel": "patch",
+2026-03-14T22:57:36.4740610Z   "messages": [
+2026-03-14T22:57:36.4741535Z     "ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)"
+2026-03-14T22:57:36.4742510Z   ],
+2026-03-14T22:57:36.4742862Z   "nextVersion": "2.0.12",
+2026-03-14T22:57:36.4743336Z   "packageName": "vestjs-runtime",
+2026-03-14T22:57:36.4743776Z   "tagId": "2.0.12",
+2026-03-14T22:57:36.4744116Z   "version": "2.0.11",
+2026-03-14T22:57:36.4744524Z   "versionToPublish": "2.0.12"
+2026-03-14T22:57:36.4744912Z }
+2026-03-14T22:57:36.4745659Z 🔢 Setting next version for vestjs-runtime. From 2.0.11 to 2.0.12
+2026-03-14T22:57:36.4746415Z Updating local dependencies to latest version
+2026-03-14T22:57:36.4747326Z 🛠 Building package: vestjs-runtime
+2026-03-14T22:57:36.4762255Z 🎬 Executing command: "./node_modules/.bin/tsdown --config /home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts"
+2026-03-14T22:57:36.8115676Z (node:5295) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+2026-03-14T22:57:36.8117339Z --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("/home/runner/work/vest/vest/vx/ts-loader.js", pathToFileURL("./"));'
+2026-03-14T22:57:36.8118327Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-14T22:57:36.8272622Z [34mℹ[39m tsdown [2mv0.17.0-beta.5[22m powered by rolldown [2mv1.0.0-beta.52[22m
+2026-03-14T22:57:36.9940213Z [34mℹ[39m config file: [4m/home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts[24m 
+2026-03-14T22:57:37.0018906Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m entry: [38;2;180;116;0msrc/vestjs-runtime.ts, src/exports/IsolateSerializer.ts, src/exports/test-utils.ts[39m
+2026-03-14T22:57:37.0021099Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m tsconfig: [38;2;180;116;0mtsconfig.json[39m
+2026-03-14T22:57:37.0024522Z [34mℹ[39m Build start
+2026-03-14T22:57:37.0050536Z [34mℹ[39m Cleaning 21 files
+2026-03-14T22:57:38.4380538Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22m[1mvestjs-runtime.cjs[22m                  [2m 5.40 kB[22m [2m│ gzip:  1.48 kB[22m
+2026-03-14T22:57:38.4383395Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22m[1mexports/test-utils.cjs[22m              [2m 0.51 kB[22m [2m│ gzip:  0.30 kB[22m
+2026-03-14T22:57:38.4385675Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22m[1mexports/IsolateSerializer.cjs[22m       [2m 0.19 kB[22m [2m│ gzip:  0.11 kB[22m
+2026-03-14T22:57:38.4390745Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mIsolateSerializer-AUnnPcSK.cjs.map  [2m64.50 kB[22m [2m│ gzip: 15.93 kB[22m
+2026-03-14T22:57:38.4393238Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mIsolateSerializer-AUnnPcSK.cjs      [2m36.26 kB[22m [2m│ gzip:  8.41 kB[22m
+2026-03-14T22:57:38.4395654Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mvestjs-runtime.cjs.map              [2m 6.49 kB[22m [2m│ gzip:  2.16 kB[22m
+2026-03-14T22:57:38.4397979Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mIsolateKeys-CCvALpZC.cjs            [2m 0.94 kB[22m [2m│ gzip:  0.40 kB[22m
+2026-03-14T22:57:38.4400294Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mexports/test-utils.cjs.map          [2m 0.81 kB[22m [2m│ gzip:  0.45 kB[22m
+2026-03-14T22:57:38.4402316Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mIsolateKeys-CCvALpZC.cjs.map        [2m 0.72 kB[22m [2m│ gzip:  0.37 kB[22m
+2026-03-14T22:57:38.4404068Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m 9 files, total: 115.83 kB
+2026-03-14T22:57:38.4890964Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mvestjs-runtime.d.cts.map              [2m 5.36 kB[22m [2m│ gzip: 2.18 kB[22m
+2026-03-14T22:57:38.4893805Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mIsolate-C-a7xY5w.d.cts.map            [2m 1.31 kB[22m [2m│ gzip: 0.65 kB[22m
+2026-03-14T22:57:38.4896210Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mIsolateSerializer-CbPmwndf.d.cts.map  [2m 0.57 kB[22m [2m│ gzip: 0.32 kB[22m
+2026-03-14T22:57:38.4898938Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22mexports/test-utils.d.cts.map          [2m 0.16 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:38.4901482Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22m[32m[1mvestjs-runtime.d.cts[22m[39m                  [2m17.65 kB[22m [2m│ gzip: 4.42 kB[22m
+2026-03-14T22:57:38.4904072Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/test-utils.d.cts[22m[39m              [2m 0.25 kB[22m [2m│ gzip: 0.20 kB[22m
+2026-03-14T22:57:38.4906957Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/IsolateSerializer.d.cts[22m[39m       [2m 0.14 kB[22m [2m│ gzip: 0.10 kB[22m
+2026-03-14T22:57:38.4908517Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22m[32mIsolate-C-a7xY5w.d.cts[39m                [2m 2.03 kB[22m [2m│ gzip: 0.72 kB[22m
+2026-03-14T22:57:38.4909893Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m [2mdist/[22m[32mIsolateSerializer-CbPmwndf.d.cts[39m      [2m 0.66 kB[22m [2m│ gzip: 0.32 kB[22m
+2026-03-14T22:57:38.4910895Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [33m[CJS][39m 9 files, total: 28.12 kB
+2026-03-14T22:57:38.4911606Z [32m✔[39m [38;2;180;116;0m[vestjs-runtime][39m Build complete in [32m1487ms[39m
+2026-03-14T22:57:38.4957652Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22m[1mvestjs-runtime.mjs[22m                    [2m 4.57 kB[22m [2m│ gzip:  1.46 kB[22m
+2026-03-14T22:57:38.4960115Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22m[1mexports/test-utils.mjs[22m                [2m 0.46 kB[22m [2m│ gzip:  0.29 kB[22m
+2026-03-14T22:57:38.4963013Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22m[1mexports/IsolateSerializer.mjs[22m         [2m 0.14 kB[22m [2m│ gzip:  0.11 kB[22m
+2026-03-14T22:57:38.4965394Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mIsolateSerializer-BaYi92Cv.mjs.map    [2m64.41 kB[22m [2m│ gzip: 15.79 kB[22m
+2026-03-14T22:57:38.4968033Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mIsolateSerializer-BaYi92Cv.mjs        [2m32.80 kB[22m [2m│ gzip:  8.15 kB[22m
+2026-03-14T22:57:38.4970391Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mvestjs-runtime.d.mts.map              [2m 7.72 kB[22m [2m│ gzip:  2.98 kB[22m
+2026-03-14T22:57:38.4972664Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mvestjs-runtime.mjs.map                [2m 6.47 kB[22m [2m│ gzip:  2.15 kB[22m
+2026-03-14T22:57:38.4974914Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mIsolate-DcimVqqn.d.mts.map            [2m 1.31 kB[22m [2m│ gzip:  0.65 kB[22m
+2026-03-14T22:57:38.4977333Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mexports/test-utils.mjs.map            [2m 0.79 kB[22m [2m│ gzip:  0.45 kB[22m
+2026-03-14T22:57:38.4979569Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mIsolateKeys-B21aPuBk.mjs              [2m 0.74 kB[22m [2m│ gzip:  0.34 kB[22m
+2026-03-14T22:57:38.4981763Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mIsolateKeys-B21aPuBk.mjs.map          [2m 0.72 kB[22m [2m│ gzip:  0.37 kB[22m
+2026-03-14T22:57:38.4984312Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mIsolateSerializer-CHZRRkqQ.d.mts.map  [2m 0.57 kB[22m [2m│ gzip:  0.32 kB[22m
+2026-03-14T22:57:38.4986559Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mchunk-CLMFDpHK.mjs                    [2m 0.36 kB[22m [2m│ gzip:  0.25 kB[22m
+2026-03-14T22:57:38.4988908Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22mexports/test-utils.d.mts.map          [2m 0.16 kB[22m [2m│ gzip:  0.14 kB[22m
+2026-03-14T22:57:38.4991189Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22m[32m[1mvestjs-runtime.d.mts[22m[39m                  [2m17.61 kB[22m [2m│ gzip:  4.41 kB[22m
+2026-03-14T22:57:38.4993537Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/test-utils.d.mts[22m[39m              [2m 0.25 kB[22m [2m│ gzip:  0.19 kB[22m
+2026-03-14T22:57:38.4995921Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/IsolateSerializer.d.mts[22m[39m       [2m 0.14 kB[22m [2m│ gzip:  0.10 kB[22m
+2026-03-14T22:57:38.4998398Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22m[32mIsolate-DcimVqqn.d.mts[39m                [2m 2.03 kB[22m [2m│ gzip:  0.71 kB[22m
+2026-03-14T22:57:38.5000723Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m [2mdist/[22m[32mIsolateSerializer-CHZRRkqQ.d.mts[39m      [2m 0.66 kB[22m [2m│ gzip:  0.32 kB[22m
+2026-03-14T22:57:38.5002407Z [34mℹ[39m [38;2;180;116;0m[vestjs-runtime][39m [34m[ESM][39m 19 files, total: 141.91 kB
+2026-03-14T22:57:38.5003610Z [32m✔[39m [38;2;180;116;0m[vestjs-runtime][39m Build complete in [32m1493ms[39m
+2026-03-14T22:57:38.5729975Z 🚀 Publishing package vestjs-runtime.
+2026-03-14T22:57:38.5730599Z     Version: 2.0.12
+2026-03-14T22:57:38.5730855Z     Tag Id: 2.0.12
+2026-03-14T22:57:38.5731106Z     Publish Tag: undefined
+2026-03-14T22:57:38.5731521Z Configuring git identity for release publish.
+2026-03-14T22:57:38.5832477Z 🎬 Executing command: "cd /home/runner/work/vest/vest/packages/vestjs-runtime && npm publish --provenance"
+2026-03-14T22:57:38.6945269Z npm warn Unknown user config "always-auth". This will stop working in the next major version of npm.
+2026-03-14T22:57:39.0115658Z npm notice
+2026-03-14T22:57:39.0118988Z npm notice 📦  vestjs-runtime@2.0.12
+2026-03-14T22:57:39.0119589Z npm notice Tarball Contents
+2026-03-14T22:57:39.0137250Z npm notice 450B IsolateSerializer/package.json
+2026-03-14T22:57:39.0137915Z npm notice 1.1kB LICENSE
+2026-03-14T22:57:39.0138393Z npm notice 316B README.md
+2026-03-14T22:57:39.0138961Z npm notice 359B dist/chunk-CLMFDpHK.mjs
+2026-03-14T22:57:39.0139669Z npm notice 193B dist/exports/IsolateSerializer.cjs
+2026-03-14T22:57:39.0140430Z npm notice 144B dist/exports/IsolateSerializer.mjs
+2026-03-14T22:57:39.0141126Z npm notice 513B dist/exports/test-utils.cjs
+2026-03-14T22:57:39.0141840Z npm notice 808B dist/exports/test-utils.cjs.map
+2026-03-14T22:57:39.0142591Z npm notice 455B dist/exports/test-utils.mjs
+2026-03-14T22:57:39.0143279Z npm notice 791B dist/exports/test-utils.mjs.map
+2026-03-14T22:57:39.0143972Z npm notice 743B dist/IsolateKeys-B21aPuBk.mjs
+2026-03-14T22:57:39.0144724Z npm notice 718B dist/IsolateKeys-B21aPuBk.mjs.map
+2026-03-14T22:57:39.0145460Z npm notice 944B dist/IsolateKeys-CCvALpZC.cjs
+2026-03-14T22:57:39.0146178Z npm notice 719B dist/IsolateKeys-CCvALpZC.cjs.map
+2026-03-14T22:57:39.0147170Z npm notice 36.3kB dist/IsolateSerializer-AUnnPcSK.cjs
+2026-03-14T22:57:39.0147970Z npm notice 64.5kB dist/IsolateSerializer-AUnnPcSK.cjs.map
+2026-03-14T22:57:39.0148772Z npm notice 32.8kB dist/IsolateSerializer-BaYi92Cv.mjs
+2026-03-14T22:57:39.0149591Z npm notice 64.4kB dist/IsolateSerializer-BaYi92Cv.mjs.map
+2026-03-14T22:57:39.0150313Z npm notice 5.4kB dist/vestjs-runtime.cjs
+2026-03-14T22:57:39.0150949Z npm notice 6.5kB dist/vestjs-runtime.cjs.map
+2026-03-14T22:57:39.0151560Z npm notice 4.6kB dist/vestjs-runtime.mjs
+2026-03-14T22:57:39.0152516Z npm notice 6.5kB dist/vestjs-runtime.mjs.map
+2026-03-14T22:57:39.0153147Z npm notice 4.6kB docs/IsolateRegistry.docs.md
+2026-03-14T22:57:39.0153727Z npm notice 5.5kB docs/Isolates.md
+2026-03-14T22:57:39.0154227Z npm notice 2.0kB package.json
+2026-03-14T22:57:39.0154769Z npm notice 1.6kB src/__tests__/Bus.test.ts
+2026-03-14T22:57:39.0155528Z npm notice 2.3kB src/__tests__/IsolateWalker.iterative.test.ts
+2026-03-14T22:57:39.0156337Z npm notice 10.7kB src/__tests__/IsolateWalker.test.ts
+2026-03-14T22:57:39.0157262Z npm notice 6.8kB src/__tests__/Reconciler.test.ts
+2026-03-14T22:57:39.0158069Z npm notice 4.5kB src/__tests__/Reconciler.transient.test.ts
+2026-03-14T22:57:39.0158860Z npm notice 841B src/__tests__/vestjs-runtime.test.ts
+2026-03-14T22:57:39.0159601Z npm notice 6.9kB src/__tests__/VestRuntime.test.ts
+2026-03-14T22:57:39.0160419Z npm notice 1.4kB src/__tests__/VestRuntimeStateMachine.test.ts
+2026-03-14T22:57:39.0161030Z npm notice 1.2kB src/Bus.ts
+2026-03-14T22:57:39.0161571Z npm notice 439B src/errors/ErrorStrings.ts
+2026-03-14T22:57:39.0162467Z npm notice 682B src/exports/__tests__/__snapshots__/IsolateSerializer.test.ts.snap
+2026-03-14T22:57:39.0163501Z npm notice 9.8kB src/exports/__tests__/IsolateSerializer.test.ts
+2026-03-14T22:57:39.0164510Z npm notice 3.5kB src/exports/__tests__/IsolateSerializer.transient.test.ts
+2026-03-14T22:57:39.0165406Z npm notice 3.3kB src/exports/IsolateSerializer.ts
+2026-03-14T22:57:39.0166065Z npm notice 438B src/exports/test-utils.ts
+2026-03-14T22:57:39.0167164Z npm notice 1.8kB src/Isolate/__tests__/__snapshots__/asyncIsolate.test.ts.snap
+2026-03-14T22:57:39.0168137Z npm notice 2.7kB src/Isolate/__tests__/asyncIsolate.test.ts
+2026-03-14T22:57:39.0168954Z npm notice 3.9kB src/Isolate/__tests__/Isolate.test.ts
+2026-03-14T22:57:39.0169779Z npm notice 6.4kB src/Isolate/__tests__/IsolateFocused.test.ts
+2026-03-14T22:57:39.0170664Z npm notice 4.2kB src/Isolate/__tests__/IsolateInspector.test.ts
+2026-03-14T22:57:39.0171591Z npm notice 5.2kB src/Isolate/__tests__/IsolateMutator.test.ts
+2026-03-14T22:57:39.0172529Z npm notice 4.9kB src/Isolate/__tests__/IsolatePropagation.test.ts
+2026-03-14T22:57:39.0173471Z npm notice 3.5kB src/Isolate/__tests__/IsolateReorderable.test.ts
+2026-03-14T22:57:39.0174732Z npm notice 2.2kB src/Isolate/__tests__/IsolateSelectors.test.ts
+2026-03-14T22:57:39.0175587Z npm notice 1.6kB src/Isolate/__tests__/IsolateStatus.test.ts
+2026-03-14T22:57:39.0176489Z npm notice 1.7kB src/Isolate/__tests__/IsolateTransient.test.ts
+2026-03-14T22:57:39.0177447Z npm notice 4.9kB src/Isolate/Isolate.ts
+2026-03-14T22:57:39.0178083Z npm notice 2.4kB src/Isolate/IsolateFocused.ts
+2026-03-14T22:57:39.0178744Z npm notice 787B src/Isolate/IsolateIndexer.ts
+2026-03-14T22:57:39.0179431Z npm notice 2.4kB src/Isolate/IsolateInspector.ts
+2026-03-14T22:57:39.0180089Z npm notice 394B src/Isolate/IsolateKeys.ts
+2026-03-14T22:57:39.0180754Z npm notice 3.8kB src/Isolate/IsolateMutator.ts
+2026-03-14T22:57:39.0181452Z npm notice 4.1kB src/Isolate/IsolateRegistry.ts
+2026-03-14T22:57:39.0182176Z npm notice 268B src/Isolate/IsolateReorderable.ts
+2026-03-14T22:57:39.0182886Z npm notice 614B src/Isolate/IsolateSelectors.ts
+2026-03-14T22:57:39.0183598Z npm notice 922B src/Isolate/IsolateStateMachine.ts
+2026-03-14T22:57:39.0184311Z npm notice 214B src/Isolate/IsolateStatus.ts
+2026-03-14T22:57:39.0184977Z npm notice 906B src/Isolate/IsolateTransient.ts
+2026-03-14T22:57:39.0185643Z npm notice 1.1kB src/Isolate/IsolateTypes.ts
+2026-03-14T22:57:39.0186250Z npm notice 9.1kB src/IsolateWalker.ts
+2026-03-14T22:57:39.0187167Z npm notice 73B src/Orchestrator/RuntimeStates.ts
+2026-03-14T22:57:39.0187806Z npm notice 4.8kB src/Reconciler.ts
+2026-03-14T22:57:39.0188357Z npm notice 231B src/RuntimeEvents.ts
+2026-03-14T22:57:39.0188918Z npm notice 1.2kB src/vestjs-runtime.ts
+2026-03-14T22:57:39.0189474Z npm notice 10.4kB src/VestRuntime.ts
+2026-03-14T22:57:39.0190004Z npm notice 401B test-utils/package.json
+2026-03-14T22:57:39.0190697Z npm notice 139B types/exports/IsolateSerializer.d.cts
+2026-03-14T22:57:39.0191784Z npm notice 139B types/exports/IsolateSerializer.d.mts
+2026-03-14T22:57:39.0192506Z npm notice 251B types/exports/test-utils.d.cts
+2026-03-14T22:57:39.0193189Z npm notice 157B types/exports/test-utils.d.cts.map
+2026-03-14T22:57:39.0193908Z npm notice 251B types/exports/test-utils.d.mts
+2026-03-14T22:57:39.0194609Z npm notice 157B types/exports/test-utils.d.mts.map
+2026-03-14T22:57:39.0195285Z npm notice 2.0kB types/Isolate-C-a7xY5w.d.cts
+2026-03-14T22:57:39.0195975Z npm notice 1.3kB types/Isolate-C-a7xY5w.d.cts.map
+2026-03-14T22:57:39.0196876Z npm notice 2.0kB types/Isolate-DcimVqqn.d.mts
+2026-03-14T22:57:39.0197594Z npm notice 1.3kB types/Isolate-DcimVqqn.d.mts.map
+2026-03-14T22:57:39.0198377Z npm notice 659B types/IsolateSerializer-CbPmwndf.d.cts
+2026-03-14T22:57:39.0199212Z npm notice 571B types/IsolateSerializer-CbPmwndf.d.cts.map
+2026-03-14T22:57:39.0200039Z npm notice 659B types/IsolateSerializer-CHZRRkqQ.d.mts
+2026-03-14T22:57:39.0200821Z npm notice 571B types/IsolateSerializer-CHZRRkqQ.d.mts.map
+2026-03-14T22:57:39.0201555Z npm notice 17.6kB types/vestjs-runtime.d.cts
+2026-03-14T22:57:39.0202214Z npm notice 5.4kB types/vestjs-runtime.d.cts.map
+2026-03-14T22:57:39.0202892Z npm notice 17.6kB types/vestjs-runtime.d.mts
+2026-03-14T22:57:39.0203532Z npm notice 7.7kB types/vestjs-runtime.d.mts.map
+2026-03-14T22:57:39.0204178Z npm notice 17.6kB types/vestjs-runtime.d.ts
+2026-03-14T22:57:39.0204764Z npm notice 524B vitest.config.ts
+2026-03-14T22:57:39.0205266Z npm notice Tarball Details
+2026-03-14T22:57:39.0205772Z npm notice name: vestjs-runtime
+2026-03-14T22:57:39.0206207Z npm notice version: 2.0.12
+2026-03-14T22:57:39.0206969Z npm notice filename: vestjs-runtime-2.0.12.tgz
+2026-03-14T22:57:39.0207548Z npm notice package size: 104.2 kB
+2026-03-14T22:57:39.0208038Z npm notice unpacked size: 459.6 kB
+2026-03-14T22:57:39.0208687Z npm notice shasum: 3b2f6604fb8e9391927c409cd2e043b01da2c589
+2026-03-14T22:57:39.0209558Z npm notice integrity: sha512-/YJ7smwVWaMuT[...]ZQyE+2niSDr0g==
+2026-03-14T22:57:39.0210250Z npm notice total files: 91
+2026-03-14T22:57:39.0210664Z npm notice
+2026-03-14T22:57:39.9445993Z npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+2026-03-14T22:57:40.7477302Z npm notice publish Signed provenance statement with source and build information from GitHub Actions
+2026-03-14T22:57:40.7478928Z npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=1105918041
+2026-03-14T22:57:41.9369043Z + vestjs-runtime@2.0.12
+2026-03-14T22:57:41.9464220Z Releasing package: 📦 anyone
+2026-03-14T22:57:42.0968041Z From https://github.com/***/vest
+2026-03-14T22:57:42.0968502Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:42.0969153Z 🔍 Finding diffs for package: anyone
+2026-03-14T22:57:42.1023568Z All changes between origin/stable..origin/release:  ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)
+2026-03-14T22:57:42.1024868Z packages/anyone/package.json
+2026-03-14T22:57:42.1025353Z packages/context/package.json
+2026-03-14T22:57:42.1025830Z packages/n4s/package.json
+2026-03-14T22:57:42.1026310Z packages/vast/package.json
+2026-03-14T22:57:42.1027137Z packages/vest-utils/package.json
+2026-03-14T22:57:42.1027616Z packages/vest/package.json
+2026-03-14T22:57:42.1028108Z packages/vestjs-runtime/package.json
+2026-03-14T22:57:42.1028553Z yarn.lock
+2026-03-14T22:57:42.1028731Z 
+2026-03-14T22:57:42.1028987Z Picking tag id. Current branch: release
+2026-03-14T22:57:42.1029642Z ⚙️ Generated diff data: {
+2026-03-14T22:57:42.1030078Z   "changeLevel": "patch",
+2026-03-14T22:57:42.1030496Z   "messages": [
+2026-03-14T22:57:42.1031415Z     "ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)"
+2026-03-14T22:57:42.1032352Z   ],
+2026-03-14T22:57:42.1032683Z   "nextVersion": "2.0.11",
+2026-03-14T22:57:42.1033115Z   "packageName": "anyone",
+2026-03-14T22:57:42.1033817Z   "tagId": "2.0.11",
+2026-03-14T22:57:42.1034165Z   "version": "2.0.10",
+2026-03-14T22:57:42.1034566Z   "versionToPublish": "2.0.11"
+2026-03-14T22:57:42.1034958Z }
+2026-03-14T22:57:42.1035621Z 🔢 Setting next version for anyone. From 2.0.10 to 2.0.11
+2026-03-14T22:57:42.1037717Z Updating local dependencies to latest version
+2026-03-14T22:57:42.1038364Z 🛠 Building package: anyone
+2026-03-14T22:57:42.1059414Z 🎬 Executing command: "./node_modules/.bin/tsdown --config /home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts"
+2026-03-14T22:57:42.4368099Z (node:5357) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+2026-03-14T22:57:42.4370562Z --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("/home/runner/work/vest/vest/vx/ts-loader.js", pathToFileURL("./"));'
+2026-03-14T22:57:42.4371584Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-14T22:57:42.4517404Z [34mℹ[39m tsdown [2mv0.17.0-beta.5[22m powered by rolldown [2mv1.0.0-beta.52[22m
+2026-03-14T22:57:42.6150961Z [34mℹ[39m config file: [4m/home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts[24m 
+2026-03-14T22:57:42.6228525Z [34mℹ[39m [38;2;180;146;0m[anyone][39m entry: [38;2;180;146;0msrc/anyone.ts, src/exports/all.ts, src/exports/any.ts, src/exports/none.ts, src/exports/one.ts[39m
+2026-03-14T22:57:42.6230683Z [34mℹ[39m [38;2;180;146;0m[anyone][39m tsconfig: [38;2;180;146;0mtsconfig.json[39m
+2026-03-14T22:57:42.6234332Z [34mℹ[39m Build start
+2026-03-14T22:57:42.6261353Z [34mℹ[39m Cleaning 29 files
+2026-03-14T22:57:43.7412450Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[1manyone.cjs[22m                         [2m0.38 kB[22m [2m│ gzip: 0.19 kB[22m
+2026-03-14T22:57:43.7414579Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[1mexports/none.cjs[22m                   [2m0.14 kB[22m [2m│ gzip: 0.12 kB[22m
+2026-03-14T22:57:43.7416883Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[1mexports/all.cjs[22m                    [2m0.13 kB[22m [2m│ gzip: 0.12 kB[22m
+2026-03-14T22:57:43.7418711Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[1mexports/any.cjs[22m                    [2m0.13 kB[22m [2m│ gzip: 0.12 kB[22m
+2026-03-14T22:57:43.7421164Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[1mexports/one.cjs[22m                    [2m0.13 kB[22m [2m│ gzip: 0.12 kB[22m
+2026-03-14T22:57:43.7423178Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mrunAnyoneMethods-BnV5_696.cjs.map  [2m0.88 kB[22m [2m│ gzip: 0.51 kB[22m
+2026-03-14T22:57:43.7425187Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mone-C-TngTWp.cjs.map               [2m0.68 kB[22m [2m│ gzip: 0.44 kB[22m
+2026-03-14T22:57:43.7427365Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mrunAnyoneMethods-BnV5_696.cjs      [2m0.57 kB[22m [2m│ gzip: 0.36 kB[22m
+2026-03-14T22:57:43.7429646Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mone-C-TngTWp.cjs                   [2m0.54 kB[22m [2m│ gzip: 0.37 kB[22m
+2026-03-14T22:57:43.7431812Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mnone-BvnsAgF8.cjs                  [2m0.49 kB[22m [2m│ gzip: 0.33 kB[22m
+2026-03-14T22:57:43.7433877Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mnone-BvnsAgF8.cjs.map              [2m0.47 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-03-14T22:57:43.7435828Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22many-7W0t-5U9.cjs                   [2m0.42 kB[22m [2m│ gzip: 0.30 kB[22m
+2026-03-14T22:57:43.7437774Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mall-G56EfCZm.cjs                   [2m0.42 kB[22m [2m│ gzip: 0.30 kB[22m
+2026-03-14T22:57:43.7438886Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22many-7W0t-5U9.cjs.map               [2m0.41 kB[22m [2m│ gzip: 0.32 kB[22m
+2026-03-14T22:57:43.7441107Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mall-G56EfCZm.cjs.map               [2m0.40 kB[22m [2m│ gzip: 0.32 kB[22m
+2026-03-14T22:57:43.7441979Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m 15 files, total: 6.20 kB
+2026-03-14T22:57:43.7660992Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mnone-D0Wo1a6R.d.cts.map  [2m0.14 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7662939Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mall-DT3n67Q2.d.cts.map   [2m0.14 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7664769Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22many-BMwz5-AB.d.cts.map   [2m0.14 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7666384Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22mone-BuVF-m86.d.cts.map   [2m0.14 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7667780Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[32m[1manyone.d.cts[22m[39m             [2m0.22 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7668934Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/none.d.cts[22m[39m       [2m0.06 kB[22m [2m│ gzip: 0.07 kB[22m
+2026-03-14T22:57:43.7670030Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/all.d.cts[22m[39m        [2m0.06 kB[22m [2m│ gzip: 0.08 kB[22m
+2026-03-14T22:57:43.7671849Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/any.d.cts[22m[39m        [2m0.06 kB[22m [2m│ gzip: 0.08 kB[22m
+2026-03-14T22:57:43.7673811Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/one.d.cts[22m[39m        [2m0.06 kB[22m [2m│ gzip: 0.08 kB[22m
+2026-03-14T22:57:43.7675312Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[32mnone-D0Wo1a6R.d.cts[39m      [2m0.25 kB[22m [2m│ gzip: 0.21 kB[22m
+2026-03-14T22:57:43.7676829Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[32many-BMwz5-AB.d.cts[39m       [2m0.24 kB[22m [2m│ gzip: 0.21 kB[22m
+2026-03-14T22:57:43.7678487Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[32mone-BuVF-m86.d.cts[39m       [2m0.24 kB[22m [2m│ gzip: 0.20 kB[22m
+2026-03-14T22:57:43.7679574Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m [2mdist/[22m[32mall-DT3n67Q2.d.cts[39m       [2m0.23 kB[22m [2m│ gzip: 0.20 kB[22m
+2026-03-14T22:57:43.7680642Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [33m[CJS][39m 13 files, total: 1.98 kB
+2026-03-14T22:57:43.7681257Z [32m✔[39m [38;2;180;146;0m[anyone][39m Build complete in [32m1143ms[39m
+2026-03-14T22:57:43.7704059Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[1manyone.mjs[22m                         [2m0.26 kB[22m [2m│ gzip: 0.17 kB[22m
+2026-03-14T22:57:43.7706083Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[1mexports/none.mjs[22m                   [2m0.12 kB[22m [2m│ gzip: 0.12 kB[22m
+2026-03-14T22:57:43.7708221Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[1mexports/all.mjs[22m                    [2m0.12 kB[22m [2m│ gzip: 0.12 kB[22m
+2026-03-14T22:57:43.7710140Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[1mexports/any.mjs[22m                    [2m0.12 kB[22m [2m│ gzip: 0.12 kB[22m
+2026-03-14T22:57:43.7712050Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[1mexports/one.mjs[22m                    [2m0.12 kB[22m [2m│ gzip: 0.12 kB[22m
+2026-03-14T22:57:43.7713846Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mrunAnyoneMethods-CiYJATON.mjs.map  [2m0.89 kB[22m [2m│ gzip: 0.51 kB[22m
+2026-03-14T22:57:43.7716185Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mone-D5UWawb-.mjs.map               [2m0.68 kB[22m [2m│ gzip: 0.44 kB[22m
+2026-03-14T22:57:43.7718020Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mrunAnyoneMethods-CiYJATON.mjs      [2m0.47 kB[22m [2m│ gzip: 0.30 kB[22m
+2026-03-14T22:57:43.7719158Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mnone-BaiW3V_k.mjs.map              [2m0.47 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-03-14T22:57:43.7720858Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mone-D5UWawb-.mjs                   [2m0.41 kB[22m [2m│ gzip: 0.31 kB[22m
+2026-03-14T22:57:43.7722054Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22many-Bu9n0b6b.mjs.map               [2m0.40 kB[22m [2m│ gzip: 0.31 kB[22m
+2026-03-14T22:57:43.7723108Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mall-jZqtYMoF.mjs.map               [2m0.40 kB[22m [2m│ gzip: 0.31 kB[22m
+2026-03-14T22:57:43.7724143Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mnone-BaiW3V_k.mjs                  [2m0.35 kB[22m [2m│ gzip: 0.27 kB[22m
+2026-03-14T22:57:43.7725161Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22many-Bu9n0b6b.mjs                   [2m0.29 kB[22m [2m│ gzip: 0.24 kB[22m
+2026-03-14T22:57:43.7726181Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mall-jZqtYMoF.mjs                   [2m0.29 kB[22m [2m│ gzip: 0.24 kB[22m
+2026-03-14T22:57:43.7727410Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mnone-CKjw9Aoz.d.mts.map            [2m0.14 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7728443Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mall-8-fac2En.d.mts.map             [2m0.14 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7729478Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22many-BDnUW0EC.d.mts.map             [2m0.14 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7730546Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22mone-PuTrzIUg.d.mts.map             [2m0.14 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7731834Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[32m[1manyone.d.mts[22m[39m                       [2m0.22 kB[22m [2m│ gzip: 0.14 kB[22m
+2026-03-14T22:57:43.7732957Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/none.d.mts[22m[39m                 [2m0.08 kB[22m [2m│ gzip: 0.09 kB[22m
+2026-03-14T22:57:43.7734079Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/all.d.mts[22m[39m                  [2m0.07 kB[22m [2m│ gzip: 0.09 kB[22m
+2026-03-14T22:57:43.7735190Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/any.d.mts[22m[39m                  [2m0.07 kB[22m [2m│ gzip: 0.09 kB[22m
+2026-03-14T22:57:43.7736310Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/one.d.mts[22m[39m                  [2m0.07 kB[22m [2m│ gzip: 0.09 kB[22m
+2026-03-14T22:57:43.7737555Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[32mnone-CKjw9Aoz.d.mts[39m                [2m0.25 kB[22m [2m│ gzip: 0.20 kB[22m
+2026-03-14T22:57:43.7738665Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[32many-BDnUW0EC.d.mts[39m                 [2m0.24 kB[22m [2m│ gzip: 0.21 kB[22m
+2026-03-14T22:57:43.7739751Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[32mone-PuTrzIUg.d.mts[39m                 [2m0.24 kB[22m [2m│ gzip: 0.20 kB[22m
+2026-03-14T22:57:43.7740842Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m [2mdist/[22m[32mall-8-fac2En.d.mts[39m                 [2m0.23 kB[22m [2m│ gzip: 0.20 kB[22m
+2026-03-14T22:57:43.7741810Z [34mℹ[39m [38;2;180;146;0m[anyone][39m [34m[ESM][39m 28 files, total: 7.42 kB
+2026-03-14T22:57:43.7742399Z [32m✔[39m [38;2;180;146;0m[anyone][39m Build complete in [32m1147ms[39m
+2026-03-14T22:57:43.8494817Z 🚀 Publishing package anyone.
+2026-03-14T22:57:43.8495322Z     Version: 2.0.11
+2026-03-14T22:57:43.8495532Z     Tag Id: 2.0.11
+2026-03-14T22:57:43.8495750Z     Publish Tag: undefined
+2026-03-14T22:57:43.8496068Z Configuring git identity for release publish.
+2026-03-14T22:57:43.8593556Z 🎬 Executing command: "cd /home/runner/work/vest/vest/packages/anyone && npm publish --provenance"
+2026-03-14T22:57:43.9701981Z npm warn Unknown user config "always-auth". This will stop working in the next major version of npm.
+2026-03-14T22:57:44.2431150Z npm notice
+2026-03-14T22:57:44.2433771Z npm notice 📦  anyone@2.0.11
+2026-03-14T22:57:44.2434278Z npm notice Tarball Contents
+2026-03-14T22:57:44.2449516Z npm notice 1.3kB CHANGELOG.md
+2026-03-14T22:57:44.2450001Z npm notice 1.1kB LICENSE
+2026-03-14T22:57:44.2450443Z npm notice 1.3kB README.md
+2026-03-14T22:57:44.2450917Z npm notice 352B all/package.json
+2026-03-14T22:57:44.2451403Z npm notice 352B any/package.json
+2026-03-14T22:57:44.2451892Z npm notice 416B dist/all-G56EfCZm.cjs
+2026-03-14T22:57:44.2452765Z npm notice 404B dist/all-G56EfCZm.cjs.map
+2026-03-14T22:57:44.2453320Z npm notice 290B dist/all-jZqtYMoF.mjs
+2026-03-14T22:57:44.2453853Z npm notice 397B dist/all-jZqtYMoF.mjs.map
+2026-03-14T22:57:44.2454384Z npm notice 421B dist/any-7W0t-5U9.cjs
+2026-03-14T22:57:44.2454904Z npm notice 409B dist/any-7W0t-5U9.cjs.map
+2026-03-14T22:57:44.2455428Z npm notice 295B dist/any-Bu9n0b6b.mjs
+2026-03-14T22:57:44.2455947Z npm notice 402B dist/any-Bu9n0b6b.mjs.map
+2026-03-14T22:57:44.2456458Z npm notice 377B dist/anyone.cjs
+2026-03-14T22:57:44.2457130Z npm notice 264B dist/anyone.mjs
+2026-03-14T22:57:44.2457656Z npm notice 131B dist/exports/all.cjs
+2026-03-14T22:57:44.2458171Z npm notice 118B dist/exports/all.mjs
+2026-03-14T22:57:44.2458668Z npm notice 131B dist/exports/any.cjs
+2026-03-14T22:57:44.2459178Z npm notice 118B dist/exports/any.mjs
+2026-03-14T22:57:44.2459668Z npm notice 135B dist/exports/none.cjs
+2026-03-14T22:57:44.2460172Z npm notice 121B dist/exports/none.mjs
+2026-03-14T22:57:44.2460689Z npm notice 131B dist/exports/one.cjs
+2026-03-14T22:57:44.2461182Z npm notice 118B dist/exports/one.mjs
+2026-03-14T22:57:44.2461687Z npm notice 349B dist/none-BaiW3V_k.mjs
+2026-03-14T22:57:44.2462223Z npm notice 469B dist/none-BaiW3V_k.mjs.map
+2026-03-14T22:57:44.2462783Z npm notice 494B dist/none-BvnsAgF8.cjs
+2026-03-14T22:57:44.2463318Z npm notice 472B dist/none-BvnsAgF8.cjs.map
+2026-03-14T22:57:44.2463826Z npm notice 537B dist/one-C-TngTWp.cjs
+2026-03-14T22:57:44.2464139Z npm notice 682B dist/one-C-TngTWp.cjs.map
+2026-03-14T22:57:44.2464471Z npm notice 411B dist/one-D5UWawb-.mjs
+2026-03-14T22:57:44.2464782Z npm notice 675B dist/one-D5UWawb-.mjs.map
+2026-03-14T22:57:44.2465136Z npm notice 574B dist/runAnyoneMethods-BnV5_696.cjs
+2026-03-14T22:57:44.2465565Z npm notice 881B dist/runAnyoneMethods-BnV5_696.cjs.map
+2026-03-14T22:57:44.2466168Z npm notice 475B dist/runAnyoneMethods-CiYJATON.mjs
+2026-03-14T22:57:44.2466582Z npm notice 885B dist/runAnyoneMethods-CiYJATON.mjs.map
+2026-03-14T22:57:44.2467091Z npm notice 359B none/package.json
+2026-03-14T22:57:44.2467403Z npm notice 352B one/package.json
+2026-03-14T22:57:44.2467663Z npm notice 2.4kB package.json
+2026-03-14T22:57:44.2467953Z npm notice 1.3kB src/__tests__/all.test.ts
+2026-03-14T22:57:44.2468278Z npm notice 1.6kB src/__tests__/any.test.ts
+2026-03-14T22:57:44.2468628Z npm notice 123B src/__tests__/anyoneTestValues.ts
+2026-03-14T22:57:44.2468978Z npm notice 1.6kB src/__tests__/none.test.ts
+2026-03-14T22:57:44.2469296Z npm notice 1.5kB src/__tests__/one.test.ts
+2026-03-14T22:57:44.2469656Z npm notice 1.1kB src/__tests__/runAnyoneMethods.test.ts
+2026-03-14T22:57:44.2469982Z npm notice 194B src/anyone.ts
+2026-03-14T22:57:44.2470252Z npm notice 209B src/exports/all.ts
+2026-03-14T22:57:44.2470530Z npm notice 214B src/exports/any.ts
+2026-03-14T22:57:44.2470814Z npm notice 266B src/exports/none.ts
+2026-03-14T22:57:44.2471091Z npm notice 368B src/exports/one.ts
+2026-03-14T22:57:44.2471401Z npm notice 513B src/runner/runAnyoneMethods.ts
+2026-03-14T22:57:44.2471860Z npm notice 234B types/all-8-fac2En.d.mts
+2026-03-14T22:57:44.2472189Z npm notice 137B types/all-8-fac2En.d.mts.map
+2026-03-14T22:57:44.2472510Z npm notice 234B types/all-DT3n67Q2.d.cts
+2026-03-14T22:57:44.2472980Z npm notice 137B types/all-DT3n67Q2.d.cts.map
+2026-03-14T22:57:44.2473580Z npm notice 240B types/any-BDnUW0EC.d.mts
+2026-03-14T22:57:44.2474074Z npm notice 137B types/any-BDnUW0EC.d.mts.map
+2026-03-14T22:57:44.2474401Z npm notice 240B types/any-BMwz5-AB.d.cts
+2026-03-14T22:57:44.2474727Z npm notice 137B types/any-BMwz5-AB.d.cts.map
+2026-03-14T22:57:44.2475040Z npm notice 221B types/anyone.d.cts
+2026-03-14T22:57:44.2475315Z npm notice 221B types/anyone.d.mts
+2026-03-14T22:57:44.2475590Z npm notice 221B types/anyone.d.ts
+2026-03-14T22:57:44.2475877Z npm notice 61B types/exports/all.d.cts
+2026-03-14T22:57:44.2476187Z npm notice 74B types/exports/all.d.mts
+2026-03-14T22:57:44.2476484Z npm notice 61B types/exports/any.d.cts
+2026-03-14T22:57:44.2476934Z npm notice 74B types/exports/any.d.mts
+2026-03-14T22:57:44.2477403Z npm notice 64B types/exports/none.d.cts
+2026-03-14T22:57:44.2477705Z npm notice 77B types/exports/none.d.mts
+2026-03-14T22:57:44.2477996Z npm notice 61B types/exports/one.d.cts
+2026-03-14T22:57:44.2478289Z npm notice 74B types/exports/one.d.mts
+2026-03-14T22:57:44.2478594Z npm notice 246B types/none-CKjw9Aoz.d.mts
+2026-03-14T22:57:44.2478919Z npm notice 139B types/none-CKjw9Aoz.d.mts.map
+2026-03-14T22:57:44.2479238Z npm notice 246B types/none-D0Wo1a6R.d.cts
+2026-03-14T22:57:44.2479562Z npm notice 139B types/none-D0Wo1a6R.d.cts.map
+2026-03-14T22:57:44.2479883Z npm notice 239B types/one-BuVF-m86.d.cts
+2026-03-14T22:57:44.2480206Z npm notice 137B types/one-BuVF-m86.d.cts.map
+2026-03-14T22:57:44.2480535Z npm notice 239B types/one-PuTrzIUg.d.mts
+2026-03-14T22:57:44.2480866Z npm notice 137B types/one-PuTrzIUg.d.mts.map
+2026-03-14T22:57:44.2481179Z npm notice 506B vitest.config.ts
+2026-03-14T22:57:44.2481432Z npm notice Tarball Details
+2026-03-14T22:57:44.2481665Z npm notice name: anyone
+2026-03-14T22:57:44.2481893Z npm notice version: 2.0.11
+2026-03-14T22:57:44.2482167Z npm notice filename: anyone-2.0.11.tgz
+2026-03-14T22:57:44.2482454Z npm notice package size: 7.7 kB
+2026-03-14T22:57:44.2482738Z npm notice unpacked size: 32.9 kB
+2026-03-14T22:57:44.2483107Z npm notice shasum: 0aca4c78b5cde8680f41dfbb1af76bea417343bd
+2026-03-14T22:57:44.2483571Z npm notice integrity: sha512-oYRMYKNnJuoT+[...]eojwYb6RJPeQA==
+2026-03-14T22:57:44.2483918Z npm notice total files: 78
+2026-03-14T22:57:44.2484119Z npm notice
+2026-03-14T22:57:45.1363888Z npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+2026-03-14T22:57:45.8504509Z npm notice publish Signed provenance statement with source and build information from GitHub Actions
+2026-03-14T22:57:45.8506147Z npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=1105918159
+2026-03-14T22:57:46.9791210Z + anyone@2.0.11
+2026-03-14T22:57:46.9890518Z Releasing package: 📦 vest
+2026-03-14T22:57:46.9891260Z 🔍 Finding diffs for package: vest
+2026-03-14T22:57:47.1422958Z From https://github.com/***/vest
+2026-03-14T22:57:47.1423620Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:47.1485680Z All changes between origin/stable..origin/release:  ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)
+2026-03-14T22:57:47.1486503Z packages/anyone/package.json
+2026-03-14T22:57:47.1487159Z packages/context/package.json
+2026-03-14T22:57:47.1487598Z packages/n4s/package.json
+2026-03-14T22:57:47.1488007Z packages/vast/package.json
+2026-03-14T22:57:47.1488473Z packages/vest-utils/package.json
+2026-03-14T22:57:47.1488921Z packages/vest/package.json
+2026-03-14T22:57:47.1489400Z packages/vestjs-runtime/package.json
+2026-03-14T22:57:47.1489780Z yarn.lock
+2026-03-14T22:57:47.1489887Z 
+2026-03-14T22:57:47.1490048Z Picking tag id. Current branch: release
+2026-03-14T22:57:47.1490587Z ⚙️ Generated diff data: {
+2026-03-14T22:57:47.1490827Z   "changeLevel": "patch",
+2026-03-14T22:57:47.1491079Z   "messages": [
+2026-03-14T22:57:47.1491755Z     "ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)"
+2026-03-14T22:57:47.1492629Z   ],
+2026-03-14T22:57:47.1492925Z   "nextVersion": "6.2.5",
+2026-03-14T22:57:47.1493300Z   "packageName": "vest",
+2026-03-14T22:57:47.1493619Z   "tagId": "6.2.5",
+2026-03-14T22:57:47.1493813Z   "version": "6.2.4",
+2026-03-14T22:57:47.1494024Z   "versionToPublish": "6.2.5"
+2026-03-14T22:57:47.1494240Z }
+2026-03-14T22:57:47.1494609Z 🔢 Setting next version for vest. From 6.2.4 to 6.2.5
+2026-03-14T22:57:47.1495015Z Updating local dependencies to latest version
+2026-03-14T22:57:47.1495811Z 🛠 Building package: vest
+2026-03-14T22:57:47.1523166Z 🎬 Executing command: "./node_modules/.bin/tsdown --config /home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts"
+2026-03-14T22:57:47.4889088Z (node:5410) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+2026-03-14T22:57:47.4891126Z --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("/home/runner/work/vest/vest/vx/ts-loader.js", pathToFileURL("./"));'
+2026-03-14T22:57:47.4892353Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-14T22:57:47.5043816Z [34mℹ[39m tsdown [2mv0.17.0-beta.5[22m powered by rolldown [2mv1.0.0-beta.52[22m
+2026-03-14T22:57:47.6738495Z [34mℹ[39m config file: [4m/home/runner/work/vest/vest/vx/config/tsdown/tsdown.config.ts[24m 
+2026-03-14T22:57:47.6818829Z [34mℹ[39m [38;2;100;100;180m[vest][39m entry: [38;2;100;100;180msrc/vest.ts, src/exports/SuiteSerializer.ts, src/exports/classnames.ts, src/exports/date.ts, src/exports/debounce.ts, src/exports/email.ts, src/exports/isURL.ts, src/exports/memo.ts, src/exports/parser.ts[39m
+2026-03-14T22:57:47.6821494Z [34mℹ[39m [38;2;100;100;180m[vest][39m tsconfig: [38;2;100;100;180mtsconfig.json[39m
+2026-03-14T22:57:47.6823661Z [34mℹ[39m Build start
+2026-03-14T22:57:47.6852787Z [34mℹ[39m Cleaning 39 files
+2026-03-14T22:57:49.4005903Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[1mexports/SuiteSerializer.cjs[22m               [2m  2.50 kB[22m [2m│ gzip:  0.93 kB[22m
+2026-03-14T22:57:49.4009206Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[1mexports/memo.cjs[22m                          [2m  2.19 kB[22m [2m│ gzip:  0.79 kB[22m
+2026-03-14T22:57:49.4011925Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[1mexports/debounce.cjs[22m                      [2m  1.61 kB[22m [2m│ gzip:  0.70 kB[22m
+2026-03-14T22:57:49.4014190Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[1mexports/classnames.cjs[22m                    [2m  0.96 kB[22m [2m│ gzip:  0.49 kB[22m
+2026-03-14T22:57:49.4016507Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[1mvest.cjs[22m                                  [2m  0.86 kB[22m [2m│ gzip:  0.31 kB[22m
+2026-03-14T22:57:49.4018512Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[1mexports/email.cjs[22m                         [2m  0.25 kB[22m [2m│ gzip:  0.19 kB[22m
+2026-03-14T22:57:49.4020310Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[1mexports/isURL.cjs[22m                         [2m  0.25 kB[22m [2m│ gzip:  0.19 kB[22m
+2026-03-14T22:57:49.4022045Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[1mexports/date.cjs[22m                          [2m  0.25 kB[22m [2m│ gzip:  0.19 kB[22m
+2026-03-14T22:57:49.4024182Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[1mexports/parser.cjs[22m                        [2m  0.18 kB[22m [2m│ gzip:  0.14 kB[22m
+2026-03-14T22:57:49.4026305Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mvest-CHy2qeni.cjs.map                     [2m206.63 kB[22m [2m│ gzip: 47.52 kB[22m
+2026-03-14T22:57:49.4028545Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mvest-CHy2qeni.cjs                         [2m 97.05 kB[22m [2m│ gzip: 22.48 kB[22m
+2026-03-14T22:57:49.4030811Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mexports/SuiteSerializer.cjs.map           [2m  4.93 kB[22m [2m│ gzip:  1.80 kB[22m
+2026-03-14T22:57:49.4032962Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mexports/memo.cjs.map                      [2m  4.37 kB[22m [2m│ gzip:  1.52 kB[22m
+2026-03-14T22:57:49.4035047Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mexports/debounce.cjs.map                  [2m  3.34 kB[22m [2m│ gzip:  1.32 kB[22m
+2026-03-14T22:57:49.4037406Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mparser-DOg_t1JJ.cjs.map                   [2m  3.01 kB[22m [2m│ gzip:  1.13 kB[22m
+2026-03-14T22:57:49.4039617Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mIsolateTestStateMachine-BBP3PZx3.cjs.map  [2m  2.62 kB[22m [2m│ gzip:  0.76 kB[22m
+2026-03-14T22:57:49.4041246Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mIsolateTestStateMachine-BBP3PZx3.cjs      [2m  1.84 kB[22m [2m│ gzip:  0.58 kB[22m
+2026-03-14T22:57:49.4042438Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mexports/classnames.cjs.map                [2m  1.79 kB[22m [2m│ gzip:  0.83 kB[22m
+2026-03-14T22:57:49.4043838Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mparser-DOg_t1JJ.cjs                       [2m  1.59 kB[22m [2m│ gzip:  0.65 kB[22m
+2026-03-14T22:57:49.4044950Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mchunk-CbDLau6x.cjs                        [2m  1.12 kB[22m [2m│ gzip:  0.54 kB[22m
+2026-03-14T22:57:49.4045771Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m 20 files, total: 337.32 kB
+2026-03-14T22:57:49.4075215Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mIsolateSuite-CEwV1R-t.d.cts.map    [2m12.45 kB[22m [2m│ gzip: 5.31 kB[22m
+2026-03-14T22:57:49.4077352Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mvest.d.cts.map                     [2m 3.09 kB[22m [2m│ gzip: 1.28 kB[22m
+2026-03-14T22:57:49.4079236Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mexports/SuiteSerializer.d.cts.map  [2m 0.74 kB[22m [2m│ gzip: 0.38 kB[22m
+2026-03-14T22:57:49.4080380Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mparser-7BQP6Et1.d.cts.map          [2m 0.60 kB[22m [2m│ gzip: 0.27 kB[22m
+2026-03-14T22:57:49.4081456Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mexports/memo.d.cts.map             [2m 0.49 kB[22m [2m│ gzip: 0.30 kB[22m
+2026-03-14T22:57:49.4082754Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mexports/classnames.d.cts.map       [2m 0.43 kB[22m [2m│ gzip: 0.26 kB[22m
+2026-03-14T22:57:49.4083828Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22mexports/debounce.d.cts.map         [2m 0.16 kB[22m [2m│ gzip: 0.15 kB[22m
+2026-03-14T22:57:49.4084951Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32m[1mvest.d.cts[22m[39m                         [2m 6.96 kB[22m [2m│ gzip: 2.25 kB[22m
+2026-03-14T22:57:49.4086418Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/SuiteSerializer.d.cts[22m[39m      [2m 0.81 kB[22m [2m│ gzip: 0.38 kB[22m
+2026-03-14T22:57:49.4088488Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/classnames.d.cts[22m[39m           [2m 0.63 kB[22m [2m│ gzip: 0.37 kB[22m
+2026-03-14T22:57:49.4090231Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/memo.d.cts[22m[39m                 [2m 0.60 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-03-14T22:57:49.4091728Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/debounce.d.cts[22m[39m             [2m 0.28 kB[22m [2m│ gzip: 0.22 kB[22m
+2026-03-14T22:57:49.4092957Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/parser.d.cts[22m[39m               [2m 0.15 kB[22m [2m│ gzip: 0.13 kB[22m
+2026-03-14T22:57:49.4094118Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/email.d.cts[22m[39m                [2m 0.05 kB[22m [2m│ gzip: 0.06 kB[22m
+2026-03-14T22:57:49.4095588Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/isURL.d.cts[22m[39m                [2m 0.05 kB[22m [2m│ gzip: 0.06 kB[22m
+2026-03-14T22:57:49.4097087Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32m[1mexports/date.d.cts[22m[39m                 [2m 0.05 kB[22m [2m│ gzip: 0.06 kB[22m
+2026-03-14T22:57:49.4098246Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32mIsolateSuite-CEwV1R-t.d.cts[39m        [2m13.87 kB[22m [2m│ gzip: 3.36 kB[22m
+2026-03-14T22:57:49.4099781Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m [2mdist/[22m[32mparser-7BQP6Et1.d.cts[39m              [2m 0.74 kB[22m [2m│ gzip: 0.35 kB[22m
+2026-03-14T22:57:49.4100701Z [34mℹ[39m [38;2;100;100;180m[vest][39m [33m[CJS][39m 18 files, total: 42.17 kB
+2026-03-14T22:57:49.4101301Z [32m✔[39m [38;2;100;100;180m[vest][39m Build complete in [32m1726ms[39m
+2026-03-14T22:57:49.4235657Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[1mexports/SuiteSerializer.mjs[22m               [2m  2.23 kB[22m [2m│ gzip:  0.89 kB[22m
+2026-03-14T22:57:49.4238097Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[1mexports/memo.mjs[22m                          [2m  2.02 kB[22m [2m│ gzip:  0.76 kB[22m
+2026-03-14T22:57:49.4240214Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[1mexports/debounce.mjs[22m                      [2m  1.51 kB[22m [2m│ gzip:  0.68 kB[22m
+2026-03-14T22:57:49.4242167Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[1mexports/classnames.mjs[22m                    [2m  0.87 kB[22m [2m│ gzip:  0.45 kB[22m
+2026-03-14T22:57:49.4243647Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[1mvest.mjs[22m                                  [2m  0.51 kB[22m [2m│ gzip:  0.29 kB[22m
+2026-03-14T22:57:49.4244795Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[1mexports/parser.mjs[22m                        [2m  0.15 kB[22m [2m│ gzip:  0.13 kB[22m
+2026-03-14T22:57:49.4246372Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[1mexports/email.mjs[22m                         [2m  0.05 kB[22m [2m│ gzip:  0.06 kB[22m
+2026-03-14T22:57:49.4249386Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[1mexports/isURL.mjs[22m                         [2m  0.05 kB[22m [2m│ gzip:  0.06 kB[22m
+2026-03-14T22:57:49.4253684Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[1mexports/date.mjs[22m                          [2m  0.05 kB[22m [2m│ gzip:  0.06 kB[22m
+2026-03-14T22:57:49.4255605Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mvest-DegYfrt0.mjs.map                     [2m205.90 kB[22m [2m│ gzip: 47.18 kB[22m
+2026-03-14T22:57:49.4257533Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mvest-DegYfrt0.mjs                         [2m 91.36 kB[22m [2m│ gzip: 22.22 kB[22m
+2026-03-14T22:57:49.4258749Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mIsolateSuite-ujWLWVKC.d.mts.map           [2m 12.45 kB[22m [2m│ gzip:  5.31 kB[22m
+2026-03-14T22:57:49.4259951Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mexports/SuiteSerializer.mjs.map           [2m  4.88 kB[22m [2m│ gzip:  1.78 kB[22m
+2026-03-14T22:57:49.4261111Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mexports/memo.mjs.map                      [2m  4.28 kB[22m [2m│ gzip:  1.48 kB[22m
+2026-03-14T22:57:49.4262185Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mexports/debounce.mjs.map                  [2m  3.24 kB[22m [2m│ gzip:  1.29 kB[22m
+2026-03-14T22:57:49.4263242Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mvest.d.mts.map                            [2m  3.09 kB[22m [2m│ gzip:  1.28 kB[22m
+2026-03-14T22:57:49.4264299Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mparser-DBzFVv6R.mjs.map                   [2m  3.01 kB[22m [2m│ gzip:  1.11 kB[22m
+2026-03-14T22:57:49.4265444Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mIsolateTestStateMachine-BejZsTRI.mjs.map  [2m  2.62 kB[22m [2m│ gzip:  0.76 kB[22m
+2026-03-14T22:57:49.4266842Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mexports/classnames.mjs.map                [2m  1.79 kB[22m [2m│ gzip:  0.83 kB[22m
+2026-03-14T22:57:49.4268317Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mIsolateTestStateMachine-BejZsTRI.mjs      [2m  1.46 kB[22m [2m│ gzip:  0.47 kB[22m
+2026-03-14T22:57:49.4269463Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mparser-DBzFVv6R.mjs                       [2m  1.34 kB[22m [2m│ gzip:  0.57 kB[22m
+2026-03-14T22:57:49.4270593Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mexports/SuiteSerializer.d.mts.map         [2m  0.74 kB[22m [2m│ gzip:  0.38 kB[22m
+2026-03-14T22:57:49.4271729Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mparser-UUrcQjJc.d.mts.map                 [2m  0.60 kB[22m [2m│ gzip:  0.28 kB[22m
+2026-03-14T22:57:49.4272829Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mexports/memo.d.mts.map                    [2m  0.49 kB[22m [2m│ gzip:  0.30 kB[22m
+2026-03-14T22:57:49.4273940Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mexports/classnames.d.mts.map              [2m  0.43 kB[22m [2m│ gzip:  0.26 kB[22m
+2026-03-14T22:57:49.4275075Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22mexports/debounce.d.mts.map                [2m  0.16 kB[22m [2m│ gzip:  0.15 kB[22m
+2026-03-14T22:57:49.4276216Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32m[1mvest.d.mts[22m[39m                                [2m  6.96 kB[22m [2m│ gzip:  2.25 kB[22m
+2026-03-14T22:57:49.4277633Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/SuiteSerializer.d.mts[22m[39m             [2m  0.81 kB[22m [2m│ gzip:  0.38 kB[22m
+2026-03-14T22:57:49.4279028Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/classnames.d.mts[22m[39m                  [2m  0.66 kB[22m [2m│ gzip:  0.38 kB[22m
+2026-03-14T22:57:49.4280232Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/memo.d.mts[22m[39m                        [2m  0.60 kB[22m [2m│ gzip:  0.34 kB[22m
+2026-03-14T22:57:49.4281407Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/debounce.d.mts[22m[39m                    [2m  0.31 kB[22m [2m│ gzip:  0.23 kB[22m
+2026-03-14T22:57:49.4282608Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/parser.d.mts[22m[39m                      [2m  0.15 kB[22m [2m│ gzip:  0.13 kB[22m
+2026-03-14T22:57:49.4283829Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/email.d.mts[22m[39m                       [2m  0.05 kB[22m [2m│ gzip:  0.06 kB[22m
+2026-03-14T22:57:49.4285004Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/isURL.d.mts[22m[39m                       [2m  0.05 kB[22m [2m│ gzip:  0.06 kB[22m
+2026-03-14T22:57:49.4286179Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32m[1mexports/date.d.mts[22m[39m                        [2m  0.05 kB[22m [2m│ gzip:  0.06 kB[22m
+2026-03-14T22:57:49.4287561Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32mIsolateSuite-ujWLWVKC.d.mts[39m               [2m 13.87 kB[22m [2m│ gzip:  3.36 kB[22m
+2026-03-14T22:57:49.4288745Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m [2mdist/[22m[32mparser-UUrcQjJc.d.mts[39m                     [2m  0.74 kB[22m [2m│ gzip:  0.35 kB[22m
+2026-03-14T22:57:49.4289570Z [34mℹ[39m [38;2;100;100;180m[vest][39m [34m[ESM][39m 37 files, total: 369.53 kB
+2026-03-14T22:57:49.4290171Z [32m✔[39m [38;2;100;100;180m[vest][39m Build complete in [32m1742ms[39m
+2026-03-14T22:57:49.5134966Z 🚀 Publishing package vest.
+2026-03-14T22:57:49.5135341Z     Version: 6.2.5
+2026-03-14T22:57:49.5135710Z     Tag Id: 6.2.5
+2026-03-14T22:57:49.5136478Z     Publish Tag: undefined
+2026-03-14T22:57:49.5137303Z Configuring git identity for release publish.
+2026-03-14T22:57:49.5238249Z 🎬 Executing command: "cd /home/runner/work/vest/vest/packages/vest && npm publish --provenance"
+2026-03-14T22:57:49.6336169Z npm warn Unknown user config "always-auth". This will stop working in the next major version of npm.
+2026-03-14T22:57:50.2276196Z npm notice
+2026-03-14T22:57:50.2279370Z npm notice 📦  vest@6.2.5
+2026-03-14T22:57:50.2279912Z npm notice Tarball Contents
+2026-03-14T22:57:50.2334644Z npm notice 1.1kB LICENSE
+2026-03-14T22:57:50.2335230Z npm notice 4.5kB README.md
+2026-03-14T22:57:50.2335910Z npm notice 436B SuiteSerializer/package.json
+2026-03-14T22:57:50.2336852Z npm notice 8.9kB bench/advanced.bench.ts
+2026-03-14T22:57:50.2337599Z npm notice 2.3kB bench/complex-flows.bench.ts
+2026-03-14T22:57:50.2338380Z npm notice 1.2kB bench/conditional-isolates.bench.ts
+2026-03-14T22:57:50.2339132Z npm notice 732B bench/debounce-coverage.bench.ts
+2026-03-14T22:57:50.2339889Z npm notice 885B bench/dynamic-each-group.bench.ts
+2026-03-14T22:57:50.2340611Z npm notice 1.0kB bench/enforce-advanced.bench.ts
+2026-03-14T22:57:50.2341281Z npm notice 9.0kB bench/expert.bench.ts
+2026-03-14T22:57:50.2341942Z npm notice 4.1kB bench/feature-matrix.bench.ts
+2026-03-14T22:57:50.2342636Z npm notice 1.2kB bench/focus-filters.bench.ts
+2026-03-14T22:57:50.2343328Z npm notice 1.3kB bench/granular/complex.bench.ts
+2026-03-14T22:57:50.2344078Z npm notice 1.2kB bench/granular/conditional.bench.ts
+2026-03-14T22:57:50.2344808Z npm notice 2.8kB bench/granular/control-flow.bench.ts
+2026-03-14T22:57:50.2345455Z npm notice 2.4kB bench/granular/core.bench.ts
+2026-03-14T22:57:50.2346069Z npm notice 694B bench/granular/enforce.bench.ts
+2026-03-14T22:57:50.2347416Z npm notice 1.3kB bench/granular/optional.bench.ts
+2026-03-14T22:57:50.2348081Z npm notice 723B bench/granular/state.bench.ts
+2026-03-14T22:57:50.2348684Z npm notice 4.7kB bench/library.bench.ts
+2026-03-14T22:57:50.2349353Z npm notice 2.3kB bench/nesting-fields-hooks.bench.ts
+2026-03-14T22:57:50.2350070Z npm notice 1.0kB bench/optional-warn-mode.bench.ts
+2026-03-14T22:57:50.2350764Z npm notice 2.4kB bench/result-selectors.bench.ts
+2026-03-14T22:57:50.2351453Z npm notice 1.0kB bench/stress-fields.bench.ts
+2026-03-14T22:57:50.2352176Z npm notice 1.3kB bench/stress-nesting.bench.ts
+2026-03-14T22:57:50.2352791Z npm notice 1.7kB bench/suite-focus.bench.ts
+2026-03-14T22:57:50.2353393Z npm notice 401B classnames/package.json
+2026-03-14T22:57:50.2353947Z npm notice 359B date/package.json
+2026-03-14T22:57:50.2354490Z npm notice 387B debounce/package.json
+2026-03-14T22:57:50.2355070Z npm notice 1.1kB dist/chunk-CbDLau6x.cjs
+2026-03-14T22:57:50.2355653Z npm notice 964B dist/exports/classnames.cjs
+2026-03-14T22:57:50.2356313Z npm notice 1.8kB dist/exports/classnames.cjs.map
+2026-03-14T22:57:50.2357254Z npm notice 869B dist/exports/classnames.mjs
+2026-03-14T22:57:50.2357912Z npm notice 1.8kB dist/exports/classnames.mjs.map
+2026-03-14T22:57:50.2358554Z npm notice 247B dist/exports/date.cjs
+2026-03-14T22:57:50.2359116Z npm notice 51B dist/exports/date.mjs
+2026-03-14T22:57:50.2359693Z npm notice 1.6kB dist/exports/debounce.cjs
+2026-03-14T22:57:50.2360261Z npm notice 3.3kB dist/exports/debounce.cjs.map
+2026-03-14T22:57:50.2360896Z npm notice 1.5kB dist/exports/debounce.mjs
+2026-03-14T22:57:50.2361523Z npm notice 3.2kB dist/exports/debounce.mjs.map
+2026-03-14T22:57:50.2362126Z npm notice 253B dist/exports/email.cjs
+2026-03-14T22:57:50.2362695Z npm notice 54B dist/exports/email.mjs
+2026-03-14T22:57:50.2363277Z npm notice 253B dist/exports/isURL.cjs
+2026-03-14T22:57:50.2363855Z npm notice 54B dist/exports/isURL.mjs
+2026-03-14T22:57:50.2364411Z npm notice 2.2kB dist/exports/memo.cjs
+2026-03-14T22:57:50.2364993Z npm notice 4.4kB dist/exports/memo.cjs.map
+2026-03-14T22:57:50.2365597Z npm notice 2.0kB dist/exports/memo.mjs
+2026-03-14T22:57:50.2366141Z npm notice 4.3kB dist/exports/memo.mjs.map
+2026-03-14T22:57:50.2366948Z npm notice 181B dist/exports/parser.cjs
+2026-03-14T22:57:50.2367889Z npm notice 152B dist/exports/parser.mjs
+2026-03-14T22:57:50.2368560Z npm notice 2.5kB dist/exports/SuiteSerializer.cjs
+2026-03-14T22:57:50.2369315Z npm notice 4.9kB dist/exports/SuiteSerializer.cjs.map
+2026-03-14T22:57:50.2370046Z npm notice 2.2kB dist/exports/SuiteSerializer.mjs
+2026-03-14T22:57:50.2370779Z npm notice 4.9kB dist/exports/SuiteSerializer.mjs.map
+2026-03-14T22:57:50.2371672Z npm notice 1.8kB dist/IsolateTestStateMachine-BBP3PZx3.cjs
+2026-03-14T22:57:50.2372604Z npm notice 2.6kB dist/IsolateTestStateMachine-BBP3PZx3.cjs.map
+2026-03-14T22:57:50.2373512Z npm notice 1.5kB dist/IsolateTestStateMachine-BejZsTRI.mjs
+2026-03-14T22:57:50.2374403Z npm notice 2.6kB dist/IsolateTestStateMachine-BejZsTRI.mjs.map
+2026-03-14T22:57:50.2375163Z npm notice 1.3kB dist/parser-DBzFVv6R.mjs
+2026-03-14T22:57:50.2375814Z npm notice 3.0kB dist/parser-DBzFVv6R.mjs.map
+2026-03-14T22:57:50.2376449Z npm notice 1.6kB dist/parser-DOg_t1JJ.cjs
+2026-03-14T22:57:50.2377312Z npm notice 3.0kB dist/parser-DOg_t1JJ.cjs.map
+2026-03-14T22:57:50.2377964Z npm notice 97.0kB dist/vest-CHy2qeni.cjs
+2026-03-14T22:57:50.2378585Z npm notice 206.6kB dist/vest-CHy2qeni.cjs.map
+2026-03-14T22:57:50.2379202Z npm notice 91.4kB dist/vest-DegYfrt0.mjs
+2026-03-14T22:57:50.2379814Z npm notice 205.9kB dist/vest-DegYfrt0.mjs.map
+2026-03-14T22:57:50.2380359Z npm notice 857B dist/vest.cjs
+2026-03-14T22:57:50.2380829Z npm notice 505B dist/vest.mjs
+2026-03-14T22:57:50.2381329Z npm notice 5.9kB docs/focus.md
+2026-03-14T22:57:50.2381853Z npm notice 366B email/package.json
+2026-03-14T22:57:50.2382399Z npm notice 366B isURL/package.json
+2026-03-14T22:57:50.2382936Z npm notice 359B memo/package.json
+2026-03-14T22:57:50.2383435Z npm notice 4.4kB package.json
+2026-03-14T22:57:50.2383975Z npm notice 373B parser/package.json
+2026-03-14T22:57:50.2385174Z npm notice 1.5kB src/__tests__/__snapshots__/integration.async-tests.test.ts.snap
+2026-03-14T22:57:50.2386282Z npm notice 2.4kB src/__tests__/__snapshots__/integration.base.test.ts.snap
+2026-03-14T22:57:50.2387632Z npm notice 4.7kB src/__tests__/__snapshots__/integration.stateful-async.test.ts.snap
+2026-03-14T22:57:50.2388832Z npm notice 12.5kB src/__tests__/__snapshots__/integration.stateful-tests.test.ts.snap
+2026-03-14T22:57:50.2389869Z npm notice 2.8kB src/__tests__/integration.async-tests.test.ts
+2026-03-14T22:57:50.2390625Z npm notice 1.4kB src/__tests__/integration.base.test.ts
+2026-03-14T22:57:50.2391449Z npm notice 20.2kB src/__tests__/integration.byGroup.test.ts
+2026-03-14T22:57:50.2392400Z npm notice 2.5kB src/__tests__/integration.exclusive.test.ts
+2026-03-14T22:57:50.2393285Z npm notice 5.2kB src/__tests__/integration.stateful-async.test.ts
+2026-03-14T22:57:50.2394226Z npm notice 4.9kB src/__tests__/integration.stateful-tests.test.ts
+2026-03-14T22:57:50.2394987Z npm notice 8.6kB src/__tests__/isolate.test.ts
+2026-03-14T22:57:50.2395753Z npm notice 2.0kB src/__tests__/NestedTests_fail_fast.test.ts
+2026-03-14T22:57:50.2396553Z npm notice 1.7kB src/__tests__/state_refill.test.ts
+2026-03-14T22:57:50.2397671Z npm notice 3.2kB src/__tests__/SuiteResult_cache_expiration.test.ts
+2026-03-14T22:57:50.2398578Z npm notice 4.1kB src/__tests__/SuiteResult_during_run.test.ts
+2026-03-14T22:57:50.2399284Z npm notice 815B src/__tests__/vest.test.ts
+2026-03-14T22:57:50.2400084Z npm notice 66.1kB src/core/__tests__/__snapshots__/runtime.test.ts.snap
+2026-03-14T22:57:50.2400912Z npm notice 3.0kB src/core/__tests__/runtime.test.ts
+2026-03-14T22:57:50.2401589Z npm notice 1.6kB src/core/context/SuiteContext.ts
+2026-03-14T22:57:50.2402366Z npm notice 395B src/core/isolate/IsolateEach/IsolateEach.ts
+2026-03-14T22:57:50.2403217Z npm notice 1.9kB src/core/isolate/IsolateSuite/IsolateSuite.ts
+2026-03-14T22:57:50.2404260Z npm notice 1.3kB src/core/isolate/IsolateTest/__tests__/IsolateTestReconciler.test.ts
+2026-03-14T22:57:50.2405379Z npm notice 5.2kB src/core/isolate/IsolateTest/__tests__/VestTest.test.ts
+2026-03-14T22:57:50.2406457Z npm notice 10.0kB src/core/isolate/IsolateTest/__tests__/VestTestInspector.test.ts
+2026-03-14T22:57:50.2408054Z npm notice 604B src/core/isolate/IsolateTest/cancelOverriddenPendingTest.ts
+2026-03-14T22:57:50.2408963Z npm notice 1.5kB src/core/isolate/IsolateTest/IsolateTest.ts
+2026-03-14T22:57:50.2409889Z npm notice 3.8kB src/core/isolate/IsolateTest/IsolateTestReconciler.ts
+2026-03-14T22:57:50.2410879Z npm notice 790B src/core/isolate/IsolateTest/isSameProfileTest.ts
+2026-03-14T22:57:50.2411779Z npm notice 2.5kB src/core/isolate/IsolateTest/TestWalker.ts
+2026-03-14T22:57:50.2412602Z npm notice 7.7kB src/core/isolate/IsolateTest/VestTest.ts
+2026-03-14T22:57:50.2413384Z npm notice 2.3kB src/core/isolate/registerTests.ts
+2026-03-14T22:57:50.2414128Z npm notice 855B src/core/isolate/VestIsolateType.ts
+2026-03-14T22:57:50.2414862Z npm notice 816B src/core/isolate/VestReconciler.ts
+2026-03-14T22:57:50.2415504Z npm notice 2.9kB src/core/Runtime.ts
+2026-03-14T22:57:50.2416178Z npm notice 1.0kB src/core/selectors/useIsPending.ts
+2026-03-14T22:57:50.2417224Z npm notice 1.6kB src/core/StateMachines/IsolateTestStateMachine.ts
+2026-03-14T22:57:50.2418281Z npm notice 841B src/core/test/__tests__/__snapshots__/IsolateTest.test.ts.snap
+2026-03-14T22:57:50.2419329Z npm notice 8.8kB src/core/test/__tests__/__snapshots__/test.test.ts.snap
+2026-03-14T22:57:50.2420353Z npm notice 2.8kB src/core/test/__tests__/AbortControllerIntegration.test.ts
+2026-03-14T22:57:50.2421266Z npm notice 4.2kB src/core/test/__tests__/IsolateTest.test.ts
+2026-03-14T22:57:50.2421998Z npm notice 8.7kB src/core/test/__tests__/key.test.ts
+2026-03-14T22:57:50.2422911Z npm notice 11.1kB src/core/test/__tests__/merging_of_previous_test_runs.test.ts
+2026-03-14T22:57:50.2423850Z npm notice 6.0kB src/core/test/__tests__/runAsyncTest.test.ts
+2026-03-14T22:57:50.2424614Z npm notice 10.2kB src/core/test/__tests__/test.test.ts
+2026-03-14T22:57:50.2425709Z npm notice 2.6kB src/core/test/__tests__/testFunctionPayload.test.ts
+2026-03-14T22:57:50.2440652Z npm notice 738B src/core/test/Abortable.ts
+2026-03-14T22:57:50.2441639Z npm notice 1.6kB src/core/test/helpers/__tests__/nonMatchingSeverityProfile.test.ts
+2026-03-14T22:57:50.2442598Z npm notice 637B src/core/test/helpers/matchingFieldName.ts
+2026-03-14T22:57:50.2443436Z npm notice 567B src/core/test/helpers/nonMatchingSeverityProfile.ts
+2026-03-14T22:57:50.2444309Z npm notice 338B src/core/test/helpers/shouldUseErrorMessage.ts
+2026-03-14T22:57:50.2444985Z npm notice 1.3kB src/core/test/test.ts
+2026-03-14T22:57:50.2445670Z npm notice 4.6kB src/core/test/testLevelFlowControl/runTest.ts
+2026-03-14T22:57:50.2446510Z npm notice 2.1kB src/core/test/testLevelFlowControl/verifyTestRun.ts
+2026-03-14T22:57:50.2447426Z npm notice 4.9kB src/core/test/TestRegistry.ts
+2026-03-14T22:57:50.2448014Z npm notice 402B src/core/test/TestTypes.ts
+2026-03-14T22:57:50.2448644Z npm notice 1.3kB src/core/test/validateTestParams.ts
+2026-03-14T22:57:50.2449283Z npm notice 502B src/core/VestBus/BusEvents.ts
+2026-03-14T22:57:50.2449862Z npm notice 5.9kB src/core/VestBus/VestBus.ts
+2026-03-14T22:57:50.2450411Z npm notice 1.7kB src/errors/ErrorStrings.ts
+2026-03-14T22:57:50.2451153Z npm notice 3.4kB src/exports/__tests__/__snapshots__/memo.test.ts.snap
+2026-03-14T22:57:50.2452111Z npm notice 929B src/exports/__tests__/__snapshots__/SuiteSerializer.test.ts.snap
+2026-03-14T22:57:50.2452984Z npm notice 5.4kB src/exports/__tests__/classnames.test.ts
+2026-03-14T22:57:50.2453698Z npm notice 8.2kB src/exports/__tests__/debounce.test.ts
+2026-03-14T22:57:50.2454363Z npm notice 26.4kB src/exports/__tests__/memo.test.ts
+2026-03-14T22:57:50.2455023Z npm notice 15.9kB src/exports/__tests__/parser.test.ts
+2026-03-14T22:57:50.2455763Z npm notice 8.1kB src/exports/__tests__/SuiteSerializer.test.ts
+2026-03-14T22:57:50.2456419Z npm notice 1.2kB src/exports/classnames.ts
+2026-03-14T22:57:50.2457103Z npm notice 34B src/exports/date.ts
+2026-03-14T22:57:50.2457615Z npm notice 2.2kB src/exports/debounce.ts
+2026-03-14T22:57:50.2458128Z npm notice 36B src/exports/email.ts
+2026-03-14T22:57:50.2458598Z npm notice 36B src/exports/isURL.ts
+2026-03-14T22:57:50.2459352Z npm notice 3.0kB src/exports/memo.ts
+2026-03-14T22:57:50.2459854Z npm notice 2.1kB src/exports/parser.ts
+2026-03-14T22:57:50.2460412Z npm notice 3.2kB src/exports/SuiteSerializer.ts
+2026-03-14T22:57:50.2461169Z npm notice 25.1kB src/hooks/__tests__/__snapshots__/include.test.ts.snap
+2026-03-14T22:57:50.2461922Z npm notice 15.8kB src/hooks/__tests__/include.test.ts
+2026-03-14T22:57:50.2462554Z npm notice 10.5kB src/hooks/__tests__/mode.test.ts
+2026-03-14T22:57:50.2463189Z npm notice 2.4kB src/hooks/__tests__/useWarn.test.ts
+2026-03-14T22:57:50.2463834Z npm notice 1.1kB src/hooks/__tests__/warn.test.ts
+2026-03-14T22:57:50.2464669Z npm notice 4.1kB src/hooks/focused/__tests__/__snapshots__/focused.test.ts.snap
+2026-03-14T22:57:50.2465553Z npm notice 26.0kB src/hooks/focused/__tests__/focused.test.ts
+2026-03-14T22:57:50.2466214Z npm notice 1.1kB src/hooks/focused/focused.ts
+2026-03-14T22:57:50.2466971Z npm notice 43B src/hooks/focused/FocusedKeys.ts
+2026-03-14T22:57:50.2467696Z npm notice 599B src/hooks/focused/useHasOnliedTests.ts
+2026-03-14T22:57:50.2468376Z npm notice 4.0kB src/hooks/focused/useIsExcluded.ts
+2026-03-14T22:57:50.2469026Z npm notice 3.3kB src/hooks/include.ts
+2026-03-14T22:57:50.2469772Z npm notice 14.8kB src/hooks/optional/__tests__/optional.test.ts
+2026-03-14T22:57:50.2470432Z npm notice 1.5kB src/hooks/optional/mode.ts
+2026-03-14T22:57:50.2470989Z npm notice 71B src/hooks/optional/Modes.ts
+2026-03-14T22:57:50.2471702Z npm notice 2.5kB src/hooks/optional/omitOptionalFields.ts
+2026-03-14T22:57:50.2472418Z npm notice 2.9kB src/hooks/optional/optional.ts
+2026-03-14T22:57:50.2473078Z npm notice 765B src/hooks/optional/OptionalTypes.ts
+2026-03-14T22:57:50.2473663Z npm notice 561B src/hooks/useWarn.ts
+2026-03-14T22:57:50.2474185Z npm notice 841B src/hooks/warn.ts
+2026-03-14T22:57:50.2475201Z npm notice 189B src/isolates/__tests__/__snapshots__/each.test.ts.snap
+2026-03-14T22:57:50.2476118Z npm notice 27.6kB src/isolates/__tests__/__snapshots__/group.test.ts.snap
+2026-03-14T22:57:50.2477431Z npm notice 10.2kB src/isolates/__tests__/__snapshots__/omitWhen.test.ts.snap
+2026-03-14T22:57:50.2478502Z npm notice 3.1kB src/isolates/__tests__/__snapshots__/skipWhen.test.ts.snap
+2026-03-14T22:57:50.2479402Z npm notice 3.3kB src/isolates/__tests__/each.test.ts
+2026-03-14T22:57:50.2480146Z npm notice 21.2kB src/isolates/__tests__/group.test.ts
+2026-03-14T22:57:50.2480941Z npm notice 15.0kB src/isolates/__tests__/omitWhen.test.ts
+2026-03-14T22:57:50.2481746Z npm notice 4.8kB src/isolates/__tests__/skipWhen.test.ts
+2026-03-14T22:57:50.2482462Z npm notice 826B src/isolates/each.ts
+2026-03-14T22:57:50.2483095Z npm notice 2.7kB src/isolates/group.ts
+2026-03-14T22:57:50.2483708Z npm notice 1.2kB src/isolates/omitWhen.ts
+2026-03-14T22:57:50.2484322Z npm notice 1.5kB src/isolates/skipWhen.ts
+2026-03-14T22:57:50.2485179Z npm notice 1.6kB src/suite/__tests__/__snapshots__/create.test.ts.snap
+2026-03-14T22:57:50.2486189Z npm notice 1.2kB src/suite/__tests__/__snapshots__/focus.test.ts.snap
+2026-03-14T22:57:50.2487520Z npm notice 27.1kB src/suite/__tests__/__snapshots__/suite.dump.test.ts.snap
+2026-03-14T22:57:50.2488403Z npm notice 2.9kB src/suite/__tests__/create.test.ts
+2026-03-14T22:57:50.2489214Z npm notice 8.1kB src/suite/__tests__/createSuite.examples.test.ts
+2026-03-14T22:57:50.2490192Z npm notice 9.9kB src/suite/__tests__/createSuite.typing-examples.test.ts
+2026-03-14T22:57:50.2491128Z npm notice 8.3kB src/suite/__tests__/createWithSchema.test.ts
+2026-03-14T22:57:50.2491907Z npm notice 25.7kB src/suite/__tests__/focus.test.ts
+2026-03-14T22:57:50.2492779Z npm notice 1.8kB src/suite/__tests__/getStandardSchema.test.ts
+2026-03-14T22:57:50.2493518Z npm notice 1.7kB src/suite/__tests__/onlyShorthand.test.ts
+2026-03-14T22:57:50.2494172Z npm notice 1.7kB src/suite/__tests__/remove.test.ts
+2026-03-14T22:57:50.2494827Z npm notice 2.4kB src/suite/__tests__/resetField.test.ts
+2026-03-14T22:57:50.2495637Z npm notice 6.9kB src/suite/__tests__/runSummary.integration.test.ts
+2026-03-14T22:57:50.2496424Z npm notice 3.4kB src/suite/__tests__/schema.example.test.ts
+2026-03-14T22:57:50.2497604Z npm notice 4.3kB src/suite/__tests__/schema.example.ts
+2026-03-14T22:57:50.2498405Z npm notice 6.7kB src/suite/__tests__/schema.parse.integration.test.ts
+2026-03-14T22:57:50.2499227Z npm notice 25.9kB src/suite/__tests__/schema.runtime.test.ts
+2026-03-14T22:57:50.2500008Z npm notice 24.0kB src/suite/__tests__/schema.types.test.ts
+2026-03-14T22:57:50.2500824Z npm notice 3.2kB src/suite/__tests__/standardSchema.test.ts
+2026-03-14T22:57:50.2501556Z npm notice 2.1kB src/suite/__tests__/staticSuite.test.ts
+2026-03-14T22:57:50.2502314Z npm notice 3.9kB src/suite/__tests__/subscribe.test.ts
+2026-03-14T22:57:50.2503046Z npm notice 1.8kB src/suite/__tests__/suite.dump.test.ts
+2026-03-14T22:57:50.2503775Z npm notice 1.8kB src/suite/__tests__/suite.dump.ts
+2026-03-14T22:57:50.2504606Z npm notice 4.0kB src/suite/__tests__/suiteSelectorsOnSuite.test.ts
+2026-03-14T22:57:50.2505403Z npm notice 3.4kB src/suite/__tests__/typedSuite.test.ts
+2026-03-14T22:57:50.2506243Z npm notice 1.5kB src/suite/after/__tests__/__snapshots__/afterEach.test.ts.snap
+2026-03-14T22:57:50.2507421Z npm notice 1.5kB src/suite/after/__tests__/__snapshots__/done.test.ts.snap
+2026-03-14T22:57:50.2508390Z npm notice 4.5kB src/suite/after/__tests__/afterEach.additional.test.ts
+2026-03-14T22:57:50.2509287Z npm notice 7.1kB src/suite/after/__tests__/afterEach.test.ts
+2026-03-14T22:57:50.2510058Z npm notice 685B src/suite/after/deferDoneCallback.ts
+2026-03-14T22:57:50.2510699Z npm notice 2.6kB src/suite/createSuite.ts
+2026-03-14T22:57:50.2511301Z npm notice 754B src/suite/getStandardSchema.ts
+2026-03-14T22:57:50.2511922Z npm notice 1.9kB src/suite/getTypedMethods.ts
+2026-03-14T22:57:50.2512523Z npm notice 2.1kB src/suite/runCallbacks.ts
+2026-03-14T22:57:50.2513405Z npm notice 3.9kB src/suite/SuiteTypes.ts
+2026-03-14T22:57:50.2514089Z npm notice 9.2kB src/suite/useCreateSuiteMethods.ts
+2026-03-14T22:57:50.2514785Z npm notice 13.2kB src/suite/useCreateSuiteRunner.ts
+2026-03-14T22:57:50.2515692Z npm notice 384B src/suite/validateSuiteCallback/validateSuiteCallback.ts
+2026-03-14T22:57:50.2517161Z npm notice 1.6kB src/suiteResult/__tests__/__snapshots__/useProduceSuiteSummary.test.ts.snap
+2026-03-14T22:57:50.2518279Z npm notice 525B src/suiteResult/__tests__/suiteResultTypes.test.ts
+2026-03-14T22:57:50.2519272Z npm notice 6.8kB src/suiteResult/__tests__/useProduceSuiteSummary.test.ts
+2026-03-14T22:57:50.2520564Z npm notice 2.5kB src/suiteResult/selectors/__tests__/__snapshots__/collectFailureMessages.test.ts.snap
+2026-03-14T22:57:50.2521872Z npm notice 4.2kB src/suiteResult/selectors/__tests__/collectFailureMessages.test.ts
+2026-03-14T22:57:50.2522943Z npm notice 9.4kB src/suiteResult/selectors/__tests__/getFailure.test.ts
+2026-03-14T22:57:50.2523935Z npm notice 6.2kB src/suiteResult/selectors/__tests__/getFailures.test.ts
+2026-03-14T22:57:50.2524982Z npm notice 7.8kB src/suiteResult/selectors/__tests__/getFailuresByGroup.test.ts
+2026-03-14T22:57:50.2526014Z npm notice 5.0kB src/suiteResult/selectors/__tests__/hasFailures.test.ts
+2026-03-14T22:57:50.2527323Z npm notice 5.4kB src/suiteResult/selectors/__tests__/hasFailuresByGroup.test.ts
+2026-03-14T22:57:50.2528464Z npm notice 3.1kB src/suiteResult/selectors/__tests__/hasFailuresByTestObject.test.ts
+2026-03-14T22:57:50.2529508Z npm notice 2.9kB src/suiteResult/selectors/__tests__/isPending.test.ts
+2026-03-14T22:57:50.2530439Z npm notice 1.9kB src/suiteResult/selectors/__tests__/isTested.test.ts
+2026-03-14T22:57:50.2531349Z npm notice 9.7kB src/suiteResult/selectors/__tests__/isValid.test.ts
+2026-03-14T22:57:50.2532303Z npm notice 19.1kB src/suiteResult/selectors/__tests__/isValidByGroup.test.ts
+2026-03-14T22:57:50.2533339Z npm notice 6.3kB src/suiteResult/selectors/__tests__/summaryFailures.test.ts
+2026-03-14T22:57:50.2534235Z npm notice 1.4kB src/suiteResult/selectors/collectFailures.ts
+2026-03-14T22:57:50.2535120Z npm notice 3.0kB src/suiteResult/selectors/hasFailuresByTestObjects.ts
+2026-03-14T22:57:50.2535957Z npm notice 587B src/suiteResult/selectors/LazyDraft.ts
+2026-03-14T22:57:50.2537159Z npm notice 14.0kB src/suiteResult/selectors/suiteSelectors.ts
+2026-03-14T22:57:50.2538099Z npm notice 6.2kB src/suiteResult/selectors/useProduceSuiteSummary.ts
+2026-03-14T22:57:50.2539072Z npm notice 17.8kB src/suiteResult/selectors/useSetValidProperty.ts
+2026-03-14T22:57:50.2539847Z npm notice 409B src/suiteResult/Severity.ts
+2026-03-14T22:57:50.2540483Z npm notice 2.9kB src/suiteResult/suiteResult.ts
+2026-03-14T22:57:50.2541194Z npm notice 3.8kB src/suiteResult/SuiteResultTypes.ts
+2026-03-14T22:57:50.2541920Z npm notice 820B src/suiteResult/SummaryFailure.ts
+2026-03-14T22:57:50.2542656Z npm notice 429B src/testUtils/__tests__/partition.test.ts
+2026-03-14T22:57:50.2543360Z npm notice 330B src/testUtils/partition.ts
+2026-03-14T22:57:50.2544016Z npm notice 2.8kB src/testUtils/suiteDummy.ts
+2026-03-14T22:57:50.2544695Z npm notice 2.4kB src/testUtils/testDummy.ts
+2026-03-14T22:57:50.2545326Z npm notice 126B src/testUtils/testPromise.ts
+2026-03-14T22:57:50.2545961Z npm notice 242B src/testUtils/TVestMock.ts
+2026-03-14T22:57:50.2546581Z npm notice 543B src/testUtils/vestMocks.ts
+2026-03-14T22:57:50.2547320Z npm notice 1.2kB src/vest.ts
+2026-03-14T22:57:50.2547900Z npm notice 630B types/exports/classnames.d.cts
+2026-03-14T22:57:50.2548603Z npm notice 433B types/exports/classnames.d.cts.map
+2026-03-14T22:57:50.2549303Z npm notice 656B types/exports/classnames.d.mts
+2026-03-14T22:57:50.2549976Z npm notice 428B types/exports/classnames.d.mts.map
+2026-03-14T22:57:50.2550623Z npm notice 50B types/exports/date.d.cts
+2026-03-14T22:57:50.2551198Z npm notice 50B types/exports/date.d.mts
+2026-03-14T22:57:50.2551785Z npm notice 285B types/exports/debounce.d.cts
+2026-03-14T22:57:50.2552456Z npm notice 160B types/exports/debounce.d.cts.map
+2026-03-14T22:57:50.2553440Z npm notice 311B types/exports/debounce.d.mts
+2026-03-14T22:57:50.2554033Z npm notice 160B types/exports/debounce.d.mts.map
+2026-03-14T22:57:50.2554607Z npm notice 53B types/exports/email.d.cts
+2026-03-14T22:57:50.2555166Z npm notice 53B types/exports/email.d.mts
+2026-03-14T22:57:50.2555738Z npm notice 53B types/exports/isURL.d.cts
+2026-03-14T22:57:50.2556242Z npm notice 53B types/exports/isURL.d.mts
+2026-03-14T22:57:50.2556970Z npm notice 603B types/exports/memo.d.cts
+2026-03-14T22:57:50.2557525Z npm notice 490B types/exports/memo.d.cts.map
+2026-03-14T22:57:50.2558060Z npm notice 603B types/exports/memo.d.mts
+2026-03-14T22:57:50.2558554Z npm notice 490B types/exports/memo.d.mts.map
+2026-03-14T22:57:50.2559108Z npm notice 150B types/exports/parser.d.cts
+2026-03-14T22:57:50.2559638Z npm notice 150B types/exports/parser.d.mts
+2026-03-14T22:57:50.2560231Z npm notice 813B types/exports/SuiteSerializer.d.cts
+2026-03-14T22:57:50.2560928Z npm notice 745B types/exports/SuiteSerializer.d.cts.map
+2026-03-14T22:57:50.2561595Z npm notice 813B types/exports/SuiteSerializer.d.mts
+2026-03-14T22:57:50.2562265Z npm notice 745B types/exports/SuiteSerializer.d.mts.map
+2026-03-14T22:57:50.2562733Z npm notice 13.9kB types/IsolateSuite-CEwV1R-t.d.cts
+2026-03-14T22:57:50.2563178Z npm notice 12.4kB types/IsolateSuite-CEwV1R-t.d.cts.map
+2026-03-14T22:57:50.2563610Z npm notice 13.9kB types/IsolateSuite-ujWLWVKC.d.mts
+2026-03-14T22:57:50.2564015Z npm notice 12.4kB types/IsolateSuite-ujWLWVKC.d.mts.map
+2026-03-14T22:57:50.2564395Z npm notice 744B types/parser-7BQP6Et1.d.cts
+2026-03-14T22:57:50.2564753Z npm notice 598B types/parser-7BQP6Et1.d.cts.map
+2026-03-14T22:57:50.2565108Z npm notice 744B types/parser-UUrcQjJc.d.mts
+2026-03-14T22:57:50.2565467Z npm notice 598B types/parser-UUrcQjJc.d.mts.map
+2026-03-14T22:57:50.2565796Z npm notice 7.0kB types/vest.d.cts
+2026-03-14T22:57:50.2566087Z npm notice 3.1kB types/vest.d.cts.map
+2026-03-14T22:57:50.2566376Z npm notice 7.0kB types/vest.d.mts
+2026-03-14T22:57:50.2566931Z npm notice 3.1kB types/vest.d.mts.map
+2026-03-14T22:57:50.2567287Z npm notice 7.0kB types/vest.d.ts
+2026-03-14T22:57:50.2567562Z npm notice 651B vitest.config.ts
+2026-03-14T22:57:50.2567813Z npm notice Tarball Details
+2026-03-14T22:57:50.2568050Z npm notice name: vest
+2026-03-14T22:57:50.2568487Z npm notice version: 6.2.5
+2026-03-14T22:57:50.2568758Z npm notice filename: vest-6.2.5.tgz
+2026-03-14T22:57:50.2569048Z npm notice package size: 325.9 kB
+2026-03-14T22:57:50.2569326Z npm notice unpacked size: 1.8 MB
+2026-03-14T22:57:50.2569683Z npm notice shasum: e200f353917b09f15c6e1bdc9999351494bd74cd
+2026-03-14T22:57:50.2570148Z npm notice integrity: sha512-F6d3ANrHhRiWe[...]/Yn+P+JbeNKdQ==
+2026-03-14T22:57:50.2570502Z npm notice total files: 290
+2026-03-14T22:57:50.2570718Z npm notice
+2026-03-14T22:57:50.9496312Z npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+2026-03-14T22:57:51.8088716Z npm notice publish Signed provenance statement with source and build information from GitHub Actions
+2026-03-14T22:57:51.8089986Z npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=1105918270
+2026-03-14T22:57:53.9357950Z + vest@6.2.5
+2026-03-14T22:57:53.9463260Z 🌎 Pushing latest branch.
+2026-03-14T22:57:54.0854975Z From https://github.com/***/vest
+2026-03-14T22:57:54.0855614Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:54.0916054Z All changes between origin/stable..origin/release:  ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)
+2026-03-14T22:57:54.0917632Z packages/anyone/package.json
+2026-03-14T22:57:54.0918125Z packages/context/package.json
+2026-03-14T22:57:54.0918582Z packages/n4s/package.json
+2026-03-14T22:57:54.0919013Z packages/vast/package.json
+2026-03-14T22:57:54.0919511Z packages/vest-utils/package.json
+2026-03-14T22:57:54.0919943Z packages/vest/package.json
+2026-03-14T22:57:54.0920426Z packages/vestjs-runtime/package.json
+2026-03-14T22:57:54.0920865Z yarn.lock
+2026-03-14T22:57:54.0921614Z 
+2026-03-14T22:57:54.0929495Z 🎬 Executing command: "sh /home/runner/work/vest/vest/vx/scripts/release/steps/push_to_latest_branch.sh "✨ Updating: [vest-utils]: (2.0.12), [context]: (4.0.12), [vestjs-runtime]: (2.0.12), [vast]: (2.0.12), [n4s]: (6.1.9), [vest]: (6.2.5), [anyone]: (2.0.11)" "ee081b28  chore: increment all package versions by one more patch for absolute release safety (Evyatar Alush)""
+2026-03-14T22:57:54.0991612Z Running Script push_to_latest_branch.sh
+2026-03-14T22:57:54.0994508Z Current directory: /home/runner/work/vest/vest
+2026-03-14T22:57:54.0994964Z Workspace directory: /home/runner/work/vest/vest
+2026-03-14T22:57:54.0995400Z Going back to root folder
+2026-03-14T22:57:54.0995846Z Fetching stable for reference
+2026-03-14T22:57:54.2467875Z From https://github.com/***/vest
+2026-03-14T22:57:54.2468307Z  * branch              stable     -> FETCH_HEAD
+2026-03-14T22:57:54.2528176Z Rebasing hotfixes
+2026-03-14T22:57:54.2545633Z fatal: invalid upstream 'stable'
+2026-03-14T22:57:54.2548906Z No hotfixes to rebase
+2026-03-14T22:57:54.2549432Z Deleting local stable branch
+2026-03-14T22:57:54.2562342Z error: branch 'stable' not found
+2026-03-14T22:57:54.2565116Z Failed to delete stable. Continuing...
+2026-03-14T22:57:54.2565510Z Checking out new local stable branch
+2026-03-14T22:57:54.2583507Z Switched to a new branch 'stable'
+2026-03-14T22:57:54.2590356Z Rebuilding yarn.lock
+2026-03-14T22:57:54.7951300Z [94m➤[39m [90mYN0000[39m: ┌ Resolution step
+2026-03-14T22:57:54.7952366Z ##[group]Resolution step
+2026-03-14T22:57:55.0315744Z [93m➤[39m YN0002: │ [38;5;166m@algolia/[39m[38;5;173mautocomplete-core[39m[38;5;111m@[39m[38;5;111mnpm:1.19.2[39m doesn't provide [38;5;166m@algolia/[39m[38;5;173mclient-search[39m ([38;5;111mpdfcdc[39m), requested by [38;5;166m@algolia/[39m[38;5;173mautocomplete-shared[39m
+2026-03-14T22:57:55.0319529Z [93m➤[39m YN0002: │ [38;5;166m@algolia/[39m[38;5;173mautocomplete-core[39m[38;5;111m@[39m[38;5;111mnpm:1.19.2[39m doesn't provide [38;5;173malgoliasearch[39m ([38;5;111mp831de[39m), requested by [38;5;166m@algolia/[39m[38;5;173mautocomplete-shared[39m
+2026-03-14T22:57:55.0323949Z [93m➤[39m YN0002: │ [38;5;166m@algolia/[39m[38;5;173mautocomplete-core[39m[38;5;111m@[39m[38;5;111mnpm:1.19.2[39m doesn't provide [38;5;173msearch-insights[39m ([38;5;111mp6f87c[39m), requested by [38;5;166m@algolia/[39m[38;5;173mautocomplete-plugin-algolia-insights[39m
+2026-03-14T22:57:55.0329221Z [93m➤[39m YN0002: │ [38;5;166m@algolia/[39m[38;5;173mautocomplete-plugin-algolia-insights[39m[38;5;111m@[39m[38;5;111mnpm:1.19.2 [4dbba][39m doesn't provide [38;5;166m@algolia/[39m[38;5;173mclient-search[39m ([38;5;111mpdee7b[39m), requested by [38;5;166m@algolia/[39m[38;5;173mautocomplete-shared[39m
+2026-03-14T22:57:55.0332559Z [93m➤[39m YN0002: │ [38;5;166m@algolia/[39m[38;5;173mautocomplete-plugin-algolia-insights[39m[38;5;111m@[39m[38;5;111mnpm:1.19.2 [4dbba][39m doesn't provide [38;5;173malgoliasearch[39m ([38;5;111mpbf9f3[39m), requested by [38;5;166m@algolia/[39m[38;5;173mautocomplete-shared[39m
+2026-03-14T22:57:55.0334657Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mbundler[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [b1961][39m doesn't provide [38;5;173mreact[39m ([38;5;111mpe157b[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mtypes[39m
+2026-03-14T22:57:55.0336517Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mbundler[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [b1961][39m doesn't provide [38;5;173mreact-dom[39m ([38;5;111mpdbf86[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mtypes[39m
+2026-03-14T22:57:55.0338765Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-content-blog[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [cd3f2][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp43ca0[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0340838Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-content-docs[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [cd3f2][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp2d069[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0343170Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-content-pages[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [cd3f2][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mpccbf5[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0346827Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-css-cascade-layers[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2[39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp30344[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0349920Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-css-cascade-layers[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2[39m doesn't provide [38;5;173mreact[39m ([38;5;111mp104ca[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mtypes[39m
+2026-03-14T22:57:55.0352306Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-css-cascade-layers[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2[39m doesn't provide [38;5;173mreact[39m ([38;5;111mp9f3ce[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0354304Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-css-cascade-layers[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2[39m doesn't provide [38;5;173mreact-dom[39m ([38;5;111mpad91f[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mtypes[39m
+2026-03-14T22:57:55.0357656Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-css-cascade-layers[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2[39m doesn't provide [38;5;173mreact-dom[39m ([38;5;111mp30451[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0361063Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-debug[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [cd3f2][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp12660[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0363634Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-google-analytics[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [cd3f2][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mpf3ab8[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0366579Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-google-gtag[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [86937][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp901b6[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0370650Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-google-tag-manager[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [cd3f2][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp4f139[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0373544Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-sitemap[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [cd3f2][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp2b6c5[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0377741Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mplugin-svgr[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [cd3f2][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp7a04a[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0380557Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mpreset-classic[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [86937][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp95d2f[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0383219Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mtheme-search-algolia[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2 [cd3f2][39m doesn't provide [38;5;166m@mdx-js/[39m[38;5;173mreact[39m ([38;5;111mp825f5[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mcore[39m
+2026-03-14T22:57:55.0386889Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mutils-common[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2[39m doesn't provide [38;5;173mreact[39m ([38;5;111mp5b9be[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mtypes[39m
+2026-03-14T22:57:55.0390561Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mutils-common[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2[39m doesn't provide [38;5;173mreact-dom[39m ([38;5;111mpddaa8[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mtypes[39m
+2026-03-14T22:57:55.0394046Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mutils[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2[39m doesn't provide [38;5;173mreact[39m ([38;5;111mp7e5ed[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mtypes[39m
+2026-03-14T22:57:55.0397579Z [93m➤[39m YN0002: │ [38;5;166m@docusaurus/[39m[38;5;173mutils[39m[38;5;111m@[39m[38;5;111mnpm:3.9.2[39m doesn't provide [38;5;173mreact-dom[39m ([38;5;111mp76168[39m), requested by [38;5;166m@docusaurus/[39m[38;5;173mtypes[39m
+2026-03-14T22:57:55.0400620Z [93m➤[39m YN0060: │ [38;5;173mvest-monorepo[39m[38;5;111m@[39m[38;5;111mworkspace:.[39m provides [38;5;173meslint[39m ([38;5;111mp3c745[39m) with version [38;5;111m9.39.1[39m, which doesn't satisfy what [38;5;166m@typescript-eslint/[39m[38;5;173meslint-plugin[39m and some of its descendants request
+2026-03-14T22:57:55.0402909Z [93m➤[39m YN0060: │ [38;5;173mvest-monorepo[39m[38;5;111m@[39m[38;5;111mworkspace:.[39m provides [38;5;173meslint[39m ([38;5;111mp0407b[39m) with version [38;5;111m9.39.1[39m, which doesn't satisfy what [38;5;166m@typescript-eslint/[39m[38;5;173mparser[39m requests
+2026-03-14T22:57:55.0404996Z [93m➤[39m YN0002: │ [38;5;173mwebsite[39m[38;5;111m@[39m[38;5;111mworkspace:website[39m doesn't provide [38;5;166m@docusaurus/[39m[38;5;173mtheme-common[39m ([38;5;111mpf82aa[39m), requested by [38;5;166m@easyops-cn/[39m[38;5;173mdocusaurus-search-local[39m
+2026-03-14T22:57:55.0408775Z [93m➤[39m YN0002: │ [38;5;173mwebsite[39m[38;5;111m@[39m[38;5;111mworkspace:website[39m doesn't provide [38;5;166m@types/[39m[38;5;173mreact[39m ([38;5;111mpb5869[39m), requested by [38;5;166m@mdx-js/[39m[38;5;173mreact[39m
+2026-03-14T22:57:55.0410441Z [93m➤[39m YN0002: │ [38;5;173mwebsite[39m[38;5;111m@[39m[38;5;111mworkspace:website[39m doesn't provide [38;5;173mwebpack[39m ([38;5;111mp31363[39m), requested by [38;5;173mfile-loader[39m
+2026-03-14T22:57:55.0412868Z [93m➤[39m YN0002: │ [38;5;173mwebsite[39m[38;5;111m@[39m[38;5;111mworkspace:website[39m doesn't provide [38;5;173mwebpack[39m ([38;5;111mp76863[39m), requested by [38;5;173murl-loader[39m
+2026-03-14T22:57:55.0415579Z [93m➤[39m YN0000: │ Some peer dependencies are incorrectly met; run [38;5;111myarn explain peer-requirements <hash>[39m for details, where [38;5;111m<hash>[39m is the six-letter p-prefixed code
+2026-03-14T22:57:55.0417568Z ##[endgroup]
+2026-03-14T22:57:55.0418012Z [94m➤[39m [90mYN0000[39m: └ Completed in 0s 244ms
+2026-03-14T22:57:55.0418414Z [94m➤[39m [90mYN0000[39m: ┌ Fetch step
+2026-03-14T22:57:55.0418836Z ##[group]Fetch step
+2026-03-14T22:57:55.4461059Z [94m➤[39m YN0013: │ 1689 packages were already cached
+2026-03-14T22:57:55.4510661Z ##[endgroup]
+2026-03-14T22:57:55.4511503Z [94m➤[39m [90mYN0000[39m: └ Completed in 0s 411ms
+2026-03-14T22:57:55.5166289Z [94m➤[39m [90mYN0000[39m: ┌ Link step
+2026-03-14T22:57:55.5167603Z ##[group]Link step
+2026-03-14T22:57:55.9588052Z ##[endgroup]
+2026-03-14T22:57:55.9589076Z [94m➤[39m [90mYN0000[39m: └ Completed in 0s 442ms
+2026-03-14T22:57:56.0799057Z [93m➤[39m YN0000: Done with warnings in 1s 288ms
+2026-03-14T22:57:56.1112971Z Cleaning up auth token
+2026-03-14T22:57:56.4775197Z [93m➤[39m YN0000: Configuration doesn't contain setting npmAuthToken; there is nothing to unset
+2026-03-14T22:57:56.8484904Z [93m➤[39m YN0000: Configuration doesn't contain setting npmAlwaysAuth; there is nothing to unset
+2026-03-14T22:57:56.8589189Z Committing
+2026-03-14T22:58:03.4294906Z ##[error]packages/vest/bench/granular/enforce.bench.ts(11,65): error TS2349: This expression is not callable.
+2026-03-14T22:58:03.4296406Z   Type 'never' has no call signatures.
+2026-03-14T22:58:03.4299980Z ##[error]packages/vest/src/core/isolate/IsolateEach/IsolateEach.ts(12,10): error TS2352: Conversion of type 'TIsolate<{ allowReorder: true; }>' to type 'TIsolateEach' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+2026-03-14T22:58:03.4303177Z   Type 'TIsolate<{ allowReorder: true; }>' is not comparable to type '{ children: Nullable<TIsolate<IsolatePayload<Record<string, any>>>[]>; key: IsolateKey; output: any; allowReorder?: boolean | undefined; ... 6 more ...; abortController: Nullable<...>; }'.
+2026-03-14T22:58:03.4304565Z     Types of property '[IsolateKeys.Data]' are incompatible.
+2026-03-14T22:58:03.4305351Z       Property 'tests' is missing in type 'DataOnly<{ allowReorder: true; }>' but required in type 'DataOnly<void & { tests: TIsolateTest[]; }>'.
+2026-03-14T22:58:03.4992704Z husky - pre-commit hook exited with code 2 (error)
+2026-03-14T22:58:03.4997590Z Pushing to stable
+2026-03-14T22:58:03.9762813Z To https://github.com/***/vest.git
+2026-03-14T22:58:03.9763439Z    f8bce217..ee081b28  stable -> stable
+2026-03-14T22:58:03.9807571Z Deleting local latest branch (latest)
+2026-03-14T22:58:03.9821460Z error: branch 'latest' not found
+2026-03-14T22:58:03.9824008Z Failed to delete latest. Continuing...
+2026-03-14T22:58:03.9824402Z Checking out new local latest branch
+2026-03-14T22:58:03.9842423Z Switched to a new branch 'latest'
+2026-03-14T22:58:03.9847638Z Trying to update latest branch
+2026-03-14T22:58:04.1196308Z Everything up-to-date
+2026-03-14T22:58:04.1235402Z 🎬 Executing command: "sh /home/runner/work/vest/vest/vx/scripts/release/steps/create_git_tag.sh vest-utils@2.0.12"
+2026-03-14T22:58:04.1302361Z Creating Git Tag: vest-utils@2.0.12
+2026-03-14T22:58:04.1324853Z Pushing Git Tag: vest-utils@2.0.12
+2026-03-14T22:58:04.5763251Z To https://github.com/***/vest
+2026-03-14T22:58:04.5763983Z  * [new tag]           vest-utils@2.0.12 -> vest-utils@2.0.12
+2026-03-14T22:58:04.5815462Z 🎬 Executing command: "sh /home/runner/work/vest/vest/vx/scripts/release/steps/create_git_tag.sh context@4.0.12"
+2026-03-14T22:58:04.5883744Z Creating Git Tag: context@4.0.12
+2026-03-14T22:58:04.5903474Z Pushing Git Tag: context@4.0.12
+2026-03-14T22:58:04.9915008Z To https://github.com/***/vest
+2026-03-14T22:58:04.9915536Z  * [new tag]           context@4.0.12 -> context@4.0.12
+2026-03-14T22:58:04.9964109Z 🎬 Executing command: "sh /home/runner/work/vest/vest/vx/scripts/release/steps/create_git_tag.sh vestjs-runtime@2.0.12"
+2026-03-14T22:58:05.0032871Z Creating Git Tag: vestjs-runtime@2.0.12
+2026-03-14T22:58:05.0052331Z Pushing Git Tag: vestjs-runtime@2.0.12
+2026-03-14T22:58:05.4501928Z To https://github.com/***/vest
+2026-03-14T22:58:05.4502674Z  * [new tag]           vestjs-runtime@2.0.12 -> vestjs-runtime@2.0.12
+2026-03-14T22:58:05.4552748Z 🎬 Executing command: "sh /home/runner/work/vest/vest/vx/scripts/release/steps/create_git_tag.sh vast@2.0.12"
+2026-03-14T22:58:05.4621484Z Creating Git Tag: vast@2.0.12
+2026-03-14T22:58:05.4641029Z Pushing Git Tag: vast@2.0.12
+2026-03-14T22:58:05.8804046Z To https://github.com/***/vest
+2026-03-14T22:58:05.8804628Z  * [new tag]           vast@2.0.12 -> vast@2.0.12
+2026-03-14T22:58:05.8854602Z 🎬 Executing command: "sh /home/runner/work/vest/vest/vx/scripts/release/steps/create_git_tag.sh n4s@6.1.9"
+2026-03-14T22:58:05.8926245Z Creating Git Tag: n4s@6.1.9
+2026-03-14T22:58:05.8946373Z Pushing Git Tag: n4s@6.1.9
+2026-03-14T22:58:06.3524226Z To https://github.com/***/vest
+2026-03-14T22:58:06.3524887Z  * [new tag]           n4s@6.1.9 -> n4s@6.1.9
+2026-03-14T22:58:06.3589587Z 🎬 Executing command: "sh /home/runner/work/vest/vest/vx/scripts/release/steps/create_git_tag.sh vest@6.2.5"
+2026-03-14T22:58:06.3657636Z Creating Git Tag: vest@6.2.5
+2026-03-14T22:58:06.3677677Z Pushing Git Tag: vest@6.2.5
+2026-03-14T22:58:06.8188314Z To https://github.com/***/vest
+2026-03-14T22:58:06.8188762Z  * [new tag]           vest@6.2.5 -> vest@6.2.5
+2026-03-14T22:58:06.8238289Z 🎬 Executing command: "sh /home/runner/work/vest/vest/vx/scripts/release/steps/create_git_tag.sh anyone@2.0.11"
+2026-03-14T22:58:06.8306552Z Creating Git Tag: anyone@2.0.11
+2026-03-14T22:58:06.8325950Z Pushing Git Tag: anyone@2.0.11
+2026-03-14T22:58:07.2684921Z To https://github.com/***/vest
+2026-03-14T22:58:07.2685606Z  * [new tag]           anyone@2.0.11 -> anyone@2.0.11

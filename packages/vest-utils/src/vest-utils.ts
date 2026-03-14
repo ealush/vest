@@ -1,6 +1,6 @@
 export { withResolvers } from './withResolvers';
 export { default as cache } from './cache';
-export type { CacheApi } from './cache';
+export type { CacheApi, CacheConfig } from './cache';
 export type { BusType } from './bus';
 export type { TinyState } from './tinyState';
 export { isNullish, isNotNullish } from './isNullish';

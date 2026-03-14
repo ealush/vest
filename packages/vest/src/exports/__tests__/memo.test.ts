@@ -279,6 +279,71 @@ describe('memo', () => {
       expect(suite.getError('f1')).toBe('CacheKey is a, index is: 600');
     });
 
+    describe('Configuration Options', () => {
+      it('should respect custom cacheSize configuration', () => {
+        const suite = vest.create(
+          ({ cacheKey, index }: { cacheKey: string; index: number }) => {
+            memo(
+              () => {
+                vestTest(
+                  'f1',
+                  `CacheKey is ${cacheKey}, index is: ${index}`,
+                  () => false,
+                );
+              },
+              [cacheKey],
+              { cacheSize: 2 },
+            );
+          },
+        );
+
+        suite.run({ cacheKey: 'a', index: 0 });
+        expect(suite.getError('f1')).toBe('CacheKey is a, index is: 0');
+        suite.run({ cacheKey: 'b', index: 1 });
+        expect(suite.getError('f1')).toBe('CacheKey is b, index is: 1');
+        suite.run({ cacheKey: 'c', index: 2 });
+        expect(suite.getError('f1')).toBe('CacheKey is c, index is: 2');
+
+        // Cache limit breached (size was 2), 'a' should be evicted
+        suite.run({ cacheKey: 'a', index: 3 });
+        expect(suite.getError('f1')).toBe('CacheKey is a, index is: 3');
+      });
+
+      it('should invalidate cache if ttl expires', async () => {
+        let executionCount = 0;
+        const suite = vest.create(
+          ({ cacheKey, index }: { cacheKey: string; index: number }) => {
+            memo(
+              () => {
+                executionCount++;
+                vestTest(
+                  'f1',
+                  `CacheKey is ${cacheKey}, index is: ${index}`,
+                  () => false,
+                );
+              },
+              [cacheKey],
+              { ttl: 50 },
+            );
+          },
+        );
+
+        suite.run({ cacheKey: 'a', index: 0 });
+        expect(suite.getError('f1')).toBe('CacheKey is a, index is: 0');
+        expect(executionCount).toBe(1);
+
+        suite.run({ cacheKey: 'a', index: 1 });
+        expect(suite.getError('f1')).toBe('CacheKey is a, index is: 0');
+        expect(executionCount).toBe(1); // Cache hit
+
+        await wait(60);
+
+        suite.run({ cacheKey: 'a', index: 2 });
+        expect(suite.getError('f1')).toBe('CacheKey is a, index is: 2');
+        expect(executionCount).toBe(2); // Cache miss, ttl expired
+      });
+    });
+
     it('Should correctly restore async tests', async () => {
       const tests = [];
       const suite = vest.create(({ key, index }) => {

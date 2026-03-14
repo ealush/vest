@@ -7,6 +7,7 @@ import {
   makeResult,
   Result,
   unwrap,
+  CacheConfig,
 } from 'vest-utils';
 import { TIsolate, IsolateSelectors, Walker } from 'vestjs-runtime';
 
@@ -20,13 +21,20 @@ import { registerReconciler } from '../vest';
 
 const isolateType = 'Memo';
 
+export type MemoOptions = {
+  cacheSize?: number;
+  ttl?: number;
+};
+
 export function memo<Callback extends CB = CB>(
   callback: Callback,
   dependencies: unknown[],
+  options?: MemoOptions,
 ): TIsolateMemo {
   return createVestIsolate(isolateType, callback, {
     dependencies,
     cache: null,
+    options,
   });
 }
 
@@ -68,6 +76,7 @@ type TIsolateMemoWithCache = TIsolateMemo & {
 type IsolateMemoPayload = {
   dependencies: unknown[];
   cache: Nullable<CacheApi<TIsolateMemo>>;
+  options?: MemoOptions;
 };
 
 registerReconciler(IsolateMemoReconciler);
@@ -76,7 +85,9 @@ function initializeCache(
   history: TIsolateMemo,
 ): Result<TIsolateMemoWithCache, string> {
   if (isNullish(history.data.cache)) {
-    history.data.cache = cache<TIsolateMemo>(5);
+    history.data.cache = cache<TIsolateMemo>(
+      getMemoCacheConfig(history.data.options),
+    );
     history.data.cache(history.data.dependencies, () => history);
   }
 
@@ -99,4 +110,11 @@ function isCanceledTest(historicHit: TIsolateMemo): boolean {
     i => VestTest.isCanceled(i as TIsolateTest).unwrap(),
     VestTest.is,
   );
+}
+
+function getMemoCacheConfig(options?: MemoOptions): CacheConfig {
+  return {
+    maxSize: options?.cacheSize ?? 5,
+    ttl: options?.ttl,
+  };
 }

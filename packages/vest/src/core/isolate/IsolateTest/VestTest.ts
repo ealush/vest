@@ -106,6 +106,16 @@ export class VestTest {
     );
   }
 
+  static isInfo(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(VestTest.getData(test).severity === TestSeverity.Info);
+  }
+
+  static isSuccess(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(
+      VestTest.getData(test).severity === TestSeverity.Success,
+    );
+  }
+
   static isOmitted(test: TIsolateTest): Result<boolean> {
     return makeResult.Ok(VestTest.statusEquals(test, TestStatus.OMITTED));
   }
@@ -197,7 +207,9 @@ export class VestTest {
   static fail(test: TIsolateTest): void {
     VestTest.setStatus(
       test,
-      VestTest.warns(test).unwrap() ? TestStatus.WARNING : TestStatus.FAILED,
+      VestTest.getData(test).severity === TestSeverity.Error
+        ? TestStatus.FAILED
+        : TestStatus.WARNING,
     );
   }
 

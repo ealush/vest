@@ -1,4 +1,4 @@
-import { either, makeResult, Result } from 'vest-utils';
+import { makeResult, Result } from 'vest-utils';
 
 import { Severity } from '../../../suiteResult/Severity';
 import { TIsolateTest } from '../../isolate/IsolateTest/IsolateTest';
@@ -11,7 +11,16 @@ export function nonMatchingSeverityProfile(
   severity: Severity,
   testObject: TIsolateTest,
 ): Result<boolean> {
-  return makeResult.Ok(
-    either(severity === Severity.WARNINGS, VestTest.warns(testObject).unwrap()),
-  );
+  const isWarning = VestTest.warns(testObject).unwrap();
+  const isSuccess = VestTest.isSuccess(testObject).unwrap();
+  const isInfo = VestTest.isInfo(testObject).unwrap();
+
+  const matchingSeverityProfile: Record<Severity, boolean> = {
+    [Severity.ERRORS]: !(isWarning || isSuccess || isInfo),
+    [Severity.INFO]: isInfo,
+    [Severity.SUCCESSES]: isSuccess,
+    [Severity.WARNINGS]: isWarning,
+  };
+
+  return makeResult.Ok(!matchingSeverityProfile[severity]);
 }

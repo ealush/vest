@@ -31,8 +31,10 @@ export function parse<
   const testedStorage: Record<string, boolean> = {};
 
   const selectors = {
+    info: sel.hasInfo,
     invalid: sel.hasErrors,
     pending: sel.isPending,
+    success: sel.hasSuccesses,
     tested: isTested,
     untested: isUntested,
     valid: sel.isValid,
@@ -77,9 +79,11 @@ export function parse<
 }
 
 export type ParsedVestObject<F extends TFieldName> = {
+  info(fieldName?: F | string): boolean;
   valid(fieldName?: F | string): boolean;
   tested(fieldName?: F | string): boolean;
   invalid(fieldName?: F | string): boolean;
+  success(fieldName?: F | string): boolean;
   untested(fieldName?: F | string): boolean;
   warning(fieldName?: F | string): boolean;
   pending(fieldName?: F | string): boolean;

@@ -93,6 +93,8 @@ describe('Utility: classnames', () => {
     dummyTest.failingWarning('field_3');
     dummyTest.passing('field_4');
     dummyTest.failing('field_5');
+    dummyTest.passingSuccess('field_7');
+    dummyTest.passingInfo('field_8');
   });
 
   const res = suite.run();
@@ -101,6 +103,8 @@ describe('Utility: classnames', () => {
     const genClass = classnames(res, {
       invalid: 'invalid_string',
       pending: 'pending_string',
+      info: 'info_string',
+      success: 'success_string',
       tested: 'tested_string',
       untested: 'untested_string',
       valid: 'valid_string',
@@ -123,6 +127,14 @@ describe('Utility: classnames', () => {
 
       expect(genClass('field_5').split(' ').sort()).toEqual(
         'tested_string invalid_string'.split(' ').sort(),
+      );
+
+      expect(genClass('field_7').split(' ').sort()).toEqual(
+        'tested_string valid_string success_string'.split(' ').sort(),
+      );
+
+      expect(genClass('field_8').split(' ').sort()).toEqual(
+        'tested_string valid_string info_string'.split(' ').sort(),
       );
 
       expect(genClass('field_6').split(' ').sort()).toEqual(

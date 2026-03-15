@@ -43,8 +43,18 @@ export function bindSuiteSelectors<
       get().getMessage(...args),
     getWarning: (...args: Parameters<SuiteSelectors<F, G>['getWarning']>) =>
       get().getWarning(...args),
+    getInfo: (...args: Parameters<SuiteSelectors<F, G>['getInfo']>) =>
+      get().getInfo(...args),
+    getSuccesses: (...args: Parameters<SuiteSelectors<F, G>['getSuccesses']>) =>
+      get().getSuccesses(...args),
     getWarnings: (...args: Parameters<SuiteSelectors<F, G>['getWarnings']>) =>
       get().getWarnings(...args),
+    getInfoByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['getInfoByGroup']>
+    ) => get().getInfoByGroup(...args),
+    getSuccessesByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['getSuccessesByGroup']>
+    ) => get().getSuccessesByGroup(...args),
     getWarningsByGroup: (
       ...args: Parameters<SuiteSelectors<F, G>['getWarningsByGroup']>
     ) => get().getWarningsByGroup(...args),
@@ -55,6 +65,16 @@ export function bindSuiteSelectors<
     ) => get().hasErrorsByGroup(...args),
     hasWarnings: (...args: Parameters<SuiteSelectors<F, G>['hasWarnings']>) =>
       get().hasWarnings(...args),
+    hasInfo: (...args: Parameters<SuiteSelectors<F, G>['hasInfo']>) =>
+      get().hasInfo(...args),
+    hasSuccesses: (...args: Parameters<SuiteSelectors<F, G>['hasSuccesses']>) =>
+      get().hasSuccesses(...args),
+    hasInfoByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['hasInfoByGroup']>
+    ) => get().hasInfoByGroup(...args),
+    hasSuccessesByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['hasSuccessesByGroup']>
+    ) => get().hasSuccessesByGroup(...args),
     hasWarningsByGroup: (
       ...args: Parameters<SuiteSelectors<F, G>['hasWarningsByGroup']>
     ) => get().hasWarningsByGroup(...args),
@@ -80,10 +100,18 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     getErrorsByGroup,
     getMessage,
     getWarning,
+    getInfo,
+    getSuccesses,
     getWarnings,
+    getInfoByGroup,
+    getSuccessesByGroup,
     getWarningsByGroup,
     hasErrors,
     hasErrorsByGroup,
+    hasInfo,
+    hasInfoByGroup,
+    hasSuccesses,
+    hasSuccessesByGroup,
     hasWarnings,
     hasWarningsByGroup,
     isPending,
@@ -181,6 +209,22 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     ).unwrap();
   }
 
+  function hasSuccesses(fieldName?: InputFieldName<F>): boolean {
+    return hasFailures(
+      summary,
+      SeverityCount.SUCCESS_COUNT,
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
+  function hasInfo(fieldName?: InputFieldName<F>): boolean {
+    return hasFailures(
+      summary,
+      SeverityCount.INFO_COUNT,
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
   function isTested(fieldName: InputFieldName<F>): boolean {
     const safeFieldName = asFieldName(fieldName);
 
@@ -196,6 +240,30 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return hasFailuresByGroup(
       summary,
       SeverityCount.WARN_COUNT,
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
+  function hasSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean {
+    return hasFailuresByGroup(
+      summary,
+      SeverityCount.SUCCESS_COUNT,
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
+  function hasInfoByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean {
+    return hasFailuresByGroup(
+      summary,
+      SeverityCount.INFO_COUNT,
       asGroupName(groupName),
       asFieldName(fieldName),
     ).unwrap();
@@ -237,6 +305,12 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
         ? getFailure<F, G>(Severity.WARNINGS, summary, safeFieldName)
         : getFailure<F, G>(Severity.WARNINGS, summary)
     ).unwrap();
+  }
+
+  function getInfo(): FailureMessages;
+  function getInfo(fieldName: InputFieldName<F>): string[];
+  function getInfo(fieldName?: InputFieldName<F>): GetFailuresResponse {
+    return getFailures(summary, Severity.INFO, asFieldName(fieldName)).unwrap();
   }
 
   function getErrors(): FailureMessages;
@@ -284,6 +358,16 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     return getError(fieldName) || getWarning(fieldName);
   }
 
+  function getSuccesses(): FailureMessages;
+  function getSuccesses(fieldName: InputFieldName<F>): string[];
+  function getSuccesses(fieldName?: InputFieldName<F>): GetFailuresResponse {
+    return getFailures(
+      summary,
+      Severity.SUCCESSES,
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
   function getWarningsByGroup(groupName: InputGroupName<G>): FailureMessages;
   function getWarningsByGroup(
     groupName: InputGroupName<G>,
@@ -308,6 +392,40 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
       ? greaterThan(summary.tests[safeFieldName]?.pendingCount, 0)
       : greaterThan(summary.pendingCount, 0);
   }
+
+  function getSuccessesByGroup(groupName: InputGroupName<G>): FailureMessages;
+  function getSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  function getSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): GetFailuresResponse {
+    return getFailuresByGroup(
+      summary,
+      Severity.SUCCESSES,
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
+  function getInfoByGroup(groupName: InputGroupName<G>): FailureMessages;
+  function getInfoByGroup(
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  function getInfoByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): GetFailuresResponse {
+    return getFailuresByGroup(
+      summary,
+      Severity.INFO,
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
+  }
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
@@ -322,12 +440,18 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
     fieldName?: InputFieldName<F>,
   ): SummaryFailure<F, G> | string | undefined;
   getMessage(fieldName: InputFieldName<F>): string | undefined;
+  getInfo(): FailureMessages;
+  getInfo(fieldName: InputFieldName<F>): string[];
+  getInfo(fieldName?: InputFieldName<F>): string[] | FailureMessages;
   getErrors(): FailureMessages;
   getErrors(fieldName: InputFieldName<F>): string[];
   getErrors(fieldName?: InputFieldName<F>): string[] | FailureMessages;
   getWarnings(): FailureMessages;
   getWarnings(fieldName: InputFieldName<F>): string[];
   getWarnings(fieldName?: InputFieldName<F>): string[] | FailureMessages;
+  getSuccesses(): FailureMessages;
+  getSuccesses(fieldName: InputFieldName<F>): string[];
+  getSuccesses(fieldName?: InputFieldName<F>): string[] | FailureMessages;
   getErrorsByGroup(groupName: InputGroupName<G>): FailureMessages;
   getErrorsByGroup(
     groupName: InputGroupName<G>,
@@ -346,13 +470,41 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
     groupName: InputGroupName<G>,
     fieldName?: InputFieldName<F>,
   ): string[] | FailureMessages;
+  getSuccessesByGroup(groupName: InputGroupName<G>): FailureMessages;
+  getSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  getSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): string[] | FailureMessages;
+  getInfoByGroup(groupName: InputGroupName<G>): FailureMessages;
+  getInfoByGroup(
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  getInfoByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): string[] | FailureMessages;
   hasErrors(fieldName?: InputFieldName<F>): boolean;
   hasWarnings(fieldName?: InputFieldName<F>): boolean;
+  hasSuccesses(fieldName?: InputFieldName<F>): boolean;
+  hasInfo(fieldName?: InputFieldName<F>): boolean;
   hasErrorsByGroup(
     groupName: InputGroupName<G>,
     fieldName?: InputFieldName<F>,
   ): boolean;
   hasWarningsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean;
+  hasSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean;
+  hasInfoByGroup(
     groupName: InputGroupName<G>,
     fieldName?: InputFieldName<F>,
   ): boolean;

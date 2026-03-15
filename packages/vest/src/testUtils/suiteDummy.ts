@@ -17,6 +17,18 @@ export function warning(failingFields?: OneOrMoreOf<string>) {
   });
 }
 
+export function success(fields?: OneOrMoreOf<string>) {
+  return createSuiteRunResult(fields, fieldName => {
+    dummyTest.passingSuccess(fieldName);
+  });
+}
+
+export function info(fields?: OneOrMoreOf<string>) {
+  return createSuiteRunResult(fields, fieldName => {
+    dummyTest.passingInfo(fieldName);
+  });
+}
+
 export function failingAsync(failingFields?: OneOrMoreOf<string>) {
   return createSuiteRunResult(failingFields, fieldName => {
     dummyTest.failingAsync(fieldName);

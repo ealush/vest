@@ -466,6 +466,46 @@ describe('parser.parse', () => {
     });
   });
 
+  describe('parse().success', () => {
+    it('Should return true when the suite has successes', () => {
+      expect(parse(suiteDummy.success()).success()).toBe(true);
+    });
+
+    it('Should return false when the suite has no successes', () => {
+      expect(parse(suiteDummy.failing()).success()).toBe(false);
+    });
+
+    describe('serialized result', () => {
+      it('Should return true when the suite has successes', () => {
+        expect(parse(ser(suiteDummy.success())).success()).toBe(true);
+      });
+
+      it('Should return false when the suite has no successes', () => {
+        expect(parse(ser(suiteDummy.failing())).success()).toBe(false);
+      });
+    });
+  });
+
+  describe('parse().info', () => {
+    it('Should return true when the suite has info', () => {
+      expect(parse(suiteDummy.info()).info()).toBe(true);
+    });
+
+    it('Should return false when the suite has no info', () => {
+      expect(parse(suiteDummy.failing()).info()).toBe(false);
+    });
+
+    describe('serialized result', () => {
+      it('Should return true when the suite has info', () => {
+        expect(parse(ser(suiteDummy.info())).info()).toBe(true);
+      });
+
+      it('Should return false when the suite has no info', () => {
+        expect(parse(ser(suiteDummy.failing())).info()).toBe(false);
+      });
+    });
+  });
+
   describe('parse().pending', () => {
     it('Should return true when the suite has pending tests', () => {
       const suite = vest.create(() => {

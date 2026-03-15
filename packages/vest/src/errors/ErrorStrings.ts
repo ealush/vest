@@ -6,6 +6,11 @@ export enum ErrorStrings {
   PARSER_EXPECT_RESULT_OBJECT = "Vest parser: expected argument at position 0 to be Vest's result object.",
   WARN_MUST_BE_CALLED_FROM_TEST = 'Warn must be called from within the body of a test function',
   USE_WARN_MUST_BE_CALLED_FROM_TEST = 'useWarn must be called from within the body of a test function',
+  SUCCESS_MUST_BE_CALLED_FROM_TEST = 'success must be called from within the body of a test function',
+  USE_SUCCESS_MUST_BE_CALLED_FROM_TEST = 'useSuccess must be called from within the body of a test function',
+  INFO_MUST_BE_CALLED_FROM_TEST = 'info must be called from within the body of a test function',
+  USE_INFO_MUST_BE_CALLED_FROM_TEST = 'useInfo must be called from within the body of a test function',
+  USE_SEVERITY_MUST_BE_CALLED_FROM_TEST = 'useSeverity must be called from within the body of a test function',
   EACH_CALLBACK_MUST_BE_A_FUNCTION = 'Each must be called with a function',
   INVALID_PARAM_PASSED_TO_FUNCTION = 'Incompatible params passed to {fn_name} function. "{param}" must be of type {expected}',
   TESTS_CALLED_IN_DIFFERENT_ORDER = `Vest Critical Error: Tests called in different order than previous run.

@@ -41,22 +41,33 @@ export type CustomMatcherArgs<K extends keyof n4s.EnforceMatchers> = DropFirst<
   Parameters<Extract<n4s.EnforceMatchers[K], CB>>
 >;
 
+type IsPromiseLike<T> = T extends PromiseLike<any> ? true : false;
+type NextAsyncMode<
+  CurrentAsync extends boolean,
+  RuleReturn,
+> = CurrentAsync extends true ? true : IsPromiseLike<RuleReturn>;
+
 export type EnforceCustomMatcher<F extends CB> = (
   ...args: CustomMatcherArgs<F extends keyof n4s.EnforceMatchers ? F : never>
-) => boolean | RuleRunReturn<any>;
+) => boolean | RuleRunReturn<any> | Promise<boolean | RuleRunReturn<any>>;
 
 /**
  * Maps custom rules to eager API signatures (drops the value parameter).
  * Only includes rules where T matches the first parameter type.
  */
-export type TCustomRules<T, A, S> = {
+export type TCustomRules<T, A, S, AsyncMode extends boolean> = {
   [K in keyof n4s.EnforceMatchers as T extends FirstParam<
     n4s.EnforceMatchers[K]
   >
     ? K
     : never]: (
     ...args: CustomMatcherArgs<K>
-  ) => import('./eager').EnforceEagerReturn<T, A, S>;
+  ) => import('./eager').EnforceEagerReturn<
+    T,
+    A,
+    S,
+    NextAsyncMode<AsyncMode, ReturnType<Extract<n4s.EnforceMatchers[K], CB>>>
+  >;
 };
 export type WidenFirstParam<F, T> = F extends (
   arg: any,

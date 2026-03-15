@@ -1,4 +1,4 @@
-import type { Maybe } from 'vest-utils';
+import { type Maybe } from 'vest-utils';
 
 import { allRules, schemaRulesMap } from './eager/allRules';
 import type { EnforceEagerReturn } from './eager/eagerTypes';
@@ -9,6 +9,8 @@ export { extendEager };
 export type { EnforceEagerReturn } from './eager/eagerTypes';
 
 const MESSAGE_KEY = 'message';
+const THEN_KEY = 'then';
+const CATCH_KEY = 'catch';
 
 type EagerReturn<T> = EnforceEagerReturn<
   T,
@@ -62,6 +64,7 @@ type EagerReturn<T> = EnforceEagerReturn<
  */
 export function enforceEager<T>(value: T): EagerReturn<T> {
   let customMessage: Maybe<string> = undefined;
+  let pendingPromise: Promise<void> | null = null;
 
   const setMessage = (msg?: string) => {
     customMessage = msg;
@@ -70,19 +73,47 @@ export function enforceEager<T>(value: T): EagerReturn<T> {
 
   const clearMessage = () => setMessage(undefined);
 
+  const ensurePendingPromise = () => {
+    if (!pendingPromise) {
+      pendingPromise = Promise.resolve();
+    }
+
+    return pendingPromise;
+  };
+
+  const getReservedProperty = (key: string) => {
+    switch (key) {
+      case MESSAGE_KEY:
+        return setMessage;
+      case THEN_KEY:
+        return ensurePendingPromise().then.bind(ensurePendingPromise());
+      case CATCH_KEY:
+        return ensurePendingPromise().catch.bind(ensurePendingPromise());
+      default:
+        return undefined;
+    }
+  };
+
   const proxy: EagerReturn<T> = new Proxy(
     {},
     {
       get(_target: any, key: string) {
-        if (key === MESSAGE_KEY) return setMessage;
+        const reservedProperty = getReservedProperty(key);
+        if (reservedProperty) {
+          return reservedProperty;
+        }
 
         const rule = getRule(key) ?? getSchemaRule(key);
         if (rule) {
           return createRuleCall({
             clearMessage,
             customMessage,
+            getPendingPromise: () => pendingPromise,
             rule,
             ruleName: key,
+            setPendingPromise: nextPromise => {
+              pendingPromise = nextPromise;
+            },
             target: proxy,
             value,
           });
@@ -92,6 +123,8 @@ export function enforceEager<T>(value: T): EagerReturn<T> {
       },
     },
   );
+
+  proxy.pass = true;
 
   return proxy;
 }

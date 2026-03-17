@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import wait from 'wait';
 
 import { TFieldName } from '../suiteResult/SuiteResultTypes';
-import { info, success, test as vestTest, warn } from '../vest';
+import { success, test as vestTest, warn } from '../vest';
 
 /**
  * Generates dummy vest tests.
@@ -59,18 +59,6 @@ const createPassingSuccess = (
     message,
     vi.fn(() => {
       success();
-    }),
-  );
-
-const createPassingInfo = (
-  name = faker.lorem.word(),
-  message = faker.lorem.words(),
-) =>
-  vestTest(
-    name as TFieldName,
-    message,
-    vi.fn(() => {
-      info();
     }),
   );
 
@@ -133,7 +121,6 @@ const testDummy = () => ({
   failingWarningAsync: createFailingWarningAsync,
   passing: createPassing,
   passingAsync: createPassingAsync,
-  passingInfo: createPassingInfo,
   passingSuccess: createPassingSuccess,
   passingWarning: createPassingWarning,
   passingWarningAsync: createPassingWarningAsync,

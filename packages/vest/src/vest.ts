@@ -4,12 +4,10 @@ import { registerReconciler } from './core/isolate/VestReconciler';
 import { test } from './core/test/test';
 import { skip, only } from './hooks/focused/focused';
 import { include } from './hooks/include';
-import { info } from './hooks/info';
 import { Modes } from './hooks/optional/Modes';
 import { mode } from './hooks/optional/mode';
 import { optional } from './hooks/optional/optional';
 import { success } from './hooks/success';
-import { useInfo } from './hooks/useInfo';
 import { useSeverity } from './hooks/useSeverity';
 import { useSuccess } from './hooks/useSuccess';
 import { useWarn } from './hooks/useWarn';
@@ -36,11 +34,9 @@ export {
   only,
   warn,
   success,
-  info,
   useWarn,
   useSeverity,
   useSuccess,
-  useInfo,
   include,
   suiteSelectors,
   each,

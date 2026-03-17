@@ -8,8 +8,7 @@ export enum ErrorStrings {
   USE_WARN_MUST_BE_CALLED_FROM_TEST = 'useWarn must be called from within the body of a test function',
   SUCCESS_MUST_BE_CALLED_FROM_TEST = 'success must be called from within the body of a test function',
   USE_SUCCESS_MUST_BE_CALLED_FROM_TEST = 'useSuccess must be called from within the body of a test function',
-  INFO_MUST_BE_CALLED_FROM_TEST = 'info must be called from within the body of a test function',
-  USE_INFO_MUST_BE_CALLED_FROM_TEST = 'useInfo must be called from within the body of a test function',
+
   USE_SEVERITY_MUST_BE_CALLED_FROM_TEST = 'useSeverity must be called from within the body of a test function',
   EACH_CALLBACK_MUST_BE_A_FUNCTION = 'Each must be called with a function',
   INVALID_PARAM_PASSED_TO_FUNCTION = 'Incompatible params passed to {fn_name} function. "{param}" must be of type {expected}',

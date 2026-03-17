@@ -23,12 +23,6 @@ export function success(fields?: OneOrMoreOf<string>) {
   });
 }
 
-export function info(fields?: OneOrMoreOf<string>) {
-  return createSuiteRunResult(fields, fieldName => {
-    dummyTest.passingInfo(fieldName);
-  });
-}
-
 export function failingAsync(failingFields?: OneOrMoreOf<string>) {
   return createSuiteRunResult(failingFields, fieldName => {
     dummyTest.failingAsync(fieldName);

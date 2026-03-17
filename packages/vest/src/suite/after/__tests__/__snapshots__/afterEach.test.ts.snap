@@ -7,8 +7,6 @@ exports[`suite resolve > awaiting suite > should resolve when all tests finish a
     "errors": [
       "field_statement_1",
     ],
-    "info": [],
-    "infoCount": 0,
     "pendingCount": 0,
     "successCount": 0,
     "successes": [],
@@ -20,8 +18,6 @@ exports[`suite resolve > awaiting suite > should resolve when all tests finish a
   "field_2": SummaryBase {
     "errorCount": 0,
     "errors": [],
-    "info": [],
-    "infoCount": 0,
     "pendingCount": 0,
     "successCount": 0,
     "successes": [],
@@ -35,8 +31,6 @@ exports[`suite resolve > awaiting suite > should resolve when all tests finish a
     "errors": [
       "field_statement_3",
     ],
-    "info": [],
-    "infoCount": 0,
     "pendingCount": 0,
     "successCount": 0,
     "successes": [],
@@ -55,8 +49,6 @@ exports[`suite resolve > should immediately return all sync fields 1`] = `
     "errors": [
       "field_statement_1",
     ],
-    "info": [],
-    "infoCount": 0,
     "pendingCount": 0,
     "successCount": 0,
     "successes": [],
@@ -70,8 +62,6 @@ exports[`suite resolve > should immediately return all sync fields 1`] = `
     "errors": [
       "field_statement_2",
     ],
-    "info": [],
-    "infoCount": 0,
     "pendingCount": 0,
     "successCount": 0,
     "successes": [],
@@ -85,8 +75,6 @@ exports[`suite resolve > should immediately return all sync fields 1`] = `
     "errors": [
       "field_statement_3",
     ],
-    "info": [],
-    "infoCount": 0,
     "pendingCount": 0,
     "successCount": 0,
     "successes": [],

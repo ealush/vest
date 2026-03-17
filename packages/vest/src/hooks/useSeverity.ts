@@ -11,8 +11,8 @@ export function useSeverity() {
   invariant(currentTest, ErrorStrings.USE_SEVERITY_MUST_BE_CALLED_FROM_TEST);
 
   return {
-    info(): void {
-      VestTest.setSeverity(currentTest, TestSeverity.Info);
+    error(): void {
+      VestTest.setSeverity(currentTest, TestSeverity.Error);
     },
     success(): void {
       VestTest.setSeverity(currentTest, TestSeverity.Success);

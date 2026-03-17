@@ -486,26 +486,6 @@ describe('parser.parse', () => {
     });
   });
 
-  describe('parse().info', () => {
-    it('Should return true when the suite has info', () => {
-      expect(parse(suiteDummy.info()).info()).toBe(true);
-    });
-
-    it('Should return false when the suite has no info', () => {
-      expect(parse(suiteDummy.failing()).info()).toBe(false);
-    });
-
-    describe('serialized result', () => {
-      it('Should return true when the suite has info', () => {
-        expect(parse(ser(suiteDummy.info())).info()).toBe(true);
-      });
-
-      it('Should return false when the suite has no info', () => {
-        expect(parse(ser(suiteDummy.failing())).info()).toBe(false);
-      });
-    });
-  });
-
   describe('parse().pending', () => {
     it('Should return true when the suite has pending tests', () => {
       const suite = vest.create(() => {

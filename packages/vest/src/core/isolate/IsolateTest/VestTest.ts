@@ -106,10 +106,6 @@ export class VestTest {
     );
   }
 
-  static isInfo(test: TIsolateTest): Result<boolean> {
-    return makeResult.Ok(VestTest.getData(test).severity === TestSeverity.Info);
-  }
-
   static isSuccess(test: TIsolateTest): Result<boolean> {
     return makeResult.Ok(
       VestTest.getData(test).severity === TestSeverity.Success,

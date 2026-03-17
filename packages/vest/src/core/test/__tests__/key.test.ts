@@ -112,8 +112,6 @@ describe('key', () => {
           SummaryBase {
             "errorCount": 1,
             "errors": [],
-            "info": [],
-            "infoCount": 0,
             "pendingCount": 0,
             "successCount": 0,
             "successes": [],
@@ -136,8 +134,6 @@ describe('key', () => {
           {
             "errorCount": 0,
             "errors": [],
-            "info": [],
-            "infoCount": 0,
             "pendingCount": 0,
             "successCount": 0,
             "successes": [],
@@ -154,8 +150,6 @@ describe('key', () => {
             "field1": SummaryBase {
               "errorCount": 0,
               "errors": [],
-              "info": [],
-              "infoCount": 0,
               "pendingCount": 0,
               "successCount": 0,
               "successes": [],
@@ -167,8 +161,6 @@ describe('key', () => {
             "field2": SummaryBase {
               "errorCount": 0,
               "errors": [],
-              "info": [],
-              "infoCount": 0,
               "pendingCount": 0,
               "successCount": 0,
               "successes": [],
@@ -180,8 +172,6 @@ describe('key', () => {
             "field3": SummaryBase {
               "errorCount": 0,
               "errors": [],
-              "info": [],
-              "infoCount": 0,
               "pendingCount": 0,
               "successCount": 0,
               "successes": [],
@@ -193,8 +183,6 @@ describe('key', () => {
             "reordered": SummaryBase {
               "errorCount": 0,
               "errors": [],
-              "info": [],
-              "infoCount": 0,
               "pendingCount": 0,
               "successCount": 0,
               "successes": [],

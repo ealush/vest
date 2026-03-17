@@ -13,11 +13,9 @@ export function nonMatchingSeverityProfile(
 ): Result<boolean> {
   const isWarning = VestTest.warns(testObject).unwrap();
   const isSuccess = VestTest.isSuccess(testObject).unwrap();
-  const isInfo = VestTest.isInfo(testObject).unwrap();
 
   const matchingSeverityProfile: Record<Severity, boolean> = {
-    [Severity.ERRORS]: !(isWarning || isSuccess || isInfo),
-    [Severity.INFO]: isInfo,
+    [Severity.ERRORS]: !(isWarning || isSuccess),
     [Severity.SUCCESSES]: isSuccess,
     [Severity.WARNINGS]: isWarning,
   };

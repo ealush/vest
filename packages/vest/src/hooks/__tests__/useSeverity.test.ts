@@ -8,7 +8,7 @@ import * as vest from '../../vest';
 const { create, test, useSeverity } = vest;
 
 describe('useSeverity hook', () => {
-  it('should expose warn, success and info severity setters', () => {
+  it('should expose error, warn, success and info severity setters', () => {
     let t;
 
     create(() => {
@@ -20,6 +20,22 @@ describe('useSeverity hook', () => {
     }).run();
 
     expect(VestTest.isSuccess(VestTest.cast(t).unwrap()).unwrap()).toBe(true);
+  });
+
+  it('should allow resetting severity back to error', () => {
+    let t;
+
+    create(() => {
+      t = test(faker.lorem.word(), faker.lorem.sentence(), () => {
+        const { success, error } = useSeverity();
+        success();
+        error();
+      });
+    }).run();
+
+    const castTest = VestTest.cast(t).unwrap();
+    expect(VestTest.isSuccess(castTest).unwrap()).toBe(false);
+    expect(VestTest.getData(castTest).severity).toBe('error');
   });
 
   it('should throw when called outside a test body', () => {

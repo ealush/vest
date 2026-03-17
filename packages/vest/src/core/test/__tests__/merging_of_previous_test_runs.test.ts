@@ -129,8 +129,6 @@ describe('Merging of previous test runs', () => {
             "f1": SummaryBase {
               "errorCount": 1,
               "errors": [],
-              "info": [],
-              "infoCount": 0,
               "pendingCount": 0,
               "successCount": 0,
               "successes": [],
@@ -142,8 +140,6 @@ describe('Merging of previous test runs', () => {
             "f2": SummaryBase {
               "errorCount": 1,
               "errors": [],
-              "info": [],
-              "infoCount": 0,
               "pendingCount": 0,
               "successCount": 0,
               "successes": [],
@@ -155,8 +151,6 @@ describe('Merging of previous test runs', () => {
             "f3": SummaryBase {
               "errorCount": 1,
               "errors": [],
-              "info": [],
-              "infoCount": 0,
               "pendingCount": 0,
               "successCount": 0,
               "successes": [],
@@ -178,8 +172,6 @@ describe('Merging of previous test runs', () => {
             "f1": SummaryBase {
               "errorCount": 1,
               "errors": [],
-              "info": [],
-              "infoCount": 0,
               "pendingCount": 0,
               "successCount": 0,
               "successes": [],
@@ -191,8 +183,6 @@ describe('Merging of previous test runs', () => {
             "f3": SummaryBase {
               "errorCount": 1,
               "errors": [],
-              "info": [],
-              "infoCount": 0,
               "pendingCount": 0,
               "successCount": 0,
               "successes": [],
@@ -242,8 +232,6 @@ describe('Merging of previous test runs', () => {
               "f1": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
-                "info": [],
-                "infoCount": 0,
                 "pendingCount": 0,
                 "successCount": 0,
                 "successes": [],
@@ -255,8 +243,6 @@ describe('Merging of previous test runs', () => {
               "f2": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
-                "info": [],
-                "infoCount": 0,
                 "pendingCount": 0,
                 "successCount": 0,
                 "successes": [],
@@ -268,8 +254,6 @@ describe('Merging of previous test runs', () => {
               "f3": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
-                "info": [],
-                "infoCount": 0,
                 "pendingCount": 0,
                 "successCount": 0,
                 "successes": [],
@@ -281,8 +265,6 @@ describe('Merging of previous test runs', () => {
               "f4": {
                 "errorCount": 2,
                 "errors": [],
-                "info": [],
-                "infoCount": 0,
                 "pendingCount": 0,
                 "successCount": 0,
                 "successes": [],
@@ -294,8 +276,6 @@ describe('Merging of previous test runs', () => {
               "f5": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
-                "info": [],
-                "infoCount": 0,
                 "pendingCount": 0,
                 "successCount": 0,
                 "successes": [],
@@ -307,8 +287,6 @@ describe('Merging of previous test runs', () => {
               "f6": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
-                "info": [],
-                "infoCount": 0,
                 "pendingCount": 0,
                 "successCount": 0,
                 "successes": [],
@@ -320,8 +298,6 @@ describe('Merging of previous test runs', () => {
               "f7": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
-                "info": [],
-                "infoCount": 0,
                 "pendingCount": 0,
                 "successCount": 0,
                 "successes": [],
@@ -350,8 +326,6 @@ describe('Merging of previous test runs', () => {
               "f1": SummaryBase {
                 "errorCount": 1,
                 "errors": [],
-                "info": [],
-                "infoCount": 0,
                 "pendingCount": 0,
                 "successCount": 0,
                 "successes": [],
@@ -363,8 +337,6 @@ describe('Merging of previous test runs', () => {
               "f4": {
                 "errorCount": 2,
                 "errors": [],
-                "info": [],
-                "infoCount": 0,
                 "pendingCount": 0,
                 "successCount": 0,
                 "successes": [],

@@ -12,7 +12,6 @@ export class SummaryBase {
   public errorCount = 0;
   public warnCount = 0;
   public successCount = 0;
-  public infoCount = 0;
   public testCount = 0;
   public pendingCount = 0;
 }
@@ -26,7 +25,6 @@ export class SuiteSummary<
   public [Severity.ERRORS]: SummaryFailure<F, G>[] = [];
   public [Severity.WARNINGS]: SummaryFailure<F, G>[] = [];
   public [Severity.SUCCESSES]: SummaryFailure<F, G>[] = [];
-  public [Severity.INFO]: SummaryFailure<F, G>[] = [];
   public groups: Groups<G, F> = {} as Groups<G, F>;
   public tests: Tests<F> = {} as Tests<F>;
   public run!: {
@@ -81,7 +79,6 @@ export type CommonSummaryProperties = SummaryBase & {
   errors: string[];
   warnings: string[];
   successes: string[];
-  info: string[];
 };
 
 export type GetFailuresResponse = FailureMessages | string[];

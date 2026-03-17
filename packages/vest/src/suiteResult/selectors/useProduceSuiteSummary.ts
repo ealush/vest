@@ -210,9 +210,6 @@ function updateFailures(
 function getSummarySeverity(testObject: TIsolateTest): Severity | null {
   const severityMatches: Record<Severity, boolean> = {
     [Severity.ERRORS]: VestTest.isFailing(testObject).unwrap(),
-    [Severity.INFO]:
-      VestTest.isPassing(testObject).unwrap() &&
-      VestTest.isInfo(testObject).unwrap(),
     [Severity.SUCCESSES]:
       VestTest.isPassing(testObject).unwrap() &&
       VestTest.isSuccess(testObject).unwrap(),
@@ -224,7 +221,6 @@ function getSummarySeverity(testObject: TIsolateTest): Severity | null {
   const severityOrder = [
     Severity.WARNINGS,
     Severity.SUCCESSES,
-    Severity.INFO,
     Severity.ERRORS,
   ];
 
@@ -235,8 +231,7 @@ function isErrorFailure(testObject: TIsolateTest): boolean {
   return (
     VestTest.isFailing(testObject).unwrap() &&
     !VestTest.warns(testObject).unwrap() &&
-    !VestTest.isSuccess(testObject).unwrap() &&
-    !VestTest.isInfo(testObject).unwrap()
+    !VestTest.isSuccess(testObject).unwrap()
   );
 }
 
@@ -255,7 +250,6 @@ function incrementFailures<S extends CommonSummaryProperties>(
 function baseTestStats<S extends CommonSummaryProperties>(): S {
   return assign(new SummaryBase(), {
     errors: [],
-    info: [],
     successes: [],
     warnings: [],
   }) as unknown as S;

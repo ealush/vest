@@ -11,13 +11,10 @@ describe('VestTest Severities', () => {
     expect(VestTest.getData(test).severity).toBe(TestSeverity.Error);
   });
 
-  it('should allow setting severity to success or info, overwriting previous values', () => {
+  it('should allow setting severity to success, overwriting previous values', () => {
     const test = mockIsolateTest({ fieldName: 'field1' });
 
     VestTest.setSeverity(test, TestSeverity.Success);
     expect(VestTest.getData(test).severity).toBe(TestSeverity.Success);
-
-    VestTest.setSeverity(test, TestSeverity.Info);
-    expect(VestTest.getData(test).severity).toBe(TestSeverity.Info);
   });
 });

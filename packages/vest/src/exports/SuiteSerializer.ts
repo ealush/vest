@@ -9,6 +9,7 @@ import {
   TGroupName,
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
+import { TestSeverity } from '../suiteResult/Severity';
 
 type Dumpable = {
   dump: CB<TIsolateSuite>;
@@ -80,7 +81,8 @@ function strip<T>(node: T, visited: WeakMap<object, any>): T {
   const root = node as Record<string, any>;
   const shouldKeepMessage =
     root.testStatus === TestStatus.FAILED ||
-    root.testStatus === TestStatus.WARNING;
+    root.testStatus === TestStatus.WARNING ||
+    root.severity === TestSeverity.Success;
   const clonedNode: Record<string, any> = {};
   visited.set(node, clonedNode);
 
@@ -124,7 +126,6 @@ const DisallowedKeys = new Set([
   'match',
   'matchAll',
   'output',
-  'severity',
   'tests',
 ]);
 

@@ -6,7 +6,7 @@ export enum ErrorStrings {
   PARSER_EXPECT_RESULT_OBJECT = "Vest parser: expected argument at position 0 to be Vest's result object.",
   WARN_MUST_BE_CALLED_FROM_TEST = 'Warn must be called from within the body of a test function',
   USE_WARN_MUST_BE_CALLED_FROM_TEST = 'useWarn must be called from within the body of a test function',
-  SUCCESS_MUST_BE_CALLED_FROM_TEST = 'success must be called from within the body of a test function',
+  SUCCESS_MUST_BE_CALLED_FROM_TEST = 'Success must be called from within the body of a test function',
   USE_SUCCESS_MUST_BE_CALLED_FROM_TEST = 'useSuccess must be called from within the body of a test function',
 
   USE_SEVERITY_MUST_BE_CALLED_FROM_TEST = 'useSeverity must be called from within the body of a test function',

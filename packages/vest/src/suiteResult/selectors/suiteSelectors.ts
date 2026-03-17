@@ -12,6 +12,7 @@ import matchingFieldName from '../../core/test/helpers/matchingFieldName';
 import { Severity, SeverityCount } from '../Severity';
 import {
   FailureMessages,
+  FailureMessages as SeverityMessages,
   GetFailuresResponse,
   SuiteResult,
   SuiteSummary,
@@ -393,9 +394,9 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   getWarnings(): FailureMessages;
   getWarnings(fieldName: InputFieldName<F>): string[];
   getWarnings(fieldName?: InputFieldName<F>): string[] | FailureMessages;
-  getSuccesses(): FailureMessages;
+  getSuccesses(): SeverityMessages;
   getSuccesses(fieldName: InputFieldName<F>): string[];
-  getSuccesses(fieldName?: InputFieldName<F>): string[] | FailureMessages;
+  getSuccesses(fieldName?: InputFieldName<F>): string[] | SeverityMessages;
   getErrorsByGroup(groupName: InputGroupName<G>): FailureMessages;
   getErrorsByGroup(
     groupName: InputGroupName<G>,
@@ -414,7 +415,7 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
     groupName: InputGroupName<G>,
     fieldName?: InputFieldName<F>,
   ): string[] | FailureMessages;
-  getSuccessesByGroup(groupName: InputGroupName<G>): FailureMessages;
+  getSuccessesByGroup(groupName: InputGroupName<G>): SeverityMessages;
   getSuccessesByGroup(
     groupName: InputGroupName<G>,
     fieldName: InputFieldName<F>,
@@ -422,7 +423,7 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   getSuccessesByGroup(
     groupName: InputGroupName<G>,
     fieldName?: InputFieldName<F>,
-  ): string[] | FailureMessages;
+  ): string[] | SeverityMessages;
 
   hasErrors(fieldName?: InputFieldName<F>): boolean;
   hasWarnings(fieldName?: InputFieldName<F>): boolean;

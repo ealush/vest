@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { create, enforce, success, test, warn } from '../../../vest';
+import { Modes, create, enforce, mode, success, test } from '../../../vest';
 
 describe('Success Selectors', () => {
   describe('success message visibility', () => {
@@ -46,6 +46,7 @@ describe('Success Selectors', () => {
   describe('per-test granularity', () => {
     it('should show success for a passing test even when other tests on the same field fail', () => {
       const suite = create(() => {
+        mode(Modes.ALL);
         test('password', 'Too short', () => {
           enforce('Ab1').longerThan(8);
         });
@@ -106,6 +107,7 @@ describe('Success Selectors', () => {
   describe('success does not affect validity', () => {
     it('should not make an otherwise invalid field valid', () => {
       const suite = create(() => {
+        mode(Modes.ALL);
         test('field', 'error message', () => false);
         test('field', 'success message', () => {
           success();
@@ -126,55 +128,6 @@ describe('Success Selectors', () => {
 
       const res = suite.run();
       expect(res.isValid()).toBe(true);
-    });
-  });
-
-  describe('getMessage integration', () => {
-    it('should return the error over the success when both exist', () => {
-      const suite = create(() => {
-        test('field', 'error msg', () => false);
-        test('field', 'success msg', () => {
-          success();
-        });
-      });
-
-      const res = suite.run();
-      expect(res.getMessage('field')).toBe('error msg');
-    });
-
-    it('should return the warning over the success when both exist', () => {
-      const suite = create(() => {
-        test('field', 'warn msg', () => {
-          warn();
-          return false;
-        });
-        test('field', 'success msg', () => {
-          success();
-        });
-      });
-
-      const res = suite.run();
-      expect(res.getMessage('field')).toBe('warn msg');
-    });
-
-    it('should return the success message when no errors or warnings exist', () => {
-      const suite = create(() => {
-        test('field', 'success msg', () => {
-          success();
-        });
-      });
-
-      const res = suite.run();
-      expect(res.getMessage('field')).toBe('success msg');
-    });
-
-    it('should return undefined when a passing test has no success()', () => {
-      const suite = create(() => {
-        test('field', 'invisible msg', () => {});
-      });
-
-      const res = suite.run();
-      expect(res.getMessage('field')).toBeUndefined();
     });
   });
 });

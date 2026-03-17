@@ -8,7 +8,7 @@ import * as vest from '../../vest';
 const { create, test, useSeverity } = vest;
 
 describe('useSeverity hook', () => {
-  it('should expose error, warn, success and info severity setters', () => {
+  it('should expose error, warn and success severity setters', () => {
     let t;
 
     create(() => {

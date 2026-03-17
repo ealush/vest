@@ -62,6 +62,18 @@ const createPassingSuccess = (
     }),
   );
 
+const createPassingSuccessAsync = (
+  name = faker.lorem.word(),
+  message = faker.lorem.words(),
+) =>
+  vestTest(
+    name as TFieldName,
+    message,
+    vi.fn(async () => {
+      success();
+    }),
+  );
+
 const createFailingAsync = (
   name = faker.lorem.word(),
   { message = faker.lorem.words(), time = 0 } = {},
@@ -122,6 +134,7 @@ const testDummy = () => ({
   passing: createPassing,
   passingAsync: createPassingAsync,
   passingSuccess: createPassingSuccess,
+  passingSuccessAsync: createPassingSuccessAsync,
   passingWarning: createPassingWarning,
   passingWarningAsync: createPassingWarningAsync,
 });

@@ -42,10 +42,12 @@ keywords:
     isValid,
     isValidByGroup,
     classnames,
-    memo,
-    SuiteSerializer,
-    runStatic,
-    validate,
+    success,
+    useSuccess,
+    hasSuccesses,
+    getSuccesses,
+    hasSuccessesByGroup,
+    getSuccessesByGroup,
     subscribe,
   ]
 ---
@@ -209,6 +211,18 @@ Returns a setter function that marks the current test as warning severity, inclu
 
 - [Read more about `useWarn`](./writing_tests/warn_only_tests.md)
 
+#### `success()`
+
+Sets the test's severity to success in the synchronous part of a test.
+
+- [Read more about `success`](./writing_tests/success_tests.md)
+
+#### `useSuccess()`
+
+Returns a setter function that marks the current test as success severity, including async flows after an `await`.
+
+- [Read more about `useSuccess`](./writing_tests/success_tests.md)
+
 #### `only(fieldName)`
 
 Makes Vest only run the provided field names.
@@ -271,12 +285,16 @@ After running your suite, the results object is returned. It has the following f
 
 - `hasErrors(fieldName?)`: Returns true if the suite or the provided field has errors.
 - `hasWarnings(fieldName?)`: Returns true if the suite or the provided field has warnings.
+- `hasSuccesses(fieldName?)`: Returns true if the suite or the provided field has success messages.
 - `getErrors(fieldName?)`: Returns an object with errors in the suite, or an array of objects for a specific field.
 - `getWarnings(fieldName?)`: Returns an object with warnings in the suite, or an array of objects for a specific field.
+- `getSuccesses(fieldName?)`: Returns an object with successes in the suite, or an array of messages for a specific field.
 - `hasErrorsByGroup(groupName)`: Returns true if the provided group has errors.
 - `hasWarningByGroup(groupName)`: Returns true if the provided group has warnings.
+- `hasSuccessesByGroup(groupName)`: Returns true if the provided group has successes.
 - `getErrorsByGroup(groupName)`: Returns an object with errors in the provided group.
 - `getWarningsByGroup(groupName)`: Returns an object with warnings in the provided group.
+- `getSuccessesByGroup(groupName)`: Returns an object with successes in the provided group.
 - `isPending(fieldName?)`: Returns true if the suite has pending async tests.
 - `isTested(fieldName)`: Returns true if the provided field has been tested.
 - `isValid(fieldName?)`: Returns true if the suite or the provided field is valid.

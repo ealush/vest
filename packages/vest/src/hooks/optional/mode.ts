@@ -50,10 +50,6 @@ function useIsOne(): Result<boolean> {
 }
 
 export function useShouldSkipBasedOnMode(testObject: TIsolateTest): boolean {
-  if (VestTest.isSuccess(testObject).unwrap()) {
-    return false;
-  }
-
   if (useIsOne().unwrap()) {
     return useHasErrorsByTestObjects();
   }

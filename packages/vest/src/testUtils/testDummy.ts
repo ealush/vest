@@ -5,9 +5,6 @@ import wait from 'wait';
 import { TFieldName } from '../suiteResult/SuiteResultTypes';
 import { success, test as vestTest, warn } from '../vest';
 
-/**
- * Generates dummy vest tests.
- */
 const createFailing = (
   name: string = faker.lorem.word(),
   message: string = faker.lorem.words(),
@@ -19,7 +16,6 @@ const createFailing = (
       throw new Error();
     }),
   );
-
 const createFailingWarning = (
   name = faker.lorem.word(),
   message = faker.lorem.words(),
@@ -64,12 +60,13 @@ const createPassingSuccess = (
 
 const createPassingSuccessAsync = (
   name = faker.lorem.word(),
-  message = faker.lorem.words(),
+  { message = faker.lorem.words(), time = 0 } = {},
 ) =>
   vestTest(
     name as TFieldName,
     message,
     vi.fn(async () => {
+      await wait(time);
       success();
     }),
   );

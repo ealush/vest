@@ -274,5 +274,46 @@ describe('->getFailure (singular form)', () => {
         expect(suite.get().getMessage('field_1')).toBeUndefined();
       });
     });
+
+    describe('severity priority: error > warn > success', () => {
+      it('should return error message when all severities are present', () => {
+        const suite = vest.create(() => {
+          vest.test('f', 'error_msg', () => false);
+          vest.test('f', 'warn_msg', () => {
+            vest.warn();
+            return false;
+          });
+          vest.test('f', 'success_msg', () => {
+            vest.success();
+          });
+        });
+        const res = suite.run();
+        expect(res.getMessage('f')).toBe('error_msg');
+      });
+
+      it('should return warning message when no errors are present', () => {
+        const suite = vest.create(() => {
+          vest.test('f', 'warn_msg', () => {
+            vest.warn();
+            return false;
+          });
+          vest.test('f', 'success_msg', () => {
+            vest.success();
+          });
+        });
+        const res = suite.run();
+        expect(res.getMessage('f')).toBe('warn_msg');
+      });
+
+      it('should return success message when no errors or warnings are present', () => {
+        const suite = vest.create(() => {
+          vest.test('f', 'success_msg', () => {
+            vest.success();
+          });
+        });
+        const res = suite.run();
+        expect(res.getMessage('f')).toBe('success_msg');
+      });
+    });
   });
 });

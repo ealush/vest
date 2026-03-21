@@ -20,7 +20,7 @@ export function useVerifyTestRun(
     return testObject;
   }
 
-  if (useShouldSkipBasedOnMode(testData)) {
+  if (useShouldSkipBasedOnMode(testObject)) {
     return skipTestAndReturn(testObject).unwrap();
   }
 

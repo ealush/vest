@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { Severity } from '../../../../suiteResult/Severity';
+import { Severity, TestSeverity } from '../../../../suiteResult/Severity';
 import { mockIsolateTest } from '../../../../testUtils/vestMocks';
 import { TIsolateTest } from '../../../isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../../isolate/IsolateTest/VestTest';
@@ -48,6 +48,19 @@ describe('nonMatchingSeverityProfile', () => {
         expect(
           nonMatchingSeverityProfile(Severity.WARNINGS, testObject).unwrap(),
         ).toBe(true);
+      });
+    });
+
+    describe('When test is success', () => {
+      it('should return true for errors and false for successes', () => {
+        VestTest.setSeverity(testObject, TestSeverity.Success);
+
+        expect(
+          nonMatchingSeverityProfile(Severity.ERRORS, testObject).unwrap(),
+        ).toBe(true);
+        expect(
+          nonMatchingSeverityProfile(Severity.SUCCESSES, testObject).unwrap(),
+        ).toBe(false);
       });
     });
   });

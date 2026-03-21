@@ -466,6 +466,26 @@ describe('parser.parse', () => {
     });
   });
 
+  describe('parse().success', () => {
+    it('Should return true when the suite has successes', () => {
+      expect(parse(suiteDummy.success()).success()).toBe(true);
+    });
+
+    it('Should return false when the suite has no successes', () => {
+      expect(parse(suiteDummy.failing()).success()).toBe(false);
+    });
+
+    describe('serialized result', () => {
+      it('Should return true when the suite has successes', () => {
+        expect(parse(ser(suiteDummy.success())).success()).toBe(true);
+      });
+
+      it('Should return false when the suite has no successes', () => {
+        expect(parse(ser(suiteDummy.failing())).success()).toBe(false);
+      });
+    });
+  });
+
   describe('parse().pending', () => {
     it('Should return true when the suite has pending tests', () => {
       const suite = vest.create(() => {

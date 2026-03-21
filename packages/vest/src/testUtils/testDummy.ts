@@ -3,11 +3,8 @@ import { vi } from 'vitest';
 import wait from 'wait';
 
 import { TFieldName } from '../suiteResult/SuiteResultTypes';
-import { test as vestTest, warn } from '../vest';
+import { success, test as vestTest, warn } from '../vest';
 
-/**
- * Generates dummy vest tests.
- */
 const createFailing = (
   name: string = faker.lorem.word(),
   message: string = faker.lorem.words(),
@@ -19,7 +16,6 @@ const createFailing = (
       throw new Error();
     }),
   );
-
 const createFailingWarning = (
   name = faker.lorem.word(),
   message = faker.lorem.words(),
@@ -47,6 +43,31 @@ const createPassingWarning = (
     message,
     vi.fn(() => {
       warn();
+    }),
+  );
+
+const createPassingSuccess = (
+  name = faker.lorem.word(),
+  message = faker.lorem.words(),
+) =>
+  vestTest(
+    name as TFieldName,
+    message,
+    vi.fn(() => {
+      success();
+    }),
+  );
+
+const createPassingSuccessAsync = (
+  name = faker.lorem.word(),
+  { message = faker.lorem.words(), time = 0 } = {},
+) =>
+  vestTest(
+    name as TFieldName,
+    message,
+    vi.fn(async () => {
+      await wait(time);
+      success();
     }),
   );
 
@@ -109,6 +130,8 @@ const testDummy = () => ({
   failingWarningAsync: createFailingWarningAsync,
   passing: createPassing,
   passingAsync: createPassingAsync,
+  passingSuccess: createPassingSuccess,
+  passingSuccessAsync: createPassingSuccessAsync,
   passingWarning: createPassingWarning,
   passingWarningAsync: createPassingWarningAsync,
 });

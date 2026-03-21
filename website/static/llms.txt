@@ -50,6 +50,7 @@
 - [Failing with a custom message](/docs/writing_tests/failing_with_a_custom_message)
 - [Debouncing Tests](/docs/writing_tests/advanced_test_features/debounce)
 - [Warn only tests](/docs/writing_tests/warn_only_tests)
+- [Success messages](/docs/writing_tests/success_tests)
 
 ## Enforce (Assertions)
 - [Builtin enforce plugins](/docs/enforce/builtin-enforce-plugins/plugins)

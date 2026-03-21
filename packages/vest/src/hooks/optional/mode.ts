@@ -1,8 +1,9 @@
 import { makeResult, Result } from 'vest-utils';
 
 import { useMode } from '../../core/context/SuiteContext';
-import { WithFieldName } from '../../core/test/TestTypes';
 import { useHasErrorsByTestObjects } from '../../suiteResult/selectors/hasFailuresByTestObjects';
+import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
+import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 
 import { Modes } from './Modes';
 
@@ -48,13 +49,19 @@ function useIsOne(): Result<boolean> {
   return useIsMode(Modes.ONE);
 }
 
-export function useShouldSkipBasedOnMode(testData: WithFieldName): boolean {
+export function useShouldSkipBasedOnMode(testObject: TIsolateTest): boolean {
   if (useIsOne().unwrap()) {
     return useHasErrorsByTestObjects();
   }
 
+  const { fieldName } = VestTest.getData(testObject);
+
   if (useIsEager().unwrap()) {
-    return useHasErrorsByTestObjects(testData.fieldName);
+    return useHasErrorsByTestObjects(fieldName);
+  }
+
+  if (VestTest.isSuccess(testObject).unwrap()) {
+    return false;
   }
 
   return false;

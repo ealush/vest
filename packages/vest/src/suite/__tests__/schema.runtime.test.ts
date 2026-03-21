@@ -141,6 +141,7 @@ describe('Schema Runtime Validation', () => {
       // Schema validation should create a test failure
       expect(result.hasErrors('count')).toBe(true);
       expect(result.isValid()).toBe(false);
+      expect(result.getMessage('count')).toBeUndefined();
     });
 
     it('should handle nested schema failures with custom messages', () => {
@@ -172,10 +173,24 @@ describe('Schema Runtime Validation', () => {
 
       const testSuite = create(() => {}, schemaWithMessage);
 
-      const result = testSuite.run({ price: 'free' });
+      const result = testSuite.run({ price: 'free' } as any);
 
       expect(result.hasErrors('price')).toBe(true);
       expect(result.getErrors('price')).toContain('Price must be a number');
+    });
+
+    it('should keep schema assertion messages empty when none are provided', () => {
+      const schemaWithoutMessage = enforce.shape({
+        price: enforce.isNumber(),
+      });
+
+      const testSuite = create(() => {}, schemaWithoutMessage);
+
+      const result = testSuite.run({ price: 'free' } as any);
+
+      expect(result.hasErrors('price')).toBe(true);
+      expect(result.getMessage('price')).toBeUndefined();
+      expect(result.getErrors('price')).toEqual([]);
     });
 
     it('should only validate focused schema fields with focus enabled', () => {

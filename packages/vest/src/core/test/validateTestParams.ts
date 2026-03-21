@@ -11,12 +11,12 @@ import { IsolateKey } from 'vestjs-runtime';
 import { ErrorStrings } from '../../errors/ErrorStrings';
 import { TFieldName } from '../../suiteResult/SuiteResultTypes';
 
-import { TestFn } from './TestTypes';
+import { TestFn, TestMessage } from './TestTypes';
 
 export type TestParams<F extends TFieldName = TFieldName> = {
   fieldName: F;
   key?: IsolateKey;
-  message?: string;
+  message?: TestMessage;
   testFn: TestFn;
 };
 
@@ -36,7 +36,7 @@ export function validateTestParams(
 
   const [message, testFn, key] = (
     isFunction(rest[1]) ? rest : [undefined, ...rest]
-  ) as [string | undefined, TestFn, IsolateKey | undefined];
+  ) as [TestMessage, TestFn, IsolateKey | undefined];
 
   if (!isFunction(testFn)) {
     return makeResult.Err(

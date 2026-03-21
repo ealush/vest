@@ -3,15 +3,19 @@ import { useEmit } from '../VestBus/VestBus';
 
 import { IsolateTest, TIsolateTest } from '../isolate/IsolateTest/IsolateTest';
 
-import { TestFn } from './TestTypes';
+import { TestFn, TestMessage } from './TestTypes';
 import { useAttemptRunTest } from './testLevelFlowControl/runTest';
 import { validateTestParams } from './validateTestParams';
 
-function vestTest(fieldName: string, message: string, cb: TestFn): TIsolateTest;
+function vestTest(
+  fieldName: string,
+  message: TestMessage,
+  cb: TestFn,
+): TIsolateTest;
 function vestTest(fieldName: string, cb: TestFn): TIsolateTest;
 function vestTest(
   fieldName: string,
-  message: string,
+  message: TestMessage,
   cb: TestFn,
   key: IsolateKey,
 ): TIsolateTest;
@@ -20,9 +24,9 @@ function vestTest(fieldName: string, cb: TestFn, key: IsolateKey): TIsolateTest;
 function vestTest(
   fieldName: string,
   ...args:
-    | [message: string, cb: TestFn]
+    | [message: TestMessage, cb: TestFn]
     | [cb: TestFn]
-    | [message: string, cb: TestFn, key: IsolateKey]
+    | [message: TestMessage, cb: TestFn, key: IsolateKey]
     | [cb: TestFn, key: IsolateKey]
 ): TIsolateTest {
   const {

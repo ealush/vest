@@ -15,6 +15,7 @@ describe('useSeverity hook', () => {
       t = test(faker.lorem.word(), faker.lorem.sentence(), () => {
         const severity = useSeverity();
         severity.warn();
+        severity.error();
         severity.success();
       });
     }).run();

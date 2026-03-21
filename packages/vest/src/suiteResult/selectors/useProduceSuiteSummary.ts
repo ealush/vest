@@ -228,11 +228,7 @@ function getSummarySeverity(testObject: TIsolateTest): Severity | null {
 }
 
 function isErrorFailure(testObject: TIsolateTest): boolean {
-  return (
-    VestTest.isFailing(testObject).unwrap() &&
-    !VestTest.warns(testObject).unwrap() &&
-    !VestTest.isSuccess(testObject).unwrap()
-  );
+  return VestTest.isFailing(testObject).unwrap();
 }
 
 function incrementFailures<S extends CommonSummaryProperties>(

@@ -265,6 +265,7 @@ export class VestTest {
   }
 
   static reset(test: TIsolateTest): void {
+    VestTest.setSeverity(test, TestSeverity.Error);
     VestTest.setStatus(test, TestAction.RESET);
   }
 }

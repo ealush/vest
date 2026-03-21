@@ -60,5 +60,9 @@ export function useShouldSkipBasedOnMode(testObject: TIsolateTest): boolean {
     return useHasErrorsByTestObjects(fieldName);
   }
 
+  if (VestTest.isSuccess(testObject).unwrap()) {
+    return false;
+  }
+
   return false;
 }

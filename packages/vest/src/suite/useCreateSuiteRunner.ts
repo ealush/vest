@@ -282,12 +282,7 @@ function runSchemaValidation<S extends TSchema = undefined>(
 
       const fieldName = error.path?.length ? error.path.join('.') : '__root__';
       const testKey = `${fieldName}_${i}`;
-      (test as typeof test & ((...args: any[]) => void))(
-        fieldName,
-        error.message,
-        () => false,
-        testKey,
-      );
+      test(fieldName, error.message, () => false, testKey);
     }
   };
 }

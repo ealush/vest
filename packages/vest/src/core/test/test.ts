@@ -7,11 +7,15 @@ import { TestFn } from './TestTypes';
 import { useAttemptRunTest } from './testLevelFlowControl/runTest';
 import { validateTestParams } from './validateTestParams';
 
-function vestTest(fieldName: string, message: string, cb: TestFn): TIsolateTest;
+function vestTest(
+  fieldName: string,
+  message: string | undefined,
+  cb: TestFn,
+): TIsolateTest;
 function vestTest(fieldName: string, cb: TestFn): TIsolateTest;
 function vestTest(
   fieldName: string,
-  message: string,
+  message: string | undefined,
   cb: TestFn,
   key: IsolateKey,
 ): TIsolateTest;
@@ -20,9 +24,9 @@ function vestTest(fieldName: string, cb: TestFn, key: IsolateKey): TIsolateTest;
 function vestTest(
   fieldName: string,
   ...args:
-    | [message: string, cb: TestFn]
+    | [message: string | undefined, cb: TestFn]
     | [cb: TestFn]
-    | [message: string, cb: TestFn, key: IsolateKey]
+    | [message: string | undefined, cb: TestFn, key: IsolateKey]
     | [cb: TestFn, key: IsolateKey]
 ): TIsolateTest {
   const {

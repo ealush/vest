@@ -48,9 +48,14 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   };
   skipWhen: (condition: TDraftCondition<F, G>, callback: CB) => void;
   test: {
-    (fieldName: F, message: string, cb: TestFn): TIsolateTest;
+    (fieldName: F, message: string | undefined, cb: TestFn): TIsolateTest;
     (fieldName: F, cb: TestFn): TIsolateTest;
-    (fieldName: F, message: string, cb: TestFn, key: IsolateKey): TIsolateTest;
+    (
+      fieldName: F,
+      message: string | undefined,
+      cb: TestFn,
+      key: IsolateKey,
+    ): TIsolateTest;
     (fieldName: F, cb: TestFn, key: IsolateKey): TIsolateTest;
   };
   group: {

@@ -5,7 +5,7 @@ import { useCreateVestState } from '../core/Runtime';
 import { useInitVestBus } from '../core/VestBus/VestBus';
 import { VestReconciler } from '../core/isolate/VestReconciler';
 import {
-  InferSchemaData,
+  InferSchemaOutput,
   TFieldName,
   TGroupName,
   TSchema,
@@ -48,14 +48,14 @@ function createSuite<
 // @vx-allow use-use
 function createSuite<
   S extends TSchema,
-  T extends (data: InferSchemaData<S>, ...args: any[]) => void = (
-    data: InferSchemaData<S>,
+  T extends (data: InferSchemaOutput<S>, ...args: any[]) => void = (
+    data: InferSchemaOutput<S>,
     ...args: any[]
   ) => void,
 >(
   suiteCallback: T,
   schema: S,
-): Suite<Extract<keyof InferSchemaData<S>, string>, TGroupName, T, S>;
+): Suite<Extract<keyof InferSchemaOutput<S>, string>, TGroupName, T, S>;
 // @vx-allow use-use
 function createSuite<
   F extends TFieldName = TFieldName,

@@ -31,7 +31,7 @@ yarn config unset npmAlwaysAuth
 
 echo "Committing"
 git add -A
-git commit -m "$1" -m "$2"
+git commit -m "$1" -m "$2" --no-verify
 
 echo "Pushing to $STABLE_BRANCH"
 git push https://$PUBLIC_REPO_TOKEN@github.com/$GITHUB_REPOSITORY.git $STABLE_BRANCH -f

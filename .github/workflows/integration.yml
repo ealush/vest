@@ -66,4 +66,12 @@ jobs:
           git config --global --replace-all user.email "${{ secrets.EMAIL_ADDRESS }}"
           git add benchmark-results.md
           git commit -m "chore(benchmark): update benchmark results [skip ci]" || echo "No changes to commit"
-          git push origin HEAD:${GITHUB_REF_NAME} || echo "No changes to push"
+          output=$(git push origin HEAD:${GITHUB_REF_NAME} 2>&1) || rc=$?
+          if [ -n "$rc" ]; then
+            if echo "$output" | grep -iq "everything up-to-date"; then
+              echo "No changes to push"
+            else
+              echo "$output"
+              exit $rc
+            fi
+          fi

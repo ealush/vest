@@ -1,5 +1,5 @@
 import { createCascade } from 'context';
-import { assign, TinyState, tinyState, DynamicValue } from 'vest-utils';
+import { assign, TinyState, createTinyState, DynamicValue } from 'vest-utils';
 
 import { Modes } from '../../hooks/optional/Modes';
 import { SuiteModifiers } from '../../suite/SuiteTypes';
@@ -14,7 +14,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   return assign(
     {
       inclusion: {},
-      mode: tinyState.createTinyState<Modes>(Modes.EAGER),
+      mode: createTinyState<Modes>(Modes.EAGER),
       modifiers: {
         onlyGroup: new Set<string>(),
         skipGroup: new Set<string>(),

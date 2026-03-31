@@ -8,9 +8,9 @@ import {
   TinyState,
   text,
   dynamicValue,
-  tinyState,
+  createTinyState,
   BusType,
-  bus,
+  createBus,
   Nullable,
   DynamicValue,
   asArray,
@@ -117,10 +117,10 @@ export function createRef(
   setter: DynamicValue<Record<string, any>>,
 ): StateRefType {
   const ref = Object.freeze({
-    Bus: bus.createBus<RuntimeEvents>(),
+    Bus: createBus<RuntimeEvents>(),
     Reconciler,
     appData: dynamicValue(setter),
-    historyRoot: tinyState.createTinyState<Nullable<TIsolate>>(null),
+    historyRoot: createTinyState<Nullable<TIsolate>>(null),
     implicitOnlyNodes: new Set<TIsolate>(),
   });
 

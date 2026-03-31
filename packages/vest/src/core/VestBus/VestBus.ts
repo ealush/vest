@@ -28,22 +28,10 @@ export function useInitVestBus() {
 
   useRegistryBusEvents(VestBus);
 
-  VestBus.on('TEST_COMPLETED', () => {
-    useExpireSuiteResultCache();
-  });
-
+  // Invalidate suite result cache on test start to prevent stale cache from
+  // affecting test exclusion logic (see https://github.com/ealush/vest/issues/1157).
   VestBus.on('TEST_RUN_STARTED', () => {
-    // Bringing this back due to https://github.com/ealush/vest/issues/1157
-    // This is a very peculiar bug in which we're seeing vest behaving differently between
-    // runs when suite.get() is called.
-    // In the bug we experienced that failing tests were skipped in the second run.
-    // The reason: suite.get() built the failures cache. Calling suite.get() before the test run
-    // made Vest think that the field already had failing tests (even though it was the same test!)
-    // and it skipped the test.
-    // A better solution is to be able to identify each failure to its actual position in the suite
-    // but this requires some re-architecting within Vest.
-    // This is an easy enough solution - we just reset the cache before the test run, let's hope we don't see
-    // any performance issues.
+    useExpireSuiteResultCache();
   });
 
   VestBus.on('ISOLATE_ENTER', (isolate: TIsolate) => {

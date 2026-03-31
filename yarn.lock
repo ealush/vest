@@ -16997,7 +16997,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vast@^2.0.15, vast@workspace:packages/vast":
+"vast@workspace:packages/vast":
   version: 0.0.0-use.local
   resolution: "vast@workspace:packages/vast"
   dependencies:
@@ -17054,7 +17054,6 @@ __metadata:
   dependencies:
     context: ^4.0.15
     n4s: ^6.1.12
-    vast: ^2.0.15
     vest-utils: ^2.0.15
     vestjs-runtime: ^2.0.15
     vitest: ^4.0.18

@@ -13,10 +13,16 @@ import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
 /**
  * Conditionally skips running tests within the callback.
  *
+ * Unlike `omitWhen`, skipped tests **retain their previous result** from
+ * the last run. Use `skipWhen` when you want to avoid re-evaluating
+ * tests that already have a known result (e.g., skip an async uniqueness
+ * check while the field still has synchronous validation errors).
+ *
  * @example
  *
+ * // Skip the async check while there are sync errors on the field
  * skipWhen(res => res.hasErrors('username'), () => {
- *  test('username', 'User already taken', async () => await doesUserExist(username)
+ *   test('username', 'User already taken', async () => await doesUserExist(username));
  * });
  */
 // @vx-allow use-use

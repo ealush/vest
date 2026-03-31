@@ -24,6 +24,7 @@
   },
   "unpkg": "./dist/anyone.mjs",
   "jsdelivr": "./dist/anyone.mjs",
+  "sideEffects": false,
   "vxAllowResolve": [],
   "exports": {
     "./anyone": {

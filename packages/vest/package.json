@@ -38,10 +38,13 @@
   "scripts": {
     "bench": "vitest bench --run --config ./vitest.config.ts"
   },
+  "sideEffects": [
+    "./dist/exports/*.mjs",
+    "./dist/exports/*.cjs"
+  ],
   "dependencies": {
     "context": "^4.0.15",
     "n4s": "^6.1.12",
-    "vast": "^2.0.15",
     "vest-utils": "^2.0.15",
     "vestjs-runtime": "^2.0.15"
   },

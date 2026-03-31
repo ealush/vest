@@ -56,13 +56,10 @@ function usePickNode(
     return newNodeResult;
   }
 
-  // eslint-disable-next-line no-warning-comments
-  // FIXME: May-13-2023
-  // This may not be the most ideal solution.
-  // In short: if the node was omitted in the previous run,
-  // we want to re-evaluate it. The reason is that we may incorrectly
-  // identify it is "optional" because it was omitted in the previous run.
-  // There may be a better way to handle this. Need to revisit this.
+  // Re-run previously omitted tests to avoid stale "optional" identification.
+  // An omitted test has no result, so reusing it would cause the optional
+  // system to incorrectly treat the field as optional (since no test ran).
+  // Re-evaluation is conservative but correct.
   if (VestTest.isOmitted(prevNode).unwrap()) {
     return newNodeResult;
   }

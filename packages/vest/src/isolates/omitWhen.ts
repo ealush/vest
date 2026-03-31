@@ -13,13 +13,19 @@ import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
 /**
  * Conditionally omits tests from the suite.
  *
- * When the condition is met, the tests within the callback will be omitted
- * and will not be executed. The callback itself will also be skipped.
+ * Unlike `skipWhen`, omitted tests are **completely removed** from the
+ * result — they do not retain their previous state and are not counted
+ * in `testCount`, `errorCount`, or validity checks. Use `omitWhen` when
+ * the tests are irrelevant to the current form state (e.g., omit
+ * "confirm password" tests when the password field is empty).
  *
  * @example
  *
- * omitWhen(res => res.hasErrors('username'), () => {
- *  test('username', 'User already taken', async () => await doesUserExist(username)
+ * // Don't validate confirmation when password is empty
+ * omitWhen(!data.password, () => {
+ *   test('confirm', 'Passwords do not match', () => {
+ *     enforce(data.confirm).equals(data.password);
+ *   });
  * });
  */
 // @vx-allow use-use

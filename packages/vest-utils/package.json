@@ -21,6 +21,7 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "license": "MIT",
+  "sideEffects": false,
   "exports": {
     "./exports/minifyObject": {
       "types": "./types/exports/minifyObject.d.cts",

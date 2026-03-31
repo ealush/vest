@@ -23,6 +23,7 @@
   },
   "unpkg": "./dist/vast.mjs",
   "jsdelivr": "./dist/vast.mjs",
+  "sideEffects": false,
   "vxAllowResolve": [],
   "exports": {
     ".": {

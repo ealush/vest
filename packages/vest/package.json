@@ -38,6 +38,10 @@
   "scripts": {
     "bench": "vitest bench --run --config ./vitest.config.ts"
   },
+  "sideEffects": [
+    "./dist/exports/*.mjs",
+    "./dist/exports/*.cjs"
+  ],
   "dependencies": {
     "context": "^4.0.15",
     "n4s": "^6.1.12",

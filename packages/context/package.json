@@ -24,6 +24,7 @@
   },
   "unpkg": "./dist/context.mjs",
   "jsdelivr": "./dist/context.mjs",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./types/context.d.cts",

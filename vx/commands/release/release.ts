@@ -14,9 +14,9 @@ import 'vx/scripts/genTsConfig.js';
 
 export type ReleaseOptions = { isTopLevelChange?: boolean };
 
-export default function release({
+export default async function release({
   isTopLevelChange,
-}: ReleaseOptions = {}): void {
+}: ReleaseOptions = {}): Promise<void> {
   if (!branchAllowsRelease) {
     logger.info(`❌  Branch ${CURRENT_BRANCH} does not allow release. Exiting`);
     return;
@@ -26,22 +26,22 @@ export default function release({
   if (pkg) {
     return withPackage(pkg, () => releasePackage({ isTopLevelChange }));
   }
-  releaseAll();
+  await releaseAll();
 }
 
-function releaseAll(): void {
+async function releaseAll(): Promise<void> {
   logger.info('🏃 Running release script.');
 
   const { packageListToRelease, isTopLevelChange } = packagesToRelease();
 
-  packageListToRelease.forEach(name => {
-    withPackage(name, () => release({ isTopLevelChange }));
-  });
+  for (const name of packageListToRelease) {
+    await withPackage(name, () => release({ isTopLevelChange }));
+  }
 
   if (!isReleaseBranch) {
     logger.info(`❌  Not in release branch. Not pushing changes to git.`);
     return;
   }
 
-  commitChangesToGit();
+  await commitChangesToGit();
 }

@@ -14,7 +14,7 @@ export function getStandardSchema<S extends TSchema = undefined>(
       }
       return {
         issues: result.errors.map((error: any) => ({
-          message: error.message,
+          ...(error.message === undefined ? {} : { message: error.message }),
           path: error.fieldName ? error.fieldName.split('.') : undefined,
         })),
       };

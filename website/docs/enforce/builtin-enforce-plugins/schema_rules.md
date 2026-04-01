@@ -21,6 +21,7 @@ These rules are available in `enforce`:
   - [enforce.pick() - pick a subset of fields](#enforcepick---pick-a-subset-of-fields)
   - [enforce.omit() - omit a subset of fields](#enforceomit---omit-a-subset-of-fields)
   - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
+  - [enforce.record() - dynamic object matching](#enforcerecord---dynamic-object-matching)
 
 ## enforce.shape() - Lean schema validation.
 
@@ -178,6 +179,28 @@ enforce({ data: [1, 2, 3] }).shape({
   data: enforce.isArrayOf(enforce.isNumber()),
 });
 ```
+
+## enforce.record() - dynamic object matching
+
+When you need to validate objects acting as key-value mappings (where keys are dynamic), you can use `enforce.record()`. It allows you to validate all values, and optionally all keys, within an object.
+
+```js
+// Validating just values
+const userRoles = { alice: 'admin', bob: 'editor' };
+enforce(userRoles).record(enforce.isString());
+```
+
+```js
+// Validating both keys and values
+// The first argument is the key rule, the second is the value rule
+const exactMapping = { user_123: true, user_456: false };
+enforce(exactMapping).record(
+  enforce.isString().matches(/^user_\d+$/),
+  enforce.isBoolean(),
+);
+```
+
+Just like `isArrayOf`, `record` can be nested in shapes or other arrays, and properly populates accurate error paths (e.g. `settings.darkMode`).
 
 ## Schema Parsing
 

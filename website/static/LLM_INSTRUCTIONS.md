@@ -14,13 +14,16 @@ This document serves as the "Source of Truth" for Large Language Models (LLMs) g
 
 Respect module boundaries to prevent circular dependencies.
 
-| Package              | Description                                              | Dependencies Allowed                      |
-| :------------------- | :------------------------------------------------------- | :---------------------------------------- |
-| **`vest-utils`**     | Low-level shared utilities (Types, FP helpers).          | **NONE**. This is the foundational layer. |
-| **`vestjs-runtime`** | The state management engine (Isolates, Bus, Reconciler). | `vest-utils`                              |
-| **`n4s`**            | "Enforce" assertion library (Rules, Validation logic).   | `vest-utils`                              |
-| **`vest`**           | The main validation library (Public API, Suites).        | `n4s`, `vestjs-runtime`, `vest-utils`     |
-| **`vx`**             | Internal CLI and build tooling.                          | Node.js native only.                      |
+| Package              | Description                                              | Dependencies Allowed                             |
+| :------------------- | :------------------------------------------------------- | :----------------------------------------------- |
+| **`vest-utils`**     | Low-level shared utilities (Types, FP helpers).          | **NONE**. This is the foundational layer.        |
+| **`context`**        | Execution context system (createContext, createCascade). | `vest-utils`                                     |
+| **`vast`**           | Standalone state container utility.                      | `vest-utils`                                     |
+| **`anyone`**         | Compound boolean predicate utility (all/any/none/one).   | `vest-utils`                                     |
+| **`vestjs-runtime`** | The state management engine (Isolates, Bus, Reconciler). | `vest-utils`, `context`                          |
+| **`n4s`**            | "Enforce" assertion library (Rules, Validation logic).   | `vest-utils`, `context`                          |
+| **`vest`**           | The main validation library (Public API, Suites).        | `n4s`, `vestjs-runtime`, `vest-utils`, `context` |
+| **`vx`**             | Internal CLI and build tooling.                          | Node.js native only.                             |
 
 ## 3. Tooling & CLI (`vx`)
 

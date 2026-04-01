@@ -1,5 +1,5 @@
 {
-  "version": "2.0.13",
+  "version": "2.0.15",
   "name": "vest-utils",
   "author": "ealush",
   "scripts": {
@@ -21,6 +21,7 @@
     "url": "https://github.com/ealush/vest.git/issues"
   },
   "license": "MIT",
+  "sideEffects": false,
   "exports": {
     "./exports/minifyObject": {
       "types": "./types/exports/minifyObject.d.cts",

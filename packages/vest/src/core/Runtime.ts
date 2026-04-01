@@ -1,4 +1,11 @@
-import { CB, CacheApi, TinyState, cache, seq, tinyState } from 'vest-utils';
+import {
+  CB,
+  CacheApi,
+  TinyState,
+  cache,
+  seq,
+  createTinyState,
+} from 'vest-utils';
 import { IReconciler, VestRuntime } from 'vestjs-runtime';
 
 import {
@@ -31,8 +38,8 @@ export function useCreateVestState({
   VestReconciler: IReconciler;
 }) {
   const stateRef: StateExtra = {
-    doneCallbacks: tinyState.createTinyState<DoneCallbacks>(() => []),
-    fieldCallbacks: tinyState.createTinyState<FieldCallbacks>(() => ({})),
+    doneCallbacks: createTinyState<DoneCallbacks>(() => []),
+    fieldCallbacks: createTinyState<FieldCallbacks>(() => ({})),
     suiteId: seq(),
     suiteResultCache: createSuiteResultCache(),
   };

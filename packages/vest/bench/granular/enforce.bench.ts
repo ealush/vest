@@ -8,7 +8,7 @@ const suiteEnforceSimple = create(() => {
 });
 
 const suiteEnforceChain = create(() => {
-  enforce(10).isNumber().greaterThan(0).lessThan(20).equals(10).matches(/10/);
+  enforce(10).isNumber().greaterThan(0).lessThan(20).equals(10).isEven();
 });
 
 const suiteEnforceTemplate = create(() => {

@@ -4,6 +4,7 @@ import sample from 'lodash/sample.js';
 
 import listAllChangesSinceStableBranch from '../github/listAllChangesSinceStableBranch.js';
 import matchPackageNameInCommit from '../github/matchPackageNameInCommit.js';
+import createRelease from '../github/createRelease.js';
 
 import exec from 'vx/exec.js';
 import * as logger from 'vx/logger.js';
@@ -39,14 +40,14 @@ type CommitChange = { title: string; files: string[] };
 /**
  * Pushes release commits and tags to git.
  */
-function commitChangesToGit(): void {
+async function commitChangesToGit(): Promise<void> {
   logger.info('\ud83c\udf0e Pushing latest branch.');
 
   const allChanges = listAllChangesSinceStableBranch();
   const changedPackages = filterChangedPackages(allChanges);
 
   pushToLatestBranch(allChanges, changedPackages);
-  createTags(changedPackages);
+  await createTags(changedPackages, allChanges);
 }
 
 export default commitChangesToGit;
@@ -99,13 +100,18 @@ function createCommitMessage(changedPackages: string[]): string {
 }
 
 /**
- * Tags each changed package with its published version.
+ * Tags each changed package with its published version and creates a GitHub release.
  */
-function createTags(changedPackages: string[]): void {
-  return changedPackages.forEach(packageName => {
+async function createTags(
+  changedPackages: string[],
+  allChanges: CommitChange[],
+): Promise<void> {
+  const body = allChanges.map(({ title }) => `- ${title}`).join('\n');
+  for (const packageName of changedPackages) {
     const version = packageJson(packageName).version ?? '0.0.0';
     const tag = `${packageName}@${version}`;
 
     exec(['sh', CREATE_GIT_TAG, tag]);
-  });
+    await createRelease({ tag, release: { title: tag, body } });
+  }
 }

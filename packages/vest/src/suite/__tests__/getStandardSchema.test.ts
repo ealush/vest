@@ -41,6 +41,19 @@ describe('getStandardSchema', () => {
       ]);
     });
 
+    it('Should keep issue message empty when no message exists', () => {
+      const errors = [{ fieldName: 'field1' }];
+      const runner = vi.fn().mockReturnValue({
+        hasErrors: () => true,
+        errors,
+      });
+      const schema = getStandardSchema(runner);
+
+      const result = schema.validate({});
+      // @ts-ignore
+      expect(result.issues).toEqual([{ path: ['field1'] }]);
+    });
+
     it('Should split nested field names', () => {
       const errors = [{ message: 'error1', fieldName: 'field1.nested' }];
       const runner = vi.fn().mockReturnValue({

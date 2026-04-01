@@ -120,12 +120,20 @@ export class IsolateMutator {
       return makeResult.Err(`Isolate status is already ${status}`);
     }
 
-    isolate.status = IsolateStateMachine.staticTransition(
-      isolate.status ?? IsolateStatus.INITIAL,
+    const currentStatus = isolate.status ?? IsolateStatus.INITIAL;
+    const nextStatus = IsolateStateMachine.staticTransition(
+      currentStatus,
       status,
       payload,
     ) as IsolateStatus;
 
+    if (nextStatus === currentStatus) {
+      return makeResult.Err(
+        `Transition from ${currentStatus} to ${status} was rejected`,
+      );
+    }
+
+    isolate.status = nextStatus;
     return makeResult.Ok(isolate.status);
   }
 

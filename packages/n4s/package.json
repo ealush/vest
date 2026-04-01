@@ -1,6 +1,6 @@
 {
   "name": "n4s",
-  "version": "6.1.10",
+  "version": "6.1.12",
   "description": "typed schema validation version of enforce",
   "license": "MIT",
   "author": "ealush",
@@ -17,9 +17,13 @@
   "bugs": {
     "url": "https://github.com/ealush/vest.git/issues"
   },
+  "sideEffects": [
+    "./dist/exports/*.mjs",
+    "./dist/exports/*.cjs"
+  ],
   "dependencies": {
-    "context": "^4.0.13",
-    "vest-utils": "^2.0.13"
+    "context": "^4.0.15",
+    "vest-utils": "^2.0.15"
   },
   "devDependencies": {
     "@types/validator": "^13.15.10",

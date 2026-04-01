@@ -82,16 +82,14 @@ export function enforceEager<T>(value: T): EagerReturn<T> {
   };
 
   const getReservedProperty = (key: string) => {
-    switch (key) {
-      case MESSAGE_KEY:
-        return setMessage;
-      case THEN_KEY:
-        return ensurePendingPromise().then.bind(ensurePendingPromise());
-      case CATCH_KEY:
-        return ensurePendingPromise().catch.bind(ensurePendingPromise());
-      default:
-        return undefined;
+    if (key === MESSAGE_KEY) return setMessage;
+
+    if (key === THEN_KEY || key === CATCH_KEY) {
+      const p = ensurePendingPromise();
+      return key === THEN_KEY ? p.then.bind(p) : p.catch.bind(p);
     }
+
+    return undefined;
   };
 
   const proxy: EagerReturn<T> = new Proxy(

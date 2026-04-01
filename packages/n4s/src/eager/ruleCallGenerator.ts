@@ -23,7 +23,9 @@ function processRuleResult(
   customMessage: string | undefined,
   args: any[],
 ): void {
-  const transformedResult = transformResult(result, ruleName, value, ...args);
+  const transformedResult = ctx.run({ value }, () =>
+    transformResult(result, ruleName, value, ...args),
+  );
 
   invariant(
     transformedResult.pass,
@@ -52,11 +54,11 @@ export function createRuleCall(config: RuleCallConfig) {
     const pendingPromise = getPendingPromise();
     if (pendingPromise) {
       setPendingPromise(
-        pendingPromise.then(() => {
-          return Promise.resolve(runRule()).then(ruleResult => {
+        pendingPromise
+          .then(() => runRule())
+          .then(ruleResult => {
             processRuleResult(ruleResult, ruleName, value, customMessage, args);
-          });
-        }),
+          }),
       );
 
       clearMessage();
@@ -68,7 +70,7 @@ export function createRuleCall(config: RuleCallConfig) {
 
     if (isPromise(ruleResult)) {
       setPendingPromise(
-        Promise.resolve(ruleResult).then(resolvedResult => {
+        ruleResult.then(resolvedResult => {
           processRuleResult(
             resolvedResult,
             ruleName,

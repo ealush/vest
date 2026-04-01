@@ -11,9 +11,9 @@ declare global {
 }
 
 function syncTypeChecks() {
-  // @ts-expect-error - sync-only chains should not expose promise methods at type level
   enforce('sync')
     .isString()
+    // @ts-expect-error - sync-only chains should not expose promise methods at type level
     .then(() => undefined);
 }
 

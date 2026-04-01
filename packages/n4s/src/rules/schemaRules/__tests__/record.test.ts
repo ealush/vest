@@ -18,7 +18,8 @@ describe('enforce.record()', () => {
 
       it('fails when any value does not match', () => {
         const rule = enforce.record(enforce.isNumber());
-        expect(rule.run({ a: 1, b: 'two', c: 3 } as any).pass).toBe(false);
+        // @ts-expect-error - testing runtime with invalid value type
+        expect(rule.run({ a: 1, b: 'two', c: 3 }).pass).toBe(false);
       });
 
       it('passes for empty objects', () => {
@@ -28,12 +29,14 @@ describe('enforce.record()', () => {
 
       it('fails for non-object values', () => {
         const rule = enforce.record(enforce.isNumber());
-        expect(rule.run('not an object' as any).pass).toBe(false);
+        // @ts-expect-error - testing runtime with non-object
+        expect(rule.run('not an object').pass).toBe(false);
       });
 
       it('fails for arrays', () => {
         const rule = enforce.record(enforce.isNumber());
-        expect(rule.run([1, 2, 3] as any).pass).toBe(false);
+        // @ts-expect-error - testing runtime with array
+        expect(rule.run([1, 2, 3]).pass).toBe(false);
       });
 
       it('skips prototype keys', () => {
@@ -76,7 +79,8 @@ describe('enforce.record()', () => {
           enforce.isString().matches(/^[a-z]+$/),
           enforce.isNumber(),
         );
-        const res = rule.run({ valid: 'text' } as any);
+        // @ts-expect-error - testing runtime with invalid value type
+        const res = rule.run({ valid: 'text' });
         expect(res.pass).toBe(false);
         expect(res.path).toEqual(['valid']);
       });
@@ -100,8 +104,9 @@ describe('enforce.record()', () => {
 
         const failing = rule.run({
           user1: { name: 'Alice', age: 30 },
+          // @ts-expect-error - testing runtime with invalid nested value
           user2: { name: 'Bob', age: '25' },
-        } as any);
+        });
 
         expect(failing.pass).toBe(false);
         expect(failing.path).toEqual(['user2', 'age']);
@@ -156,13 +161,15 @@ describe('enforce.record()', () => {
 
       it('fails for non-object values', () => {
         expect(() => {
-          (enforce('not an object') as any).record(enforce.isNumber());
+          // @ts-expect-error - testing runtime with non-object
+          enforce('not an object').record(enforce.isNumber());
         }).toThrow();
       });
 
       it('fails for arrays', () => {
         expect(() => {
-          (enforce([1, 2, 3]) as any).record(enforce.isNumber());
+          // @ts-expect-error - testing runtime with array
+          enforce([1, 2, 3]).record(enforce.isNumber());
         }).toThrow();
       });
 

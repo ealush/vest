@@ -99,26 +99,26 @@ function createRecordFailure<T extends Record<string, any>>(
   return newRes as RuleRunReturn<T>;
 }
 
+type RecordKey<K> = [K] extends [never]
+  ? string
+  : K extends RuleInstance<any, any>
+    ? K['infer'] extends PropertyKey
+      ? K['infer']
+      : string
+    : string;
+
+type RecordInputKey<K> = [K] extends [never]
+  ? string
+  : K extends RuleInstance<any, any>
+    ? InferShapeInput<K> extends PropertyKey
+      ? InferShapeInput<K>
+      : string
+    : string;
+
 export type RecordRuleInstance<
   K extends RuleInstance<any, any> | never,
   V extends RuleInstance<any, any>,
 > = RuleInstance<
-  Record<
-    K extends RuleInstance<any, any>
-      ? K['infer'] extends PropertyKey
-        ? K['infer']
-        : string
-      : string,
-    V['infer']
-  >,
-  [
-    Record<
-      K extends RuleInstance<any, any>
-        ? InferShapeInput<K> extends PropertyKey
-          ? InferShapeInput<K>
-          : string
-        : string,
-      InferShapeInput<V>
-    >,
-  ]
+  Record<RecordKey<K>, V['infer']>,
+  [Record<RecordInputKey<K>, InferShapeInput<V>>]
 >;

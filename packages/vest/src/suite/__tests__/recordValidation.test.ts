@@ -23,7 +23,8 @@ describe('enforce.record() in Vest', () => {
     });
 
     expect(result.isValid()).toBe(false);
-    expect(result.hasErrors('settings.notifications' as any)).toBe(true);
+    // @ts-expect-error - dot-path field name
+    expect(result.hasErrors('settings.notifications')).toBe(true);
   });
 
   it('works with focus modifiers when dropping entirely via focus', () => {
@@ -38,10 +39,12 @@ describe('enforce.record() in Vest', () => {
 
     const result = suite
       .focus({ only: 'name' })
-      .run({ name: '', permissions: { bad: 'value' } } as any);
+      // @ts-expect-error - testing runtime with invalid value type
+      .run({ name: '', permissions: { bad: 'value' } });
 
     // permissions.bad should not be validated because we focused on name
-    expect(result.hasErrors('permissions.bad' as any)).toBe(false);
+    // @ts-expect-error - dot-path field name
+    expect(result.hasErrors('permissions.bad')).toBe(false);
     expect(result.isValid()).toBe(true);
   });
 
@@ -60,11 +63,12 @@ describe('enforce.record() in Vest', () => {
 
     const result = suite.run({
       admin: { active: true },
+      // @ts-expect-error - testing runtime with invalid nested value
       editor: { active: 'yes' }, // invalid
-    } as any);
+    });
 
     // The top-level key is 'editor', meaning 'editor.active' should have a schema validation error.
-    expect(result.hasErrors('editor.active' as any)).toBe(true);
+    expect(result.hasErrors('editor.active')).toBe(true);
   });
 
   it('maintains parsed coerced types using .test() inside suite', () => {
@@ -93,7 +97,7 @@ describe('enforce.record() in Vest', () => {
     const suite = create(() => {}, schema);
 
     // Incorrect key formatting
-    const result = suite.run({ guest_1: true } as any);
+    const result = suite.run({ guest_1: true });
     expect(result.hasErrors('guest_1')).toBe(true);
     expect(result.isValid()).toBe(false);
 

@@ -57,6 +57,13 @@ function parseRules(arg1: any, arg2?: any) {
   return { keyRule: undefined, valueRule: arg1 };
 }
 
+function validateKey(
+  key: string,
+  keyRule: RuleInstance<any, any>,
+): RuleRunReturn<any> {
+  return ctx.run({ value: key, set: true }, () => keyRule.run(key));
+}
+
 function evaluateRecordEntry<T extends Record<string, any>>(
   key: string,
   value: T,
@@ -66,26 +73,21 @@ function evaluateRecordEntry<T extends Record<string, any>>(
   },
   parsedValue: Record<string, any>,
 ): RuleRunReturn<T> | void {
-  let parsedKey = key;
   if (rules.keyRule) {
-    const keyRes = ctx.run({ value: key, set: true }, () =>
-      rules.keyRule!.run(key),
-    );
+    const keyRes = validateKey(key, rules.keyRule);
     if (!keyRes.pass) return createRecordFailure(value, key, keyRes);
-    parsedKey = keyRes.type;
+    if (keyRes.type !== key) {
+      delete parsedValue[key];
+      key = keyRes.type;
+    }
   }
 
-  const fieldValue = value[key];
-  const valRes = ctx.run({ value: fieldValue, set: true, meta: { key } }, () =>
-    rules.valueRule.run(fieldValue),
+  const valRes = ctx.run({ value: value[key], set: true, meta: { key } }, () =>
+    rules.valueRule.run(value[key]),
   );
 
   if (!valRes.pass) return createRecordFailure(value, key, valRes);
-
-  parsedValue[parsedKey] = valRes.type;
-  if (parsedKey !== key) {
-    delete parsedValue[key];
-  }
+  parsedValue[key] = valRes.type;
 }
 
 function createRecordFailure<T extends Record<string, any>>(

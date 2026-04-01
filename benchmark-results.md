@@ -56,7 +56,7 @@
 | Deep Nesting Stress               | depth 10                           | **78.512**   | 35.3061  | 7.05%           | 0          | 0.00%    |
 | Deep Nesting Stress               | depth 50                           | **32.109**   | 38.3066  | 2.14%           | 0          | 0.00%    |
 | Deep Nesting Stress               | depth 100                          | **20.985**   | 52.4618  | 1.41%           | 0          | 0.00%    |
-| Complex Combinations & Edge Cases | High-Frequency Test Creation       | **191.36**   | 8.738    | 2.68%           | 0          | 0.00%    |
+| Complex Combinations & Edge Cases | High Frequency test Creation       | **191.36**   | 8.738    | 2.68%           | 0          | 0.00%    |
 | Conditional isolates              | skip even indices                  | **594.62**   | 3.2584   | 6.44%           | 0          | 0.00%    |
 | Conditional isolates              | omit multiples of 4                | **464.11**   | 5.8324   | 12.11%          | 0          | 0.00%    |
 | Field Volume Stress               | 10 fields                          | **354.74**   | 8.7396   | 4.90%           | 0          | 0.00%    |

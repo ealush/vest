@@ -66,11 +66,13 @@ function evaluateRecordEntry<T extends Record<string, any>>(
   },
   parsedValue: Record<string, any>,
 ): RuleRunReturn<T> | void {
+  let parsedKey = key;
   if (rules.keyRule) {
     const keyRes = ctx.run({ value: key, set: true }, () =>
       rules.keyRule!.run(key),
     );
     if (!keyRes.pass) return createRecordFailure(value, key, keyRes);
+    parsedKey = keyRes.type;
   }
 
   const fieldValue = value[key];
@@ -80,7 +82,10 @@ function evaluateRecordEntry<T extends Record<string, any>>(
 
   if (!valRes.pass) return createRecordFailure(value, key, valRes);
 
-  parsedValue[key] = valRes.type;
+  parsedValue[parsedKey] = valRes.type;
+  if (parsedKey !== key) {
+    delete parsedValue[key];
+  }
 }
 
 function createRecordFailure<T extends Record<string, any>>(
@@ -95,9 +100,25 @@ function createRecordFailure<T extends Record<string, any>>(
 }
 
 export type RecordRuleInstance<
-  _K,
+  K extends RuleInstance<any, any> | never,
   V extends RuleInstance<any, any>,
 > = RuleInstance<
-  Record<string, V['infer']>,
-  [Record<string, InferShapeInput<V>>]
+  Record<
+    K extends RuleInstance<any, any>
+      ? K['infer'] extends PropertyKey
+        ? K['infer']
+        : string
+      : string,
+    V['infer']
+  >,
+  [
+    Record<
+      K extends RuleInstance<any, any>
+        ? InferShapeInput<K> extends PropertyKey
+          ? InferShapeInput<K>
+          : string
+        : string,
+      InferShapeInput<V>
+    >,
+  ]
 >;

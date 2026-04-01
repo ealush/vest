@@ -13,6 +13,7 @@ import * as generalRules from './rules/generalRules';
 import type { ObjectRulesUnion } from './rules/objectRules';
 import * as objectRules from './rules/objectRules';
 import * as schemaRules from './rules/schemaRules/schemaRules';
+import { lazy as lazyRule } from './rules/schemaRules/lazy';
 import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
 import { type RuleInstance } from './utils/RuleInstance';
 import { RuleRunReturn } from './utils/RuleRunReturn';
@@ -92,6 +93,7 @@ const schemaRulesWithArrayChaining = {
       );
       return RuleRunReturn.create(result, value);
     }),
+  lazy: lazyRule,
   loose: schemaAttacher(schemaEvaluators.loose),
   record: recordEvaluators.record,
   shape: schemaAttacher(schemaEvaluators.shape),

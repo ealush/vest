@@ -15,6 +15,7 @@ import { MultiTypeInput, MultiTypeInputArgs } from './schemaRulesTypes';
 
 import type {
   IsArrayOfRuleInstance,
+  LazyRuleInstance,
   LooseRuleInstance,
   OptionalRuleInstance,
   PartialRuleInstance,
@@ -31,6 +32,7 @@ export type SchemaRuleLazyTypes = {
   isArrayOf: <Rules extends RuleInstance<any, any>[]>(
     ...rules: Rules
   ) => IsArrayOfRuleInstance<MultiTypeInput<Rules>, MultiTypeInputArgs<Rules>>;
+  lazy: <T>(factory: () => RuleInstance<T, any>) => LazyRuleInstance<T>;
   loose: <S extends Record<string, RuleInstance<any>>>(
     schema: S,
   ) => LooseRuleInstance<S>;

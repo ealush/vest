@@ -629,14 +629,12 @@ describe('enforce.extend', () => {
   });
 
   describe('Async behavior considerations', () => {
-    it('Should handle custom rules that might be used async (returning promises should fail sync)', () => {
+    it('Should handle custom rules that return promises', async () => {
       enforce.extend({
-        // This simulates someone accidentally returning a promise
         asyncRule: () => Promise.resolve(true),
       });
 
-      // In n4spath, invalid return values should throw
-      expect(() => enforce('test').asyncRule()).toThrow();
+      await expect(enforce('test').asyncRule()).resolves.toBeUndefined();
     });
   });
 

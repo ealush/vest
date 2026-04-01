@@ -1,3 +1,5 @@
+import { invariant, isPromise } from 'vest-utils';
+
 import { extendEager } from './eager';
 import { ctx } from './enforceContext';
 import { addToChain, registerLazyRule } from './rules/genRuleChain';
@@ -49,6 +51,12 @@ export function extendEnforce(
     const rule = rules[ruleName];
     const ruleWrapper = (value: any, ...args: any[]) => {
       const res = ctx.run({ value }, () => rule(value, ...args));
+
+      invariant(
+        !isPromise(res),
+        `enforce.extend: rule "${ruleName}" returned a Promise. Async rules are only supported in the eager API (enforce(value).rule()), not in the lazy API (enforce.rule()).`,
+      );
+
       return RuleRunReturn.create(res, value);
     };
 

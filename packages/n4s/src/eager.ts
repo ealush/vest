@@ -9,8 +9,7 @@ export { extendEager };
 export type { EnforceEagerReturn } from './eager/eagerTypes';
 
 const MESSAGE_KEY = 'message';
-const THEN_KEY = 'then';
-const CATCH_KEY = 'catch';
+const PROMISE_KEYS = new Set(['then', 'catch', 'finally']);
 
 type EagerReturn<T> = EnforceEagerReturn<
   T,
@@ -73,33 +72,19 @@ export function enforceEager<T>(value: T): EagerReturn<T> {
 
   const clearMessage = () => setMessage(undefined);
 
-  const ensurePendingPromise = () => {
-    if (!pendingPromise) {
-      pendingPromise = Promise.resolve();
-    }
-
-    return pendingPromise;
-  };
-
-  const getReservedProperty = (key: string) => {
-    if (key === MESSAGE_KEY) return setMessage;
-
-    if (key === THEN_KEY || key === CATCH_KEY) {
-      const p = ensurePendingPromise();
-      return key === THEN_KEY ? p.then.bind(p) : p.catch.bind(p);
-    }
-
-    return undefined;
-  };
+  const getPromiseMethod = (key: string) =>
+    pendingPromise && PROMISE_KEYS.has(key)
+      ? (pendingPromise as any)[key].bind(pendingPromise)
+      : undefined;
 
   const proxy: EagerReturn<T> = new Proxy(
     {},
     {
       get(_target: any, key: string) {
-        const reservedProperty = getReservedProperty(key);
-        if (reservedProperty) {
-          return reservedProperty;
-        }
+        if (key === MESSAGE_KEY) return setMessage;
+
+        const promiseMethod = getPromiseMethod(key);
+        if (promiseMethod) return promiseMethod;
 
         const rule = getRule(key) ?? getSchemaRule(key);
         if (rule) {

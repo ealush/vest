@@ -17,12 +17,12 @@ type RuleCallConfig = {
 };
 
 function processRuleResult(
+  config: Pick<RuleCallConfig, 'ruleName' | 'value' | 'customMessage'>,
   result: any,
-  ruleName: string,
-  value: any,
-  customMessage: string | undefined,
   args: any[],
 ): void {
+  const { ruleName, value, customMessage } = config;
+
   const transformedResult = ctx.run({ value }, () =>
     transformResult(result, ruleName, value, ...args),
   );
@@ -33,65 +33,50 @@ function processRuleResult(
   );
 }
 
+function setAsyncResult(
+  config: Pick<RuleCallConfig, 'target' | 'clearMessage' | 'setPendingPromise'>,
+  promise: Promise<void>,
+) {
+  config.setPendingPromise(
+    promise.catch(err => {
+      config.target.pass = false;
+      throw err;
+    }),
+  );
+  config.clearMessage();
+  config.target.pass = true;
+  return config.target;
+}
+
 export function createRuleCall(config: RuleCallConfig) {
-  const {
-    target,
-    rule,
-    ruleName,
-    value,
-    customMessage,
-    clearMessage,
-    getPendingPromise,
-    setPendingPromise,
-  } = config;
+  const { target, rule, value, getPendingPromise } = config;
+
+  const runRule = (...args: any[]) =>
+    ctx.run({ value }, () => (rule as (...args: any[]) => any)(value, ...args));
 
   return function ruleCall(...args: any[]): any {
-    const runRule = () =>
-      ctx.run({ value }, () =>
-        (rule as (...args: any[]) => any)(value, ...args),
-      );
-
     const pendingPromise = getPendingPromise();
     if (pendingPromise) {
-      setPendingPromise(
+      return setAsyncResult(
+        config,
         pendingPromise
-          .then(() => runRule())
-          .then(ruleResult => {
-            processRuleResult(ruleResult, ruleName, value, customMessage, args);
-          }),
+          .then(() => runRule(...args))
+          .then(ruleResult => processRuleResult(config, ruleResult, args)),
       );
-
-      clearMessage();
-      target.pass = true;
-      return target;
     }
 
-    const ruleResult = runRule();
+    const ruleResult = runRule(...args);
 
     if (isPromise(ruleResult)) {
-      setPendingPromise(
-        ruleResult.then(resolvedResult => {
-          processRuleResult(
-            resolvedResult,
-            ruleName,
-            value,
-            customMessage,
-            args,
-          );
-        }),
+      return setAsyncResult(
+        config,
+        ruleResult.then(resolved => processRuleResult(config, resolved, args)),
       );
-
-      clearMessage();
-      target.pass = true;
-      return target;
     }
 
-    processRuleResult(ruleResult, ruleName, value, customMessage, args);
-
-    // Clear message after each rule - it only applies to the next rule
-    clearMessage();
+    processRuleResult(config, ruleResult, args);
+    config.clearMessage();
     target.pass = true;
-
     return target;
   };
 }

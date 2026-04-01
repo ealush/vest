@@ -13,6 +13,7 @@ import type {
 
 type ThenableEnforce = PromiseLike<void> & {
   catch: (onrejected?: ((reason: unknown) => unknown) | null) => Promise<void>;
+  finally: (onfinally?: (() => void) | null) => Promise<void>;
 };
 
 type Msg<T, A, S, AsyncMode extends boolean> = {

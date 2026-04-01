@@ -62,6 +62,13 @@ const schemaEvaluators = adaptDynamicRules<
   loose: schemaRules.loose,
 });
 
+const recordEvaluators = adaptDynamicRules<
+  RuleInstance<any, [any]>,
+  Pick<typeof schemaRules, 'record'>
+>({
+  record: schemaRules.record,
+});
+
 /**
  * Wraps a lazy schema evaluator so the resulting RuleInstance carries
  * a `__schema` reference to the original schema definition.
@@ -86,6 +93,7 @@ const schemaRulesWithArrayChaining = {
       return RuleRunReturn.create(result, value);
     }),
   loose: schemaAttacher(schemaEvaluators.loose),
+  record: recordEvaluators.record,
   shape: schemaAttacher(schemaEvaluators.shape),
 };
 

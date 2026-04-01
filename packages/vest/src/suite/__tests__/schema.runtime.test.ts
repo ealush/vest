@@ -173,7 +173,7 @@ describe('Schema Runtime Validation', () => {
 
       const testSuite = create(() => {}, schemaWithMessage);
 
-      const result = testSuite.run({ price: 'free' } as any);
+      const result = testSuite.run({ price: 'free' });
 
       expect(result.hasErrors('price')).toBe(true);
       expect(result.getErrors('price')).toContain('Price must be a number');
@@ -186,7 +186,8 @@ describe('Schema Runtime Validation', () => {
 
       const testSuite = create(() => {}, schemaWithoutMessage);
 
-      const result = testSuite.run({ price: 'free' } as any);
+      // @ts-expect-error - testing runtime with invalid value type
+      const result = testSuite.run({ price: 'free' });
 
       expect(result.hasErrors('price')).toBe(true);
       expect(result.getMessage('price')).toBeUndefined();

@@ -8,6 +8,7 @@ import './partial';
 import './pick';
 import './omit';
 import './shape';
+import './record';
 
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { MultiTypeInput, MultiTypeInputArgs } from './schemaRulesTypes';
@@ -20,6 +21,7 @@ import type {
   PickRuleInstance,
   OmitRuleInstance,
   ShapeRuleInstance,
+  RecordRuleInstance,
 } from './schemaRules';
 
 /**
@@ -49,4 +51,13 @@ export type SchemaRuleLazyTypes = {
   shape: <S extends Record<string, RuleInstance<any>>>(
     schema: S,
   ) => ShapeRuleInstance<S>;
+  record: {
+    <V extends RuleInstance<any, any>>(
+      valueRule: V,
+    ): RecordRuleInstance<never, V>;
+    <K extends RuleInstance<string, any>, V extends RuleInstance<any, any>>(
+      keyRule: K,
+      valueRule: V,
+    ): RecordRuleInstance<K, V>;
+  };
 };

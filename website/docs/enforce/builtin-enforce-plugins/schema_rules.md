@@ -253,7 +253,7 @@ binaryTree.test({
 }); // true
 ```
 
-The factory function is called once on first validation and cached, so there is no performance overhead from repeated resolution.
+The factory function is called once on first validation and cached, avoiding repeated schema resolution overhead.
 
 ### TypeScript
 

@@ -3,7 +3,19 @@ sidebar_position: 5
 title: Schema Validation with Enforce
 description: While less common when using Vest, sometimes it might be useful to validate a value against a schema. Vest comes with some schema validation rules that are handy for data-shape validation.
 keywords:
-  [Vest, schema, validation, rules, shape, optional, partial, loose, isArrayOf]
+  [
+    Vest,
+    schema,
+    validation,
+    rules,
+    shape,
+    optional,
+    partial,
+    loose,
+    isArrayOf,
+    lazy,
+    recursive,
+  ]
 ---
 
 # Schema rules
@@ -22,6 +34,7 @@ These rules are available in `enforce`:
   - [enforce.omit() - omit a subset of fields](#enforceomit---omit-a-subset-of-fields)
   - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
   - [enforce.record() - dynamic object matching](#enforcerecord---dynamic-object-matching)
+  - [enforce.lazy() - recursive schemas](#enforcelazy---recursive-schemas)
 
 ## enforce.shape() - Lean schema validation.
 
@@ -201,6 +214,81 @@ enforce(exactMapping).record(
 ```
 
 Just like `isArrayOf`, `record` can be nested in shapes or other arrays, and properly populates accurate error paths (e.g. `settings.darkMode`).
+
+## enforce.lazy() - recursive schemas
+
+Use `enforce.lazy()` to validate self-referencing data structures like trees, nested comments, or recursive menus. It wraps a factory function that returns the schema, deferring resolution to validation time to avoid infinite recursion during definition.
+
+```js
+const treeSchema = enforce.shape({
+  value: enforce.isNumber(),
+  children: enforce.isArrayOf(enforce.lazy(() => treeSchema)),
+});
+
+treeSchema.test({
+  value: 1,
+  children: [
+    { value: 2, children: [] },
+    {
+      value: 3,
+      children: [{ value: 4, children: [] }],
+    },
+  ],
+}); // true
+```
+
+`lazy` works with `enforce.optional()` for optional recursive fields, such as binary trees:
+
+```js
+const binaryTree = enforce.shape({
+  value: enforce.isNumber(),
+  left: enforce.optional(enforce.lazy(() => binaryTree)),
+  right: enforce.optional(enforce.lazy(() => binaryTree)),
+});
+
+binaryTree.test({ value: 1 }); // true (leaf node)
+binaryTree.test({
+  value: 1,
+  left: { value: 2, right: { value: 3 } },
+}); // true
+```
+
+The factory function is called once on first validation and cached, so there is no performance overhead from repeated resolution.
+
+### TypeScript
+
+TypeScript cannot infer recursive types automatically. When using `enforce.lazy()` for recursive schemas, provide an explicit type annotation:
+
+```ts
+import type { RuleInstance } from 'n4s';
+
+type Category = {
+  name: string;
+  children: Category[];
+};
+
+const categorySchema: RuleInstance<Category> = enforce.shape({
+  name: enforce.isString(),
+  children: enforce.isArrayOf(enforce.lazy(() => categorySchema)),
+});
+```
+
+For non-recursive uses, the type is inferred automatically:
+
+```ts
+const schema = enforce.shape({
+  name: enforce.isString(),
+  metadata: enforce.lazy(() =>
+    enforce.shape({
+      key: enforce.isString(),
+      value: enforce.isNumber(),
+    }),
+  ),
+});
+
+type Data = typeof schema.infer;
+// { name: string; metadata: { key: string; value: number } }
+```
 
 ## Schema Parsing
 

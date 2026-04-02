@@ -169,6 +169,45 @@ describe('schema parse integration', () => {
     expect(result).toEqual({ name: 'Jane', age: 34 });
   });
 
+  it('tuple parses element values with custom coercions', () => {
+    const schema = enforce.tuple(enforce.trimString(), enforce.toNumber());
+    const result = schema.parse(['  hello  ', '42']);
+    expect(result).toEqual(['hello', 42]);
+  });
+
+  it('tuple parses nested shape elements', () => {
+    const schema = enforce.tuple(
+      enforce.trimString(),
+      enforce.shape({
+        name: enforce.trimString(),
+        age: enforce.toNumber(),
+      }),
+    );
+
+    const result = schema.parse(['  label  ', { name: '  Jane  ', age: '34' }]);
+    expect(result).toEqual(['label', { name: 'Jane', age: 34 }]);
+  });
+
+  it('tuple parses with built-in parser chains', () => {
+    const schema = enforce.tuple(
+      enforce.isString().trim().toTitle(),
+      enforce.isNumeric().toNumber().clamp(0, 100),
+    );
+
+    const result = schema.parse(['  jANE DOE ', '180']);
+    expect(result).toEqual(['Jane Doe', 100]);
+  });
+
+  it('tuple inside shape preserves parse transformations', () => {
+    const schema = enforce.shape({
+      label: enforce.trimString(),
+      coords: enforce.tuple(enforce.toNumber(), enforce.toNumber()),
+    });
+
+    const result = schema.parse({ label: '  origin  ', coords: ['10', '20'] });
+    expect(result).toEqual({ label: 'origin', coords: [10, 20] });
+  });
+
   it('lazy propagates parse transformations through recursive schemas', () => {
     const schema: RuleInstance<any> = enforce.shape({
       name: enforce.trimString(),

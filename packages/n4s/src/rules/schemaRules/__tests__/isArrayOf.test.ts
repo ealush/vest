@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 
 import { enforce } from '../../../n4s';
 
@@ -67,6 +67,42 @@ describe('isArrayOf', () => {
     expect(rule.run([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])).toMatchObject({
       pass: false,
     }); // fails maxLength
+  });
+});
+
+describe('enforce.list() - alias for isArrayOf', () => {
+  it('should validate arrays identically to isArrayOf', () => {
+    const rule = enforce.list(enforce.isNumber());
+    expect(rule.run([1, 2, 3]).pass).toBe(true);
+    expect(runArrayRule(rule, [1, 'x']).pass).toBe(false);
+  });
+
+  it('should support multiple rules', () => {
+    const rule = enforce.list(enforce.isNumber(), enforce.isString());
+    expect(rule.run([1, '2', 3]).pass).toBe(true);
+  });
+
+  it('should chain array methods', () => {
+    const rule = enforce.list(enforce.isNumber()).minLength(1).maxLength(5);
+    expect(rule.run([1, 2]).pass).toBe(true);
+    expect(rule.run([]).pass).toBe(false);
+  });
+
+  it('should infer the same types as isArrayOf', () => {
+    const viaIsArrayOf = enforce.isArrayOf(enforce.isString());
+    const viaList = enforce.list(enforce.isString());
+    expectTypeOf(viaList.infer).toEqualTypeOf(viaIsArrayOf.infer);
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(viaList.parse).returns.toEqualTypeOf<string[]>();
+  });
+
+  it('should work in the eager API', () => {
+    expect(() => {
+      enforce([1, 2, 3]).list(enforce.isNumber());
+    }).not.toThrow();
+    expect(() => {
+      enforce(['x']).list(enforce.isNumber());
+    }).toThrow();
   });
 });
 

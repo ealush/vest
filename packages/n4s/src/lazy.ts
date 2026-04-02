@@ -94,9 +94,23 @@ const schemaRulesWithArrayChaining = {
       return RuleRunReturn.create(result, value);
     }),
   lazy: lazyRule,
+  list: <T>(...rules: any[]): ArrayRuleInstance<T> =>
+    addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
+      const result = ctx.run({ value }, () =>
+        schemaRules.isArrayOf(value, ...rules),
+      );
+      return RuleRunReturn.create(result, value);
+    }),
   loose: schemaAttacher(schemaEvaluators.loose),
   record: recordEvaluators.record,
   shape: schemaAttacher(schemaEvaluators.shape),
+  tuple: (...rules: any[]) =>
+    addToChain(arrayRules, (value: any) => {
+      const result = ctx.run({ value }, () =>
+        schemaRules.tuple(value, ...rules),
+      );
+      return RuleRunReturn.create(result, value);
+    }),
 };
 
 const baseEnforceLazy = {

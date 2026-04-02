@@ -13,8 +13,10 @@ keywords:
     partial,
     loose,
     isArrayOf,
+    list,
     lazy,
     recursive,
+    tuple,
   ]
 ---
 
@@ -32,9 +34,10 @@ These rules are available in `enforce`:
   - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
   - [enforce.pick() - pick a subset of fields](#enforcepick---pick-a-subset-of-fields)
   - [enforce.omit() - omit a subset of fields](#enforceomit---omit-a-subset-of-fields)
-  - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
+  - [enforce.isArrayOf() / enforce.list() - array shape matching](#enforceisarrayof--enforcelist---array-shape-matching)
   - [enforce.record() - dynamic object matching](#enforcerecord---dynamic-object-matching)
   - [enforce.lazy() - recursive schemas](#enforcelazy---recursive-schemas)
+  - [enforce.tuple() - fixed-length array validation](#enforcetuple---fixed-length-array-validation)
 
 ## enforce.shape() - Lean schema validation.
 
@@ -169,9 +172,11 @@ enforce({ name: 'Laura', code: 'x23', internal: true }).omit(
 // ✅ This will pass, validating only `name` and skipping `code` and `internal`
 ```
 
-## enforce.isArrayOf() - array shape matching
+## enforce.isArrayOf() / enforce.list() - array shape matching
 
-enforce.isArrayOf can be used to determine the allowed types and values within an array. It will run against each element in the array, and will only pass if all items meet at least one of the validation rules.
+`enforce.list()` is an alias for `enforce.isArrayOf()` — they are identical. Use whichever reads better alongside your other schema rules (`shape`, `tuple`, `record`, `loose`, etc.).
+
+enforce.isArrayOf (or enforce.list) can be used to determine the allowed types and values within an array. It will run against each element in the array, and will only pass if all items meet at least one of the validation rules.
 
 ```js
 enforce([1, 2, 'hello!']).isArrayOf(enforce.isString(), enforce.isNumber());
@@ -288,6 +293,56 @@ const schema = enforce.shape({
 
 type Data = typeof schema.infer;
 // { name: string; metadata: { key: string; value: number } }
+```
+
+## enforce.tuple() - fixed-length array validation
+
+Use `enforce.tuple()` to validate arrays where each position has a distinct type. Unlike `isArrayOf` which applies the same rule to all elements, `tuple` maps each rule to its corresponding index and enforces exact length.
+
+```js
+enforce.tuple(enforce.isString(), enforce.isNumber());
+// ✓ ['hello', 42]
+// ✗ ['hello', 'world']    — wrong type at index 1
+// ✗ ['hello']              — too few elements
+// ✗ ['hello', 42, true]    — too many elements
+```
+
+Only trailing elements can be made optional (elements in the middle must remain required):
+
+```js
+enforce.tuple(enforce.isString(), enforce.optional(enforce.isNumber()));
+// ✓ ['hello']
+// ✓ ['hello', 42]
+```
+
+Tuple elements can be any schema rule, including nested shapes and other tuples:
+
+```js
+enforce.tuple(
+  enforce.isString(),
+  enforce.shape({ lat: enforce.isNumber(), lng: enforce.isNumber() }),
+);
+// ✓ ['location', { lat: 40.7, lng: -74.0 }]
+```
+
+### TypeScript
+
+Tuple types are inferred automatically from the rules:
+
+```ts
+const schema = enforce.tuple(enforce.isString(), enforce.isNumber());
+type T = enforce.infer<typeof schema>; // [string, number]
+```
+
+Tuples compose naturally inside shapes:
+
+```ts
+const pointSchema = enforce.shape({
+  label: enforce.isString(),
+  coords: enforce.tuple(enforce.isNumber(), enforce.isNumber()),
+});
+type Point = enforce.infer<typeof pointSchema>;
+// { label: string; coords: [number, number] }
 ```
 
 ## Schema Parsing

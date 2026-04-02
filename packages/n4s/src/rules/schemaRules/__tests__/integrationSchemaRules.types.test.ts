@@ -246,4 +246,48 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     // eslint-disable-next-line vitest/valid-expect
     expectTypeOf(treeSchema.parse).returns.toEqualTypeOf<Tree>();
   });
+
+  it('tuple: parse() return type matches inferred tuple type', () => {
+    const schema = enforce.tuple(
+      enforce.isString(),
+      enforce.isNumber(),
+      enforce.isBoolean(),
+    );
+
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(schema.parse).returns.toEqualTypeOf<
+      [string, number, boolean]
+    >();
+  });
+
+  it('tuple inside shape: parse() preserves tuple in parent shape', () => {
+    const schema = enforce.shape({
+      label: enforce.isString(),
+      coords: enforce.tuple(enforce.isNumber(), enforce.isNumber()),
+    });
+
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(schema.parse).returns.toEqualTypeOf<{
+      label: string;
+      coords: [number, number];
+    }>();
+  });
+
+  it('enforce.infer<> is an alias for typeof schema.infer', () => {
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      age: enforce.isNumber(),
+      tags: enforce.isArrayOf(enforce.isString()),
+    });
+
+    type ViaInferProp = typeof schema.infer;
+    type ViaEnforceInfer = enforce.infer<typeof schema>;
+
+    expectTypeOf<ViaEnforceInfer>().toEqualTypeOf<ViaInferProp>();
+    expectTypeOf<ViaEnforceInfer>().toEqualTypeOf<{
+      name: string;
+      age: number;
+      tags: string[];
+    }>();
+  });
 });

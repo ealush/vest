@@ -9,6 +9,7 @@ import './pick';
 import './omit';
 import './shape';
 import './record';
+import './tuple';
 
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { MultiTypeInput, MultiTypeInputArgs } from './schemaRulesTypes';
@@ -23,6 +24,7 @@ import type {
   OmitRuleInstance,
   ShapeRuleInstance,
   RecordRuleInstance,
+  TupleRuleInstance,
 } from './schemaRules';
 
 /**
@@ -30,6 +32,9 @@ import type {
  */
 export type SchemaRuleLazyTypes = {
   isArrayOf: <Rules extends RuleInstance<any, any>[]>(
+    ...rules: Rules
+  ) => IsArrayOfRuleInstance<MultiTypeInput<Rules>, MultiTypeInputArgs<Rules>>;
+  list: <Rules extends RuleInstance<any, any>[]>(
     ...rules: Rules
   ) => IsArrayOfRuleInstance<MultiTypeInput<Rules>, MultiTypeInputArgs<Rules>>;
   lazy: <T>(factory: () => RuleInstance<T, any>) => LazyRuleInstance<T>;
@@ -62,4 +67,7 @@ export type SchemaRuleLazyTypes = {
       valueRule: V,
     ): RecordRuleInstance<K, V>;
   };
+  tuple: <Rules extends RuleInstance<any, any>[]>(
+    ...rules: Rules
+  ) => TupleRuleInstance<Rules>;
 };

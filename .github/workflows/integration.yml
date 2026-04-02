@@ -59,8 +59,10 @@ jobs:
       - name: Release
         run: yarn release
       - name: Run benchmarks
+        if: github.event_name != 'pull_request'
         run: npx tsx vx/scripts/benchmark-reporter.ts --update
       - name: Commit Benchmark Results
+        if: github.event_name != 'pull_request'
         run: |
           git config --global user.name "${{ secrets.GIT_NAME }}"
           git config --global --replace-all user.email "${{ secrets.EMAIL_ADDRESS }}"

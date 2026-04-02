@@ -1,4 +1,4 @@
-import { isFunction, longerThan, greaterThan } from 'vest-utils';
+import { greaterThan, isFunction, longerThan } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';

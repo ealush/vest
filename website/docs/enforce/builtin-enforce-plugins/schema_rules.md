@@ -13,6 +13,7 @@ keywords:
     partial,
     loose,
     isArrayOf,
+    list,
     lazy,
     recursive,
     tuple,
@@ -33,7 +34,7 @@ These rules are available in `enforce`:
   - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
   - [enforce.pick() - pick a subset of fields](#enforcepick---pick-a-subset-of-fields)
   - [enforce.omit() - omit a subset of fields](#enforceomit---omit-a-subset-of-fields)
-  - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
+  - [enforce.isArrayOf() / enforce.list() - array shape matching](#enforceisarrayof--enforcelist---array-shape-matching)
   - [enforce.record() - dynamic object matching](#enforcerecord---dynamic-object-matching)
   - [enforce.lazy() - recursive schemas](#enforcelazy---recursive-schemas)
   - [enforce.tuple() - fixed-length array validation](#enforcetuple---fixed-length-array-validation)
@@ -171,9 +172,11 @@ enforce({ name: 'Laura', code: 'x23', internal: true }).omit(
 // ✅ This will pass, validating only `name` and skipping `code` and `internal`
 ```
 
-## enforce.isArrayOf() - array shape matching
+## enforce.isArrayOf() / enforce.list() - array shape matching
 
-enforce.isArrayOf can be used to determine the allowed types and values within an array. It will run against each element in the array, and will only pass if all items meet at least one of the validation rules.
+`enforce.list()` is an alias for `enforce.isArrayOf()` — they are identical. Use whichever reads better alongside your other schema rules (`shape`, `tuple`, `record`, `loose`, etc.).
+
+enforce.isArrayOf (or enforce.list) can be used to determine the allowed types and values within an array. It will run against each element in the array, and will only pass if all items meet at least one of the validation rules.
 
 ```js
 enforce([1, 2, 'hello!']).isArrayOf(enforce.isString(), enforce.isNumber());

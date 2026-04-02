@@ -1,4 +1,4 @@
-import { isFunction } from 'vest-utils';
+import { isFunction, longerThan, greaterThan } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
@@ -36,7 +36,10 @@ export function tuple(value: unknown, ...rules: any[]): RuleRunReturn<any> {
   const requiredCount = countRequired(rules);
 
   // Reject arrays that are too short or too long
-  if (value.length < requiredCount || value.length > rules.length) {
+  if (
+    greaterThan(requiredCount, value.length) ||
+    longerThan(value, rules.length)
+  ) {
     return RuleRunReturn.Failing(value);
   }
 

@@ -849,3 +849,52 @@ describe('comprehensive typed API coverage', () => {
     result.getErrors('anything');
   });
 });
+
+describe('lazy schema in suite types', () => {
+  it('infers data type from schema containing lazy fields', () => {
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      metadata: enforce.lazy(() =>
+        enforce.shape({
+          key: enforce.isString(),
+          value: enforce.isNumber(),
+        }),
+      ),
+    });
+
+    const suite = create(data => {
+      void (0 as unknown as AssertTrue<
+        IsEqual<
+          typeof data,
+          { name: string; metadata: { key: string; value: number } }
+        >
+      >);
+      void (0 as unknown as AssertTrue<IsEqual<(typeof data)['name'], string>>);
+      void (0 as unknown as AssertTrue<
+        IsEqual<(typeof data)['metadata'], { key: string; value: number }>
+      >);
+    }, schema);
+
+    void (0 as unknown as AssertTrue<
+      IsEqual<
+        Parameters<typeof suite.run>[0],
+        { name: string; metadata: { key: string; value: number } }
+      >
+    >);
+
+    void (0 as unknown as AssertTrue<
+      IsEqual<
+        ReturnType<typeof suite.get>['types']['output'],
+        { name: string; metadata: { key: string; value: number } }
+      >
+    >);
+
+    suite.run({ name: 'test', metadata: { key: 'k', value: 1 } });
+
+    // @ts-expect-error - metadata.value must be number
+    suite.run({ name: 'test', metadata: { key: 'k', value: 'bad' } });
+
+    // @ts-expect-error - missing metadata field
+    suite.run({ name: 'test' });
+  });
+});

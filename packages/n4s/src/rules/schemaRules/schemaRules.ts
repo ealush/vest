@@ -1,6 +1,7 @@
 import './schemaRulesLazyTypes';
 
 export { isArrayOf, type IsArrayOfRuleInstance } from './isArrayOf';
+export { type LazyRuleInstance } from './lazy';
 export { loose, type LooseRuleInstance } from './loose';
 export { optional, type OptionalRuleInstance } from './optional';
 export { partial, type PartialRuleInstance } from './partial';

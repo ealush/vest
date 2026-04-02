@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { enforce } from '../../../n4s';
+import type { RuleInstance } from '../../../utils/RuleInstance';
 
 declare global {
   namespace n4s {
@@ -154,5 +155,44 @@ describe('schema parse integration', () => {
     // @ts-expect-error - testing nullish input against string schema
     expect(schema.parse({ label: undefined })).toEqual({ label: 'N/A' });
     expect(schema.parse({ label: 'hello' })).toEqual({ label: 'hello' });
+  });
+
+  it('lazy propagates parse transformations from inner schema', () => {
+    const inner = enforce.shape({
+      name: enforce.trimString(),
+      age: enforce.toNumber(),
+    });
+
+    const schema = enforce.lazy(() => inner);
+    // @ts-expect-error - input type differs from output due to coercions
+    const result = schema.parse({ name: '  Jane  ', age: '34' });
+    expect(result).toEqual({ name: 'Jane', age: 34 });
+  });
+
+  it('lazy propagates parse transformations through recursive schemas', () => {
+    const schema: RuleInstance<any> = enforce.shape({
+      name: enforce.trimString(),
+      children: enforce.isArrayOf(enforce.lazy(() => schema)),
+    });
+
+    const result = schema.parse({
+      name: '  Root  ',
+      children: [
+        {
+          name: '  Child  ',
+          children: [{ name: '  Grandchild  ', children: [] }],
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      name: 'Root',
+      children: [
+        {
+          name: 'Child',
+          children: [{ name: 'Grandchild', children: [] }],
+        },
+      ],
+    });
   });
 });

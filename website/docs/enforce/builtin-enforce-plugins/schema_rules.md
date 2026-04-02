@@ -15,6 +15,7 @@ keywords:
     isArrayOf,
     lazy,
     recursive,
+    tuple,
   ]
 ---
 
@@ -35,6 +36,7 @@ These rules are available in `enforce`:
   - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
   - [enforce.record() - dynamic object matching](#enforcerecord---dynamic-object-matching)
   - [enforce.lazy() - recursive schemas](#enforcelazy---recursive-schemas)
+  - [enforce.tuple() - fixed-length array validation](#enforcetuple---fixed-length-array-validation)
 
 ## enforce.shape() - Lean schema validation.
 
@@ -288,6 +290,56 @@ const schema = enforce.shape({
 
 type Data = typeof schema.infer;
 // { name: string; metadata: { key: string; value: number } }
+```
+
+## enforce.tuple() - fixed-length array validation
+
+Use `enforce.tuple()` to validate arrays where each position has a distinct type. Unlike `isArrayOf` which applies the same rule to all elements, `tuple` maps each rule to its corresponding index and enforces exact length.
+
+```js
+enforce.tuple(enforce.isString(), enforce.isNumber());
+// ✓ ['hello', 42]
+// ✗ ['hello', 'world']    — wrong type at index 1
+// ✗ ['hello']              — too few elements
+// ✗ ['hello', 42, true]    — too many elements
+```
+
+Trailing elements can be made optional:
+
+```js
+enforce.tuple(enforce.isString(), enforce.optional(enforce.isNumber()));
+// ✓ ['hello']
+// ✓ ['hello', 42]
+```
+
+Tuple elements can be any schema rule, including nested shapes and other tuples:
+
+```js
+enforce.tuple(
+  enforce.isString(),
+  enforce.shape({ lat: enforce.isNumber(), lng: enforce.isNumber() }),
+);
+// ✓ ['location', { lat: 40.7, lng: -74.0 }]
+```
+
+### TypeScript
+
+Tuple types are inferred automatically from the rules:
+
+```ts
+const schema = enforce.tuple(enforce.isString(), enforce.isNumber());
+type T = enforce.infer<typeof schema>; // [string, number]
+```
+
+Tuples compose naturally inside shapes:
+
+```ts
+const pointSchema = enforce.shape({
+  label: enforce.isString(),
+  coords: enforce.tuple(enforce.isNumber(), enforce.isNumber()),
+});
+type Point = enforce.infer<typeof pointSchema>;
+// { label: string; coords: [number, number] }
 ```
 
 ## Schema Parsing

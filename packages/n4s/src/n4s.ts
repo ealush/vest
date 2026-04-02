@@ -5,6 +5,7 @@ import { ctx } from './enforceContext';
 import type { EnforceContext } from './enforceContext';
 import { extendEnforce } from './extendLogic';
 import { enforceLazy } from './lazy';
+import type { RuleInstance } from './utils/RuleInstance';
 
 /**
  * Context API for accessing validation context.
@@ -42,6 +43,10 @@ type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;
 type Enforce = typeof enforceEager &
   typeof enforceLazy & { extend: ExtendFn; context: ContextFn };
+
+export namespace enforce {
+  export type infer<R extends RuleInstance<any, any>> = R['infer'];
+}
 
 /**
  * Main validation function supporting both eager (imperative) and lazy (builder) APIs.

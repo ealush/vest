@@ -97,6 +97,13 @@ const schemaRulesWithArrayChaining = {
   loose: schemaAttacher(schemaEvaluators.loose),
   record: recordEvaluators.record,
   shape: schemaAttacher(schemaEvaluators.shape),
+  tuple: (...rules: any[]) =>
+    addToChain({}, (value: any) => {
+      const result = ctx.run({ value }, () =>
+        schemaRules.tuple(value, ...rules),
+      );
+      return RuleRunReturn.create(result, value);
+    }),
 };
 
 const baseEnforceLazy = {

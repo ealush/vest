@@ -9,6 +9,7 @@ import './pick';
 import './omit';
 import './shape';
 import './record';
+import './tuple';
 
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { MultiTypeInput, MultiTypeInputArgs } from './schemaRulesTypes';
@@ -23,6 +24,7 @@ import type {
   OmitRuleInstance,
   ShapeRuleInstance,
   RecordRuleInstance,
+  TupleRuleInstance,
 } from './schemaRules';
 
 /**
@@ -62,4 +64,7 @@ export type SchemaRuleLazyTypes = {
       valueRule: V,
     ): RecordRuleInstance<K, V>;
   };
+  tuple: <Rules extends RuleInstance<any, any>[]>(
+    ...rules: Rules
+  ) => TupleRuleInstance<Rules>;
 };

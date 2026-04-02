@@ -246,4 +246,22 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     // eslint-disable-next-line vitest/valid-expect
     expectTypeOf(treeSchema.parse).returns.toEqualTypeOf<Tree>();
   });
+
+  it('enforce.infer<> is an alias for typeof schema.infer', () => {
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      age: enforce.isNumber(),
+      tags: enforce.isArrayOf(enforce.isString()),
+    });
+
+    type ViaInferProp = typeof schema.infer;
+    type ViaEnforceInfer = enforce.infer<typeof schema>;
+
+    expectTypeOf<ViaEnforceInfer>().toEqualTypeOf<ViaInferProp>();
+    expectTypeOf<ViaEnforceInfer>().toEqualTypeOf<{
+      name: string;
+      age: number;
+      tags: string[];
+    }>();
+  });
 });

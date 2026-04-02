@@ -40,6 +40,17 @@ export type TArraySchemaRules<T, A, S> = T extends any[]
       isArrayOf: <Rules extends RuleInstance<any, any>[]>(
         ...rules: Rules
       ) => EnforceEagerReturn<MultiTypeInput<Rules>[], A, S>;
+      tuple: <Rules extends RuleInstance<any, any>[]>(
+        ...rules: Rules
+      ) => EnforceEagerReturn<
+        {
+          [K in keyof Rules]: Rules[K] extends RuleInstance<infer R, any>
+            ? R
+            : never;
+        },
+        A,
+        S
+      >;
     }
   : Record<string, never>;
 

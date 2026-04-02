@@ -9,4 +9,5 @@ export { pick, type PickRuleInstance } from './pick';
 export { omit, type OmitRuleInstance } from './omit';
 export { shape, type ShapeRuleInstance } from './shape';
 export { record, type RecordRuleInstance } from './record';
+export { tuple, type TupleRuleInstance } from './tuple';
 export type { SchemaRuleLazyTypes } from './schemaRulesLazyTypes';

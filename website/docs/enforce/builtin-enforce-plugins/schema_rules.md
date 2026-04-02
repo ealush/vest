@@ -304,7 +304,7 @@ enforce.tuple(enforce.isString(), enforce.isNumber());
 // ✗ ['hello', 42, true]    — too many elements
 ```
 
-Trailing elements can be made optional:
+Only trailing elements can be made optional (elements in the middle must remain required):
 
 ```js
 enforce.tuple(enforce.isString(), enforce.optional(enforce.isNumber()));

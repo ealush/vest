@@ -1,6 +1,7 @@
 import { describe, expectTypeOf, it } from 'vitest';
 
 import { enforce } from '../../../n4s';
+import type { RuleInstance } from '../../../utils/RuleInstance';
 import type { ShapeType } from '../shape';
 
 // schema combinators are consumed via enforce
@@ -197,5 +198,52 @@ describe('types: compile-time mismatches across rules and composed schemas', () 
     expectTypeOf(listSchema.parse).returns.toMatchTypeOf<
       { id: number; label: string }[]
     >();
+  });
+
+  it('lazy: standalone preserves inner rule type for .infer and .parse()', () => {
+    const lazyNum = enforce.lazy(() => enforce.isNumber());
+    expectTypeOf(lazyNum.infer).toEqualTypeOf<number>();
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(lazyNum.parse).returns.toEqualTypeOf<number>();
+
+    const lazyStr = enforce.lazy(() => enforce.isString());
+    expectTypeOf(lazyStr.infer).toEqualTypeOf<string>();
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(lazyStr.parse).returns.toEqualTypeOf<string>();
+  });
+
+  it('lazy: inside shape preserves field types in .infer and .parse()', () => {
+    const schema = enforce.shape({
+      name: enforce.isString(),
+      count: enforce.lazy(() => enforce.isNumber()),
+    });
+
+    type S = typeof schema.infer;
+
+    const ok: S = { name: 'a', count: 1 };
+    void ok;
+
+    // @ts-expect-error - count must be number, not string
+    const bad: S = { name: 'a', count: 'not a number' };
+    void bad;
+
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(schema.parse).returns.toMatchTypeOf<{
+      name: string;
+      count: number;
+    }>();
+  });
+
+  it('lazy: recursive schema with explicit annotation preserves types', () => {
+    type Tree = { value: number; children: Tree[] };
+
+    const treeSchema: RuleInstance<Tree> = enforce.shape({
+      value: enforce.isNumber(),
+      children: enforce.isArrayOf(enforce.lazy(() => treeSchema)),
+    });
+
+    expectTypeOf(treeSchema.infer).toEqualTypeOf<Tree>();
+    // eslint-disable-next-line vitest/valid-expect
+    expectTypeOf(treeSchema.parse).returns.toEqualTypeOf<Tree>();
   });
 });

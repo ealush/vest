@@ -1,3 +1,5 @@
+import { isFunction } from 'vest-utils';
+
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
@@ -89,7 +91,7 @@ function elementFailure(
  * with undefined (the same way shape detects optional fields).
  */
 function isOptionalRule(rule: RuleInstance<any, any>): boolean {
-  if (!rule || typeof rule.test !== 'function') return false;
+  if (!rule || !isFunction(rule.test)) return false;
   return rule.test(undefined);
 }
 

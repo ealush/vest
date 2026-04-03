@@ -1243,8 +1243,10 @@ These rules are available in `enforce`:
   - [enforce.loose() - loose shape matching](#enforceloose---loose-shape-matching)
   - [enforce.pick() - pick a subset of fields](#enforcepick---pick-a-subset-of-fields)
   - [enforce.omit() - omit a subset of fields](#enforceomit---omit-a-subset-of-fields)
-  - [enforce.isArrayOf() - array shape matching](#enforceisarrayof---array-shape-matching)
+  - [enforce.isArrayOf() / enforce.list() - array shape matching](#enforceisarrayof--enforcelist---array-shape-matching)
   - [enforce.record() - dynamic object matching](#enforcerecord---dynamic-object-matching)
+  - [enforce.lazy() - recursive schemas](#enforcelazy---recursive-schemas)
+  - [enforce.tuple() - fixed-length array validation](#enforcetuple---fixed-length-array-validation)
 
 ## enforce.shape() - Lean schema validation.
 
@@ -1379,9 +1381,11 @@ enforce({ name: 'Laura', code: 'x23', internal: true }).omit(
 // ✅ This will pass, validating only `name` and skipping `code` and `internal`
 ```
 
-## enforce.isArrayOf() - array shape matching
+## enforce.isArrayOf() / enforce.list() - array shape matching
 
-enforce.isArrayOf can be used to determine the allowed types and values within an array. It will run against each element in the array, and will only pass if all items meet at least one of the validation rules.
+`enforce.list()` is an alias for `enforce.isArrayOf()` — they are identical. Use whichever reads better alongside your other schema rules (`shape`, `tuple`, `record`, `loose`, etc.).
+
+enforce.isArrayOf (or enforce.list) can be used to determine the allowed types and values within an array. It will run against each element in the array, and will only pass if all items meet at least one of the validation rules.
 
 ```js
 enforce([1, 2, 'hello!']).isArrayOf(enforce.isString(), enforce.isNumber());
@@ -1424,6 +1428,131 @@ enforce(exactMapping).record(
 ```
 
 Just like `isArrayOf`, `record` can be nested in shapes or other arrays, and properly populates accurate error paths (e.g. `settings.darkMode`).
+
+## enforce.lazy() - recursive schemas
+
+Use `enforce.lazy()` to validate self-referencing data structures like trees, nested comments, or recursive menus. It wraps a factory function that returns the schema, deferring resolution to validation time to avoid infinite recursion during definition.
+
+```js
+const treeSchema = enforce.shape({
+  value: enforce.isNumber(),
+  children: enforce.isArrayOf(enforce.lazy(() => treeSchema)),
+});
+
+treeSchema.test({
+  value: 1,
+  children: [
+    { value: 2, children: [] },
+    {
+      value: 3,
+      children: [{ value: 4, children: [] }],
+    },
+  ],
+}); // true
+```
+
+`lazy` works with `enforce.optional()` for optional recursive fields, such as binary trees:
+
+```js
+const binaryTree = enforce.shape({
+  value: enforce.isNumber(),
+  left: enforce.optional(enforce.lazy(() => binaryTree)),
+  right: enforce.optional(enforce.lazy(() => binaryTree)),
+});
+
+binaryTree.test({ value: 1 }); // true (leaf node)
+binaryTree.test({
+  value: 1,
+  left: { value: 2, right: { value: 3 } },
+}); // true
+```
+
+The factory function is called once on first validation and cached, avoiding repeated schema resolution overhead.
+
+### TypeScript
+
+TypeScript cannot infer recursive types automatically. When using `enforce.lazy()` for recursive schemas, provide an explicit type annotation:
+
+```ts
+import type { RuleInstance } from 'n4s';
+
+type Category = {
+  name: string;
+  children: Category[];
+};
+
+const categorySchema: RuleInstance<Category> = enforce.shape({
+  name: enforce.isString(),
+  children: enforce.isArrayOf(enforce.lazy(() => categorySchema)),
+});
+```
+
+For non-recursive uses, the type is inferred automatically:
+
+```ts
+const schema = enforce.shape({
+  name: enforce.isString(),
+  metadata: enforce.lazy(() =>
+    enforce.shape({
+      key: enforce.isString(),
+      value: enforce.isNumber(),
+    }),
+  ),
+});
+
+type Data = typeof schema.infer;
+// { name: string; metadata: { key: string; value: number } }
+```
+
+## enforce.tuple() - fixed-length array validation
+
+Use `enforce.tuple()` to validate arrays where each position has a distinct type. Unlike `isArrayOf` which applies the same rule to all elements, `tuple` maps each rule to its corresponding index and enforces exact length.
+
+```js
+enforce.tuple(enforce.isString(), enforce.isNumber());
+// ✓ ['hello', 42]
+// ✗ ['hello', 'world']    — wrong type at index 1
+// ✗ ['hello']              — too few elements
+// ✗ ['hello', 42, true]    — too many elements
+```
+
+Only trailing elements can be made optional (elements in the middle must remain required):
+
+```js
+enforce.tuple(enforce.isString(), enforce.optional(enforce.isNumber()));
+// ✓ ['hello']
+// ✓ ['hello', 42]
+```
+
+Tuple elements can be any schema rule, including nested shapes and other tuples:
+
+```js
+enforce.tuple(
+  enforce.isString(),
+  enforce.shape({ lat: enforce.isNumber(), lng: enforce.isNumber() }),
+);
+// ✓ ['location', { lat: 40.7, lng: -74.0 }]
+```
+
+### TypeScript
+
+Tuple types are inferred automatically from the rules:
+
+```ts
+const schema = enforce.tuple(enforce.isString(), enforce.isNumber());
+type T = enforce.infer<typeof schema>; // [string, number]
+```
+
+Tuples compose naturally inside shapes:
+
+```ts
+const pointSchema = enforce.shape({
+  label: enforce.isString(),
+  coords: enforce.tuple(enforce.isNumber(), enforce.isNumber()),
+});
+type Point = enforce.infer<typeof pointSchema>;
+// { label: string; coords: [number, number] }
+```
 
 ## Schema Parsing
 
@@ -5237,30 +5366,27 @@ Vest provides the `each` helper to handle these lists efficiently.
 
 ## Using `each`
 
-Think of `each` as a smarter `forEach` loop designed specifically for validation. It takes three arguments:
+Think of `each` as a smarter `forEach` loop designed specifically for validation. It takes two arguments:
 
 1. The array to iterate over.
 2. A callback function to run for every item.
-3. (Important!) A unique key for tracking.
+
+The key for tracking goes on each `test` call as the last argument.
 
 ```javascript
 import { create, test, each, enforce } from 'vest';
 
 const suite = create(data => {
   // data.products is an array of objects
-  each(
-    data.products,
-    product => {
-      test('product_name', 'Name is required', () => {
-        enforce(product.name).isNotBlank();
-      });
+  each(data.products, product => {
+    test('product_name', 'Name is required', () => {
+      enforce(product.name).isNotBlank();
+    }, product.id); // <--- The key goes on the test
 
-      test('product_price', 'Price must be positive', () => {
-        enforce(product.price).greaterThan(0);
-      });
-    },
-    'id',
-  ); // <--- The magic key property
+    test('product_price', 'Price must be positive', () => {
+      enforce(product.price).greaterThan(0);
+    }, product.id);
+  });
 });
 ```
 
@@ -5272,19 +5398,25 @@ Vest is stateful. It remembers that the test for "Product A" failed. If you reor
 
 ### How to specify the Key
 
-You can pass the key in two ways:
+The key is the last argument to `test`. It can be any string or number that uniquely identifies the item:
 
-1.  **As a property name** (String): If your objects have an ID field, just pass the name of that field.
+```javascript
+each(data.items, item => {
+  test('item_name', 'Name required', () => {
+    enforce(item.name).isNotBlank();
+  }, item.id); // Uses item.id as the key
+});
+```
 
-    ```javascript
-    each(items, item => { ... }, 'userId'); // Uses item.userId
-    ```
+You can also use a computed key:
 
-2.  **As a function**: If you need to calculate the key.
-
-    ```javascript
-    each(items, item => { ... }, (item) => `${item.type}_${item.id}`);
-    ```
+```javascript
+each(data.items, item => {
+  test('item_name', 'Name required', () => {
+    enforce(item.name).isNotBlank();
+  }, `${item.type}_${item.id}`);
+});
+```
 
 :::danger Avoid using Index
 Never use the array index as a key (or omit the key argument, which defaults to index). If the user deletes the first item, the second item will inherit the first item's validation state (and errors!), leading to a confusing UI.

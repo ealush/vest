@@ -13,30 +13,37 @@ Vest provides the `each` helper to handle these lists efficiently.
 
 ## Using `each`
 
-Think of `each` as a smarter `forEach` loop designed specifically for validation. It takes three arguments:
+Think of `each` as a smarter `forEach` loop designed specifically for validation. It takes two arguments:
 
 1. The array to iterate over.
 2. A callback function to run for every item.
-3. (Important!) A unique key for tracking.
+
+The key for tracking goes on each `test` call as the last argument.
 
 ```javascript
 import { create, test, each, enforce } from 'vest';
 
 const suite = create(data => {
   // data.products is an array of objects
-  each(
-    data.products,
-    product => {
-      test('product_name', 'Name is required', () => {
+  each(data.products, product => {
+    test(
+      'product_name',
+      'Name is required',
+      () => {
         enforce(product.name).isNotBlank();
-      });
+      },
+      product.id,
+    ); // <--- The key goes on the test
 
-      test('product_price', 'Price must be positive', () => {
+    test(
+      'product_price',
+      'Price must be positive',
+      () => {
         enforce(product.price).greaterThan(0);
-      });
-    },
-    'id',
-  ); // <--- The magic key property
+      },
+      product.id,
+    );
+  });
 });
 ```
 
@@ -48,19 +55,35 @@ Vest is stateful. It remembers that the test for "Product A" failed. If you reor
 
 ### How to specify the Key
 
-You can pass the key in two ways:
+The key is the last argument to `test`. It can be any string or number that uniquely identifies the item:
 
-1.  **As a property name** (String): If your objects have an ID field, just pass the name of that field.
+```javascript
+each(data.items, item => {
+  test(
+    'item_name',
+    'Name required',
+    () => {
+      enforce(item.name).isNotBlank();
+    },
+    item.id,
+  ); // Uses item.id as the key
+});
+```
 
-    ```javascript
-    each(items, item => { ... }, 'userId'); // Uses item.userId
-    ```
+You can also use a computed key:
 
-2.  **As a function**: If you need to calculate the key.
-
-    ```javascript
-    each(items, item => { ... }, (item) => `${item.type}_${item.id}`);
-    ```
+```javascript
+each(data.items, item => {
+  test(
+    'item_name',
+    'Name required',
+    () => {
+      enforce(item.name).isNotBlank();
+    },
+    `${item.type}_${item.id}`,
+  );
+});
+```
 
 :::danger Avoid using Index
 Never use the array index as a key (or omit the key argument, which defaults to index). If the user deletes the first item, the second item will inherit the first item's validation state (and errors!), leading to a confusing UI.

@@ -5379,13 +5379,23 @@ import { create, test, each, enforce } from 'vest';
 const suite = create(data => {
   // data.products is an array of objects
   each(data.products, product => {
-    test('product_name', 'Name is required', () => {
-      enforce(product.name).isNotBlank();
-    }, product.id); // <--- The key goes on the test
+    test(
+      'product_name',
+      'Name is required',
+      () => {
+        enforce(product.name).isNotBlank();
+      },
+      product.id,
+    ); // <--- The key goes on the test
 
-    test('product_price', 'Price must be positive', () => {
-      enforce(product.price).greaterThan(0);
-    }, product.id);
+    test(
+      'product_price',
+      'Price must be positive',
+      () => {
+        enforce(product.price).greaterThan(0);
+      },
+      product.id,
+    );
   });
 });
 ```
@@ -5402,9 +5412,14 @@ The key is the last argument to `test`. It can be any string or number that uniq
 
 ```javascript
 each(data.items, item => {
-  test('item_name', 'Name required', () => {
-    enforce(item.name).isNotBlank();
-  }, item.id); // Uses item.id as the key
+  test(
+    'item_name',
+    'Name required',
+    () => {
+      enforce(item.name).isNotBlank();
+    },
+    item.id,
+  ); // Uses item.id as the key
 });
 ```
 
@@ -5412,9 +5427,14 @@ You can also use a computed key:
 
 ```javascript
 each(data.items, item => {
-  test('item_name', 'Name required', () => {
-    enforce(item.name).isNotBlank();
-  }, `${item.type}_${item.id}`);
+  test(
+    'item_name',
+    'Name required',
+    () => {
+      enforce(item.name).isNotBlank();
+    },
+    `${item.type}_${item.id}`,
+  );
 });
 ```
 

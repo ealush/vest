@@ -1,6 +1,6 @@
 {
   "name": "vestjs-runtime",
-  "version": "2.0.15",
+  "version": "2.0.16",
   "description": "Internal runtime module used by Vest",
   "license": "MIT",
   "author": "ealush",
@@ -19,8 +19,8 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "context": "^4.0.15",
-    "vest-utils": "^2.0.15"
+    "context": "^4.0.16",
+    "vest-utils": "^2.0.16"
   },
   "exports": {
     "./exports/IsolateSerializer": {

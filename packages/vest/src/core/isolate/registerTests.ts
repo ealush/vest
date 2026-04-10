@@ -94,7 +94,9 @@ export function useReprocessTree(rootNode: TIsolate): void {
   if (root) {
     useClearTestIndexes(root);
   }
-  useRegisterSubtree(rootNode);
+  SuiteContext.run({ isReprocessing: true }, () => {
+    useRegisterSubtree(rootNode);
+  });
 }
 
 function useClearTestIndexes(root: TIsolate) {

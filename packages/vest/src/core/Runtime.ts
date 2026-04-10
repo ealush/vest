@@ -65,6 +65,11 @@ export function useDependencies() {
   return useVestState().dependencies()[0];
 }
 
+export function useResetDependencies() {
+  const [, , resetDependencies] = useVestState().dependencies();
+  resetDependencies();
+}
+
 function useSuiteId() {
   return useVestState().suiteId;
 }
@@ -100,6 +105,7 @@ export function useExpireSuiteResultCache() {
 export function useResetCallbacks() {
   const [, , resetDoneCallbacks] = useDoneCallbacks();
   const [, , resetFieldCallbacks] = useFieldCallbacks();
+  useResetDependencies();
 
   resetDoneCallbacks();
   resetFieldCallbacks();

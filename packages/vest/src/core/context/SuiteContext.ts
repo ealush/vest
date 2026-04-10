@@ -14,7 +14,10 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
   return assign(
     {
       dependencies: {},
+      dependenciesRegistered: new WeakSet<TIsolateTest>(),
+      fieldsRegistered: new Set<string>(),
       inclusion: {},
+      isReprocessing: false,
       mode: createTinyState<Modes>(Modes.EAGER),
       modifiers: {
         onlyGroup: new Set<string>(),
@@ -29,10 +32,13 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
 
 type CTXType = {
   dependencies: Record<string, string[]>;
+  dependenciesRegistered: WeakSet<TIsolateTest>;
+  fieldsRegistered: Set<string>;
   inclusion: Record<string, DynamicValue<boolean>>;
   mode: TinyState<Modes>;
   suiteParams: any[];
   currentTest?: TIsolateTest;
+  isReprocessing: boolean;
   skipped?: boolean;
   schema: TSchema;
   modifiers: TInternalModifiers<TFieldName>;

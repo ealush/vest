@@ -68,4 +68,4 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
 export type TDraftCondition<
   F extends TFieldName,
   G extends TGroupName,
-> = DynamicValue<boolean, [draft: SuiteResult<F, G>, currentNode: TIsolateTest]>;
+> = DynamicValue<boolean, [draft: SuiteResult<F, G>, currentNode?: TIsolateTest]>;

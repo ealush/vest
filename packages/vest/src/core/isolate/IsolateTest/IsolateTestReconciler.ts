@@ -10,8 +10,7 @@ import type { TIsolateTest } from './IsolateTest';
 import { VestTest } from './VestTest';
 import cancelOverriddenPendingTest from './cancelOverriddenPendingTest';
 import { isSameProfileTest } from './isSameProfileTest';
-import { useDependencies } from '../../Runtime';
-import { useHasOnliedTests } from '../../../hooks/focused/useHasOnliedTests';
+import { useShouldIncludeByDependency } from '../../../hooks/focused/useShouldIncludeByDependency';
 import { useEmit } from '../../VestBus/VestBus';
 
 export class IsolateTestReconciler {
@@ -66,18 +65,8 @@ function usePickNode(
     return newNodeResult;
   }
 
-  // If the test has dependencies, and any of them are focused, we should re-run the test
-  // to ensure that the cross-field logic is updated.
-  const dependencies = useDependencies();
-  const fieldName = VestTest.getData(newNode).fieldName;
-  const fieldDependencies = dependencies[fieldName];
-
-  if (fieldDependencies && fieldDependencies.length > 0) {
-    for (const dep of fieldDependencies) {
-      if (useHasOnliedTests(newNode, dep)) {
-        return newNodeResult;
-      }
-    }
+  if (useShouldIncludeByDependency(fieldName, prevNode)) {
+    return newNodeResult;
   }
 
   return makeResult.Ok(prevNode);

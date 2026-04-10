@@ -10,5 +10,5 @@ export interface TestReturnValue<F extends TFieldName = TFieldName> extends TIso
    * Additionally, this field will be considered invalid if any of its
    * dependencies are invalid.
    */
-  dependsOn(...fields: F[]): TestReturnValue<F>;
+  dependsOn(...fields: (F | F[])[]): TestReturnValue<F>;
 }

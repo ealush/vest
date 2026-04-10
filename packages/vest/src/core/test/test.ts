@@ -1,3 +1,4 @@
+import { asArray } from 'vest-utils';
 import { IsolateKey } from 'vestjs-runtime';
 
 import { IsolateTest } from '../isolate/IsolateTest/IsolateTest';
@@ -7,7 +8,7 @@ import { TestReturnValue } from './TestReturnValue';
 import { TestFn, TestMessage } from './TestTypes';
 import { useAttemptRunTest } from './testLevelFlowControl/runTest';
 import { validateTestParams } from './validateTestParams';
-import { useRegisterDependencies } from './dependsOn';
+import { useRegisterDependencies, useResetTestDependencies } from './dependsOn';
 
 function vestTest(
   fieldName: string,
@@ -49,10 +50,10 @@ function vestTest(
 
   const isolate = IsolateTest(useAttemptRunTest, testObjectInput, key);
 
-
+  useResetTestDependencies(isolate);
   const returnValue = Object.assign(isolate, {
-    dependsOn(...fields: string[]) {
-      useRegisterDependencies(safeFieldName, fields, isolate);
+    dependsOn(...fields: (string | string[])[]) {
+      useRegisterDependencies(safeFieldName, asArray(fields).flat(), isolate);
       return returnValue;
     },
   }) as TestReturnValue;

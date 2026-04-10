@@ -66,9 +66,17 @@ describe('test().dependsOn() Integration Suite', () => {
         test('f3', () => { enforce(data.f3).isNotEmpty(); });
       });
 
-      // Prime f1 and f3, but NOT f2? 
-      // Actually, if f2 is intermediate, it must have been seen for the graph to exist.
-      // But we can simulate a case where f2 was omitted.
+      // Primer run: focus ONLY f3. f1 and f2 remain clean.
+      suite.only('f3').run({ f1: '', f2: '', f3: 'v' });
+      
+      // Second run: focus f3 again. 
+      // f2 should NOT be included because it was never tested (clean).
+      // f1 should NOT be included because the dependency chain was blocked at f2.
+      const res = suite.only('f3').run({ f1: '', f2: '', f3: 'v' });
+
+      expect(res.isTested('f3')).toBe(true);
+      expect(res.isTested('f2')).toBe(false);
+      expect(res.isTested('f1')).toBe(false);
     });
   });
 
@@ -173,6 +181,58 @@ describe('test().dependsOn() Integration Suite', () => {
       
       expect(res.isTested('f1')).toBe(true);
       expect(res.isTested('f2')).toBe(true); // Restoration verified
+    });
+  });
+
+  describe('Isolation & Edge Cases', () => {
+    it('should eventually clear dependencies across runs (Dynamic Discovery)', () => {
+      let isConditional = true;
+      const suite = create(() => {
+        if (isConditional) {
+          test('f1', () => {}).dependsOn('f2');
+        } else {
+          test('f1', () => {});
+        }
+        test('f2', () => {});
+      });
+
+      // Run 1: f1 depends on f2
+      suite.run();
+      
+      // Run 2: Change condition. f1 NO LONGER depends on f2.
+      // Since dependsOn is discovered AFTER the test runs, the first focused run
+      // is conservative and includes f1.
+      isConditional = false;
+      suite.only('f2').run();
+
+      // Run 3: Focused run on f2. Now the history (from Run 2) has no dependencies for f1.
+      const res = suite.only('f2').run();
+
+      expect(res.isTested('f2')).toBe(true);
+      expect(res.isTested('f1')).toBe(false); 
+    });
+
+    it('should consider a field dirty if ANY of its instances were tested (Multi-instance Fix)', () => {
+      const suite = create((data) => {
+        // Two instances of f1. In primer, we only run one.
+        if (data.runFirst) {
+          test('f1', () => {});
+        }
+        test('f1', () => {});
+
+        test('f2', () => {}).dependsOn('f1');
+      });
+
+      // Primer: Run only the first instance of f1.
+      suite.run({ runFirst: true });
+
+      // Run 2: Focus f1. f2 should be included because f1 WAS tested.
+      // Historically, if we only checked the first match in history, we might miss it
+      // if the first match was skipped but the second was tested.
+      const res = suite.only('f1').run({ runFirst: false });
+
+      expect(res.isTested('f1')).toBe(true);
+      expect(res.isTested('f2')).toBe(true);
     });
   });
 });

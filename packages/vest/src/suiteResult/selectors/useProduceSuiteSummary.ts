@@ -4,6 +4,7 @@ import { VestRuntime } from 'vestjs-runtime';
 import { TIsolateSuite } from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
+import { useDependencies } from '../../core/Runtime';
 import { isVestIsolate } from '../../core/isolate/VestIsolateType';
 import { countKeyBySeverity, Severity } from '../Severity';
 import {
@@ -21,7 +22,6 @@ import { SummaryFailure } from '../SummaryFailure';
 
 import {
   useNoMissingTestsLogic,
-  useSetValidProperty,
 } from './useSetValidProperty';
 
 export function useProduceSuiteSummary<
@@ -36,10 +36,6 @@ export function useProduceSuiteSummary<
 
   if (isVestIsolate(root)) {
     useProcessTests(root.data.tests, summary);
-  }
-
-  if (summary.valid !== false) {
-    summary.valid = useSetValidProperty();
   }
 
   return summary;
@@ -72,14 +68,58 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
   // of the suite.
   // We iterate over all the fields we've seen, and if any of them is not valid,
   // the suite is not valid.
+  const dependencies = useDependencies();
+
   for (const fieldName in summary.tests) {
-    if (summary.tests[fieldName].valid === false) {
+    const isFieldValid = determineFieldValidity(
+      fieldName as F,
+      summary,
+      dependencies,
+    );
+
+    summary.tests[fieldName].valid = isFieldValid;
+
+    if (isFieldValid === false) {
       summary.valid = false;
-      break;
     }
   }
 
   return summary;
+}
+
+function determineFieldValidity<F extends TFieldName, G extends TGroupName>(
+  fieldName: F,
+  summary: SuiteSummary<F, G>,
+  dependencies: Record<string, string[]>,
+): boolean {
+  const queue: string[] = [fieldName as string];
+  const visited = new Set<string>();
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+
+    if (visited.has(current)) {
+      continue;
+    }
+    visited.add(current);
+
+    const fieldSummary = summary.tests[current as F];
+
+    // Pillar 3: A field is NOT valid if its own tests failed or were not run
+    if (!fieldSummary || fieldSummary.valid === false) {
+      return false;
+    }
+
+    const fieldDeps = dependencies[current];
+
+    if (fieldDeps) {
+      for (const dep of fieldDeps) {
+        queue.push(dep);
+      }
+    }
+  }
+
+  return true;
 }
 
 function useAppendToGroup<F extends TFieldName, G extends TGroupName>(

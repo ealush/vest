@@ -66,11 +66,19 @@ export function useOnTestStart(testObject: TIsolateTest) {
   useAddTestToRoot(testObject);
 }
 
+import { useRegisterDependencies } from '../test/dependsOn';
+
 export function useRegisterSubtree(isolate: TIsolate) {
   if (VestTest.is(isolate)) {
     useAddTestToRoot(isolate);
     // Populate characteristics correctly
     useUpdateRegistry(isolate);
+
+    const { dependsOn, fieldName } = VestTest.getData(isolate);
+
+    if (dependsOn) {
+      useRegisterDependencies(fieldName, dependsOn);
+    }
   }
 
   if (isolate.children) {

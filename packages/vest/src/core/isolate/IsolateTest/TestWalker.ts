@@ -14,6 +14,22 @@ type MaybeRoot = Nullable<TIsolate>;
 export class TestWalker {
   static defaultRoot = VestRuntime.useAvailableRoot;
 
+  static findTestByFieldName<F extends TFieldName>(
+    fieldName: F,
+    root: MaybeRoot = TestWalker.defaultRoot(),
+  ): Nullable<TIsolateTest<F>> {
+    if (!root) return null;
+    return Walker.find(
+      root,
+      isolate => {
+        const test = VestTest.cast<F>(isolate).unwrap();
+
+        return matchingFieldName(VestTest.getData(test), fieldName).unwrap();
+      },
+      VestTest.is,
+    ) as Nullable<TIsolateTest<F>>;
+  }
+
   static someTests(
     predicate: (test: TIsolateTest) => boolean,
     root: MaybeRoot = TestWalker.defaultRoot(),

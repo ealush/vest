@@ -116,7 +116,12 @@ function Form() {
 
 By combining `isTested()` (to hide premature errors) and `suite.only()` (to update specific fields), you get precise control over the user experience without tightly coupling your validation to the DOM.
 
+:::tip Automating Related Fields
+If you have fields that depend on each other (like Password and Confirm Password), you can use [`dependsOn()`](./cross_field_validation.md) to automatically include related fields in your `onBlur` runs.
+:::
+
 ## Related
 
+- [Cross-Field Validation](./cross_field_validation.md) - Learn how to link field dependencies with `dependsOn()`
 - [Focused Updates](./focused_updates.md) - Deep dive into `suite.only()` and `suite.focus()`
 - [Accessing the Result](./accessing_the_result.md) - Learn about `isTested()` and other result methods

@@ -334,8 +334,15 @@ suite.focus({ skipGroup: ['groupA', 'groupB'] }).run(formData); // ✅
 suite.focus({ onlyGroup: 'groupA' }).run(formData); // ✅
 ```
 
+### Dependent Inclusions
+
+Manual inclusion with `include()` is powerful but can be complex to manage as forms grow. If your fields have a natural dependency (e.g., `Confirm Password` depends on `Password`), use [`dependsOn()`](./cross_field_validation.md) instead.
+
+When a field is focused, Vest will automatically include any fields that depend on it, as long as they have been validated at least once before.
+
 ## Related
 
+- [Cross-Field Validation](./cross_field_validation.md) - Learn how to link field dependencies with `dependsOn()`
 - [Including and Excluding Fields](./including_and_excluding/skip_and_only) - Using `only()` and `skip()` inside suites
 - [Include](./including_and_excluding/include) - Link related fields to run together
 - [Test Groups](../writing_tests/advanced_test_features/grouping_tests) - Grouping tests together

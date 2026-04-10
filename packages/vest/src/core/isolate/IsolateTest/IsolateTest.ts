@@ -51,6 +51,7 @@ export type IsolateTestPayload<F extends TFieldName = TFieldName> =
     severity: TestSeverity;
     testStatus: TestStatus;
     asyncTest?: AsyncTest;
+    dependsOn?: string[];
   };
 
 type CommonTestFields<F extends TFieldName = TFieldName> = {

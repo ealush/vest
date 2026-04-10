@@ -8,9 +8,13 @@ import {
 } from 'vestjs-runtime';
 
 import { SuiteContext, useInclusion } from '../../core/context/SuiteContext';
+import { useDependencies } from '../../core/Runtime';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
+import { TestWalker } from '../../core/isolate/IsolateTest/TestWalker';
 import { useIsExcludedIndividually } from '../../isolates/skipWhen';
+import { useHasFromRegistry } from '../../core/test/TestRegistry';
+import { useHasOnliedTests } from './useHasOnliedTests';
 
 /**
  * Finds the closest focus isolate that matches a given field name.
@@ -96,7 +100,76 @@ function useIsExcludedByField(testObject: TIsolateTest): boolean {
   // Check the centralized runtime registry for implicit ONLY exclusion.
   if (VestRuntime.hasImplicitOnly()) {
     const inclusion = useInclusion();
-    return !dynamicValue(inclusion[fieldName], testObject);
+    
+    if (dynamicValue(inclusion[fieldName], testObject)) {
+      return false;
+    }
+
+    const dependencies = useDependencies();
+    const fieldDependencies = dependencies[fieldName];
+
+    if (fieldDependencies && fieldDependencies.length > 0) {
+      if (useShouldIncludeByDependency(fieldName, testObject)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+function useShouldIncludeByDependency(
+  fieldName: string,
+  testObject: TIsolateTest,
+): boolean {
+  const dependencies = useDependencies();
+  const queue = [fieldName];
+  const visited = new Set<string>();
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+
+    if (visited.has(current)) {
+      continue;
+    }
+    visited.add(current);
+
+    const fieldDependencies = dependencies[current];
+
+    if (!fieldDependencies || fieldDependencies.length === 0) {
+      continue;
+    }
+
+    if (!useIsFieldDirty(current)) {
+      continue;
+    }
+
+    for (const dep of fieldDependencies) {
+      // 1. If any dependency in the chain is explicitly focused, the whole chain is included.
+      if (useHasOnliedTests(testObject, dep)) {
+        return true;
+      }
+      // 2. Otherwise, check dependencies of this dependency (transitive)
+      queue.push(dep);
+    }
+  }
+
+  return false;
+}
+
+function useIsFieldDirty(fieldName: string): boolean {
+  if (useHasFromRegistry('tested', fieldName)) {
+    return true;
+  }
+
+  const [historyRoot] = VestRuntime.useHistoryRoot();
+  if (historyRoot) {
+    const historyTest = TestWalker.findTestByFieldName(fieldName, historyRoot);
+    if (historyTest) {
+      return VestTest.isTested(historyTest).unwrap();
+    }
   }
 
   return false;

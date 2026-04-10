@@ -13,6 +13,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
 
   return assign(
     {
+      dependencies: {},
       inclusion: {},
       mode: createTinyState<Modes>(Modes.EAGER),
       modifiers: {
@@ -27,6 +28,7 @@ export const SuiteContext = createCascade<CTXType>((ctxRef, parentContext) => {
 });
 
 type CTXType = {
+  dependencies: Record<string, string[]>;
   inclusion: Record<string, DynamicValue<boolean>>;
   mode: TinyState<Modes>;
   suiteParams: any[];

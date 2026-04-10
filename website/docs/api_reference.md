@@ -13,6 +13,7 @@ keywords:
     suite.reset,
     suite.resetField,
     test,
+    test().dependsOn,
     warn,
     useWarn,
     enforce,
@@ -190,6 +191,13 @@ Combines multiple enforce rules.
 A single validation test inside your suite.
 
 - [Read more about `test`](./writing_tests/the_test_function.md)
+
+#### `test().dependsOn(...fieldNames)`
+
+Declares that the current test depends on other fields.
+
+- `fieldNames`: `string | string[]`
+- [Read more about Cross-Field Validation](./writing_your_suite/cross_field_validation.md)
 
 #### `enforce(value)`
 

@@ -12,6 +12,7 @@ import { OptionalFieldTypes } from '../../hooks/optional/OptionalTypes';
 import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
 import { TFieldName, TGroupName } from '../SuiteResultTypes';
 
+import { useDependencies } from '../../core/Runtime';
 import { useMapFirstPending } from '../../core/selectors/useIsPending';
 import {
   useGetFromRegistry,
@@ -117,7 +118,13 @@ export function useSetValidProperty(fieldName?: TFieldName): boolean {
 export function useSetValidPropertyImpl(
   fieldName?: TFieldName,
   groupName?: TGroupName,
+  visited = new Set<TFieldName>(),
 ): boolean {
+  if (fieldName && visited.has(fieldName)) {
+    return true; // We've already checked this field in the current dependency chain
+  }
+  fieldName && visited.add(fieldName);
+
   // Step 1: Is the field optional, and the optional condition is applied?
   if (useIsOptionalFieldApplied(fieldName).unwrap()) {
     return true;
@@ -134,8 +141,37 @@ export function useSetValidPropertyImpl(
   }
 
   // Step 4: Did all required tests for the field run?
-  const noMissing = useNoMissingTests(fieldName, groupName);
-  return noMissing;
+  if (!useNoMissingTests(fieldName, groupName)) {
+    return false;
+  }
+
+  // Step 5: Are all dependencies valid?
+  if (useHasInvalidDependencies(fieldName, visited)) {
+    return false;
+  }
+
+  // All checks passed!
+  return true;
+}
+
+function useHasInvalidDependencies(
+  fieldName: TFieldName | undefined,
+  visited: Set<TFieldName>,
+): boolean {
+  if (!fieldName) {
+    return false;
+  }
+
+  const dependencies = useDependencies();
+  const fieldDeps = dependencies[fieldName];
+
+  if (!fieldDeps) {
+    return false;
+  }
+
+  return fieldDeps.some(
+    dep => !useSetValidPropertyImpl(dep as TFieldName, undefined, visited),
+  );
 }
 
 /**

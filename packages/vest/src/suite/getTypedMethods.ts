@@ -2,6 +2,7 @@ import { CB, DynamicValue } from 'vest-utils';
 import { TIsolate, IsolateKey } from 'vestjs-runtime';
 
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
+import { TestReturnValue } from '../core/test/TestReturnValue';
 import { TestFn, TestMessage } from '../core/test/TestTypes';
 import { test } from '../core/test/test';
 import { FieldExclusion, only, skip } from '../hooks/focused/focused';
@@ -30,7 +31,7 @@ export function getTypedMethods<
     skip,
     skipWhen,
     test,
-  };
+  } as TTypedMethods<F, G>;
 }
 
 export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
@@ -48,15 +49,15 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   };
   skipWhen: (condition: TDraftCondition<F, G>, callback: CB) => void;
   test: {
-    (fieldName: F, message: TestMessage, cb: TestFn): TIsolateTest;
-    (fieldName: F, cb: TestFn): TIsolateTest;
+    (fieldName: F, message: TestMessage, cb: TestFn): TestReturnValue<F>;
+    (fieldName: F, cb: TestFn): TestReturnValue<F>;
     (
       fieldName: F,
       message: TestMessage,
       cb: TestFn,
       key: IsolateKey,
-    ): TIsolateTest;
-    (fieldName: F, cb: TestFn, key: IsolateKey): TIsolateTest;
+    ): TestReturnValue<F>;
+    (fieldName: F, cb: TestFn, key: IsolateKey): TestReturnValue<F>;
   };
   group: {
     (callback: () => void): TIsolate;
@@ -67,4 +68,4 @@ export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
 export type TDraftCondition<
   F extends TFieldName,
   G extends TGroupName,
-> = DynamicValue<boolean, [draft: SuiteResult<F, G>]>;
+> = DynamicValue<boolean, [draft: SuiteResult<F, G>, currentNode: TIsolateTest]>;

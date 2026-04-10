@@ -96,8 +96,10 @@ function useSetIncluded<F extends TFieldName, G extends TGroupName>(
       return useHasOnliedTests(currentNode, makeBrand<TFieldName>(condition));
     }
 
-    return dynamicValue(condition, () =>
+    return dynamicValue(
+      condition,
       useCreateSuiteResult(undefined, undefined),
+      currentNode,
     );
   };
 }

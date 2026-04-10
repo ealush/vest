@@ -26,6 +26,7 @@ type DoneCallbacks = Array<DoneCallback>;
 type StateExtra = {
   doneCallbacks: TinyState<DoneCallbacks>;
   fieldCallbacks: TinyState<FieldCallbacks>;
+  dependencies: TinyState<Record<string, string[]>>;
   suiteId: string;
   suiteResultCache: CacheApi<SuiteResult<TFieldName, TGroupName, TSchema>>;
 };
@@ -38,6 +39,7 @@ export function useCreateVestState({
   VestReconciler: IReconciler;
 }) {
   const stateRef: StateExtra = {
+    dependencies: createTinyState<Record<string, string[]>>(() => ({})),
     doneCallbacks: createTinyState<DoneCallbacks>(() => []),
     fieldCallbacks: createTinyState<FieldCallbacks>(() => ({})),
     suiteId: seq(),
@@ -57,6 +59,10 @@ export function useDoneCallbacks() {
 
 export function useFieldCallbacks() {
   return useVestState().fieldCallbacks();
+}
+
+export function useDependencies() {
+  return useVestState().dependencies()[0];
 }
 
 function useSuiteId() {

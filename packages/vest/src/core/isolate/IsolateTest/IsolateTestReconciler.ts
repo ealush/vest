@@ -65,7 +65,9 @@ function usePickNode(
     return newNodeResult;
   }
 
-  if (useShouldIncludeByDependency(fieldName, prevNode)) {
+  const { fieldName } = VestTest.getData(prevNode);
+
+  if (useShouldIncludeByDependency(fieldName, newNode)) {
     return newNodeResult;
   }
 

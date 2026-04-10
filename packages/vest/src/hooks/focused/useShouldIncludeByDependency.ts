@@ -30,6 +30,9 @@ export function useShouldIncludeByDependency(
       continue;
     }
 
+    // Only follow the dependency chain if the current field is 'dirty'.
+    // A field is dirty if it has been tested in the current run OR was tested in the latest history.
+    // In a fresh run (no history), all fields are considered dirty.
     if (!useIsFieldDirty(current)) {
       continue;
     }
@@ -54,13 +57,16 @@ function useIsFieldDirty(fieldName: string): boolean {
 
   const [historyRoot] = VestRuntime.useHistoryRoot();
 
-  return (
-    !!historyRoot &&
-    TestWalker.someTests(testObject => {
-      return (
-        matchingFieldName(VestTest.getData(testObject), fieldName).unwrap() &&
-        VestTest.isTested(testObject).unwrap()
-      );
-    }, historyRoot)
-  );
+  // In a completely fresh run (no history), everything is considered "dirty"
+  // to ensure initial dependency discovery works correctly.
+  if (!historyRoot) {
+    return true;
+  }
+
+  return TestWalker.someTests(testObject => {
+    return (
+      matchingFieldName(VestTest.getData(testObject), fieldName).unwrap() &&
+      VestTest.isTested(testObject).unwrap()
+    );
+  }, historyRoot);
 }

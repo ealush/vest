@@ -7,13 +7,12 @@ import {
   VestRuntime,
 } from 'vestjs-runtime';
 
-import { SuiteContext, useInclusion } from '../../core/context/SuiteContext';
+import { SuiteContext, useInclusion, useSkipped } from '../../core/context/SuiteContext';
 import { useDependencies } from '../../core/Runtime';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 import { useHasOnliedTests } from './useHasOnliedTests';
 import { useShouldIncludeByDependency } from './useShouldIncludeByDependency';
-import { useIsExcludedIndividually } from '../../isolates/skipWhen';
 import { useHasFromRegistry } from '../../core/test/TestRegistry';
 
 /**
@@ -53,7 +52,7 @@ function useClosestMatchingFocus(
  * @returns {boolean} `true` if the test should jump straight to a skipped status.
  */
 export function useIsExcluded(testObject: TIsolateTest): boolean {
-  if (useIsExcludedIndividually()) return true;
+  if (useSkipped()) return true;
 
   if (useIsExcludedByGroup(testObject)) return true;
 

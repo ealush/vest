@@ -188,28 +188,89 @@ describe('test().dependsOn() Integration Suite', () => {
     it('should eventually clear dependencies across runs (Dynamic Discovery)', () => {
       let isConditional = true;
       const suite = create(() => {
+        const t = test('f1', () => {});
+
         if (isConditional) {
-          test('f1', () => {}).dependsOn('f2');
-        } else {
-          test('f1', () => {});
+          t.dependsOn('f2');
         }
         test('f2', () => {});
       });
 
-      // Run 1: f1 depends on f2
+      // Run 1: Primer. f1 depends on f2.
       suite.run();
-      
-      // Run 2: Change condition. f1 NO LONGER depends on f2.
-      // Since dependsOn is discovered AFTER the test runs, the first focused run
-      // is conservative and includes f1.
+
+      // Run 2: Removed dependency. 
+      // Reconciler is conservative and includes f1 because it 'saw' it in history with f2.
       isConditional = false;
-      suite.only('f2').run();
+      const res2 = suite.only('f2').run();
+      expect(res2.isTested('f1')).toBe(true); // discovery run
 
-      // Run 3: Focused run on f2. Now the history (from Run 2) has no dependencies for f1.
-      const res = suite.only('f2').run();
+      // Run 3: Now that Run 2 confirmed f1 NO LONGER depends on f2,
+      // subsequent focused runs on f2 should exclude f1.
+      const res3 = suite.only('f2').run();
 
+      expect(res3.isTested('f2')).toBe(true);
+      expect(res3.isTested('f1')).toBe(false); 
+    });
+
+    it('should handle deep dependency chains without stack overflow (Iterative Test)', () => {
+      const DEPTH = 20;
+      const suite = create(() => {
+        for (let i = 0; i < DEPTH; i++) {
+          const field = `f${i}`;
+          const nextField = `f${i + 1}`;
+          test(field, () => {}).dependsOn(nextField);
+        }
+        test(`f${DEPTH}`, () => {});
+      });
+
+      // Primer run
+      suite.run();
+
+      // Focus the last node. All nodes should be included.
+      const res = suite.only(`f${DEPTH}`).run();
+
+      for (let i = 0; i <= DEPTH; i++) {
+        expect(res.isTested(`f${i}`)).toBe(true);
+      }
+    });
+
+    it('should handle circular dependencies gracefully (Iterative Visited Test)', () => {
+      const suite = create(() => {
+        test('f1', () => {}).dependsOn('f2');
+        test('f2', () => {}).dependsOn('f1');
+        test('f3', () => {}).dependsOn('f1');
+      });
+
+      // Primer run
+      suite.run();
+
+      // Focus f1. f2 and f3 should be included.
+      // f1 -> f2 -> f1 should stop at visited set.
+      const res = suite.only('f1').run();
+
+      expect(res.isTested('f1')).toBe(true);
       expect(res.isTested('f2')).toBe(true);
-      expect(res.isTested('f1')).toBe(false); 
+      expect(res.isTested('f3')).toBe(true);
+    });
+
+    it('should support mixed variadic and array signatures', () => {
+      const suite = create(() => {
+        test('f1', () => {}).dependsOn('a', 'b', ['c', 'd']);
+        test('a', () => {});
+        test('b', () => {});
+        test('c', () => {});
+        test('d', () => {});
+      });
+
+      // Primer run
+      suite.run();
+
+      // Focusing any should include f1
+      const res = suite.only('d').run();
+
+      expect(res.isTested('d')).toBe(true);
+      expect(res.isTested('f1')).toBe(true);
     });
 
     it('should consider a field dirty if ANY of its instances were tested (Multi-instance Fix)', () => {

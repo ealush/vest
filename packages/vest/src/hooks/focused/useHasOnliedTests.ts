@@ -9,7 +9,8 @@ import {
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 
 /**
- * Checks if context has included tests
+ * Checks if a field name is explicitly focused via an only() call.
+ * This walks up the isolate tree from the given testObject to find matching focus isolates.
  */
 export function useHasOnliedTests(
   testObject: TIsolateTest,

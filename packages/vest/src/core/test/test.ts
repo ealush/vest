@@ -53,7 +53,7 @@ function vestTest(
   useResetTestDependencies(isolate);
   const returnValue = Object.assign(isolate, {
     dependsOn(...fields: (string | string[])[]) {
-      useRegisterDependencies(safeFieldName, asArray(fields).flat(), isolate);
+      useRegisterDependencies(safeFieldName, fields.flat(), isolate);
       return returnValue;
     },
   }) as TestReturnValue;

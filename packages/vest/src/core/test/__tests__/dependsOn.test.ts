@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { create, test, enforce, group } from 'vest';
+import { create, test, enforce, group, include } from 'vest';
+import { ErrorStrings } from '../../../errors/ErrorStrings';
 
 describe('test().dependsOn() -- type and shape', () => {
   it('test() returns an object with a dependsOn method', () => {
@@ -28,25 +29,25 @@ describe('test().dependsOn() -- type and shape', () => {
 
 describe('test().dependsOn() -- Pillar 1: Focus Sync', () => {
   it('auto-includes dependent field during focused run (Pillar 1)', () => {
-    const suite = create((data: { password: string; confirmPassword: string }) => {
-      test('password', 'Required', () => {
-        enforce(data.password).isNotEmpty();
-      });
-      test('confirmPassword', 'Must match', () => {
-        enforce(data.confirmPassword).equals(data.password);
-      }).dependsOn('password');
-    });
+    const suite = create(
+      (data: { password: string; confirmPassword: string }) => {
+        test('password', 'Required', () => {
+          enforce(data.password).isNotEmpty();
+        });
+        test('confirmPassword', 'Must match', () => {
+          enforce(data.confirmPassword).equals(data.password);
+        }).dependsOn('password');
+      },
+    );
 
     // Make it dirty first
     suite.run({ password: '', confirmPassword: '' });
 
     // Focus on password -- confirmPassword should be auto-included since it's dirty
-    const result = suite
-      .only('password')
-      .run({
-        password: 'abc123',
-        confirmPassword: 'different',
-      });
+    const result = suite.only('password').run({
+      password: 'abc123',
+      confirmPassword: 'different',
+    });
 
     expect(result.hasErrors('confirmPassword')).toBe(true);
     expect(result.getErrors('confirmPassword')).toContain('Must match');
@@ -80,14 +81,16 @@ describe('test().dependsOn() -- Pillar 1: Focus Sync', () => {
 
 describe('test().dependsOn() -- Pillar 2: Dirty-Field Guard', () => {
   it('does NOT include dependent field if it has never been tested before (Pillar 2)', () => {
-    const suite = create((data: { password: string; confirmPassword: string }) => {
-      test('password', 'Required', () => {
-        enforce(data.password).isNotEmpty();
-      });
-      test('confirmPassword', 'Must match', () => {
-        enforce(data.confirmPassword).equals(data.password);
-      }).dependsOn('password');
-    });
+    const suite = create(
+      (data: { password: string; confirmPassword: string }) => {
+        test('password', 'Required', () => {
+          enforce(data.password).isNotEmpty();
+        });
+        test('confirmPassword', 'Must match', () => {
+          enforce(data.confirmPassword).equals(data.password);
+        }).dependsOn('password');
+      },
+    );
 
     // 1st run: focus on password. confirmPassword has NEVER been tested.
     // It should NOT run even though it depends on password.
@@ -98,7 +101,9 @@ describe('test().dependsOn() -- Pillar 2: Dirty-Field Guard', () => {
     expect(result1.isTested('confirmPassword')).toBe(false);
 
     // 2nd run: test confirmPassword once to make it "dirty"
-    suite.only('confirmPassword').run({ password: 'abc', confirmPassword: 'abc' });
+    suite
+      .only('confirmPassword')
+      .run({ password: 'abc', confirmPassword: 'abc' });
 
     // 3rd run: focus on password again. Now confirmPassword IS dirty.
     // It SHOULD run.
@@ -113,15 +118,16 @@ describe('test().dependsOn() -- Pillar 2: Dirty-Field Guard', () => {
 
 describe('test().dependsOn() -- Pillar 3: Validity Link', () => {
   it('dependent field is INVALID if its dependency is invalid (Pillar 3)', () => {
-    const suite = create((data: { password: string; confirmPassword: string }) => {
-      const t = test('password', 'Required', () => {
-        enforce(data.password).isNotEmpty();
-      });
-      console.log("TEST RETURN:", Object.keys(t), t.dependsOn);
-      test('confirmPassword', 'Must match', () => {
-        enforce(data.confirmPassword).equals(data.password);
-      }).dependsOn('password');
-    });
+    const suite = create(
+      (data: { password: string; confirmPassword: string }) => {
+        test('password', 'Required', () => {
+          enforce(data.password).isNotEmpty();
+        });
+        test('confirmPassword', 'Must match', () => {
+          enforce(data.confirmPassword).equals(data.password);
+        }).dependsOn('password');
+      },
+    );
 
     // 1st run: password invalid, confirmPassword valid.
     const result1 = suite.run({ password: '', confirmPassword: '' });
@@ -134,14 +140,16 @@ describe('test().dependsOn() -- Pillar 3: Validity Link', () => {
   });
 
   it('dependent field is INVALID if its dependency is VALID but has own errors', () => {
-    const suite = create((data: { password: string; confirmPassword: string }) => {
-      test('password', 'Required', () => {
-        enforce(data.password).isNotEmpty();
-      });
-      test('confirmPassword', 'Must match', () => {
-        enforce(data.confirmPassword).equals(data.password);
-      }).dependsOn('password');
-    });
+    const suite = create(
+      (data: { password: string; confirmPassword: string }) => {
+        test('password', 'Required', () => {
+          enforce(data.password).isNotEmpty();
+        });
+        test('confirmPassword', 'Must match', () => {
+          enforce(data.confirmPassword).equals(data.password);
+        }).dependsOn('password');
+      },
+    );
 
     const result = suite.run({ password: 'abc', confirmPassword: 'def' });
 
@@ -174,17 +182,61 @@ describe('test().dependsOn() -- Pillar 3: Validity Link', () => {
 });
 
 describe('test().dependsOn() -- Integration Patterns', () => {
-  it('works with groups', () => {
-    const suite = create((data: { password: string; confirmPassword: string }) => {
-      group('auth', () => {
+  it('throws on self dependency to prevent include loops', () => {
+    const suite = create((data: { password: string }) => {
+      expect(() => {
         test('password', 'Required', () => {
           enforce(data.password).isNotEmpty();
-        });
-        test('confirmPassword', 'Must match', () => {
-          enforce(data.confirmPassword).equals(data.password);
         }).dependsOn('password');
-      });
+      }).toThrow(ErrorStrings.INCLUDE_SELF);
     });
+
+    suite.run({ password: '' });
+  });
+
+  it('coexists with manual include().when() rules', () => {
+    const suite = create(
+      (data: { source: string; mirror: string; dependent: string }) => {
+        include('mirror').when('source');
+
+        test('source', () => {
+          enforce(data.source).isNotEmpty();
+        });
+
+        test('mirror', 'Mirror required', () => {
+          enforce(data.mirror).isNotEmpty();
+        });
+
+        test('dependent', 'Must match source', () => {
+          enforce(data.dependent).equals(data.source);
+        }).dependsOn('source');
+      },
+    );
+
+    suite.run({ source: 'a', mirror: 'a', dependent: 'a' });
+
+    const result = suite.only('source').run({
+      source: 'a',
+      mirror: '',
+      dependent: 'b',
+    });
+
+    expect(result.hasErrors('mirror')).toBe(true);
+    expect(result.hasErrors('dependent')).toBe(true);
+  });
+  it('works with groups', () => {
+    const suite = create(
+      (data: { password: string; confirmPassword: string }) => {
+        group('auth', () => {
+          test('password', 'Required', () => {
+            enforce(data.password).isNotEmpty();
+          });
+          test('confirmPassword', 'Must match', () => {
+            enforce(data.confirmPassword).equals(data.password);
+          }).dependsOn('password');
+        });
+      },
+    );
 
     suite.only('password').run({
       password: 'abc',
@@ -193,13 +245,13 @@ describe('test().dependsOn() -- Integration Patterns', () => {
 
     // confirmPassword should be auto-included even inside group
     // But wait, it needs to be "dirty" for Pillar 2.
-    
+
     // Let's make it dirty first
     suite.run({ password: 'abc', confirmPassword: 'abc' });
-    
+
     const result2 = suite.only('password').run({
       password: 'abc',
-      confirmPassword: 'different'
+      confirmPassword: 'different',
     });
 
     expect(result2.hasErrors('confirmPassword')).toBe(true);
@@ -211,14 +263,14 @@ describe('test().dependsOn() -- Integration Patterns', () => {
         enforce(data.username).isNotEmpty();
       });
       test('profile', 'Username must exist first', async () => {
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await new Promise(resolve => setTimeout(resolve, 10));
         enforce(data.profile).isNotEmpty();
       }).dependsOn('username');
     });
 
     // Make dirty
     suite.run({ username: 'alice', profile: 'something' });
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    await new Promise(resolve => setTimeout(resolve, 20));
 
     const result = suite.only('username').run({
       username: 'alice',
@@ -226,7 +278,7 @@ describe('test().dependsOn() -- Integration Patterns', () => {
     });
 
     // Wait for async tests to finish
-    await new Promise((resolve) => setTimeout(resolve, 20)); // Just wait so setTimeout triggers
+    await new Promise(resolve => setTimeout(resolve, 20)); // Just wait so setTimeout triggers
     expect(result.isValid('profile')).toBe(false);
   });
 });

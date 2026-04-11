@@ -25,7 +25,6 @@ export class SuiteSummary<
   public [Severity.WARNINGS]: SummaryFailure<F, G>[] = [];
   public groups: Groups<G, F> = {} as Groups<G, F>;
   public tests: Tests<F> = {} as Tests<F>;
-  public dependencies!: Record<string, string[]>;
   public run!: {
     data: {
       raw: D | undefined;
@@ -38,13 +37,6 @@ export class SuiteSummary<
 
   constructor() {
     super();
-
-    Object.defineProperty(this, 'dependencies', {
-      configurable: true,
-      enumerable: false,
-      value: {},
-      writable: true,
-    });
 
     Object.defineProperty(this, 'run', {
       configurable: true,

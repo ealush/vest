@@ -18,6 +18,8 @@ The `test` function is the main function in Vest that holds your validation logi
 
 A test can either be synchronous or asynchronous, and it can either have a severity of `error` or of `warn`.
 
+`test(...)` also returns a chainable value that exposes `dependsOn(...)` for cross-field validation wiring. See [Cross-field Validation with dependsOn](./depends_on.md).
+
 ## How to fail a test?
 
 There are two ways to fail a test:

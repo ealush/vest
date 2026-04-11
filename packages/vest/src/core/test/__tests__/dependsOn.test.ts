@@ -54,8 +54,12 @@ describe('test().dependsOn() -- Pillar 1: Focus Sync', () => {
 
   it('works with multiple dependencies (Pillar 1)', () => {
     const suite = create((data: { a: string; b: string; total: string }) => {
-      test('a', () => enforce(data.a).isNotEmpty());
-      test('b', () => enforce(data.b).isNotEmpty());
+      test('a', () => {
+        enforce(data.a).isNotEmpty();
+      });
+      test('b', () => {
+        enforce(data.b).isNotEmpty();
+      });
       test('total', 'Sum must equal 100', () => {
         enforce(Number(data.a) + Number(data.b)).equals(100);
       }).dependsOn('a', 'b');
@@ -148,9 +152,15 @@ describe('test().dependsOn() -- Pillar 3: Validity Link', () => {
 
   it('works with recursive invalidation', () => {
     const suite = create((data: { a: string; b: string; c: string }) => {
-      test('a', () => enforce(data.a).isNotEmpty());
-      test('b', () => enforce(data.b).equals(data.a)).dependsOn('a');
-      test('c', () => enforce(data.c).equals(data.b)).dependsOn('b');
+      test('a', () => {
+        enforce(data.a).isNotEmpty();
+      });
+      test('b', () => {
+        enforce(data.b).equals(data.a);
+      }).dependsOn('a');
+      test('c', () => {
+        enforce(data.c).equals(data.b);
+      }).dependsOn('b');
     });
 
     // a -> b -> c
@@ -176,7 +186,7 @@ describe('test().dependsOn() -- Integration Patterns', () => {
       });
     });
 
-    const result = suite.only('password').run({
+    suite.only('password').run({
       password: 'abc',
       confirmPassword: 'different',
     });
@@ -207,7 +217,7 @@ describe('test().dependsOn() -- Integration Patterns', () => {
     });
 
     // Make dirty
-    const firstRun = suite.run({ username: 'alice', profile: 'something' });
+    suite.run({ username: 'alice', profile: 'something' });
     await new Promise((resolve) => setTimeout(resolve, 20));
 
     const result = suite.only('username').run({

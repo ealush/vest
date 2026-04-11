@@ -1,4 +1,7 @@
 import { CB, Nullable } from 'vest-utils';
+import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
+
+import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 
 import { Severity } from './Severity';
 import { SummaryFailure } from './SummaryFailure';
@@ -119,30 +122,31 @@ type SuiteResultData<
   | (Omit<SuiteSummary<F, G, D, S>, 'valid'> &
       SuiteSelectors<F, G> & {
         valid: false;
+        issues: ReadonlyArray<StandardSchemaV1.Issue>;
         value?: undefined;
-        issues: any;
       })
   | (Omit<SuiteSummary<F, G, D, S>, 'valid'> &
       SuiteSelectors<F, G> & {
         valid: null;
+        issues?: undefined;
         value?: undefined;
-        issues?: any;
       });
 
+type BrandedFieldName<F extends string> = F & TFieldName;
+type BrandedGroupName<G extends string> = G & TGroupName;
+
 export type SuiteResult<
-  F extends TFieldName,
-  G extends TGroupName,
+  F extends string = TFieldName,
+  G extends string = TGroupName,
   S extends TSchema = undefined,
   D = unknown,
-> = SuiteResultData<F, G, S, D> & {
-  dump: () => any;
-  types: {
-    fields: F;
-    groups: G;
-    data: D;
-    schema: S;
-  };
+> = SuiteResultData<BrandedFieldName<F>, BrandedGroupName<G>, S, D> & {
+  dump: CB<TIsolateSuite>;
+  types: S extends undefined
+    ? undefined
+    : { input: InferSchemaData<S>; output: InferSchemaOutput<S> };
 };
 
-export type TFieldName = string & { __brand: 'TFieldName' };
-export type TGroupName = string & { __brand: 'TGroupName' };
+// Public-facing aliases remain plain strings; internals can still brand via FieldName/GroupName.
+export type TFieldName = string;
+export type TGroupName = string;

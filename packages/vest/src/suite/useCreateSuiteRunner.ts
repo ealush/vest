@@ -8,7 +8,6 @@ import {
   isFunction,
   isObject,
   withResolvers,
-  makeBrand,
 } from 'vest-utils';
 
 import { useEmit } from '../core/VestBus/VestBus';
@@ -208,15 +207,15 @@ function useRunSuiteCallback<
     
     for (const [dependent, deps] of Object.entries(dependencies)) {
       for (const depField of deps) {
-        include(dependent).when((res, currentNode) => {
+        include(dependent).when(res => {
           const historyRoot = VestRuntime.useHistoryRoot()[0];
           const wasTestedInHistory = TestWalker.someTests((test) => {
             const data = VestTest.getData(test);
             return data.fieldName === dependent && VestTest.isTested(test).unwrap();
           }, historyRoot);
 
-          const isTested = wasTestedInHistory || res.isTested(dependent as F);
-          const hasFocusedDep = useHasOnliedTests(currentNode, makeBrand(depField as string) as string);
+          const isTested = wasTestedInHistory || res.isTested(dependent);
+          const hasFocusedDep = useHasOnliedTests(VestRuntime.useAvailableRoot() as any, depField);
           return isTested && hasFocusedDep;
         });
       }

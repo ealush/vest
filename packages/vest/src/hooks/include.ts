@@ -6,7 +6,6 @@ import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
 import { ErrorStrings } from '../errors/ErrorStrings';
 import { TDraftCondition } from '../suite/getTypedMethods';
 import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
-import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
 
 import { useHasOnliedTests } from './focused/useHasOnliedTests';

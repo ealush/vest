@@ -95,6 +95,19 @@ describe('typed methods', () => {
     expect(suite.get().hasErrors('PASSWORD')).toBe(true);
   });
 
+  it('should type dependsOn to suite field names when using typed methods', () => {
+    const suite = vest.create<'USERNAME' | 'PASSWORD'>(() => {
+      const { test } = suite;
+
+      test('PASSWORD', 'Required', () => false).dependsOn('USERNAME');
+
+      // @ts-expect-error - invalid dependency field name
+      test('PASSWORD', 'Required', () => false).dependsOn('EMAIL');
+    });
+
+    suite.run();
+  });
+
   it('should expose all typed methods', () => {
     const suite = vest.create(() => {});
 

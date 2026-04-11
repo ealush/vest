@@ -13,15 +13,10 @@ import {
 import { useEmit } from '../core/VestBus/VestBus';
 
 import { SuiteContext } from '../core/context/SuiteContext';
-import { IsolateReorderable, VestRuntime } from 'vestjs-runtime';
+import { IsolateReorderable } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
 import { only, skip } from '../hooks/focused/focused';
-import { useDependencies } from '../core/Runtime';
-import { TestWalker } from '../core/isolate/IsolateTest/TestWalker';
-import { VestTest } from '../core/isolate/IsolateTest/VestTest';
-import { include } from '../hooks/include';
-import { useHasOnliedTests } from '../hooks/focused/useHasOnliedTests';
 import {
   SuiteResult,
   TFieldName,
@@ -201,25 +196,6 @@ function useRunSuiteCallback<
     // observes the same focus context.
     only(modifiers.only);
     skip(modifiers.skip);
-
-
-    const [dependencies] = useDependencies();
-    
-    for (const [dependent, deps] of Object.entries(dependencies)) {
-      for (const depField of deps) {
-        include(dependent).when(res => {
-          const historyRoot = VestRuntime.useHistoryRoot()[0];
-          const wasTestedInHistory = TestWalker.someTests((test) => {
-            const data = VestTest.getData(test);
-            return data.fieldName === dependent && VestTest.isTested(test).unwrap();
-          }, historyRoot);
-
-          const isTested = wasTestedInHistory || res.isTested(dependent);
-          const hasFocusedDep = useHasOnliedTests(VestRuntime.useAvailableRoot() as any, depField);
-          return isTested && hasFocusedDep;
-        });
-      }
-    }
 
     (suiteCallback as CB)(...args);
 

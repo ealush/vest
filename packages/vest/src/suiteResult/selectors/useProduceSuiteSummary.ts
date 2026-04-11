@@ -25,8 +25,6 @@ import {
 } from './useSetValidProperty';
 import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
 
-import { useDependencies } from '../../core/Runtime';
-
 export function useProduceSuiteSummary<
   F extends TFieldName,
   G extends TGroupName,
@@ -36,9 +34,6 @@ export function useProduceSuiteSummary<
   const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
   const summary = new SuiteSummary<F, G, D, S>();
-
-  const [dependencies] = useDependencies();
-  summary.dependencies = dependencies;
 
   if (isVestIsolate(root)) {
     useProcessTests(root.data.tests, summary);

@@ -2,8 +2,8 @@ import { invariant } from 'vest-utils';
 import { IsolateKey } from 'vestjs-runtime';
 
 import { useEmit } from '../VestBus/VestBus';
-import { useDependencies } from '../Runtime';
 import { ErrorStrings } from '../../errors/ErrorStrings';
+import { include } from '../../hooks/include';
 import { IsolateTest } from '../isolate/IsolateTest/IsolateTest';
 
 import { TFieldName } from '../../suiteResult/SuiteResultTypes';
@@ -50,25 +50,21 @@ function vestTest(
   // This invalidates the suite cache.
   useEmit('TEST_RUN_STARTED');
 
-  const testNode = IsolateTest(useAttemptRunTest, testObjectInput, key) as TestReturnValue;
+  const testNode = IsolateTest(
+    useAttemptRunTest,
+    testObjectInput,
+    key,
+  ) as TestReturnValue;
 
   Object.defineProperty(testNode, 'dependsOn', {
     configurable: true,
     enumerable: false,
-    value: function(...fields: (TFieldName | string)[]) {
-      const [, setDependencies] = useDependencies();
-
-      for (const depField of fields) {
+    value: (...fields: TFieldName[]) => {
+      fields.forEach(depField => {
         invariant(depField !== safeFieldName, ErrorStrings.INCLUDE_SELF);
+        include(safeFieldName).when(depField);
+      });
 
-        setDependencies(deps => {
-          deps[safeFieldName] = deps[safeFieldName] || [];
-          if (!deps[safeFieldName].includes(depField as string)) {
-            deps[safeFieldName].push(depField as string);
-          }
-          return deps;
-        });
-      }
       return testNode;
     },
     writable: true,

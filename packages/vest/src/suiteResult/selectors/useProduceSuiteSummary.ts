@@ -23,6 +23,9 @@ import {
   useNoMissingTestsLogic,
   useSetValidProperty,
 } from './useSetValidProperty';
+import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
+
+import { useDependencies } from '../../core/Runtime';
 
 export function useProduceSuiteSummary<
   F extends TFieldName,
@@ -33,6 +36,9 @@ export function useProduceSuiteSummary<
   const root = VestRuntime.useAvailableRoot<TIsolateSuite>();
 
   const summary = new SuiteSummary<F, G, D, S>();
+
+  const [dependencies] = useDependencies();
+  summary.dependencies = dependencies;
 
   if (isVestIsolate(root)) {
     useProcessTests(root.data.tests, summary);
@@ -74,8 +80,12 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
   // the suite is not valid.
   for (const fieldName in summary.tests) {
     if (summary.tests[fieldName].valid === false) {
-      summary.valid = false;
-      break;
+      if (useIsOptionalFieldApplied(fieldName as F).unwrap()) {
+        summary.tests[fieldName].valid = true;
+      } else {
+        summary.valid = false;
+        break;
+      }
     }
   }
 

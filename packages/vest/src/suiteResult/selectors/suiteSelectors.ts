@@ -115,9 +115,38 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
   function isValid(fieldName?: InputFieldName<F>): boolean {
     const targetFieldName = asFieldName(fieldName);
 
-    return Boolean(
-      targetFieldName ? summary.tests[targetFieldName]?.valid : summary.valid,
-    );
+    if (targetFieldName) {
+      return isFieldValid(targetFieldName);
+    }
+
+    return Boolean(summary.valid);
+  }
+
+  function isFieldValid(fieldName: F, visited = new Set<F>()): boolean {
+    const fieldSummary = summary.tests[fieldName];
+
+    if (!fieldSummary || fieldSummary.valid === false) {
+      return false;
+    }
+
+    if (visited.has(fieldName)) {
+      return fieldSummary.valid !== false;
+    }
+    visited.add(fieldName);
+
+    const dependencies = summary.dependencies?.[fieldName];
+
+    if (!dependencies) {
+      return fieldSummary.valid !== false;
+    }
+
+    for (const dep of dependencies) {
+      if (!isFieldValid(dep as F, visited)) {
+        return false;
+      }
+    }
+
+    return fieldSummary.valid !== false;
   }
 
   // eslint-disable-next-line max-statements, complexity

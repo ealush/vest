@@ -126,6 +126,8 @@ const DisallowedKeys = new Set([
   'output',
   'severity',
   'tests',
+  'dependsOn',
+  'dependencies',
 ]);
 
 const SkipTraversalKeys = new Set([

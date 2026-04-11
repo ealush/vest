@@ -7,6 +7,7 @@ import { ErrorStrings } from '../errors/ErrorStrings';
 import { TDraftCondition } from '../suite/getTypedMethods';
 import { TFieldName, TGroupName } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
+import { LazyDraft } from '../suiteResult/selectors/LazyDraft';
 
 import { useHasOnliedTests } from './focused/useHasOnliedTests';
 
@@ -96,8 +97,10 @@ function useSetIncluded<F extends TFieldName, G extends TGroupName>(
       return useHasOnliedTests(currentNode, makeBrand<TFieldName>(condition));
     }
 
-    return dynamicValue(condition, () =>
-      useCreateSuiteResult(undefined, undefined),
+    return dynamicValue(
+      condition,
+      LazyDraft<F, G>(),
+      currentNode,
     );
   };
 }

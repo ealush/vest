@@ -21,6 +21,7 @@ export class SuiteSummary<
   D = unknown,
   S extends TSchema = undefined,
 > extends SummaryBase {
+  public dependencies: Record<TFieldName, TFieldName[]> = {};
   public [Severity.ERRORS]: SummaryFailure<F, G>[] = [];
   public [Severity.WARNINGS]: SummaryFailure<F, G>[] = [];
   public groups: Groups<G, F> = {} as Groups<G, F>;
@@ -48,6 +49,13 @@ export class SuiteSummary<
         },
         time: new Date(0),
       },
+      writable: true,
+    });
+
+    Object.defineProperty(this, 'dependencies', {
+      configurable: true,
+      enumerable: false,
+      value: {},
       writable: true,
     });
   }

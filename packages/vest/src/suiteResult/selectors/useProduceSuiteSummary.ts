@@ -1,7 +1,10 @@
 import { defaultTo, isEmpty, Maybe, assign } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
-import { TIsolateSuite } from '../../core/isolate/IsolateSuite/IsolateSuite';
+import {
+  SuiteDependencies,
+  TIsolateSuite,
+} from '../../core/isolate/IsolateSuite/IsolateSuite';
 import { TIsolateTest } from '../../core/isolate/IsolateTest/IsolateTest';
 import { VestTest } from '../../core/isolate/IsolateTest/VestTest';
 import { isVestIsolate } from '../../core/isolate/VestIsolateType';
@@ -23,7 +26,6 @@ import {
   useNoMissingTestsLogic,
   useSetValidProperty,
 } from './useSetValidProperty';
-import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
 
 export function useProduceSuiteSummary<
   F extends TFieldName,
@@ -36,6 +38,7 @@ export function useProduceSuiteSummary<
   const summary = new SuiteSummary<F, G, D, S>();
 
   if (isVestIsolate(root)) {
+    summary.dependencies = SuiteDependencies.getDependencies(root);
     useProcessTests(root.data.tests, summary);
   }
 
@@ -68,21 +71,6 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
 
     return addSummaryStats(testObject, summary);
   }, summary);
-
-  // After we have all the tests bucketed, we decide on the final validity
-  // of the suite.
-  // We iterate over all the fields we've seen, and if any of them is not valid,
-  // the suite is not valid.
-  for (const fieldName in summary.tests) {
-    if (summary.tests[fieldName].valid === false) {
-      if (useIsOptionalFieldApplied(fieldName as F).unwrap()) {
-        summary.tests[fieldName].valid = true;
-      } else {
-        summary.valid = false;
-        break;
-      }
-    }
-  }
 
   return summary;
 }

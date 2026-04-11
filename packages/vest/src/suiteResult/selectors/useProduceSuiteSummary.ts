@@ -23,7 +23,6 @@ import {
   useNoMissingTestsLogic,
   useSetValidProperty,
 } from './useSetValidProperty';
-import { useIsOptionalFieldApplied } from '../../hooks/optional/optional';
 
 export function useProduceSuiteSummary<
   F extends TFieldName,
@@ -68,21 +67,6 @@ function useProcessTests<F extends TFieldName, G extends TGroupName>(
 
     return addSummaryStats(testObject, summary);
   }, summary);
-
-  // After we have all the tests bucketed, we decide on the final validity
-  // of the suite.
-  // We iterate over all the fields we've seen, and if any of them is not valid,
-  // the suite is not valid.
-  for (const fieldName in summary.tests) {
-    if (summary.tests[fieldName].valid === false) {
-      if (useIsOptionalFieldApplied(fieldName as F).unwrap()) {
-        summary.tests[fieldName].valid = true;
-      } else {
-        summary.valid = false;
-        break;
-      }
-    }
-  }
 
   return summary;
 }

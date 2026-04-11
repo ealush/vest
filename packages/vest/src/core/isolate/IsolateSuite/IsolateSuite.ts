@@ -17,6 +17,7 @@ import {
 } from '../VestIsolateType';
 
 export type TIsolateSuite = TVestIsolate<{
+  dependencies: Record<TFieldName, Set<TFieldName>>;
   optional: OptionalFields;
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>;
   // Registry indices (populated by IsolateRegistry)
@@ -35,9 +36,35 @@ export function IsolateSuite<Callback extends CB = CB>(
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>,
 ): TIsolateSuite {
   return createVestIsolate(VestIsolateType.Suite, callback, {
+    dependencies: {},
     optional: {},
     resolver,
   });
+}
+
+export class SuiteDependencies {
+  static addDependency(
+    suite: TIsolateSuite,
+    fieldName: TFieldName,
+    dependency: TFieldName,
+  ): void {
+    const dependencies = suite.data.dependencies;
+    dependencies[fieldName] = dependencies[fieldName] ?? new Set<TFieldName>();
+    dependencies[fieldName].add(dependency);
+  }
+
+  static getDependencies(
+    suite: TIsolateSuite,
+  ): Record<TFieldName, TFieldName[]> {
+    const source = suite.data.dependencies ?? {};
+    const output: Record<TFieldName, TFieldName[]> = {};
+
+    Object.keys(source).forEach(key => {
+      output[key as TFieldName] = Array.from(source[key as TFieldName] ?? []);
+    });
+
+    return output;
+  }
 }
 
 export class SuiteOptionalFields {

@@ -54,6 +54,7 @@ export type IsolateTestPayload<F extends TFieldName = TFieldName> =
   };
 
 type CommonTestFields<F extends TFieldName = TFieldName> = {
+  dependsOn?: TFieldName[];
   message?: Maybe<string>;
   fieldName: F;
   testFn: TestFn;

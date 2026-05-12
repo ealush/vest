@@ -1,3 +1,4 @@
+
 ---
 sidebar_position: 4
 title: Creating custom enforce rules
@@ -64,7 +65,7 @@ enforce(user.email).isValidEmail();
 
 ## Custom rules return value
 
-Rules can either return boolean indicating success or failure, or an object with two keys. `pass` indicates whether the validation is successful or not, and message provides a function with no arguments that return an error message in case of failure. Thus, when pass is false, message should return the error message for when enforce(x).yourRule() fails.
+Rules can either return boolean indicating success or failure, or an object with two keys. `pass` indicates whether the validation is successful or not, and message provides a function with no arguments that returns an error message in case of failure. Thus, when pass is false, message should return the error message for when enforce(x).yourRule() fails.
 
 ```js
 enforce.extend({

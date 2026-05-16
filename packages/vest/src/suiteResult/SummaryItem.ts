@@ -4,7 +4,7 @@ import { WithFieldName } from '../core/test/TestTypes';
 
 import { TFieldName, TGroupName } from './SuiteResultTypes';
 
-export class SummaryFailure<
+export class SummaryItem<
   F extends TFieldName,
   G extends TGroupName,
 > implements WithFieldName<F> {
@@ -16,10 +16,10 @@ export class SummaryFailure<
 
   static fromTestObject<F extends TFieldName, G extends TGroupName>(
     testObject: TIsolateTest<F>,
-  ): SummaryFailure<F, G> {
+  ): SummaryItem<F, G> {
     const { fieldName, message } = VestTest.getData(testObject);
     const groupName = VestTest.getGroupName<G>(testObject);
 
-    return new SummaryFailure<F, G>(fieldName, message, groupName);
+    return new SummaryItem<F, G>(fieldName, message, groupName);
   }
 }

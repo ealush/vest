@@ -7,8 +7,7 @@ import { include } from './hooks/include';
 import { Modes } from './hooks/optional/Modes';
 import { mode } from './hooks/optional/mode';
 import { optional } from './hooks/optional/optional';
-import { useWarn } from './hooks/useWarn';
-import { warn } from './hooks/warn';
+import { warn, useWarn, success, useSuccess } from './hooks/useSeverity';
 import { each } from './isolates/each';
 import { group } from './isolates/group';
 import { omitWhen } from './isolates/omitWhen';
@@ -31,6 +30,8 @@ export {
   only,
   warn,
   useWarn,
+  success,
+  useSuccess,
   include,
   suiteSelectors,
   each,

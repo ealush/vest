@@ -19,13 +19,14 @@ import {
   TGroupName,
   TSchema,
 } from '../SuiteResultTypes';
-import { SummaryFailure } from '../SummaryFailure';
+import { SummaryItem } from '../SummaryItem';
 
 import { gatherFailures } from './collectFailures';
 
 type InputFieldName<F extends TFieldName> = F;
 type InputGroupName<G extends TGroupName> = G;
 
+// eslint-disable-next-line max-lines-per-function
 export function bindSuiteSelectors<
   F extends TFieldName,
   G extends TGroupName,
@@ -41,6 +42,13 @@ export function bindSuiteSelectors<
     ) => get().getErrorsByGroup(...args),
     getMessage: (...args: Parameters<SuiteSelectors<F, G>['getMessage']>) =>
       get().getMessage(...args),
+    getSuccess: (...args: Parameters<SuiteSelectors<F, G>['getSuccess']>) =>
+      get().getSuccess(...args),
+    getSuccesses: (...args: Parameters<SuiteSelectors<F, G>['getSuccesses']>) =>
+      get().getSuccesses(...args),
+    getSuccessesByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['getSuccessesByGroup']>
+    ) => get().getSuccessesByGroup(...args),
     getWarning: (...args: Parameters<SuiteSelectors<F, G>['getWarning']>) =>
       get().getWarning(...args),
     getWarnings: (...args: Parameters<SuiteSelectors<F, G>['getWarnings']>) =>
@@ -53,6 +61,11 @@ export function bindSuiteSelectors<
     hasErrorsByGroup: (
       ...args: Parameters<SuiteSelectors<F, G>['hasErrorsByGroup']>
     ) => get().hasErrorsByGroup(...args),
+    hasSuccesses: (...args: Parameters<SuiteSelectors<F, G>['hasSuccesses']>) =>
+      get().hasSuccesses(...args),
+    hasSuccessesByGroup: (
+      ...args: Parameters<SuiteSelectors<F, G>['hasSuccessesByGroup']>
+    ) => get().hasSuccessesByGroup(...args),
     hasWarnings: (...args: Parameters<SuiteSelectors<F, G>['hasWarnings']>) =>
       get().hasWarnings(...args),
     hasWarningsByGroup: (
@@ -79,11 +92,16 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     getErrors,
     getErrorsByGroup,
     getMessage,
+    getSuccess,
+    getSuccesses,
+    getSuccessesByGroup,
     getWarning,
     getWarnings,
     getWarningsByGroup,
     hasErrors,
     hasErrorsByGroup,
+    hasSuccesses,
+    hasSuccessesByGroup,
     hasWarnings,
     hasWarningsByGroup,
     isPending,
@@ -181,6 +199,14 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     ).unwrap();
   }
 
+  function hasSuccesses(fieldName?: InputFieldName<F>): boolean {
+    return hasFailures(
+      summary,
+      SeverityCount.SUCCESS_COUNT,
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
   function isTested(fieldName: InputFieldName<F>): boolean {
     const safeFieldName = asFieldName(fieldName);
 
@@ -213,6 +239,18 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     ).unwrap();
   }
 
+  function hasSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean {
+    return hasFailuresByGroup(
+      summary,
+      SeverityCount.SUCCESS_COUNT,
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
   // Responses
 
   function getWarnings(): FailureMessages;
@@ -225,11 +263,11 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     ).unwrap();
   }
 
-  function getWarning(): Maybe<SummaryFailure<F, G>>;
+  function getWarning(): Maybe<SummaryItem<F, G>>;
   function getWarning(fieldName: InputFieldName<F>): Maybe<string>;
   function getWarning(
     fieldName?: InputFieldName<F>,
-  ): Maybe<SummaryFailure<F, G> | string> {
+  ): Maybe<SummaryItem<F, G> | string> {
     const safeFieldName = asFieldName(fieldName);
 
     return (
@@ -249,17 +287,41 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     ).unwrap();
   }
 
-  function getError(): Maybe<SummaryFailure<F, G>>;
+  function getError(): Maybe<SummaryItem<F, G>>;
   function getError(fieldName: InputFieldName<F>): Maybe<string>;
   function getError(
     fieldName?: InputFieldName<F>,
-  ): Maybe<SummaryFailure<F, G> | string> {
+  ): Maybe<SummaryItem<F, G> | string> {
     const safeFieldName = asFieldName(fieldName);
 
     return (
       safeFieldName
         ? getFailure<F, G>(Severity.ERRORS, summary, safeFieldName)
         : getFailure<F, G>(Severity.ERRORS, summary)
+    ).unwrap();
+  }
+
+  function getSuccesses(): FailureMessages;
+  function getSuccesses(fieldName: InputFieldName<F>): string[];
+  function getSuccesses(fieldName?: InputFieldName<F>): GetFailuresResponse {
+    return getFailures(
+      summary,
+      Severity.SUCCESS,
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
+  function getSuccess(): Maybe<SummaryItem<F, G>>;
+  function getSuccess(fieldName: InputFieldName<F>): Maybe<string>;
+  function getSuccess(
+    fieldName?: InputFieldName<F>,
+  ): Maybe<SummaryItem<F, G> | string> {
+    const safeFieldName = asFieldName(fieldName);
+
+    return (
+      safeFieldName
+        ? getFailure<F, G>(Severity.SUCCESS, summary, safeFieldName)
+        : getFailure<F, G>(Severity.SUCCESS, summary)
     ).unwrap();
   }
 
@@ -281,7 +343,9 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
   }
 
   function getMessage(fieldName: InputFieldName<F>): Maybe<string> {
-    return getError(fieldName) || getWarning(fieldName);
+    return (
+      getError(fieldName) || getWarning(fieldName) || getSuccess(fieldName)
+    );
   }
 
   function getWarningsByGroup(groupName: InputGroupName<G>): FailureMessages;
@@ -301,6 +365,23 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     ).unwrap();
   }
 
+  function getSuccessesByGroup(groupName: InputGroupName<G>): FailureMessages;
+  function getSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  function getSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): GetFailuresResponse {
+    return getFailuresByGroup(
+      summary,
+      Severity.SUCCESS,
+      asGroupName(groupName),
+      asFieldName(fieldName),
+    ).unwrap();
+  }
+
   function isPending(fieldName?: InputFieldName<F>): boolean {
     const safeFieldName = asFieldName(fieldName);
 
@@ -311,16 +392,21 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
 }
 
 export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
-  getWarning(): SummaryFailure<F, G> | undefined;
+  getWarning(): SummaryItem<F, G> | undefined;
   getWarning(fieldName: InputFieldName<F>): string | undefined;
   getWarning(
     fieldName?: InputFieldName<F>,
-  ): SummaryFailure<F, G> | string | undefined;
-  getError(): SummaryFailure<F, G> | undefined;
+  ): SummaryItem<F, G> | string | undefined;
+  getError(): SummaryItem<F, G> | undefined;
   getError(fieldName: InputFieldName<F>): string | undefined;
   getError(
     fieldName?: InputFieldName<F>,
-  ): SummaryFailure<F, G> | string | undefined;
+  ): SummaryItem<F, G> | string | undefined;
+  getSuccess(): SummaryItem<F, G> | undefined;
+  getSuccess(fieldName: InputFieldName<F>): string | undefined;
+  getSuccess(
+    fieldName?: InputFieldName<F>,
+  ): SummaryItem<F, G> | string | undefined;
   getMessage(fieldName: InputFieldName<F>): string | undefined;
   getErrors(): FailureMessages;
   getErrors(fieldName: InputFieldName<F>): string[];
@@ -328,6 +414,9 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
   getWarnings(): FailureMessages;
   getWarnings(fieldName: InputFieldName<F>): string[];
   getWarnings(fieldName?: InputFieldName<F>): string[] | FailureMessages;
+  getSuccesses(): FailureMessages;
+  getSuccesses(fieldName: InputFieldName<F>): string[];
+  getSuccesses(fieldName?: InputFieldName<F>): string[] | FailureMessages;
   getErrorsByGroup(groupName: InputGroupName<G>): FailureMessages;
   getErrorsByGroup(
     groupName: InputGroupName<G>,
@@ -346,13 +435,27 @@ export interface SuiteSelectors<F extends TFieldName, G extends TGroupName> {
     groupName: InputGroupName<G>,
     fieldName?: InputFieldName<F>,
   ): string[] | FailureMessages;
+  getSuccessesByGroup(groupName: InputGroupName<G>): FailureMessages;
+  getSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName: InputFieldName<F>,
+  ): string[];
+  getSuccessesByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): string[] | FailureMessages;
   hasErrors(fieldName?: InputFieldName<F>): boolean;
   hasWarnings(fieldName?: InputFieldName<F>): boolean;
+  hasSuccesses(fieldName?: InputFieldName<F>): boolean;
   hasErrorsByGroup(
     groupName: InputGroupName<G>,
     fieldName?: InputFieldName<F>,
   ): boolean;
   hasWarningsByGroup(
+    groupName: InputGroupName<G>,
+    fieldName?: InputFieldName<F>,
+  ): boolean;
+  hasSuccessesByGroup(
     groupName: InputGroupName<G>,
     fieldName?: InputFieldName<F>,
   ): boolean;
@@ -442,7 +545,7 @@ function hasFailures(
 function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
-): Result<Maybe<SummaryFailure<F, G>>>;
+): Result<Maybe<SummaryItem<F, G>>>;
 function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
@@ -452,7 +555,7 @@ function getFailure<F extends TFieldName, G extends TGroupName>(
   severity: Severity,
   summary: SuiteSummary<F, G>,
   fieldName?: F,
-): Result<Maybe<SummaryFailure<F, G> | string>> {
+): Result<Maybe<SummaryItem<F, G> | string>> {
   const summaryKey = summary[severity];
 
   if (!fieldName) {
@@ -460,7 +563,7 @@ function getFailure<F extends TFieldName, G extends TGroupName>(
   }
 
   return makeResult.Ok(
-    summaryKey.find((summaryFailure: SummaryFailure<TFieldName, TGroupName>) =>
+    summaryKey.find((summaryFailure: SummaryItem<TFieldName, TGroupName>) =>
       matchingFieldName(summaryFailure, fieldName).unwrap(),
     )?.message,
   );

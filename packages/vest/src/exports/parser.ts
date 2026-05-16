@@ -16,6 +16,7 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 import { suiteSelectors } from '../vest';
 
+// eslint-disable-next-line max-lines-per-function
 export function parse<
   F extends TFieldName,
   G extends TGroupName,
@@ -33,6 +34,7 @@ export function parse<
   const selectors = {
     invalid: sel.hasErrors,
     pending: sel.isPending,
+    success: sel.hasSuccesses,
     tested: isTested,
     untested: isUntested,
     valid: sel.isValid,
@@ -83,4 +85,5 @@ export type ParsedVestObject<F extends TFieldName> = {
   untested(fieldName?: F | string): boolean;
   warning(fieldName?: F | string): boolean;
   pending(fieldName?: F | string): boolean;
+  success(fieldName?: F | string): boolean;
 };

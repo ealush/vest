@@ -5,12 +5,12 @@ Promise {
   "dump": [Function],
   "errorCount": 2,
   "errors": [
-    SummaryFailure {
+    SummaryItem {
       "fieldName": "field_1",
       "groupName": undefined,
       "message": "field_statement_1",
     },
-    SummaryFailure {
+    SummaryItem {
       "fieldName": "field_2",
       "groupName": undefined,
       "message": "field_statement_2",
@@ -20,12 +20,17 @@ Promise {
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getMessage": [Function],
+  "getSuccess": [Function],
+  "getSuccesses": [Function],
+  "getSuccessesByGroup": [Function],
   "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
+  "hasSuccesses": [Function],
+  "hasSuccessesByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isPending": [Function],
@@ -47,6 +52,8 @@ Promise {
     },
   ],
   "pendingCount": 0,
+  "success": [],
+  "successCount": 0,
   "testCount": 5,
   "tests": {
     "field_1": SummaryBase {
@@ -55,6 +62,8 @@ Promise {
         "field_statement_1",
       ],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -66,6 +75,8 @@ Promise {
         "field_statement_2",
       ],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -75,6 +86,8 @@ Promise {
       "errorCount": 0,
       "errors": [],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 1,
       "valid": true,
       "warnCount": 0,
@@ -84,6 +97,8 @@ Promise {
       "errorCount": 0,
       "errors": [],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 2,
       "valid": true,
       "warnCount": 1,
@@ -95,6 +110,8 @@ Promise {
       "errorCount": 0,
       "errors": [],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 0,
       "valid": false,
       "warnCount": 0,
@@ -105,7 +122,7 @@ Promise {
   "valid": false,
   "warnCount": 1,
   "warnings": [
-    SummaryFailure {
+    SummaryItem {
       "fieldName": "field_4",
       "groupName": undefined,
       "message": "field_statement_4",

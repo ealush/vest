@@ -41,8 +41,12 @@ export function lazy<T>(
     return cached;
   };
 
-  return addToChain<LazyRuleInstance<T>>({}, (value: any) => {
-    const result = ctx.run({ value }, () => resolve().run(value));
-    return RuleRunReturn.create(result, value);
-  });
+  return addToChain<LazyRuleInstance<T>>(
+    {},
+    (value: any) => {
+      const result = ctx.run({ value }, () => resolve().run(value));
+      return RuleRunReturn.create(result, value);
+    },
+    { args: [factory], rule: 'lazy' },
+  );
 }

@@ -31,12 +31,13 @@ function vestTest(
 ): TIsolateTest {
   const {
     fieldName: safeFieldName,
+    issue,
     message,
     testFn,
     key,
   } = validateTestParams(fieldName, ...args).unwrap();
 
-  const testObjectInput = { fieldName: safeFieldName, message, testFn };
+  const testObjectInput = { fieldName: safeFieldName, issue, message, testFn };
 
   // This invalidates the suite cache.
   useEmit('TEST_RUN_STARTED');

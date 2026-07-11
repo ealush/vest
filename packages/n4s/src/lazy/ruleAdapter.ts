@@ -10,13 +10,17 @@ export function adaptDynamicRules<
   return Object.keys(container).reduce(
     (acc, key) => {
       acc[key as keyof O] = (...args: any[]) =>
-        addToChain({}, (value: any) => {
-          // eslint-disable-next-line max-nested-callbacks
-          const result = ctx.run({ value }, () =>
-            container[key as keyof O](value, ...args),
-          );
-          return RuleRunReturn.create(result, value);
-        });
+        addToChain(
+          {},
+          (value: any) => {
+            // eslint-disable-next-line max-nested-callbacks
+            const result = ctx.run({ value }, () =>
+              container[key as keyof O](value, ...args),
+            );
+            return RuleRunReturn.create(result, value);
+          },
+          { args, rule: key },
+        );
       return acc;
     },
     {} as Record<keyof typeof container, (...args: any[]) => T>,

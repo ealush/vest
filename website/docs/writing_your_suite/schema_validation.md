@@ -192,6 +192,53 @@ result.run.data.raw; // { score: 42 }
 result.run.data.parsed; // { score: 42 }
 ```
 
+## Structured schema issues
+
+Use `.issue()` immediately after a schema rule to give that failure a stable
+code and message. `n4s` derives safe metadata from the rule and `shape` derives
+the nested path:
+
+```typescript
+const schema = enforce.shape({
+  account: enforce.shape({
+    password: enforce
+      .isString()
+      .issue({ code: 'not_string', message: 'Password must be text' })
+      .longerThanOrEquals(12)
+      .issue({
+        code: 'too_short',
+        message: 'Password must contain at least 12 characters',
+      }),
+  }),
+});
+```
+
+For the value `{ account: { password: 'secret' } }`, the issue is:
+
+```javascript
+{
+  code: 'too_short',
+  message: 'Password must contain at least 12 characters',
+  path: ['account', 'password'],
+  meta: {
+    rule: 'longerThanOrEquals',
+    minimum: 12,
+    inclusive: true,
+    actual: { type: 'string', length: 6 },
+  },
+}
+```
+
+Metadata derivation intentionally excludes rejected values and opaque rule
+arguments. This prevents passwords, tokens, equality targets, and custom rule
+configuration from leaking into logs or API responses. Rules without a known
+safe metadata mapping still include the rule name.
+
+Structured issues are returned by `schema.validate()`, and when the schema is
+passed to `create()`, Vest preserves them on `result.errors` and
+`result.issues`. Existing `.message()` and string-based result selectors remain
+supported.
+
 ## Schema Parsing
 
 Schema rules support built-in [data parsers](../enforce/builtin-enforce-plugins/data_parsers.md) that transform values as part of validation. When a schema uses parsers, `suite.run()` receives the transformed data in the callback, and `result.value` contains the parsed output.

@@ -53,7 +53,10 @@ export function extendEnforce(
     };
 
     enforce[ruleName] = (...args: any[]) =>
-      addToChain({}, (value: any) => ruleWrapper(value, ...args));
+      addToChain({}, (value: any) => ruleWrapper(value, ...args), {
+        args,
+        rule: ruleName,
+      });
 
     registerLazyRule(
       ruleName,

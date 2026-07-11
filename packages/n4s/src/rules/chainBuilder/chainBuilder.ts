@@ -9,8 +9,14 @@ import {
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { RuleInstance } from '../../utils/RuleInstance';
+import type { RuleRunReturn } from '../../utils/RuleRunReturn';
+import type { IssueConfig, RuleDescriptor } from '../../issue';
 
-import { executeChain, type Predicate } from './chainExecutor';
+import {
+  executeChain,
+  type ChainPredicate,
+  type Predicate,
+} from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 
 export type RuleFunctions<T extends RuleInstance<any, any>> = Record<
@@ -31,17 +37,20 @@ type LazyMessage = DynamicValue<
 export function createChainBuilder<T extends RuleInstance<any, any>>(
   rules: RuleFunctions<T> | Record<string, (...args: any[]) => any>,
 ) {
-  const chain: Predicate[] = [];
+  const chain: ChainPredicate[] = [];
   const target: Partial<T> = {};
   let lazyMessage: Maybe<LazyMessage> = undefined;
+  let lastAdded: ChainPredicate | undefined;
 
-  const add = (p: Predicate): T => {
-    chain.push(p);
+  const add = (p: Predicate, descriptor: RuleDescriptor): T => {
+    lastAdded = { descriptor, predicate: p };
+    chain.push(lastAdded);
     return proxy;
   };
 
-  const prepend = (p: Predicate): T => {
-    chain.unshift(p);
+  const prepend = (p: Predicate, descriptor: RuleDescriptor): T => {
+    lastAdded = { descriptor, predicate: p };
+    chain.unshift(lastAdded);
     return proxy;
   };
 
@@ -62,12 +71,7 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
       return { value: result.type };
     }
     return {
-      issues: [
-        {
-          message: resolveMessage(result, args[0]),
-          path: result.path || [],
-        },
-      ],
+      issues: [toStandardIssue(result, resolveMessage(result, args[0]))],
     };
   }) as T['validate'];
 
@@ -107,6 +111,14 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     return proxy;
   };
 
+  const issue = (config: IssueConfig): T => {
+    if (!lastAdded) {
+      throw new TypeError('issue() must follow an enforce rule');
+    }
+    lastAdded.descriptor.issue = config;
+    return proxy;
+  };
+
   const proxy: T = new Proxy(
     target as T,
     createChainProxyHandlers(rules, {
@@ -120,6 +132,7 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
         version: 1 as const,
       } as StandardSchemaV1.Props<any, any>,
       add,
+      issue,
       message,
       parse,
       prepend,
@@ -130,4 +143,11 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
   );
 
   return { add, proxy } as const;
+}
+
+function toStandardIssue(result: RuleRunReturn<any>, message: string) {
+  return Object.assign(
+    { message, path: result.path || [] },
+    result.issue ? { code: result.issue.code, meta: result.issue.meta } : {},
+  );
 }

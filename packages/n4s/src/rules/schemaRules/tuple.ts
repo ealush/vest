@@ -116,6 +116,7 @@ function elementFailure(
   index: number,
 ): RuleRunReturn<any> {
   const failure = RuleRunReturn.Failing(value, res.message);
+  failure.issue = res.issue;
   failure.path = [index.toString(), ...(res.path || [])];
   return failure;
 }

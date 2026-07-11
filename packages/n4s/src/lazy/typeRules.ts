@@ -69,15 +69,31 @@ type LazyStringRuleInstance = BuildRuleInstance<
 
 export const typeRules = {
   isArray: <T = any>(): LazyArrayRuleInstance<T> =>
-    addToChain<LazyArrayRuleInstance<T>>(lazyArrayRules, isArray),
-  isBoolean: (): BooleanRuleInstance => addToChain(booleanRules, isBoolean),
-  isNull: (): NullRuleInstance => addToChain({}, isNull),
-  isNullish: (): NullishRuleInstance => addToChain({}, isNullish),
+    addToChain<LazyArrayRuleInstance<T>>(lazyArrayRules, isArray, {
+      args: [],
+      rule: 'isArray',
+    }),
+  isBoolean: (): BooleanRuleInstance =>
+    addToChain(booleanRules, isBoolean, { args: [], rule: 'isBoolean' }),
+  isNull: (): NullRuleInstance =>
+    addToChain({}, isNull, { args: [], rule: 'isNull' }),
+  isNullish: (): NullishRuleInstance =>
+    addToChain({}, isNullish, { args: [], rule: 'isNullish' }),
   isNumber: (): LazyNumberRuleInstance =>
-    addToChain<LazyNumberRuleInstance>(lazyNumberRules, isNumber),
+    addToChain<LazyNumberRuleInstance>(lazyNumberRules, isNumber, {
+      args: [],
+      rule: 'isNumber',
+    }),
   isNumeric: (): LazyNumericRuleInstance =>
-    addToChain<LazyNumericRuleInstance>(lazyNumberRules, isNumeric),
+    addToChain<LazyNumericRuleInstance>(lazyNumberRules, isNumeric, {
+      args: [],
+      rule: 'isNumeric',
+    }),
   isString: (): LazyStringRuleInstance =>
-    addToChain<LazyStringRuleInstance>(lazyStringRules, isString),
-  isUndefined: (): UndefinedRuleInstance => addToChain({}, isUndefined),
+    addToChain<LazyStringRuleInstance>(lazyStringRules, isString, {
+      args: [],
+      rule: 'isString',
+    }),
+  isUndefined: (): UndefinedRuleInstance =>
+    addToChain({}, isUndefined, { args: [], rule: 'isUndefined' }),
 };

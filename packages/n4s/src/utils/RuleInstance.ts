@@ -1,6 +1,7 @@
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { RuleRunReturn } from './RuleRunReturn';
+import type { IssueConfig } from '../issue';
 
 /**
  * Represents a lazy validation rule that can be executed with a value.
@@ -44,6 +45,8 @@ export class RuleInstance<T, Args extends any[] = any[]> {
   // Type-only declaration for parse helper that throws on issues
   parse!: (...args: Args) => T;
 
+  issue!: (config: IssueConfig) => this;
+
   // Type-only declaration for StandardSchema property.
   // The intersection with `{ readonly types: ... }` narrows `types` from optional
   // (as declared in StandardSchemaV1.Props) to required. This is safe because
@@ -77,7 +80,9 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       return {
         issues: [
           {
-            message: result.message || 'Validation failed',
+            ...(result.issue ?? {
+              message: result.message || 'Validation failed',
+            }),
             path: result.path || [],
           },
         ],
@@ -110,8 +115,8 @@ export class RuleInstance<T, Args extends any[] = any[]> {
         version: 1 as const,
       },
       infer: {} as T,
-      run,
       parse,
+      run,
       test: (...args: Args) => {
         const result = validate(...args);
         return !result.issues;

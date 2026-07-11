@@ -7,6 +7,8 @@ import { extendEnforce } from './extendLogic';
 import { enforceLazy } from './lazy';
 import type { RuleInstance } from './utils/RuleInstance';
 
+export type { EnforceIssue, IssueConfig } from './issue';
+
 /**
  * Context API for accessing validation context.
  * Allows accessing metadata and parent validation context during rule execution.

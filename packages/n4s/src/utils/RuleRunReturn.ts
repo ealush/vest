@@ -1,4 +1,5 @@
 import { isBoolean, Stringable, dynamicValue } from 'vest-utils';
+import type { EnforceIssue } from '../issue';
 
 /**
  * Represents the result of a validation rule execution.
@@ -25,6 +26,7 @@ export class RuleRunReturn<T> {
   /** Optional error message if validation failed */
   message?: string;
   path?: string[];
+  issue?: Omit<EnforceIssue, 'path'>;
 
   constructor(pass: boolean, type: T, message?: string) {
     this.pass = pass;
@@ -76,7 +78,7 @@ export class RuleRunReturn<T> {
       dynamicValue(message ?? pass.message, type),
     );
 
-    res.path = pass.path;
+    Object.assign(res, { issue: pass.issue, path: pass.path });
 
     return res;
   }

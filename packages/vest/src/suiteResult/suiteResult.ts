@@ -93,7 +93,9 @@ export function constructSuiteResultObject<
       if (failure.message) {
         acc.push({
           message: failure.message,
-          path: [failure.fieldName],
+          path: failure.path ?? [failure.fieldName],
+          ...(failure.code === undefined ? {} : { code: failure.code }),
+          ...(failure.meta === undefined ? {} : { meta: failure.meta }),
         });
       }
       return acc;

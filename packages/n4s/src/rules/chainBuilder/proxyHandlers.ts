@@ -5,12 +5,14 @@ import { RuleInstance } from '../../utils/RuleInstance';
 import { CHAIN_PREPEND } from '../parsers/parserUtils';
 
 import type { Predicate } from './chainExecutor';
+import type { IssueConfig, RuleDescriptor } from '../../issue';
 import { getLazyRule } from './lazyRegistry';
 
 export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   rules: Record<string, (...args: any[]) => any>,
   {
     add,
+    issue,
     test,
     validate,
     run,
@@ -19,18 +21,20 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     prepend,
     '~standard': standard,
   }: {
-    add: (p: Predicate) => T;
+    add: (p: Predicate, descriptor: RuleDescriptor) => T;
+    issue: (config: IssueConfig) => T;
     test: T['test'];
     validate: T['validate'];
     run: T['run'];
     parse: T['parse'];
     message: (msg: any) => T;
-    prepend: (p: Predicate) => T;
+    prepend: (p: Predicate, descriptor: RuleDescriptor) => T;
     '~standard': StandardSchemaV1.Props<any, any>;
   },
 ) {
   const methods = {
     '~standard': standard,
+    issue,
     message,
     parse,
     run,
@@ -39,6 +43,7 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   };
   const methodKeys = new Set([
     'infer',
+    'issue',
     'test',
     'validate',
     'run',
@@ -57,7 +62,10 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
   rules: Record<string, any>,
   methods: Record<string, any>,
   methodKeys: Set<string>,
-  inserters: { add: (p: Predicate) => T; prepend: (p: Predicate) => T },
+  inserters: {
+    add: (p: Predicate, descriptor: RuleDescriptor) => T;
+    prepend: (p: Predicate, descriptor: RuleDescriptor) => T;
+  },
 ) {
   function getRuleHandler(prop: string | symbol) {
     if (hasOwnProperty(rules, prop)) {
@@ -65,13 +73,17 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
         ? inserters.prepend
         : inserters.add;
       return (...args: any[]) =>
-        insert((value: any) => rules[prop](value, ...args));
+        insert((value: any) => rules[prop](value, ...args), {
+          args,
+          rule: String(prop),
+        });
     }
 
     if (typeof prop === 'string') {
       const lazyRule = getLazyRule(prop);
       if (lazyRule) {
-        return (...args: any[]) => inserters.add(lazyRule(...args));
+        return (...args: any[]) =>
+          inserters.add(lazyRule(...args), { args, rule: prop });
       }
     }
 

@@ -17,6 +17,7 @@ import type { Suite } from './suite/SuiteTypes';
 import { createSuite } from './suite/createSuite';
 import type { SuiteConfig } from './suite/createSuite';
 import type { SuiteResult, SuiteSummary } from './suiteResult/SuiteResultTypes';
+import type { TestIssue } from './core/test/TestTypes';
 import { suiteSelectors } from './suiteResult/selectors/suiteSelectors';
 
 export {
@@ -39,4 +40,4 @@ export {
   registerReconciler,
 };
 
-export type { SuiteResult, SuiteSummary, Suite, SuiteConfig };
+export type { SuiteResult, SuiteSummary, Suite, SuiteConfig, TestIssue };

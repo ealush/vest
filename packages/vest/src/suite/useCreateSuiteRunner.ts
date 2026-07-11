@@ -16,6 +16,7 @@ import { SuiteContext } from '../core/context/SuiteContext';
 import { IsolateReorderable } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
+import type { TestIssue } from '../core/test/TestTypes';
 import { only, skip } from '../hooks/focused/focused';
 import {
   SuiteResult,
@@ -30,6 +31,7 @@ import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 
 type SchemaRunResult = {
+  readonly issue?: Omit<TestIssue, 'path'>;
   readonly message?: string;
   readonly pass: boolean;
   readonly path?: readonly string[];
@@ -282,7 +284,12 @@ function runSchemaValidation<S extends TSchema = undefined>(
 
       const fieldName = error.path?.length ? error.path.join('.') : '__root__';
       const testKey = `${fieldName}_${i}`;
-      test(fieldName, error.message, () => false, testKey);
+      test(
+        fieldName,
+        error.issue ? { ...error.issue, path: error.path } : error.message,
+        () => false,
+        testKey,
+      );
     }
   };
 }
@@ -422,6 +429,7 @@ function normalizeSingleSchemaRunResult(
   }
 
   return {
+    issue: candidate.issue,
     message: candidate.message,
     pass: candidate.pass,
     path: candidate.path,

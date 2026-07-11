@@ -185,9 +185,29 @@ Combines multiple enforce rules.
 
 - [Read more about `compose`](./enforce/composing_enforce_rules.md)
 
-#### `test(fieldName, message, callback)`
+#### `test(fieldName, messageOrIssue, callback)`
 
 A single validation test inside your suite.
+
+`messageOrIssue` can be a message string or a structured issue with a stable
+`code`, human-readable `message`, and optional `meta` and `path`:
+
+```js
+test(
+  'account.password',
+  {
+    code: 'too_short',
+    message: 'Password must contain at least 12 characters',
+    meta: { minimum: 12 },
+    path: ['account', 'password'],
+  },
+  () => enforce(data.account.password).longerThanOrEquals(12),
+);
+```
+
+Structured data is available on `result.errors`, `result.warnings`, and
+`result.issues`, including through Vest's Standard Schema interface. Existing
+string selectors such as `getErrors(fieldName)` continue to return messages.
 
 - [Read more about `test`](./writing_tests/the_test_function.md)
 

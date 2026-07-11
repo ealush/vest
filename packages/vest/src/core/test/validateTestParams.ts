@@ -11,12 +11,13 @@ import { IsolateKey } from 'vestjs-runtime';
 import { ErrorStrings } from '../../errors/ErrorStrings';
 import { TFieldName } from '../../suiteResult/SuiteResultTypes';
 
-import { TestFn, TestMessage } from './TestTypes';
+import { TestFn, TestIssue, TestMessage } from './TestTypes';
 
 export type TestParams<F extends TFieldName = TFieldName> = {
   fieldName: F;
   key?: IsolateKey;
-  message?: TestMessage;
+  issue?: TestIssue;
+  message?: string;
   testFn: TestFn;
 };
 
@@ -34,7 +35,7 @@ export function validateTestParams(
     );
   }
 
-  const [message, testFn, key] = (
+  const [messageOrIssue, testFn, key] = (
     isFunction(rest[1]) ? rest : [undefined, ...rest]
   ) as [TestMessage, TestFn, IsolateKey | undefined];
 
@@ -50,8 +51,15 @@ export function validateTestParams(
 
   return makeResult.Ok({
     fieldName: makeBrand<TFieldName>(fieldName),
+    ...normalizeMessage(messageOrIssue),
     key,
-    message,
     testFn,
   });
+}
+
+function normalizeMessage(messageOrIssue: TestMessage) {
+  if (typeof messageOrIssue === 'object' && messageOrIssue !== null) {
+    return { issue: messageOrIssue, message: messageOrIssue.message };
+  }
+  return { message: messageOrIssue };
 }

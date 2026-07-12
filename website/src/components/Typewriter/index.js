@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 
@@ -13,6 +13,7 @@ export default function Typewriter({
   prefix = '',
   values = [],
   highlightClassName = '',
+  reservePairs,
 }) {
   const [phase, setPhase] = useState('typing-prefix');
   // Phases:
@@ -128,25 +129,55 @@ export default function Typewriter({
     phase === 'paused-before-type' ||
     (phase === 'typing-value' && displayedValue.length === 0); // Blink while waiting to start typing value
 
+  const reserveVariants = useMemo(
+    () =>
+      (reservePairs ?? [[prefix, values]]).flatMap(
+        ([reservePrefix, reserveValues]) =>
+          (reserveValues.length ? reserveValues : ['']).map(reserveValue => ({
+            prefix: reservePrefix,
+            value: reserveValue,
+          })),
+      ),
+    [reservePairs, prefix, values],
+  );
+
   return (
-    <>
-      {displayedPrefix}
-      {showPrefixCursor && (
-        <span className={clsx(styles.cursor, { [styles.blinking]: false })}>
-          |
-        </span>
-      )}
-      <br />
-      <span className={highlightClassName}>
-        {displayedValue}
-        {showValueCursor && (
+    <span className={styles.typewriter}>
+      <span className={styles.sizer} aria-hidden="true">
+        {reserveVariants.map(({ prefix: variantPrefix, value }, index) => (
           <span
-            className={clsx(styles.cursor, { [styles.blinking]: isBlinking })}
+            className={styles.sizerVariant}
+            key={`${variantPrefix}-${value}-${index}`}
           >
-            |
+            {variantPrefix}
+            <span className={styles.cursor}>|</span>
+            <span className={styles.breakPoint} />
+            <span className={highlightClassName}>
+              {value}
+              <span className={styles.cursor}>|</span>
+            </span>
           </span>
+        ))}
+      </span>
+      <span className={styles.visibleText}>
+        {displayedPrefix}
+        {showPrefixCursor && <span className={styles.cursor}>|</span>}
+        {showValueCursor && (
+          <>
+            <span className={styles.breakPoint} />
+            <span className={highlightClassName}>
+              {displayedValue}
+              <span
+                className={clsx(styles.cursor, {
+                  [styles.blinking]: isBlinking,
+                })}
+              >
+                |
+              </span>
+            </span>
+          </>
         )}
       </span>
-    </>
+    </span>
   );
 }

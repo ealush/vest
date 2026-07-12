@@ -68,6 +68,7 @@ suite.run(formData);`;
               prefix={prefix}
               values={values}
               highlightClassName={styles.heroHighlight}
+              reservePairs={TYPEWRITER_DATA}
             />
           </h1>
           <p className={clsx('hero__subtitle', styles.heroTagline)}>

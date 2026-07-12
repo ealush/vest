@@ -1,3 +1,30 @@
+.typewriter {
+  display: grid;
+  min-width: 0;
+}
+
+.sizer,
+.visibleText {
+  grid-area: 1 / 1 / 2 / 2;
+  min-width: 0;
+}
+
+.sizer {
+  display: grid;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sizerVariant {
+  display: block;
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.breakPoint::before {
+  content: '\A';
+  white-space: pre;
+}
+
 .cursor {
   display: inline-block;
   margin-left: 2px;
@@ -16,5 +43,11 @@
   }
   50% {
     opacity: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .breakPoint::before {
+    content: ' ';
   }
 }

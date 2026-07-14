@@ -49,7 +49,7 @@
     "vestjs-runtime": "^2.0.17"
   },
   "devDependencies": {
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "exports": {
     "./exports/classnames": {

@@ -148,9 +148,9 @@ Hydrates the suite with a serialized state.
 - `data`: The serialized state string.
 - [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
 
-#### `suite.validate(data)`
+#### `suite['~standard'].validate(data)`
 
-Runs the suite and returns a result compatible with the [Standard Schema](https://github.com/standard-schema/standard-schema) specification.
+Implements the [Standard Schema](https://standardschema.dev/) interoperability contract. Compatible consumers invoke this hook automatically. For application code, use the primary `suite.run(data)` stateful API or `suite.runStatic(data)` stateless API.
 
 - [Read more about Standard Schema Support](./community_resources/standard_schema.md)
 

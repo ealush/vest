@@ -1,112 +1,81 @@
-# Vest - Declarative validations framework
+# Vest — TypeScript validation-state framework
 
 ![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo_250.png 'Vest')
 
-[Vest Documentation](https://vestjs.dev)
+[Documentation](https://vestjs.dev) · [Async race demo](https://vestjs.dev/#async-race-demo) · [Getting started](https://vestjs.dev/docs/get_started)
 
-[![Join Discord](https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&label=Discord)](https://discord.gg/WmADZpJnSe) [![Github Stars](https://badgen.net/github/stars/ealush/vest?color=yellow&label=Github%20🌟)](https://github.com/ealush/vest)
-[![Next Tag](https://badgen.net/npm/v/vest/next)](https://vestjs.dev/vest-5-is-ready) [![Version](https://badgen.net/npm/v/vest?&icon=npm)](https://www.npmjs.com/package/vest) [![Downloads](https://badgen.net/npm/dt/vest?label=Downloads)](https://www.npmjs.com/package/vest) [![bundlephobia](https://badgen.net/bundlephobia/minzip/vest)](https://bundlephobia.com/package/vest) [![Status](https://badgen.net/github/status/ealush/vest)](https://github.com/ealush/vest/actions)
+[![Join Discord](https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&label=Discord)](https://discord.gg/WmADZpJnSe) [![GitHub Stars](https://badgen.net/github/stars/ealush/vest?color=yellow&label=GitHub%20Stars)](https://github.com/ealush/vest) [![Version](https://badgen.net/npm/v/vest?icon=npm)](https://www.npmjs.com/package/vest) [![Downloads](https://badgen.net/npm/dt/vest?label=Downloads)](https://www.npmjs.com/package/vest) [![Bundle size](https://badgen.net/bundlephobia/minzip/vest)](https://bundlephobia.com/package/vest) [![Status](https://badgen.net/github/status/ealush/vest)](https://github.com/ealush/vest/actions)
 
----
+Vest manages validation as values change over time. It runs only the relevant field or step, retains trustworthy results from earlier interactions, and prevents stale asynchronous work from replacing the current result.
 
-Vest is a validation framework that looks and feels like a unit testing framework. It is designed to be easy to learn, highly maintainable, and framework-agnostic.
+> **Vest validates what changed, remembers what already passed, and prevents stale async validation results.**
 
-Write your validations as if they were unit tests, and run them in your app.
+The validation rules read like unit tests. The stateful runtime is what makes Vest different.
 
 ```js
-import { create, test, enforce } from 'vest';
+import { create, enforce, test } from 'vest';
 
 const suite = create(data => {
   test('username', 'Username is required', () => {
     enforce(data.username).isNotBlank();
   });
 
-  test('username', 'Username must be at least 3 chars', () => {
+  test('username', 'Username must be at least 3 characters', () => {
     enforce(data.username).longerThanOrEquals(3);
   });
 
-  test('username', 'Username already taken', async () => {
-    await doesUserExist(data.username);
+  test('username', 'Username is already taken', async ({ signal }) => {
+    const response = await checkUsername(data.username, { signal });
+    enforce(response.available).isTruthy();
   });
 });
 
-const result = await suite.run(formData);
+// Run only username tests and retain previous results for every other field.
+const result = suite.only('username').run(formData);
+
+result.isPending('username');
+result.hasErrors('username');
+
+// Await the current async run when final completion matters.
+await result;
 ```
 
 ## Why Vest?
 
-Writing form validations can be messy. Vest cleans it up by separating validation logic from feature logic and providing a familiar, powerful syntax.
+- **Incremental execution:** Validate a field, group, or step without rerunning everything.
+- **Retained validation state:** Focused runs merge into one complete living result.
+- **Race-safe async:** Track pending work, cancel obsolete requests, and ignore stale completions.
+- **Real workflow primitives:** Model dependent fields, conditional sections, warnings, optional values, groups, and dynamic lists.
+- **Client and server continuity:** Run statelessly on the server and resume full validation state in the browser.
+- **Framework independence:** Use the same suite with React, Vue, Svelte, Angular, vanilla JavaScript, or Node.js.
+- **TypeScript and schemas:** Infer typed inputs and parsed outputs with Enforce schemas.
+- **Standard Schema interoperability:** Pass suites and Enforce rules to compatible tools while keeping `run()` and `runStatic()` as Vest's execution APIs.
+- **Familiar, testable rules:** Keep business validation outside UI components in suites that are easy to unit-test.
 
-### 💡 Easy to Learn
+## Where Vest fits
 
-Vest adopts the syntax and style of unit testing frameworks (Mocha, Jest). If you've written a test, you already know Vest.
+| Layer                | Responsibility                                              | Typical tools                      |
+| -------------------- | ----------------------------------------------------------- | ---------------------------------- |
+| Form state           | Values, registration, touched state, submission             | React Hook Form, Formik            |
+| Data boundary        | Parse and protect a complete payload                        | Zod, Valibot, Ajv, Enforce schemas |
+| **Validation state** | Decide what runs now, retain results, coordinate async work | **Vest**                           |
 
-### 🎨 Framework Agnostic
+These layers are complementary. A common architecture uses a form manager for input mechanics, Vest for progressive interaction, and a schema validator for the final submitted boundary.
 
-React, Vue, Svelte, Angular, or Vanilla JS - Vest works everywhere. It doesn't depend on your UI library.
+## Strong use cases
 
-### 🛡️ Type Safe
+Vest is particularly useful for:
 
-Vest is written in TypeScript and provides first-class type support, including typed suites and results.
+- async username, email, inventory, coupon, or eligibility checks;
+- onboarding and multi-step workflows;
+- linked fields and cross-field business rules;
+- warnings that should not block submission;
+- optional and conditional sections;
+- dynamic lists of travelers, products, or addresses;
+- rules shared between browser and server;
+- SSR workflows that should not validate everything twice.
 
-### 🔌 Standard Schema Support
-
-Vest implements the [Standard Schema](https://github.com/standard-schema/standard-schema) spec, making it a drop-in replacement for Zod or Yup in libraries like React Hook Form.
-
-### ⚡ SSR & Hydration
-
-Built-in support for server-side validation and state hydration (`runStatic`, `SuiteSerializer`), enabling seamless full-stack validation flows.
-
-### 🧩 Extendable & Composable
-
-Create custom rules, compose existing ones, or use the optional schema validation (`n4s`) to enforce data structure.
-
-## Examples
-
-### Basic suite with result helpers
-
-```js
-import { create, test, enforce } from 'vest';
-
-const signupSuite = create(data => {
-  test('email', 'Email is required', () => {
-    enforce(data.email).isNotBlank().isEmail();
-  });
-
-  test('password', 'Password must be at least 8 characters', () => {
-    enforce(data.password).isString().longerThanOrEquals(8);
-  });
-});
-
-const result = await signupSuite.run({ email: '', password: 'short' });
-result.hasErrors('email'); // true
-result.getErrors('password'); // ['Password must be at least 8 characters']
-```
-
-### Mixing sync and async validations
-
-```js
-import { create, test, enforce } from 'vest';
-
-const profileSuite = create(data => {
-  test('handle', 'Handle must be unique', async () => {
-    const exists = await handleExists(data.handle);
-    enforce(exists).isFalse();
-  });
-
-  test('handle', 'Handle must be 3-16 characters', () => {
-    enforce(data.handle)
-      .isString()
-      .longerThanOrEquals(3)
-      .shorterThanOrEquals(16);
-  });
-});
-
-const result = await profileSuite.run({ handle: 'ada' });
-if (result.hasErrors()) {
-  console.log(result.getErrors());
-}
-```
+For a trivial synchronous form or a one-shot API parse, native HTML validation or a schema validator may be all you need.
 
 ## Installation
 
@@ -114,17 +83,18 @@ if (result.hasErrors()) {
 npm i vest
 ```
 
-## Getting Started
+## Start here
 
-Check out the [Vest Documentation](https://vestjs.dev) for guides, API references, and examples.
+- [Getting started](https://vestjs.dev/docs/get_started)
+- [Ten Vest 6 tutorials](https://vestjs.dev/docs/tutorials)
+- [How Vest thinks about validation](https://vestjs.dev/docs/concepts)
+- [Async validation without race conditions](https://vestjs.dev/docs/guides/async-validation-race-conditions)
+- [Canonical React Hook Form + Standard Schema architecture](https://vestjs.dev/docs/guides/production-architecture)
+- [When not to use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest)
+- [Vest, schema validators, and form libraries](https://vestjs.dev/docs/vest_vs_the_rest)
+- [Consumer AI usage guide](https://vestjs.dev/llms-consumer.txt)
+- [Public roadmap](https://github.com/ealush/vest/blob/latest/ROADMAP.md)
 
-### Playgrounds
+## Contributing
 
-- [React](https://codesandbox.io/s/react-vest-5-gdc698?file=/src/suite.js)
-- [Vue](https://codesandbox.io/s/vue-vest-5-d1g236?file=/src/suite.js)
-- [Svelte](https://codesandbox.io/s/svelte-vest-5-imnq9z?file=/suite.js)
-- [Vanilla](https://codesandbox.io/s/vest-vanilla-js-vest-5-3v4pqk?file=/src/suite.js)
-
-## Contribute
-
-We welcome contributions! See [CONTRIBUTING.md](https://github.com/ealush/vest/blob/latest/CONTRIBUTING.md) for details.
+Contributions are welcome. See [CONTRIBUTING.md](https://github.com/ealush/vest/blob/latest/CONTRIBUTING.md).

@@ -5,8 +5,8 @@ import commonStyles from './Common.module.css';
 import styles from './RawExample.module.css';
 
 const SuiteCode = `import { create, test, enforce } from 'vest';
-import {memo} from 'vest/memo';
-import { doesUserExist } from './api';
+import { memo } from 'vest/memo';
+import { checkUsername } from './api';
 
 const suite = create((data = {}) => {
   test("username", "Username is required", () => {
@@ -18,8 +18,9 @@ const suite = create((data = {}) => {
   });
 
   memo(() => {
-    test('username', 'Username already taken', async () => {
-      await doesUserExist(data.username);
+    test('username', 'Username already taken', async ({ signal }) => {
+      const { available } = await checkUsername(data.username, { signal });
+      enforce(available).isTruthy();
     });
   }, [data.username]);
 });
@@ -27,17 +28,19 @@ const suite = create((data = {}) => {
 export default suite;
 `;
 
-const ApiCode = `export async function doesUserExist(username) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // Mock API call: reject if username contains "taken"
-      if (username && username.includes("taken")) {
-        reject();
-      } else {
-        resolve();
-      }
-    }, 1000);
+const ApiCode = `export async function checkUsername(username, { signal } = {}) {
+  await new Promise((resolve, reject) => {
+    const timeout = setTimeout(resolve, 1000);
+
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timeout);
+      reject(new DOMException('Aborted', 'AbortError'));
+    }, { once: true });
   });
+
+  return {
+    available: !username?.toLowerCase().includes('taken'),
+  };
 }
 `;
 
@@ -55,7 +58,7 @@ export default function App() {
     setForm(newForm);
     
     suite
-      .focus({only: name})
+      .only(name)
       .afterEach(() => {
         setIsPending(suite.isPending());
       })
@@ -177,13 +180,13 @@ export default function RawExample() {
     >
       <div className={styles.desc}>
         <strong>
-          Vest looks and feels like a unit testing framework, but for your
-          forms.
+          Your suite contains the business rules. Vest manages how their truth
+          changes over time.
         </strong>
         <br />
-        By separating validation logic from your UI, you get a system that
-        handles async checks, dependent fields, and conditional logic without
-        cluttering your component state.
+        The familiar test syntax keeps rules readable and testable while the
+        runtime handles focused execution, retained results, pending work, and
+        stale async responses.
       </div>
       <div className={styles.codeWindow}>
         <Sandpack

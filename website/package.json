@@ -6,6 +6,7 @@
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",
+    "test": "vitest run",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -25,7 +26,8 @@
     "prism-react-renderer": "^2.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "vest": "workspace:*"
   },
   "browserslist": {
     "production": [
@@ -40,6 +42,7 @@
     ]
   },
   "devDependencies": {
-    "@codesandbox/sandpack-react": "^2.20.0"
+    "@codesandbox/sandpack-react": "^2.20.0",
+    "vitest": "^4.0.18"
   }
 }

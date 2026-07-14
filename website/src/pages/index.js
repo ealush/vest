@@ -3,27 +3,17 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import CodeBlock from '@theme/CodeBlock';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-import Demo from '../components/Demo';
+import AsyncRaceDemo from '../components/AsyncRaceDemo';
 import HomepageFeatures from '../components/HomepageFeatures';
 import RawExample from '../components/RawExample';
-import Typewriter from '../components/Typewriter';
-import { TYPEWRITER_DATA } from '../components/Typewriter/data';
 
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const { siteConfig } = useDocusaurusContext();
   const [copied, setCopied] = useState(false);
   const installCommand = 'npm i vest';
-  const [[prefix, values], setTypewriterData] = useState(TYPEWRITER_DATA[0]);
-
-  useEffect(() => {
-    setTypewriterData(
-      TYPEWRITER_DATA[Math.floor(Math.random() * TYPEWRITER_DATA.length)],
-    );
-  }, []);
 
   const handleCopy = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -33,6 +23,12 @@ function HomepageHeader() {
     }
   };
 
+  const handleDemoScroll = () => {
+    document
+      .getElementById('async-race-demo')
+      ?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const heroCode = `import { create, test, enforce } from 'vest';
 
 const suite = create((data = {}) => {
@@ -40,8 +36,9 @@ const suite = create((data = {}) => {
     enforce(data.username).isNotBlank();
   });
 
-  test('username', 'already taken', async () => {
-    await doesUsernameExist(data.username);
+  test('username', 'already taken', async ({ signal }) => {
+    const { available } = await checkUsername(data.username, { signal });
+    enforce(available).isTruthy();
   });
 
   test('password', 'must be 8+ chars', () => {
@@ -61,43 +58,56 @@ suite.run(formData);`;
             <span className={styles.heroLogoText}>Vest</span>
           </div>
           <p className={styles.heroOverline}>
-            Form validation that feels like writing tests
+            TypeScript validation-state framework
           </p>
-          <h1 className="hero__title">
-            <Typewriter
-              prefix={prefix}
-              values={values}
-              highlightClassName={styles.heroHighlight}
-            />
+          <h1 className={clsx('hero__title', styles.heroTitle)}>
+            Validate what changed.{' '}
+            <span className={styles.heroHighlight}>Keep what passed.</span>
           </h1>
           <p className={clsx('hero__subtitle', styles.heroTagline)}>
-            {siteConfig.tagline}
+            Validate only the field or step changing now, retain previous
+            results, and prevent stale async responses from corrupting your form
+            state.
           </p>
           <div className={styles.ctaGroup}>
-            <Link
+            <button
               className={clsx('button button--primary', styles.primaryCta)}
+              data-adoption-event="run_demo"
+              data-adoption-label="hero_async_race"
+              onClick={handleDemoScroll}
+              type="button"
+            >
+              See async race protection
+            </button>
+            <Link
+              className={clsx('button button--secondary', styles.secondaryCta)}
+              data-adoption-event="docs_cta"
+              data-adoption-label="hero_get_started"
               to="/docs/get_started"
             >
               Get started
             </Link>
             <Link
-              className={clsx('button button--secondary', styles.secondaryCta)}
-              to="/docs/api_reference"
-            >
-              Explore the API
-            </Link>
-            <Link
               className={clsx('button', styles.tertiaryCta)}
-              to="/docs/upgrade_guide"
+              data-adoption-event="docs_cta"
+              data-adoption-label="hero_tutorials"
+              to="/docs/tutorials"
             >
-              Try Vest v6
+              Explore tutorials
             </Link>
+          </div>
+          <div className={styles.capabilityRow} aria-label="Core capabilities">
+            <span>Stateful runs</span>
+            <span>Stateless server validation</span>
+            <span>Standard Schema</span>
           </div>
           <div className={styles.installBar}>
             <code className={styles.installCommand}>{installCommand}</code>
             <button
               type="button"
               className={styles.copyPill}
+              data-adoption-event="copy_install"
+              data-adoption-label="hero_npm_install"
               onClick={handleCopy}
             >
               <svg
@@ -131,7 +141,15 @@ suite.run(formData);`;
           </div>
         </div>
         <div className={styles.heroPanel}>
-          <div className={styles.panelHeader}>Complex forms, simplified</div>
+          <div className={styles.panelHeader}>
+            <span className={styles.windowControls} aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span>registration-suite.ts</span>
+            <span className={styles.panelStatus}>Vest 6</span>
+          </div>
           <div className={styles.panelBody}>
             <CodeBlock language="javascript" className={styles.panelCode}>
               {heroCode}
@@ -152,14 +170,14 @@ export default function Home() {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title} Validations Framework`}
-      description="Vest is a validations framework inspired by the syntax and style of testing libraries."
+      title={`${siteConfig.title}: TypeScript validation-state framework`}
+      description="Validate what changed, retain previous results, and prevent stale async responses with Vest."
     >
       <HomepageHeader />
       <main>
+        <AsyncRaceDemo />
         <RawExample />
         <HomepageFeatures />
-        <Demo />
       </main>
     </Layout>
   );

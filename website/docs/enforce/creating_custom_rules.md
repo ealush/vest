@@ -19,6 +19,8 @@ Every application has unique domain logic. You might need to validate:
 
 Custom rules allow you to extend Vest's vocabulary to speak your domain language.
 
+Use `condition` for one-off logic. Use `enforce.extend` when a rule represents stable vocabulary that should be shared across suites or schemas.
+
 ## Inline logic with `condition`
 
 Sometimes you would need to add some custom logic to your validation. For that you can use `enforce.condition` which accepts a function.
@@ -64,7 +66,7 @@ enforce(user.email).isValidEmail();
 
 ## Custom rules return value
 
-Rules can either return boolean indicating success or failure, or an object with two keys. `pass` indicates whether the validation is successful or not, and message provides a function with no arguments that return an error message in case of failure. Thus, when pass is false, message should return the error message for when enforce(x).yourRule() fails.
+Rules can return a boolean or a rule-result object. `pass` indicates success, and `message` may be a string or a function that returns the failure message.
 
 ```js
 enforce.extend({
@@ -97,8 +99,8 @@ import { enforce } from 'vest';
 enforce.extend({
   matchesField: (value, fieldName) => {
     const context = enforce.context();
-    // context.parent.value gives access to the parent object being validated
-    return value === context.parent.value[fieldName];
+    const parent = context?.parent()?.value;
+    return value === parent?.[fieldName];
   },
 });
 
@@ -107,6 +109,8 @@ const schema = enforce.shape({
   confirm: enforce.isString().matchesField('password'),
 });
 ```
+
+`parent` is a function in Vest 6 and context may be absent, so context-aware rules should use nullable access. Nested arrays or objects may require more than one `parent()` traversal.
 
 ## TypeScript Support
 

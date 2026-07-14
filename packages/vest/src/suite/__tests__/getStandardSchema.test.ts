@@ -11,11 +11,12 @@ describe('getStandardSchema', () => {
 
   describe('validate', () => {
     it('Should return value on success', () => {
+      const input = { a: 1 };
       const runner = vi.fn().mockReturnValue({
         hasErrors: () => false,
+        value: input,
       });
       const schema = getStandardSchema(runner);
-      const input = { a: 1 };
 
       const result = schema.validate(input);
       expect(result).toEqual({ value: input });

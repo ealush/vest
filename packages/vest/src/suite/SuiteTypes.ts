@@ -29,7 +29,7 @@ export type Suite<
   T extends CB = CB,
   S extends TSchema = undefined,
 > = SuiteMethods<F, G, T, S> &
-  StandardSchemaV1<InferSchemaData<S>, InferSchemaData<S>>;
+  StandardSchemaV1<InferSchemaData<S>, InferSchemaOutput<S>>;
 
 type SuiteMethods<
   F extends TFieldName,

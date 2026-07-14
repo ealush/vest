@@ -1,86 +1,133 @@
 # Vest 6
-> Vest is a framework-agnostic form validation library for JavaScript that derives its syntax from modern unit testing frameworks like Mocha or Jest. It supports React, Vue, Svelte, and vanilla JS.
+> TypeScript validation-state framework for complex interactive forms. Vest validates what changed, retains trustworthy previous results, and prevents stale async work from corrupting current state.
 
-- [Full Documentation (All-in-one)](/llms-full.txt)
-- [LLM Coding Instructions](/LLM_INSTRUCTIONS.md)
+- [Full Vest 6 documentation](https://vestjs.dev/llms-full.txt)
+- [Consumer usage guide](https://vestjs.dev/llms-consumer.txt)
+- [Maintainer coding instructions](https://vestjs.dev/LLM_INSTRUCTIONS.md)
+
+## Choose Vest when
+- A field or step should validate without rerunning the complete form.
+- Previous field results must remain available across interactions.
+- Async checks can overlap or finish in the wrong order.
+- The workflow has dependent fields, warnings, conditions, groups, or dynamic lists.
+- Validation rules should run in the browser and on the server.
+
+## Choose another tool when
+- You only need to parse a complete API payload once: use a schema validator.
+- You primarily need input registration and value state: use a form manager.
+- Native HTML validation fully covers a small synchronous form.
+
+Vest composes with schema validators and form managers; these categories are not mutually exclusive.
+
+## Start with a problem
+- [Ten Vest 6 tutorials](https://vestjs.dev/docs/tutorials)
+- [Async validation without race conditions](https://vestjs.dev/docs/guides/async-validation-race-conditions)
+- [Validate one field or step](https://vestjs.dev/docs/guides/focused-validation)
+- [Dependent and cross-field validation](https://vestjs.dev/docs/guides/dependent-fields)
+- [Multi-step workflow validation](https://vestjs.dev/docs/guides/multi-step-workflows)
+- [Conditional form sections](https://vestjs.dev/docs/guides/conditional-sections)
+- [Errors, warnings, pending, and untested state](https://vestjs.dev/docs/guides/validation-status)
+- [Memoize and debounce repeated async validation](https://vestjs.dev/docs/guides/memo-and-debounce)
+- [Typed schemas and parsed results](https://vestjs.dev/docs/guides/typed-schemas)
+- [React Hook Form and schema integration](https://vestjs.dev/docs/guides/form-and-schema-integration)
+- [Next.js Server Actions and resumable state](https://vestjs.dev/docs/guides/nextjs-server-actions)
+- [Production registration architecture](https://vestjs.dev/docs/guides/production-architecture)
+- [When not to use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest)
 
 ## Key Concepts
-- **Stateful Validation**: Vest manages validation state (pending, failed, valid) across renders.
-- **Focused Updates**: Validate only specific fields (e.g., on blur) using `only()` or `skip()` while retaining the state of others.
-- **Conditional Inclusion**: Use `skipWhen`, `omitWhen`, and `include` to dynamically control which tests run.
-- **Optional Fields**: Mark fields as optional to allow them to be empty or valid.
+- **Living Result**: A suite stores validation truth and reconciles new runs with previous field results.
+- **Focused Updates**: Validate a field, step, or group with `suite.only()` or `suite.focus()` while retaining everything else.
+- **Race-safe Async**: Pending work is tracked, obsolete runs are canceled, and stale async results are ignored.
+- **Progressive Workflows**: Model dependent fields, conditional sections, optional values, warnings, groups, and dynamic lists.
 
 ## Advanced Features
-- **Async Tests**: Native Promise support for server-side checks.
-- **Server-Side Validation**: Stateless runs using `runStatic` and state serialization/hydration.
-- **Schema Validation**: Structural validation using `enforce` schemas.
-- **Type Safety**: TypeScript support for suites and enforce rules.
+- **Server and SSR**: Use `runStatic()`, then serialize and resume full validation state in the browser.
+- **Schemas and Parsing**: Enforce schemas provide structural validation, coercion, and inferred input/output types.
+- **Interoperability**: Suites and Enforce rules implement Standard Schema.
+- **Familiar Rules**: Test-like syntax keeps business validation readable, reusable, and independently testable.
 
 ## Core Documentation
-- [Getting Started with Vest](/docs/get_started)
-- [Vest's core concepts](/docs/concepts)
-- [Comparing Vest to Other Form Validation Libraries](/docs/vest_vs_the_rest)
-- [Api reference](/docs/api_reference)
-- [Server-Side Rendering (SSR)](/docs/suite_serialization)
-- [Understanding Vest's State](/docs/understanding_state)
-- [Server-Side & SSR](/docs/server_side_validations)
-- [Typescript Support](/docs/typescript_support)
-- [Upgrade guides](/docs/upgrade_guide)
+- [Getting Started with Vest](https://vestjs.dev/docs/get_started)
+- [How Vest Thinks About Validation](https://vestjs.dev/docs/concepts)
+- [Vest, Schema Validators, and Form Libraries](https://vestjs.dev/docs/vest_vs_the_rest)
+- [Api reference](https://vestjs.dev/docs/api_reference)
+- [Server-Side Rendering (SSR)](https://vestjs.dev/docs/suite_serialization)
+- [Understanding Vest's State](https://vestjs.dev/docs/understanding_state)
+- [Server-Side & SSR](https://vestjs.dev/docs/server_side_validations)
+- [Typescript Support](https://vestjs.dev/docs/typescript_support)
+- [Upgrade guides](https://vestjs.dev/docs/upgrade_guide)
+- [Ten Vest 6 Tutorials](https://vestjs.dev/docs/tutorials)
+
+## Problem-first Guides
+- [Async Validation Without Race Conditions](https://vestjs.dev/docs/guides/async-validation-race-conditions)
+- [Client and Server Validation](https://vestjs.dev/docs/guides/client-server-validation)
+- [Conditional Form Sections](https://vestjs.dev/docs/guides/conditional-sections)
+- [Dependent and Cross-Field Validation](https://vestjs.dev/docs/guides/dependent-fields)
+- [Validate Dynamic Lists and Arrays](https://vestjs.dev/docs/guides/dynamic-lists)
+- [Validate One Field or Step](https://vestjs.dev/docs/guides/focused-validation)
+- [Use Vest with Form and Schema Libraries](https://vestjs.dev/docs/guides/form-and-schema-integration)
+- [Reduce Repeated Async Validation](https://vestjs.dev/docs/guides/memo-and-debounce)
+- [Validation for Multi-Step Forms](https://vestjs.dev/docs/guides/multi-step-workflows)
+- [Next.js Server Actions Without Double Validation](https://vestjs.dev/docs/guides/nextjs-server-actions)
+- [Production Registration Architecture](https://vestjs.dev/docs/guides/production-architecture)
+- [Typed Schemas and Parsed Results](https://vestjs.dev/docs/guides/typed-schemas)
+- [Errors, Warnings, Pending, and Untested State](https://vestjs.dev/docs/guides/validation-status)
+- [When Not to Use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest)
 
 ## Writing Your Suite
-- [Including and Excluding Fields in Vest](/docs/writing_your_suite/including_and_excluding/skip_and_only)
-- [The Suite Object](/docs/writing_your_suite/vests_suite)
-- [Accessing Vest's Result](/docs/writing_your_suite/accessing_the_result)
-- [skipWhen for conditionally skipping tests](/docs/writing_your_suite/including_and_excluding/skipWhen)
-- [Schema Validation](/docs/writing_your_suite/schema_validation)
-- [Focused Updates](/docs/writing_your_suite/focused_updates)
-- [Handling Suite Completion](/docs/writing_your_suite/handling_completion)
-- [conditionally omit tests from the suite](/docs/writing_your_suite/including_and_excluding/omitWhen)
-- [Optional fields](/docs/writing_your_suite/optional_fields)
-- [Execution Modes](/docs/writing_your_suite/execution_modes)
-- [Linking fields together](/docs/writing_your_suite/including_and_excluding/include)
-- [Handling User Interaction](/docs/writing_your_suite/dirty_checking)
+- [Including and Excluding Fields in Vest](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/skip_and_only)
+- [The Suite Object](https://vestjs.dev/docs/writing_your_suite/vests_suite)
+- [Accessing Vest's Result](https://vestjs.dev/docs/writing_your_suite/accessing_the_result)
+- [skipWhen for conditionally skipping tests](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/skipWhen)
+- [Schema Validation](https://vestjs.dev/docs/writing_your_suite/schema_validation)
+- [Focused Updates](https://vestjs.dev/docs/writing_your_suite/focused_updates)
+- [Handling Suite Completion](https://vestjs.dev/docs/writing_your_suite/handling_completion)
+- [conditionally omit tests from the suite](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/omitWhen)
+- [Optional fields](https://vestjs.dev/docs/writing_your_suite/optional_fields)
+- [Execution Modes](https://vestjs.dev/docs/writing_your_suite/execution_modes)
+- [Linking fields together](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/include)
+- [Handling User Interaction](https://vestjs.dev/docs/writing_your_suite/dirty_checking)
 
 ## Writing Tests
-- [Memoizing Tests](/docs/writing_tests/advanced_test_features/memo)
-- [The Test Function](/docs/writing_tests/the_test_function)
-- [Dynamic Tests & Arrays](/docs/writing_tests/advanced_test_features/dynamic_tests)
-- [Async Validations](/docs/writing_tests/async_tests)
-- [Test Groups](/docs/writing_tests/advanced_test_features/grouping_tests)
-- [Failing with a custom message](/docs/writing_tests/failing_with_a_custom_message)
-- [Debouncing Tests](/docs/writing_tests/advanced_test_features/debounce)
-- [Warn only tests](/docs/writing_tests/warn_only_tests)
+- [Memoizing Tests](https://vestjs.dev/docs/writing_tests/advanced_test_features/memo)
+- [The Test Function](https://vestjs.dev/docs/writing_tests/the_test_function)
+- [Dynamic Tests & Arrays](https://vestjs.dev/docs/writing_tests/advanced_test_features/dynamic_tests)
+- [Async Validations](https://vestjs.dev/docs/writing_tests/async_tests)
+- [Test Groups](https://vestjs.dev/docs/writing_tests/advanced_test_features/grouping_tests)
+- [Failing with a custom message](https://vestjs.dev/docs/writing_tests/failing_with_a_custom_message)
+- [Debouncing Tests](https://vestjs.dev/docs/writing_tests/advanced_test_features/debounce)
+- [Warn only tests](https://vestjs.dev/docs/writing_tests/warn_only_tests)
 
 ## Enforce (Assertions)
-- [Builtin enforce plugins](/docs/enforce/builtin-enforce-plugins/plugins)
-- [enforce](/docs/enforce/enforce)
-- [isEmail enforce Rule](/docs/enforce/builtin-enforce-plugins/email)
-- [All Enforce Rules](/docs/enforce/enforce_rules)
-- [Date Enforce Rules](/docs/enforce/builtin-enforce-plugins/date)
-- [Compound Rules](/docs/enforce/builtin-enforce-plugins/compound_rules)
-- [isURL enforce Rule](/docs/enforce/builtin-enforce-plugins/isUrl)
-- [Creating custom enforce rules](/docs/enforce/creating_custom_rules)
-- [Schema Validation with Enforce](/docs/enforce/builtin-enforce-plugins/schema_rules)
-- [Consuming third party rules](/docs/enforce/consuming_external_rules)
-- [Data Parsers](/docs/enforce/builtin-enforce-plugins/data_parsers)
-- [Enforce Rules Composition](/docs/enforce/composing_enforce_rules)
-- [Failing with a message](/docs/enforce/failing_with_a_message)
+- [Builtin enforce plugins](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/plugins)
+- [enforce](https://vestjs.dev/docs/enforce/enforce)
+- [isEmail enforce Rule](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/email)
+- [All Enforce Rules](https://vestjs.dev/docs/enforce/enforce_rules)
+- [Date Enforce Rules](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/date)
+- [Compound Rules](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/compound_rules)
+- [isURL enforce Rule](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/isUrl)
+- [Creating custom enforce rules](https://vestjs.dev/docs/enforce/creating_custom_rules)
+- [Schema Validation with Enforce](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/schema_rules)
+- [Consuming third party rules](https://vestjs.dev/docs/enforce/consuming_external_rules)
+- [Data Parsers](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/data_parsers)
+- [Enforce Rules Composition](https://vestjs.dev/docs/enforce/composing_enforce_rules)
+- [Failing with a message](https://vestjs.dev/docs/enforce/failing_with_a_message)
 
 ## Framework Integration
-- [React](/docs/usage_with_frameworks/react)
-- [Vue](/docs/usage_with_frameworks/vue)
+- [React](https://vestjs.dev/docs/usage_with_frameworks/react)
+- [Vue](https://vestjs.dev/docs/usage_with_frameworks/vue)
 
 ## Utilities
-- [Utility - Classnames](/docs/utilities/classnames)
+- [Utility - Classnames](https://vestjs.dev/docs/utilities/classnames)
 
 ## Recipes
-- [Recipe- "any" test - at least one must pass](/docs/recipes/any_test)
-- [Recipe - focus({ skip / skipGroup / onlyGroup }) patterns](/docs/recipes/focus_skipgroup_recipes)
-- [Recipe- validating typescript enums](/docs/recipes/typescript_enums)
+- [Recipe- "any" test - at least one must pass](https://vestjs.dev/docs/recipes/any_test)
+- [Recipe - focus({ skip / skipGroup / onlyGroup }) patterns](https://vestjs.dev/docs/recipes/focus_skipgroup_recipes)
+- [Recipe- validating typescript enums](https://vestjs.dev/docs/recipes/typescript_enums)
 
 ## Community Resources
-- [integrations](/docs/community_resources/integrations)
-- [tutorials](/docs/community_resources/tutorials)
-- [showcase](/docs/community_resources/showcase)
-- [Standard Schema](/docs/community_resources/standard_schema)
+- [integrations](https://vestjs.dev/docs/community_resources/integrations)
+- [tutorials](https://vestjs.dev/docs/community_resources/tutorials)
+- [showcase](https://vestjs.dev/docs/community_resources/showcase)
+- [Standard Schema](https://vestjs.dev/docs/community_resources/standard_schema)
 

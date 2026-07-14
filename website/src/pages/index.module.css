@@ -1,7 +1,7 @@
 .heroBanner {
   position: relative;
   overflow: hidden;
-  padding: 8rem 1.75rem 6rem;
+  padding: 7rem 1.75rem 5.5rem;
   background:
     radial-gradient(
       circle at 18% 8%,
@@ -13,7 +13,7 @@
       rgba(34, 211, 238, 0.16),
       transparent 44%
     ),
-    linear-gradient(180deg, #fcfcff 0%, #f2f1fb 88%);
+    linear-gradient(180deg, #fdfdff 0%, #f4f5fb 88%);
 }
 
 html[data-theme='dark'] .heroBanner {
@@ -54,8 +54,8 @@ html[data-theme='dark'] .heroBanner {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 2.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(2.5rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 1.02fr) minmax(420px, 0.98fr);
   align-items: center;
   max-width: 1180px;
   width: min(1180px, 100%);
@@ -66,7 +66,7 @@ html[data-theme='dark'] .heroBanner {
 .heroContent {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.15rem;
   min-width: 0;
   animation: fadeSlide 0.6s ease 0.1s both;
 }
@@ -86,16 +86,16 @@ html[data-theme='dark'] .heroBanner {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .heroLogo {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
 }
 
 .heroLogoText {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--ifm-heading-color);
   letter-spacing: -0.5px;
@@ -115,6 +115,13 @@ html[data-theme='dark'] .heroLogoText {
   opacity: 0.9;
 }
 
+.heroTitle {
+  max-width: 680px;
+  font-size: clamp(3rem, 5.1vw, 4.65rem);
+  line-height: 1.01;
+  letter-spacing: -0.055em;
+}
+
 .heroHighlight {
   background: linear-gradient(120deg, #22d3ee 0%, #6366f1 44%, #f472b6 100%);
   -webkit-background-clip: text;
@@ -123,8 +130,8 @@ html[data-theme='dark'] .heroLogoText {
 }
 
 .heroTagline {
-  font-size: 1.25rem;
-  line-height: 1.7;
+  font-size: 1.17rem;
+  line-height: 1.68;
   color: var(--ifm-color-emphasis-800);
   max-width: 640px;
   margin: 0;
@@ -139,6 +146,34 @@ html[data-theme='dark'] .heroTagline {
   flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
+}
+
+.capabilityRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.1rem;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.79rem;
+  font-weight: 650;
+}
+
+.capabilityRow span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.capabilityRow span::before {
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: var(--ifm-color-primary);
+  box-shadow: 0 0 0 3px rgba(95, 106, 252, 0.1);
+  content: '';
+}
+
+html[data-theme='dark'] .capabilityRow {
+  color: #aeb9cc;
 }
 
 .primaryCta,
@@ -163,6 +198,7 @@ html[data-theme='dark'] .heroTagline {
     0 12px 26px rgba(99, 102, 241, 0.25),
     0 0 24px rgba(244, 114, 182, 0.24);
   border: none;
+  cursor: pointer;
   position: relative;
   overflow: hidden;
 }
@@ -322,7 +358,7 @@ html[data-theme='dark'] .copyPill {
   box-shadow:
     0 16px 32px rgba(0, 0, 0, 0.15),
     0 8px 16px rgba(95, 106, 252, 0.08);
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
   position: relative;
   margin-top: 1rem;
@@ -353,10 +389,47 @@ html[data-theme='dark'] .copyPill {
 }
 
 .panelHeader {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
   padding: 1rem 1.25rem;
-  font-weight: 700;
-  color: #f8fafc;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #cbd5e1;
   letter-spacing: 0.01em;
+}
+
+.windowControls {
+  display: flex;
+  gap: 0.38rem;
+}
+
+.windowControls i {
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 50%;
+  background: #fb7185;
+}
+
+.windowControls i:nth-child(2) {
+  background: #fbbf24;
+}
+
+.windowControls i:nth-child(3) {
+  background: #34d399;
+}
+
+.panelStatus {
+  justify-self: end;
+  padding: 0.22rem 0.48rem;
+  border: 1px solid rgba(129, 140, 248, 0.22);
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #c7d2fe;
+  font-size: 0.62rem;
 }
 
 .panelBody {
@@ -531,6 +604,15 @@ html[data-theme='light'] .panelCode button[class*='copyButton'] {
   .heroTagline {
     font-size: 0.98rem;
     line-height: 1.6;
+  }
+
+  .capabilityRow {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .panelHeader {
+    grid-template-columns: auto 1fr auto;
   }
 
   .heroPanel,

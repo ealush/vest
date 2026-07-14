@@ -1,3 +1,4 @@
+import Link from '@docusaurus/Link';
 import clsx from 'clsx';
 import React from 'react';
 import commonStyles from './Common.module.css';
@@ -5,53 +6,46 @@ import styles from './HomepageFeatures.module.css';
 
 const FeatureList = [
   {
-    title: 'Testing syntax',
-    emoji: '🧪',
-    category: 'Familiar',
+    title: 'Run only what changed',
+    emoji: '◎',
+    category: 'Focused',
     description:
-      'Write validations using test() and enforce() - declarative syntax you already know from Mocha or Jest.',
+      'Validate the active field, step, or group without rerunning unrelated rules or exposing errors for untouched inputs.',
   },
   {
-    title: 'Use it anywhere',
-    emoji: '🌐',
-    category: 'Portable',
-    description:
-      'Framework agnostic. Works seamlessly with React, Vue, Svelte, or vanilla JS. Fully compatible with Standard Schema.',
-  },
-  {
-    title: 'Async by default',
-    emoji: '⚡️',
-    category: 'Resilient',
-    description:
-      'Handle server checks and promises natively. Vest tracks pending states and prevents race conditions automatically.',
-  },
-  {
-    title: 'Fully typed',
-    emoji: '📘',
-    category: 'TypeScript',
-    description:
-      'First-class TypeScript support. Define your data shape once and enjoy full type inference and autocomplete across your suite.',
-  },
-  {
-    title: 'Zero external dependencies',
-    emoji: '🪶',
-    category: 'Lightweight',
-    description:
-      'Built on a modular architecture of internal micro-packages. No third-party bloat, no supply chain surprises.',
-  },
-  {
-    title: 'Smart state',
-    emoji: '🧠',
+    title: 'Keep what already passed',
+    emoji: '↺',
     category: 'Stateful',
     description:
-      'Vest remembers previous runs and merges results, allowing you to validate only the fields the user is interacting with.',
+      'Vest merges each focused run into a living result, preserving trustworthy validation state from earlier interactions.',
   },
   {
-    title: 'Full stack',
-    emoji: '🥞',
-    category: 'Universal',
+    title: 'Trust the latest response',
+    emoji: '⇄',
+    category: 'Race-safe',
     description:
-      'Run the same validation logic on both client and server. Share your suite between environments for consistent, tamper-proof validation.',
+      'Track pending work, cancel obsolete requests, and prevent slow stale responses from replacing the current result.',
+  },
+  {
+    title: 'Model real workflows',
+    emoji: '⌘',
+    category: 'Dependent',
+    description:
+      'Express linked fields, conditional sections, warnings, optional values, multi-step groups, and dynamic lists.',
+  },
+  {
+    title: 'Continue across boundaries',
+    emoji: '↗',
+    category: 'Full stack',
+    description:
+      'Run statelessly on the server, resume validation state in the browser, or share one suite across UI frameworks.',
+  },
+  {
+    title: 'Write rules like tests',
+    emoji: '✓',
+    category: 'Maintainable',
+    description:
+      'Keep business rules outside feature code in readable suites that are straightforward to unit-test and reuse.',
   },
 ];
 
@@ -76,21 +70,51 @@ export default function HomepageFeatures() {
       <div className="container">
         <div className={styles.sectionHeader}>
           <p className={styles.sectionEyebrow}>
-            Designed for the way you build
+            A runtime for validation over time
           </p>
           <h2 className={styles.sectionTitle}>
-            A complete toolkit for form sanity
+            The complete picture, without repeating all the work
           </h2>
           <p className={styles.sectionDescription}>
-            Vest combines a familiar testing syntax with a smart, stateful core.
-            It manages pending async tests, field focus, and strict type safety
-            so you don't have to.
+            A suite is a living validation result. It knows what ran, what can
+            be retained, what is pending, and which result is still relevant.
           </p>
         </div>
         <div className={styles.featuresGrid}>
           {FeatureList.map(feature => (
             <Feature key={feature.title} {...feature} />
           ))}
+        </div>
+        <div className={styles.positioningBand}>
+          <div>
+            <span className={styles.positioningLabel}>At the boundary</span>
+            <strong>Schema validators define the valid destination.</strong>
+            <p>Use them to parse and protect complete submitted payloads.</p>
+          </div>
+          <span className={styles.positioningPlus}>+</span>
+          <div>
+            <span className={styles.positioningLabel}>During interaction</span>
+            <strong>Vest manages how the user gets there.</strong>
+            <p>
+              Use it as values change, async work overlaps, and steps unfold.
+            </p>
+          </div>
+        </div>
+        <div className={styles.nextStep}>
+          <div>
+            <span className={styles.positioningLabel}>Learn by solving</span>
+            <h3>Start with the validation problem you already have.</h3>
+            <p>
+              Ten practical tutorials move from a first suite to async state,
+              typed schemas, and browser/server continuity.
+            </p>
+          </div>
+          <Link
+            className="button button--primary button--lg"
+            to="/docs/tutorials"
+          >
+            Browse the tutorials <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </div>
     </section>

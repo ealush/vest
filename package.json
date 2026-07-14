@@ -13,6 +13,10 @@
     "website:start": "yarn workspace website start",
     "build:llms": "node scripts/build-llms.js",
     "website:build": "yarn build:llms && yarn workspace website build",
+    "example:production:build": "yarn workspace @vest/example-production-registration build",
+    "example:production:test": "yarn workspace @vest/example-production-registration test",
+    "example:production:typecheck": "yarn workspace @vest/example-production-registration typecheck",
+    "ai:eval": "node scripts/score-ai-eval.js",
     "postinstall": "husky install"
   },
   "homepage": "https://vestjs.dev",
@@ -23,6 +27,7 @@
   "vx": {},
   "workspaces": [
     "website",
+    "examples/*",
     "packages/*",
     "./vx/",
     "./vx/eslint-plugin-vest-internal"

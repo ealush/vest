@@ -1,0 +1,129 @@
+{
+  "run": {
+    "date": "YYYY-MM-DD",
+    "model": "model-name-and-version",
+    "context": "no Vest documentation supplied"
+  },
+  "results": [
+    {
+      "promptId": "selection-async-signup",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "selection-api-boundary",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "selection-onboarding",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "selection-simple-contact",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "selection-rhf-zod",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "correctness-focused",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "correctness-async",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "correctness-dependent",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "correctness-conditional",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "correctness-server",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    }
+  ]
+}

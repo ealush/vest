@@ -14,7 +14,7 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 // Recursive file walker
 function getFiles(dir) {
   let results = [];
-  const list = fs.readdirSync(dir);
+  const list = fs.readdirSync(dir).sort();
   list.forEach(function (file) {
     file = path.join(dir, file);
     const stat = fs.statSync(file);
@@ -77,6 +77,41 @@ function buildDocEntry(file) {
   };
 }
 
+function makeLinksAbsolute(content, file) {
+  return content.replace(
+    /(\]\()(<[^>\n]+>|[^)\s]+)(\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\)/g,
+    (match, prefix, destination, title = '') =>
+      makeLinkAbsolute({ destination, file, match, prefix, title }),
+  );
+}
+
+function makeLinkAbsolute({ destination, file, match, prefix, title }) {
+  const href = destination.replace(/^<|>$/g, '');
+
+  if (/^(?:[a-z][a-z\d+.-]*:|#|\/\/)/i.test(href)) {
+    return match;
+  }
+
+  if (href.startsWith('/')) {
+    return `${prefix}https://vestjs.dev${href}${title})`;
+  }
+
+  const targetMatch = href.match(/^([^?#]*)([?#].*)?$/);
+  const relativeTarget = getRelativeTarget(targetMatch[1], file);
+  const suffix = targetMatch[2] || '';
+  const absoluteTarget = path.resolve(path.dirname(file), relativeTarget);
+  const docsPath = path
+    .relative(DOCS_DIR, absoluteTarget)
+    .replace(/\\/g, '/')
+    .replace(/\.mdx?$/, '');
+
+  return `${prefix}https://vestjs.dev/docs/${docsPath}${suffix}${title})`;
+}
+
+function getRelativeTarget(relativeTarget, file) {
+  return relativeTarget ? relativeTarget : path.basename(file);
+}
+
 // ─── Generate llms-full.txt ───────────────────────────────────────────────────
 
 // eslint-disable-next-line no-console
@@ -88,12 +123,15 @@ let fullText = `# Vest 6 Documentation\n\n`;
 files.forEach(file => {
   const fileContent = fs.readFileSync(file, 'utf8');
   const { content, title } = parseFrontmatter(fileContent);
-  const relativePath = path.relative(DOCS_DIR, file);
-  const displayTitle = title || relativePath;
+  const displayTitle = title || path.relative(DOCS_DIR, file);
+  const normalizedContent = makeLinksAbsolute(content.trim(), file);
+  const hasTopLevelHeading = /^#\s+/m.test(normalizedContent);
 
   fullText += `\n\n\n`;
-  fullText += `# ${displayTitle}\n\n`;
-  fullText += content.trim();
+  if (!hasTopLevelHeading) {
+    fullText += `# ${displayTitle}\n\n`;
+  }
+  fullText += normalizedContent;
 });
 
 fs.writeFileSync(path.join(OUTPUT_DIR, 'llms-full.txt'), fullText);
@@ -127,6 +165,7 @@ const sectionNames = {
   _root: 'Core Documentation',
   community_resources: 'Community Resources',
   enforce: 'Enforce (Assertions)',
+  guides: 'Problem-first Guides',
   recipes: 'Recipes',
   usage_with_frameworks: 'Framework Integration',
   utilities: 'Utilities',
@@ -137,6 +176,7 @@ const sectionNames = {
 // Preferred section order
 const sectionOrder = [
   '_root',
+  'guides',
   'writing_your_suite',
   'writing_tests',
   'enforce',
@@ -147,22 +187,52 @@ const sectionOrder = [
 ];
 
 let llmsTxt = `# Vest 6
-> Vest is a framework-agnostic form validation library for JavaScript that derives its syntax from modern unit testing frameworks like Mocha or Jest. It supports React, Vue, Svelte, and vanilla JS.
+> TypeScript validation-state framework for complex interactive forms. Vest validates what changed, retains trustworthy previous results, and prevents stale async work from corrupting current state.
 
-- [Full Documentation (All-in-one)](/llms-full.txt)
-- [LLM Coding Instructions](/LLM_INSTRUCTIONS.md)
+- [Full Vest 6 documentation](https://vestjs.dev/llms-full.txt)
+- [Consumer usage guide](https://vestjs.dev/llms-consumer.txt)
+- [Maintainer coding instructions](https://vestjs.dev/LLM_INSTRUCTIONS.md)
+
+## Choose Vest when
+- A field or step should validate without rerunning the complete form.
+- Previous field results must remain available across interactions.
+- Async checks can overlap or finish in the wrong order.
+- The workflow has dependent fields, warnings, conditions, groups, or dynamic lists.
+- Validation rules should run in the browser and on the server.
+
+## Choose another tool when
+- You only need to parse a complete API payload once: use a schema validator.
+- You primarily need input registration and value state: use a form manager.
+- Native HTML validation fully covers a small synchronous form.
+
+Vest composes with schema validators and form managers; these categories are not mutually exclusive.
+
+## Start with a problem
+- [Ten Vest 6 tutorials](https://vestjs.dev/docs/tutorials)
+- [Async validation without race conditions](https://vestjs.dev/docs/guides/async-validation-race-conditions)
+- [Validate one field or step](https://vestjs.dev/docs/guides/focused-validation)
+- [Dependent and cross-field validation](https://vestjs.dev/docs/guides/dependent-fields)
+- [Multi-step workflow validation](https://vestjs.dev/docs/guides/multi-step-workflows)
+- [Conditional form sections](https://vestjs.dev/docs/guides/conditional-sections)
+- [Errors, warnings, pending, and untested state](https://vestjs.dev/docs/guides/validation-status)
+- [Memoize and debounce repeated async validation](https://vestjs.dev/docs/guides/memo-and-debounce)
+- [Typed schemas and parsed results](https://vestjs.dev/docs/guides/typed-schemas)
+- [React Hook Form and schema integration](https://vestjs.dev/docs/guides/form-and-schema-integration)
+- [Next.js Server Actions and resumable state](https://vestjs.dev/docs/guides/nextjs-server-actions)
+- [Production registration architecture](https://vestjs.dev/docs/guides/production-architecture)
+- [When not to use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest)
 
 ## Key Concepts
-- **Stateful Validation**: Vest manages validation state (pending, failed, valid) across renders.
-- **Focused Updates**: Validate only specific fields (e.g., on blur) using \`only()\` or \`skip()\` while retaining the state of others.
-- **Conditional Inclusion**: Use \`skipWhen\`, \`omitWhen\`, and \`include\` to dynamically control which tests run.
-- **Optional Fields**: Mark fields as optional to allow them to be empty or valid.
+- **Living Result**: A suite stores validation truth and reconciles new runs with previous field results.
+- **Focused Updates**: Validate a field, step, or group with \`suite.only()\` or \`suite.focus()\` while retaining everything else.
+- **Race-safe Async**: Pending work is tracked, obsolete runs are canceled, and stale async results are ignored.
+- **Progressive Workflows**: Model dependent fields, conditional sections, optional values, warnings, groups, and dynamic lists.
 
 ## Advanced Features
-- **Async Tests**: Native Promise support for server-side checks.
-- **Server-Side Validation**: Stateless runs using \`runStatic\` and state serialization/hydration.
-- **Schema Validation**: Structural validation using \`enforce\` schemas.
-- **Type Safety**: TypeScript support for suites and enforce rules.
+- **Server and SSR**: Use \`runStatic()\`, then serialize and resume full validation state in the browser.
+- **Schemas and Parsing**: Enforce schemas provide structural validation, coercion, and inferred input/output types.
+- **Interoperability**: Suites and Enforce rules implement Standard Schema.
+- **Familiar Rules**: Test-like syntax keeps business validation readable, reusable, and independently testable.
 
 `;
 
@@ -180,7 +250,7 @@ for (const section of orderedSections) {
 
   llmsTxt += `## ${displayName}\n`;
   for (const entry of entries) {
-    llmsTxt += `- [${entry.title}](${entry.path})\n`;
+    llmsTxt += `- [${entry.title}](https://vestjs.dev${entry.path})\n`;
   }
   llmsTxt += '\n';
 }
@@ -208,7 +278,7 @@ if (fs.existsSync(LLM_INSTRUCTIONS_SOURCE)) {
 
 // ─── Copy consumer llms.txt to website/static ────────────────────────────────
 
-const CONSUMER_LLMS_SOURCE = path.join(ROOT_DIR, 'packages/vest/llms.txt');
+const CONSUMER_LLMS_SOURCE = path.join(ROOT_DIR, 'AI_USAGE_GUIDE.md');
 
 // eslint-disable-next-line no-console
 console.log('Copying consumer llms.txt to website/static...');

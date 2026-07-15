@@ -19,20 +19,20 @@ export const tripSuite = create(data => {
       'travelerName',
       'Traveler name is required',
       () => enforce(traveler.name).isNotBlank(),
-      traveler.id,
+      `${traveler.id}:name`,
     );
 
     test(
       'passportNumber',
       'Passport number is required',
       () => enforce(traveler.passportNumber).isNotBlank(),
-      traveler.id,
+      `${traveler.id}:passport`,
     );
   });
 });
 ```
 
-The final `test` argument is the tracking key. Use a database ID, UUID, or client-generated stable ID—not the array position.
+The final `test` argument is the tracking key. It must be stable and unique to that test, so combine a database ID, UUID, or client-generated stable ID with the rule identity—not the array position.
 
 ```ts
 const added = {

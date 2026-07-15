@@ -1820,13 +1820,13 @@ enforce.extend({
   },
 });
 
-const schema = enforce.shape({
-  password: enforce.isString(),
+export const schema = enforce.shape({
   confirm: enforce.isString().matchesField('password'),
+  password: enforce.isString(),
 });
 ```
 
-`parent` is a function in Vest 6 and context may be absent, so context-aware rules should use nullable access. Nested arrays or objects may require more than one `parent()` traversal.
+`parent` is a function in Vest 6 and context may be absent, so context-aware rules should use nullable access. Put a sibling-dependent rule before the sibling it reads so the parent context still contains the complete source object. Nested arrays or objects may require more than one `parent()` traversal.
 
 ## TypeScript Support
 
@@ -3702,7 +3702,7 @@ import { create, enforce, omitWhen, skipWhen, test } from 'vest';
 
 export const checkoutSuite = create(data => {
   test('email', 'Enter a valid email address', () => {
-    enforce(data.email).isEmail();
+    enforce(data.email).matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
   });
 
   skipWhen(
@@ -3817,20 +3817,20 @@ export const tripSuite = create(data => {
       'travelerName',
       'Traveler name is required',
       () => enforce(traveler.name).isNotBlank(),
-      traveler.id,
+      `${traveler.id}:name`,
     );
 
     test(
       'passportNumber',
       'Passport number is required',
       () => enforce(traveler.passportNumber).isNotBlank(),
-      traveler.id,
+      `${traveler.id}:passport`,
     );
   });
 });
 ```
 
-The final `test` argument is the tracking key. Use a database ID, UUID, or client-generated stable ID—not the array position.
+The final `test` argument is the tracking key. It must be stable and unique to that test, so combine a database ID, UUID, or client-generated stable ID with the rule identity—not the array position.
 
 ```ts
 const added = {

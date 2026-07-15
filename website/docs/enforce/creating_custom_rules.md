@@ -104,13 +104,13 @@ enforce.extend({
   },
 });
 
-const schema = enforce.shape({
-  password: enforce.isString(),
+export const schema = enforce.shape({
   confirm: enforce.isString().matchesField('password'),
+  password: enforce.isString(),
 });
 ```
 
-`parent` is a function in Vest 6 and context may be absent, so context-aware rules should use nullable access. Nested arrays or objects may require more than one `parent()` traversal.
+`parent` is a function in Vest 6 and context may be absent, so context-aware rules should use nullable access. Put a sibling-dependent rule before the sibling it reads so the parent context still contains the complete source object. Nested arrays or objects may require more than one `parent()` traversal.
 
 ## TypeScript Support
 

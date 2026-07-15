@@ -16,6 +16,7 @@
     "example:production:build": "yarn workspace @vest/example-production-registration build",
     "example:production:test": "yarn workspace @vest/example-production-registration test",
     "example:production:typecheck": "yarn workspace @vest/example-production-registration typecheck",
+    "docs:examples:test": "yarn workspace vest vitest run src/suite/__tests__/docsExamples.test.ts && yarn workspace website test",
     "ai:eval": "node scripts/score-ai-eval.js",
     "postinstall": "husky install"
   },

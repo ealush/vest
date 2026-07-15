@@ -18,7 +18,7 @@ import { create, enforce, omitWhen, skipWhen, test } from 'vest';
 
 export const checkoutSuite = create(data => {
   test('email', 'Enter a valid email address', () => {
-    enforce(data.email).isEmail();
+    enforce(data.email).matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
   });
 
   skipWhen(

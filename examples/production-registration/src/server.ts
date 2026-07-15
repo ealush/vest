@@ -29,6 +29,14 @@ export async function handleRegistration(
 
   return {
     status: 201 as const,
-    body: { account: parsed.data },
+    body: {
+      account: {
+        accountType: parsed.data.accountType,
+        companyName: parsed.data.companyName,
+        email: parsed.data.email,
+        marketingOptIn: parsed.data.marketingOptIn,
+        username: parsed.data.username,
+      },
+    },
   };
 }

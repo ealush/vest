@@ -30,6 +30,11 @@ export default suite;
 
 const ApiCode = `export async function checkUsername(username, { signal } = {}) {
   await new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
+
     const timeout = setTimeout(resolve, 1000);
 
     signal?.addEventListener('abort', () => {

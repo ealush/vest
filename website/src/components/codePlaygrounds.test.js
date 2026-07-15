@@ -84,6 +84,21 @@ describe('interactive code playgrounds', () => {
     await expect(taken).resolves.toEqual({ available: false });
   });
 
+  it('aborts the main playground API immediately for an expired signal', async () => {
+    vi.useFakeTimers();
+    const checkUsername = executeNamedFunction(
+      rawExampleApiCode,
+      'checkUsername',
+    );
+    const controller = new AbortController();
+    controller.abort();
+
+    await expect(
+      checkUsername('ada', { signal: controller.signal }),
+    ).rejects.toMatchObject({ name: 'AbortError' });
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it('executes the exact memoized async suite shown in the main playground', async () => {
     vi.useFakeTimers();
     const checkUsername = vi.fn(async username => ({

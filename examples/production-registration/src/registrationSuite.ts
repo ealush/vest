@@ -35,12 +35,12 @@ export function createRegistrationSuite(services: RegistrationServices) {
       skipWhen(
         result => result.hasErrors('username'),
         () => {
-          test('username', 'Username is already taken', async ({ signal }) => {
+          test('username', async ({ signal }) => {
             const available = await services.isUsernameAvailable(
               data.username,
               signal,
             );
-            enforce(available).isTruthy();
+            enforce(available).message('Username is already taken').isTruthy();
           });
         },
       );
@@ -73,18 +73,22 @@ export function createRegistrationSuite(services: RegistrationServices) {
   });
 }
 
-export const registrationSuite = createRegistrationSuite({
-  async isUsernameAvailable(username, signal) {
-    const response = await fetch(
-      `/api/usernames/${encodeURIComponent(username)}`,
-      { signal },
-    );
+export function createBrowserRegistrationSuite() {
+  return createRegistrationSuite({
+    async isUsernameAvailable(username, signal) {
+      const response = await fetch(
+        `/api/usernames/${encodeURIComponent(username)}`,
+        { signal },
+      );
 
-    if (!response.ok) {
-      throw new Error('Could not check username availability');
-    }
+      if (!response.ok) {
+        throw new Error('Could not check username availability');
+      }
 
-    const body: { available: boolean } = await response.json();
-    return body.available;
-  },
-});
+      const body: { available: boolean } = await response.json();
+      return body.available;
+    },
+  });
+}
+
+export const registrationSuite = createBrowserRegistrationSuite();

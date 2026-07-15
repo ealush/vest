@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createRegistrationSuite } from './registrationSuite';
+import { registerAction } from './serverAction';
 import { handleRegistration } from './server';
 import { emptyRegistration, type RegistrationData } from './types';
 
@@ -13,6 +14,10 @@ const validRegistration: RegistrationData = {
 };
 
 describe('production registration architecture', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('retains a previously valid field during a focused update', async () => {
     const suite = createRegistrationSuite({
       isUsernameAvailable: vi.fn().mockResolvedValue(true),
@@ -101,6 +106,32 @@ describe('production registration architecture', () => {
     expect(
       accepted.status === 201 ? accepted.body.account.email : undefined,
     ).toBe('dev@example.com');
+    if (accepted.status === 201) {
+      expect(accepted.body.account).not.toHaveProperty('password');
+      expect(accepted.body.account).not.toHaveProperty('confirmPassword');
+    }
     expect(rejected.status).toBe(422);
+  });
+
+  it('rejects a failed username-service response in the Server Action', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: false, status: 503 }),
+    );
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(validRegistration)) {
+      if (typeof value === 'boolean') {
+        if (value) formData.set(key, 'on');
+      } else {
+        formData.set(key, value);
+      }
+    }
+
+    await expect(registerAction(formData)).resolves.toMatchObject({
+      errors: {
+        username: ['Username availability service failed'],
+      },
+      ok: false,
+    });
   });
 });

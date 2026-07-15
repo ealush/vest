@@ -5,6 +5,31 @@ import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 import { registrationBoundarySchema } from './boundarySchema';
 import { createRegistrationSuite } from './registrationSuite';
 
+function isAvailabilityResponse(body: unknown): body is { available: boolean } {
+  return (
+    typeof (body as { available?: unknown } | null)?.available === 'boolean'
+  );
+}
+
+async function readAvailability(response: Response): Promise<boolean> {
+  if (!response.ok) {
+    throw new Error('Username availability service failed');
+  }
+
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    throw new Error('Username availability service returned invalid data');
+  }
+
+  if (!isAvailabilityResponse(body)) {
+    throw new Error('Username availability service returned invalid data');
+  }
+
+  return body.available;
+}
+
 export async function registerAction(formData: FormData) {
   const rawInput = {
     accountType: formData.get('accountType'),
@@ -30,8 +55,7 @@ export async function registerAction(formData: FormData) {
         `https://user-service.internal/usernames/${encodeURIComponent(username)}`,
         { signal },
       );
-      const body: { available: boolean } = await response.json();
-      return body.available;
+      return readAvailability(response);
     },
   });
   const result = await suite.runStatic(parsed.data);

@@ -34,7 +34,6 @@ export const registrationBoundarySchema = z
   .transform(data => ({
     ...data,
     companyName: data.companyName.trim(),
-    email: data.email.trim().toLowerCase(),
     username: data.username.trim(),
   }));
 

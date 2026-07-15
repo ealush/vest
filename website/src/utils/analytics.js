@@ -52,6 +52,7 @@ export function classifyAdoptionClick(target) {
     'discord.com': 'discord',
     'discord.gg': 'discord',
     'github.com': 'github',
+    'npmjs.com': 'npm',
     'www.npmjs.com': 'npm',
   };
   const label = destinations[url.hostname];

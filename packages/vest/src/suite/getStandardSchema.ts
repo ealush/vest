@@ -37,7 +37,8 @@ function toStandardSchemaResult<S extends TSchema = undefined>(
 
   return {
     issues: result.errors.map((error: any) => ({
-      ...(error.message === undefined ? {} : { message: error.message }),
+      message:
+        typeof error.message === 'string' ? error.message : 'Validation failed',
       path: error.fieldName ? error.fieldName.split('.') : undefined,
     })),
   };

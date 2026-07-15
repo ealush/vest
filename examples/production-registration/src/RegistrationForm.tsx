@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 
 import { registrationBoundarySchema } from './boundarySchema';
 import {
+  createBrowserRegistrationSuite,
   createRegistrationSuite,
-  registrationSuite,
 } from './registrationSuite';
 import type { RegistrationPayload } from './boundarySchema';
 import {
@@ -32,8 +32,11 @@ async function registerWithApi(payload: RegistrationPayload) {
 
 export function RegistrationForm({
   onRegister = registerWithApi,
-  suite = registrationSuite,
+  suite: providedSuite,
 }: RegistrationFormProps = {}) {
+  const [ownedSuite] = useState(createBrowserRegistrationSuite);
+  const suite = providedSuite ?? ownedSuite;
+  const ownsSuite = providedSuite === undefined;
   const form = useForm<RegistrationData>({
     criteriaMode: 'all',
     defaultValues: emptyRegistration,
@@ -51,9 +54,9 @@ export function RegistrationForm({
 
     return () => {
       unsubscribe();
-      suite.reset();
+      if (ownsSuite) suite.reset();
     };
-  }, [suite]);
+  }, [ownsSuite, suite]);
 
   function validateField<Field extends RegistrationField>(
     field: Field,

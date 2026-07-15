@@ -54,6 +54,7 @@ describe('adoption analytics classification', () => {
     ['https://discord.com/invite/WmADZpJnSe', 'discord'],
     ['https://discord.gg/WmADZpJnSe', 'discord'],
     ['https://github.com/ealush/vest', 'github'],
+    ['https://npmjs.com/package/vest', 'npm'],
     ['https://www.npmjs.com/package/vest', 'npm'],
   ])('classifies %s as an outbound %s click', (href, label) => {
     vi.stubGlobal('window', { location: { origin: 'https://vestjs.dev' } });

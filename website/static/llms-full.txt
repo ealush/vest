@@ -3683,6 +3683,18 @@ The suite now knows which tests passed, failed, or were skipped on the server an
 
 An error map does not describe successful tests, warnings, group status, skipped work, or omitted branches. Serialized Vest state retains that context, so the next browser interaction can continue from the authoritative server result instead of reconstructing an incomplete approximation.
 
+An error map also creates a second UI integration path. The application must store the server errors, route each message to the correct field component, decide how those messages interact with client errors and warnings, and clear or merge them when the user edits again.
+
+Resuming Vest state avoids that parallel wiring. If the form already renders from the suite, the same selectors immediately expose the server result after `SuiteSerializer.resume()`:
+
+```ts
+registrationSuite.getMessage('email');
+registrationSuite.getErrors('email');
+registrationSuite.getWarnings('password');
+```
+
+The UI does not need a special `serverErrors` branch. Its existing bindings keep reading from the same suite before hydration, after the server state arrives, and after subsequent focused client runs. Vest is not connecting to the components automatically; resumption makes the server result available through the validation source those components already use.
+
 Resume only when new server state arrives. Do not resume the same payload on every render.
 
 Use a separate boundary schema when you also need structural parsing or transformation. See the [production architecture](https://vestjs.dev/docs/guides/production-architecture) and [SSR serialization reference](https://vestjs.dev/docs/suite_serialization).

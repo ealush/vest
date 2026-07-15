@@ -319,6 +319,38 @@ describe('executable documentation examples', () => {
     expect(result.hasErrors('username')).toBe(false);
   });
 
+  it('exposes resumed server messages through existing client selectors', () => {
+    const createRegistrationSuite = () =>
+      vest.create((data: { email: string; password: string }) => {
+        vest.test('email', 'Email is required', () => {
+          vest.enforce(data.email).isNotBlank();
+        });
+        vest.test('password', 'Consider adding a number', () => {
+          vest.warn();
+          vest.enforce(data.password).matches(/\d/);
+        });
+      });
+    const serverSuite = createRegistrationSuite();
+    const clientSuite = createRegistrationSuite();
+    const serverResult = serverSuite.runStatic({
+      email: '',
+      password: 'letters',
+    });
+
+    expect(clientSuite.getMessage('email')).toBeUndefined();
+    SuiteSerializer.resume(
+      clientSuite,
+      SuiteSerializer.serialize(serverResult),
+    );
+
+    expect(clientSuite.getMessage('email')).toBe('Email is required');
+    expect(clientSuite.getErrors('email')).toEqual(['Email is required']);
+    expect(clientSuite.getWarnings('password')).toEqual([
+      'Consider adding a number',
+    ]);
+    expect(clientSuite.isTested('email')).toBe(true);
+  });
+
   it('runs the documented context-aware schema rule', () => {
     const { schema } = executeCodeBlock(
       'website/docs/enforce/creating_custom_rules.md',

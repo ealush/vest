@@ -24,6 +24,20 @@ const moduleMap: Runtime = {
   'vest/memo': { memo },
 };
 
+function throwOnTranspileDiagnostics(output: ts.TranspileOutput): void {
+  const diagnostics = output.diagnostics ?? [];
+
+  if (diagnostics.length > 0) {
+    throw new Error(
+      diagnostics
+        .map(diagnostic =>
+          ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'),
+        )
+        .join('\n'),
+    );
+  }
+}
+
 function readCodeBlock(relativePath: string, blockIndex: number): string {
   const markdown = fs.readFileSync(path.join(REPO_ROOT, relativePath), 'utf8');
   const blocks = [
@@ -56,16 +70,7 @@ function executeCodeBlock(
     reportDiagnostics: true,
   });
 
-  const diagnostics = output.diagnostics ?? [];
-  if (diagnostics.length > 0) {
-    throw new Error(
-      diagnostics
-        .map(diagnostic =>
-          ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'),
-        )
-        .join('\n'),
-    );
-  }
+  throwOnTranspileDiagnostics(output);
 
   const module = { exports: {} as Record<string, unknown> };
   const names = Object.keys(runtime);
@@ -104,7 +109,10 @@ function executeTestBody(
       target: ts.ScriptTarget.ES2022,
     },
     fileName: virtualPath,
+    reportDiagnostics: true,
   });
+  throwOnTranspileDiagnostics(output);
+
   const module = { exports: {} as Record<string, unknown> };
   const names = Object.keys(runtime);
   const values = Object.values(runtime);

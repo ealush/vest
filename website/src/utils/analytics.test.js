@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { classifyAdoptionClick, trackAdoptionEvent } from './analytics';
+import {
+  classifyAdoptionClick,
+  ensureGtag,
+  trackAdoptionEvent,
+} from './analytics';
 
 function target({ closest }) {
   return { closest };
@@ -79,5 +83,32 @@ describe('adoption analytics classification', () => {
       page_path: '/docs/get_started',
       transport_type: 'beacon',
     });
+  });
+
+  it('installs a queueing gtag shim when analytics is unavailable', () => {
+    const dataLayer = [];
+    vi.stubGlobal('window', { dataLayer });
+
+    ensureGtag();
+    window.gtag('set', 'page_path', '/docs/get_started');
+    window.gtag('event', 'page_view');
+
+    expect(window.gtag).toBeTypeOf('function');
+    expect(dataLayer).toHaveLength(2);
+    expect([...dataLayer[0]]).toEqual([
+      'set',
+      'page_path',
+      '/docs/get_started',
+    ]);
+    expect([...dataLayer[1]]).toEqual(['event', 'page_view']);
+  });
+
+  it('preserves an existing gtag implementation', () => {
+    const gtag = vi.fn();
+    vi.stubGlobal('window', { gtag });
+
+    ensureGtag();
+
+    expect(window.gtag).toBe(gtag);
   });
 });

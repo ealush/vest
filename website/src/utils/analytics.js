@@ -1,3 +1,14 @@
+export function ensureGtag() {
+  if (typeof window === 'undefined' || typeof window.gtag === 'function') {
+    return;
+  }
+
+  window.dataLayer = window.dataLayer ?? [];
+  window.gtag = function gtag() {
+    window.dataLayer.push(arguments);
+  };
+}
+
 export function trackAdoptionEvent(action, label) {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
     return;

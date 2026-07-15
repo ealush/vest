@@ -1,8 +1,14 @@
 import React, { useEffect } from 'react';
 
-import { classifyAdoptionClick, trackAdoptionEvent } from '../utils/analytics';
+import {
+  classifyAdoptionClick,
+  ensureGtag,
+  trackAdoptionEvent,
+} from '../utils/analytics';
 
 export default function Root({ children }) {
+  ensureGtag();
+
   useEffect(() => {
     function handleClick(event) {
       if (!(event.target instanceof Element)) return;

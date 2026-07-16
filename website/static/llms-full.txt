@@ -224,8 +224,11 @@ After running your suite, the results object is returned. It has the following f
 
 - `hasErrors(fieldName?)`: Returns true if the suite or the provided field has errors.
 - `hasWarnings(fieldName?)`: Returns true if the suite or the provided field has warnings.
-- `getErrors(fieldName?)`: Returns an object with errors in the suite, or an array of objects for a specific field.
-- `getWarnings(fieldName?)`: Returns an object with warnings in the suite, or an array of objects for a specific field.
+- `getError(fieldName?)`: Without a field, returns the first summary object (`{ fieldName, message, groupName }`). With a field, returns that field's first error message string. Returns `undefined` when none exists.
+- `getWarning(fieldName?)`: Without a field, returns the first summary object. With a field, returns that field's first warning message string. Returns `undefined` when none exists.
+- `getMessage(fieldName)`: Returns the field's first error or warning message string, preferring an error when both exist.
+- `getErrors(fieldName?)`: Without a field, returns an object whose keys are field names and values are arrays of message strings. With a field, returns that field's array of error message strings.
+- `getWarnings(fieldName?)`: Without a field, returns an object whose keys are field names and values are arrays of message strings. With a field, returns that field's array of warning message strings.
 - `hasErrorsByGroup(groupName)`: Returns true if the provided group has errors.
 - `hasWarningByGroup(groupName)`: Returns true if the provided group has warnings.
 - `getErrorsByGroup(groupName)`: Returns an object with errors in the provided group.
@@ -305,13 +308,13 @@ function EmailForm() {
 }
 ```
 
-The resolver is the simplest path when the form manager should invoke complete validation. To use Vest's progressive runtime during interaction, also run the changed field through the same suite:
+The resolver is the simplest option when the form manager should validate the whole form. To validate one field during interaction, run that field through the same suite:
 
 ```ts
 suite.only('email').run(form.getValues());
 ```
 
-See the tested [production architecture](https://vestjs.dev/docs/guides/production-architecture) for focused async validation, warnings, conditionals, Zod at the server boundary, and a stateless server run.
+See the tested [production architecture](https://vestjs.dev/docs/guides/production-architecture) for focused async validation, warnings, conditionals, a replaceable Zod boundary, and a stateless server run. An Enforce schema can own the boundary instead.
 
 ## Direct Standard Schema validation
 
@@ -351,21 +354,21 @@ Read [Vest, schema validators, and form libraries](https://vestjs.dev/docs/vest_
 - [Up your form validation game with Vest (video)](http://www.youtube.com/watch?v=X2PuiawaGV4) - A session from the Svelte Summit on how to use Vest with Svelte.
 
 
-# How Vest Thinks About Validation
+# How Vest Handles Validation
 
-Vest models validation as an evolving process, not just a function that parses an object once.
+Most validators inspect a value and return an answer. Vest can do that too, but a suite can also keep its result between runs.
 
 A schema validator usually answers:
 
 > Does this value match the required structure right now?
 
-Vest answers a different set of questions:
+An interactive form has a few more questions:
 
-> What changed? Which rules need to run? Which previous results are still trustworthy? Which async result is still current? Is the complete workflow ready to proceed?
+> What changed? Which rules need to run again? Can the other results stay as they are? Is this async response still current? Can the user continue?
 
-This is why Vest is particularly useful for complex forms, onboarding flows, wizards, configuration interfaces, and other progressive workflows.
+Those questions come up in forms, onboarding, checkout flows, settings screens, and anywhere validation happens a little at a time.
 
-## The three layers
+## What a suite gives you
 
 ### 1. Executable business rules
 
@@ -387,9 +390,9 @@ const suite = create(data => {
 
 The familiar syntax is valuable because it gives validation logic a consistent structure. Rules live outside UI components, support multiple tests per field, and can be unit-tested without simulating DOM events.
 
-### 2. A living validation result
+### 2. One result that updates over time
 
-A suite is more than a validation function. It stores the current truth about the workflow.
+A suite keeps the latest result for every test it has seen.
 
 When `suite.run()` executes, Vest:
 
@@ -410,13 +413,13 @@ Username changes
   → ignore an older username request if it finishes late
 ```
 
-This is Vest's central capability: **do the minimum new work without losing the conclusions already earned**.
+The result is still complete even when the latest run only checked one field.
 
 ### 3. Assertions, schemas, and integration
 
 `enforce` provides assertions, schemas, parsing, and custom rules. Vest suites and Enforce rules also implement Standard Schema for interoperability with compatible tools.
 
-Schema validation answers structural questions before behavioral tests run. Stateful suite execution then manages how validation evolves during interaction.
+The schema checks and parses the input. The suite then keeps track of test results as the user interacts with the form.
 
 ## Validation state, not form state
 
@@ -495,7 +498,7 @@ Real workflows are rarely independent field maps. Vest includes primitives for r
 - `each()` tracks dynamic list items with stable keys;
 - warnings provide guidance without blocking completion.
 
-These are workflow concepts, not merely value matchers.
+These tools describe relationships between tests, not just the shape of a value.
 
 ## Errors are not the same as incompleteness
 
@@ -511,13 +514,13 @@ That is different from an active validation error. Vest exposes `isTested`, `isP
 
 Because suites do not depend on UI components, the same validation contract can be used with React, Vue, Svelte, Angular, vanilla JavaScript, or Node.js.
 
-The framework decides when to invoke the suite and how to render it. Vest decides what validation work is relevant and maintains the resulting truth.
+Your framework decides when to run the suite and how to show its result. Vest keeps track of the validation itself.
 
-## The core idea
+## In short
 
-The test-like syntax makes Vest easy to learn. The stateful runtime is why it exists.
+Vest's test-like syntax is familiar, but the state kept by the suite is the important part.
 
-> **Vest validates what changed, remembers what already passed, and prevents stale asynchronous validation results.**
+It lets you validate what changed without forgetting what already passed, and it prevents an old async response from overwriting a newer result.
 
 Continue with [Understanding Vest's State](https://vestjs.dev/docs/understanding_state) or see [Vest alongside schema and form libraries](https://vestjs.dev/docs/vest_vs_the_rest).
 
@@ -1860,7 +1863,7 @@ _Note: In the interface definition, include the `value` as the first argument._
 
 # Enforce: The Assertion Library for Vest
 
-Enforce is a powerful assertion library that powers Vest's validations. It's designed to be:
+Enforce is the assertion library used inside Vest tests. Its rules are:
 
 - **Fluent** - Chain multiple assertions together naturally
 - **Composable** - Build reusable validators from smaller pieces
@@ -3425,9 +3428,9 @@ enforce(value)
 
 # Getting Started
 
-Vest is a **stateful validation runtime for complex forms and progressive workflows**.
+Vest is a validation library for forms and other flows that change over time.
 
-It validates the field or step changing now, retains trustworthy results from earlier runs, and prevents obsolete asynchronous work from corrupting current validation state.
+It can validate only the field or step that changed, keep the results from earlier runs, and ignore an old async response when a newer one has already finished.
 
 If you know Jest or Mocha, the authoring model will feel familiar: define a suite of named tests and use assertions to express the rules. The test-like syntax makes Vest approachable; its persistent validation runtime is what makes it different.
 
@@ -3435,7 +3438,7 @@ import GetStartedSandpack from '@site/src/components/Sandpack/GetStarted';
 
 ## The problem Vest solves
 
-Interactive validation is not a one-time parse. A real form unfolds over time:
+Forms are rarely validated just once. While someone fills one out:
 
 1. The user changes one field.
 2. Only the related rules should run.
@@ -3444,7 +3447,7 @@ Interactive validation is not a one-time parse. A real form unfolds over time:
 5. Async responses may arrive in the wrong order.
 6. The complete workflow still needs one reliable validation result.
 
-Vest owns that process without owning your form values, DOM, or UI components.
+Vest handles the validation state without taking over your values, DOM, or components.
 
 ## Installation
 
@@ -3522,7 +3525,7 @@ expect(invalid.hasErrors('password')).toBe(true);
 
 The test exercises the same rules as the UI without rendering a component. Interactive application code should still use stateful `run()` so focused results can accumulate over time.
 
-## When Vest is a strong fit
+## When Vest is useful
 
 Use Vest when validation behavior includes:
 
@@ -3534,12 +3537,12 @@ Use Vest when validation behavior includes:
 - errors, warnings, pending states, and progressive completion;
 - validation shared between browser and server.
 
-For a one-shot API boundary parse, a schema validator may be all you need. A common architecture is to use a schema validator for the submitted payload and Vest for the interactive journey that produces it.
+If you only need to parse an API payload once, an Enforce schema's `.parse()` method may be enough. Attach the same schema to a Vest suite when you also need validation while the user works through a form. You can use Zod or another schema library at the boundary instead if that is already part of your stack.
 
 ## Next steps
 
-- **[Follow the ten-tutorial learning path](https://vestjs.dev/docs/tutorials)**: Build from a basic suite through async state, schemas, server validation, and custom rules.
-- **[Understand Vest's living result](https://vestjs.dev/docs/concepts)**: Learn the stateful runtime mental model.
+- **[Browse the tutorials](https://vestjs.dev/docs/tutorials)**: Start with a basic suite or jump to async checks, schemas, server validation, or custom rules.
+- **[See how Vest handles validation](https://vestjs.dev/docs/concepts)**: Understand what the suite remembers between runs.
 - **[Async validation without stale results](https://vestjs.dev/docs/writing_tests/async_tests)**: Coordinate overlapping server checks safely.
 - **[Focused updates](https://vestjs.dev/docs/writing_your_suite/focused_updates)**: Validate one field, step, or group.
 - **[Dependent fields](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/include)**: Rerun related rules together.
@@ -3681,11 +3684,11 @@ The suite now knows which tests passed, failed, or were skipped on the server an
 
 ## Why serialize more than errors?
 
-An error map does not describe successful tests, warnings, group status, skipped work, or omitted branches. Serialized Vest state retains that context, so the next browser interaction can continue from the authoritative server result instead of reconstructing an incomplete approximation.
+An error map leaves out successful tests, warnings, group status, skipped work, and omitted branches. Serialized Vest state keeps all of that, so the browser can continue from the server result instead of rebuilding part of it by hand.
 
 An error map also creates a second UI integration path. The application must store the server errors, route each message to the correct field component, decide how those messages interact with client errors and warnings, and clear or merge them when the user edits again.
 
-Resuming Vest state avoids that parallel wiring. If the form already renders from the suite, the same selectors immediately expose the server result after `SuiteSerializer.resume()`:
+Resuming Vest state avoids a second set of wiring. If the form already renders from the suite, the same selectors expose the server result after `SuiteSerializer.resume()`:
 
 ```ts
 registrationSuite.getMessage('email');
@@ -3697,12 +3700,12 @@ The UI does not need a special `serverErrors` branch. Its existing bindings keep
 
 Resume only when new server state arrives. Do not resume the same payload on every render.
 
-Use a separate boundary schema when you also need structural parsing or transformation. See the [production architecture](https://vestjs.dev/docs/guides/production-architecture) and [SSR serialization reference](https://vestjs.dev/docs/suite_serialization).
+Add a schema when you also need to parse or transform the submitted data. See the [complete registration example](https://vestjs.dev/docs/guides/production-architecture) and [SSR serialization reference](https://vestjs.dev/docs/suite_serialization).
 
 
 # Conditional Form Sections
 
-Conditional interfaces create two different states that should not be conflated:
+Two conditional-field states can look similar but need different handling:
 
 - **Not ready to run:** the rule is still required, but a prerequisite currently fails.
 - **Not applicable:** the field should not count toward validity at all.
@@ -3756,9 +3759,9 @@ skipWhen(true, () => {
 
 `omitWhen`, by contrast, does not enter its callback when the condition is true because those tests do not belong to the current workflow at all.
 
-## Decision rule
+## Which one should you use?
 
-- Ask “will this rule matter later for the current workflow?” If yes, use `skipWhen`.
+- Ask “will this rule matter later in this form?” If yes, use `skipWhen`.
 - Ask “does this field or section currently exist conceptually?” If no, use `omitWhen`.
 - Use `optional(field)` when one value may be blank but must satisfy its tests when provided.
 
@@ -3861,7 +3864,7 @@ Read the complete [dynamic tests reference](https://vestjs.dev/docs/writing_test
 
 # Validate One Field or Step
 
-Rerunning an entire form on every interaction wastes work and often exposes errors for untouched fields. Vest lets the UI describe the current validation scope while the suite retains results established by earlier runs.
+Running every rule after each keystroke wastes work and can show errors for fields the user has not touched. With Vest, the UI says what changed and the suite keeps the other results.
 
 ```ts
 const result = signupSuite.only('email').run(formData);
@@ -3869,7 +3872,7 @@ const result = signupSuite.only('email').run(formData);
 
 Only tests named `email` execute. Passing or failing results for fields such as `username` and `password` remain available.
 
-## Watch the result accumulate
+## The result still contains the other fields
 
 ```ts
 const data = {
@@ -3950,11 +3953,13 @@ Read the [focus modifier reference](https://vestjs.dev/docs/writing_your_suite/f
 
 Vest does not need to replace the other validation-related tools in an application.
 
-| Layer           | Owns                                                                             |
-| --------------- | -------------------------------------------------------------------------------- |
-| Form manager    | Values, registration, events, and submission mechanics                           |
-| Vest            | Focused execution, retained results, dependencies, pending work, and async races |
-| Boundary schema | Parsing and protecting the final submitted payload                               |
+| Layer                                 | Owns                                                                             |
+| ------------------------------------- | -------------------------------------------------------------------------------- |
+| Form manager                          | Values, registration, events, and submission mechanics                           |
+| Vest suite                            | Focused execution, retained results, dependencies, pending work, and async races |
+| Enforce schema or another schema tool | Parsing, transforming, and protecting the final submitted payload                |
+
+An Enforce schema is part of Vest, so Vest can own both validation over time and the parsed boundary. A separate schema library is optional.
 
 ## React Hook Form through Standard Schema
 
@@ -3971,7 +3976,7 @@ const form = useForm({
 });
 ```
 
-That resolver is useful for full form-library validation. For Vest's progressive runtime behavior, call focused runs from the relevant field interaction and render the Vest result:
+The resolver covers full-form validation. To validate as the user types or leaves a field, run the relevant field through the same suite and render the Vest result:
 
 ```ts
 async function validateUsername() {
@@ -3983,9 +3988,31 @@ async function validateUsername() {
 }
 ```
 
-## Schema boundary
+## Parse with Enforce
 
-At submission, first await the full Vest workflow and then parse the payload with the application's boundary schema:
+Use `enforce.shape` when you want Vest to parse the input as well as run the form's business rules:
+
+```ts
+const registrationSchema = enforce.shape({
+  age: enforce.isNumeric().toNumber(),
+  email: enforce.isString().trim(),
+});
+
+const registrationSuite = create(data => {
+  test('age', 'Must be 18 or older', () => {
+    enforce(data.age).greaterThanOrEquals(18);
+  });
+}, registrationSchema);
+
+const result = await registrationSuite.runStatic(values);
+if (result.isValid()) await api.register(result.value);
+```
+
+The schema parses and transforms the payload. The suite runs the remaining rules, and `result.value` contains the parsed output.
+
+## Keep another schema library
+
+An application that already uses Zod or another schema library can keep it at the boundary:
 
 ```ts
 const result = await registrationSuite.run(values);
@@ -3996,7 +4023,7 @@ if (result.isValid()) {
 }
 ```
 
-This is deliberate overlap: both layers may express required fields, but they answer different questions. Vest manages the interaction lifecycle; the boundary schema guarantees the data contract.
+Here Zod parses the application's data contract and Vest handles validation during interaction. You can replace Zod with Enforce if you would rather keep both jobs in Vest.
 
 See the complete [production architecture](https://vestjs.dev/docs/guides/production-architecture), [Standard Schema reference](https://vestjs.dev/docs/community_resources/standard_schema), and [tool comparison](https://vestjs.dev/docs/vest_vs_the_rest).
 
@@ -4084,7 +4111,7 @@ Debounced tests are asynchronous even when their inner callback is synchronous. 
 - Use only `debounce` when values rarely repeat but interactions arrive in bursts.
 - Use only `memo` when the application revisits a small number of dependency combinations.
 - Combine them when both behaviors occur and the cached answer is safe to reuse.
-- Skip caching when the answer is authoritative, volatile, or unsafe to retain. A short `ttl` can bound reuse when limited caching is acceptable.
+- Skip caching when the answer must always be fresh or is unsafe to retain. Use a short `ttl` when limited reuse is acceptable.
 
 ## Common mistakes
 
@@ -4101,7 +4128,7 @@ Next, read [async validation without race conditions](https://vestjs.dev/docs/gu
 
 # Validation for Multi-Step Forms
 
-Multi-step forms need local progress and global truth. A user should validate the current step without losing the results from completed steps, while final submission must still require the complete workflow.
+A multi-step form should validate the current step without forgetting the steps already completed. Submission still needs to check the whole form.
 
 Model steps with groups:
 
@@ -4152,7 +4179,7 @@ async function canContinue(step: Step, data: OnboardingData) {
 }
 ```
 
-The result from earlier steps remains in the suite, so a review screen can display the status of the full workflow without rerunning every remote check.
+Earlier step results remain in the suite, so a review screen can show the whole form without repeating every remote check.
 
 Cross-field rules remain ordinary TypeScript. Put password and confirmation tests in the same group, then run that group when either value changes. If a field outside the active group must also rerun, use the dependent-field patterns described in [dependent and cross-field validation](https://vestjs.dev/docs/guides/dependent-fields).
 
@@ -4224,26 +4251,26 @@ export function RegistrationForm({ actionState }) {
 }
 ```
 
-Resuming preserves more than an error map: the suite knows which rules passed, failed, or were skipped. The next browser interaction can therefore run one field while retaining trustworthy server conclusions.
+Resuming restores more than an error map: the suite knows which rules passed, failed, or were skipped. The next browser interaction can run one field while keeping the other server results.
 
 ## Add a parsing boundary
 
-Parse untrusted action input with Zod, Valibot, Enforce, or another schema tool before persistence. Use Vest for business validation lifecycle and the schema for the submitted data contract.
+Parse action input before saving it. You can use an Enforce schema directly through `.parse()` or attach it to the Vest suite and call `runStatic()`. If the application already uses Zod, Valibot, or another schema tool, it can stay in that role.
 
 The reference implementation is in the [production registration example](https://vestjs.dev/docs/guides/production-architecture). See [suite serialization](https://vestjs.dev/docs/suite_serialization) for the lower-level API.
 
 
 import ProductionRegistrationSandpack from '@site/src/components/Sandpack/ProductionRegistration';
 
-# Production Registration Architecture
+# Complete Registration Example
 
-The canonical example keeps three responsibilities explicit:
+This example splits the work between three pieces:
 
 > **The form layer owns the inputs, the schema owns the boundary, and Vest owns how validation evolves.**
 
 The executable source lives in [`examples/production-registration`](https://github.com/ealush/vest/tree/latest/examples/production-registration).
 
-## What it demonstrates
+## What is in the example
 
 - React Hook Form owns values, registration, and submission mechanics.
 - The official Standard Schema resolver connects full-form submission to Vest.
@@ -4253,13 +4280,13 @@ The executable source lives in [`examples/production-registration`](https://gith
 - Business accounts reveal a conditional company section.
 - Password strength is a non-blocking warning.
 - The server uses a stateless Vest run.
-- Zod parses the final API boundary.
+- This implementation uses Zod for the final API boundary; an Enforce schema can own the same boundary through `.parse()` or as the suite schema.
 - A runnable Vite page demonstrates the architecture with deterministic local services.
 - Vitest proves focused retention, async race behavior, conditionals, warnings, and server isolation.
 
-## Try the browser workflow
+## Try it
 
-This playground loads the browser files directly from the canonical example—there is no second copy to drift. Try `taken` as the username, correct it before the delayed response returns, switch to a business account, and submit a weak password to see errors, pending state, conditional validation, and warnings interact.
+The playground loads its files from the example project, so the code shown here and the tested example stay in sync. Try `taken` as the username and change it before the delayed response returns. You can also switch to a business account or submit a weak password to see the conditional fields and warning state.
 
 <ProductionRegistrationSandpack />
 
@@ -4286,9 +4313,11 @@ Submission
   → persist parsed payload
 ```
 
-## Why both Vest and a boundary schema?
+## Why the example also uses Zod
 
-The schema protects a complete data boundary. It does not remember what happened during the previous interaction or decide which remote response is still relevant. Vest supplies that runtime behavior and then gets out of the way of parsing and persistence.
+Many applications already use Zod, so this example shows how to keep it. Zod parses the submitted payload; Vest handles focused runs, async checks, warnings, conditional fields, and server-side business rules.
+
+Zod is optional here. An Enforce schema created with `enforce.shape` can parse and transform the payload with `.parse()`. You can also pass it to `create`; then `run()` and `runStatic()` expose the parsed value as `result.value`.
 
 ## Run the example
 
@@ -4304,7 +4333,7 @@ Start with the [suite source](https://github.com/ealush/vest/blob/latest/example
 
 # Typed Schemas and Parsed Results
 
-Interactive validation and structural parsing solve different parts of the same workflow. A Vest suite can accept an Enforce schema as the second argument to `create`, giving the run a typed input, a parsed output, and behavioral tests.
+An Enforce schema can parse the input before the suite's tests run. Pass it as the second argument to `create`; the suite callback receives the parsed type and a successful result exposes the parsed value.
 
 ## Define input and output together
 
@@ -4370,9 +4399,9 @@ const output = await registrationSuite['~standard'].validate({
 
 Successful Standard Schema output contains the parsed values, so `output.value.age` is a number.
 
-## Assign clear responsibilities
+## Using another schema library
 
-An Enforce schema can be the application's boundary schema. It is also reasonable to use Zod, Valibot, or another schema at an external API boundary while Vest manages progressive interaction. What matters is that the form manager, boundary parser, and validation-state runtime each have an explicit job.
+Enforce can parse your API boundary, but it does not have to. If your application already uses Zod, Valibot, or another schema library there, keep it and use Vest for validation during interaction.
 
 Read [form and schema library integration](https://vestjs.dev/docs/guides/form-and-schema-integration), the [Standard Schema reference](https://vestjs.dev/docs/community_resources/standard_schema), and the [production registration architecture](https://vestjs.dev/docs/guides/production-architecture) for complete compositions.
 
@@ -4383,7 +4412,7 @@ Interactive validation has more than two states. A field may be untested, pendin
 
 | State    | What it means                                      | Typical UI                |
 | -------- | -------------------------------------------------- | ------------------------- |
-| Untested | No authoritative test result exists yet            | Neutral guidance          |
+| Untested | The field has not been checked yet                 | Neutral guidance          |
 | Pending  | Asynchronous work for the current value is running | Progress indicator        |
 | Error    | A blocking rule failed                             | Error message             |
 | Warning  | Advisory guidance failed                           | Non-blocking message      |
@@ -4440,14 +4469,14 @@ Render status in this order:
 
 On submission, await the complete suite and require `isValid()`. Warnings do not make the suite invalid; errors, pending work, and incomplete required tests do.
 
-Do not merge warning messages into the error array. Their separate severity is what lets the same suite support nuanced feedback in the browser and on the server.
+Keep warnings separate from errors. That is what lets the UI show advice without blocking submission.
 
 Read the [result selector reference](https://vestjs.dev/docs/writing_your_suite/accessing_the_result) and [warning guide](https://vestjs.dev/docs/writing_tests/warn_only_tests).
 
 
 # When Not to Use Vest
 
-Vest is designed for validation that has a lifecycle. It is not automatically the best choice every time an application checks a value.
+Vest is most useful when validation changes during user interaction. It is more machinery than you need for every value check.
 
 ## Use native HTML validation when
 
@@ -4455,13 +4484,13 @@ Vest is designed for validation that has a lifecycle. It is not automatically th
 - `required`, `min`, `max`, `pattern`, and input types express the rules;
 - custom error timing and server rule sharing are unnecessary.
 
-## Use a schema validator alone when
+## Use only a schema API when
 
 - the primary job is parsing an API request, configuration file, or environment variables;
 - validation happens once at a clear boundary;
 - transformations, codecs, JSON Schema, or ecosystem-specific type integrations are more important than interaction state.
 
-Zod, Valibot, ArkType, Joi, and Ajv each have strengths in this category.
+An Enforce schema's `.parse()` API can be enough for this job without creating a Vest suite. Zod, Valibot, ArkType, Joi, and Ajv also have strengths in this category.
 
 ## Use a form manager's built-in validation when
 
@@ -4483,7 +4512,7 @@ Vest earns its place when several of these are true:
 
 ## Combine tools when responsibilities differ
 
-A common production architecture is React Hook Form for input mechanics, Vest for progressive validation state, and Zod for the final API boundary. This is not redundant when each layer owns a distinct failure mode.
+You might use React Hook Form for input handling and Vest with Enforce for both interactive validation and the API boundary. If the project already uses Zod, keep Zod at the boundary and use Vest for the form. Either approach works.
 
 See the [production architecture](https://vestjs.dev/docs/guides/production-architecture) and [comparison guide](https://vestjs.dev/docs/vest_vs_the_rest).
 
@@ -4819,46 +4848,44 @@ export function RegistrationForm({ actionData }) {
 
 :::caution Why not just pass the errors?
 You might wonder, "Why not just pass the error object?"
-If you only pass errors, your suite doesn't know _which_ tests passed, which are pending, or which groups were skipped. By resuming the full state, Vest can continue validation seamlessly (e.g., when the user edits a field) without losing the context of the server-side run.
+If you only pass errors, your suite doesn't know _which_ tests passed, which are pending, or which groups were skipped. Resuming the full state lets the next field edit continue from the server result without rebuilding that context in the client.
 :::
 
 
-# Ten Vest 6 Tutorials
+# Vest Tutorials
 
-Vest becomes most useful when validation stops being a one-time check and starts behaving like a process. These tutorials progress from a small test-like suite to focused state, asynchronous work, conditional workflows, server continuity, and application-specific rules.
+Start with a small suite, or jump straight to the problem you are trying to solve. The examples cover focused validation, async checks, conditional fields, schemas, and sharing validation between the browser and server.
 
-Every example follows the Vest 6 API hierarchy:
+One API detail is worth knowing before you begin:
 
 1. Use `suite.run(data)` for stateful application validation.
 2. Use `suite.runStatic(data)` for an independent server request or isolated execution.
-3. Pass the suite to Standard Schema consumers. The `~standard.validate` hook is an interoperability contract, not Vest's general execution API.
+3. Pass the suite itself to a library that supports Standard Schema. The `~standard.validate` hook is for those integrations, not for calling directly in application code.
 
-## The learning path
+## Pick a tutorial
 
-|   # | Tutorial                                                                           | What you will build                         | Core capability                                      |
-| --: | ---------------------------------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------- |
-|   1 | [Validation that reads like unit tests](https://vestjs.dev/docs/get_started)                          | A signup suite outside the UI               | `create`, `test`, `enforce`, and result selectors    |
-|   2 | [Validate one field without forgetting the rest](https://vestjs.dev/docs/guides/focused-validation)   | Progressive profile validation              | Focused execution and retained results               |
-|   3 | [Async checks without stale results](https://vestjs.dev/docs/guides/async-validation-race-conditions) | Username availability validation            | Pending state, cancellation, and race safety         |
-|   4 | [Reduce repeated async validation](https://vestjs.dev/docs/guides/memo-and-debounce)                  | A coupon check with bounded reuse           | `memo`, `debounce`, and `AbortSignal`                |
-|   5 | [Warnings that do not block submission](https://vestjs.dev/docs/guides/validation-status)             | Password-strength guidance                  | Errors, warnings, pending, and untested state        |
-|   6 | [Choose between skipping and omitting](https://vestjs.dev/docs/guides/conditional-sections)           | Pickup and delivery sections                | Relevant-later versus not-applicable rules           |
-|   7 | [Validate a multi-step workflow](https://vestjs.dev/docs/guides/multi-step-workflows)                 | A typed onboarding wizard                   | Groups, step validity, and cross-field rules         |
-|   8 | [Parse typed input without losing Vest's runtime](https://vestjs.dev/docs/guides/typed-schemas)       | A schema-backed registration suite          | Input/output inference, parsing, and Standard Schema |
-|   9 | [Share validation between server and client](https://vestjs.dev/docs/guides/client-server-validation) | Stateless request validation with hydration | `runStatic`, serialization, and resumption           |
-|  10 | [Teach validation your domain language](https://vestjs.dev/docs/enforce/creating_custom_rules)        | Typed, context-aware Enforce rules          | `condition`, `enforce.extend`, and sibling context   |
+| Tutorial                                                                           | Example                              | What it covers                                     |
+| ---------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------------- |
+| [Write your first suite](https://vestjs.dev/docs/get_started)                                         | Signup                               | `create`, `test`, `enforce`, and result selectors  |
+| [Validate one field without forgetting the rest](https://vestjs.dev/docs/guides/focused-validation)   | Profile form                         | Focused runs and retained results                  |
+| [Handle async checks safely](https://vestjs.dev/docs/guides/async-validation-race-conditions)         | Username availability                | Pending state, cancellation, and race safety       |
+| [Avoid repeated async work](https://vestjs.dev/docs/guides/memo-and-debounce)                         | Coupon check                         | `memo`, `debounce`, and `AbortSignal`              |
+| [Show warnings without blocking submission](https://vestjs.dev/docs/guides/validation-status)         | Password strength                    | Errors, warnings, pending, and untested state      |
+| [Skip or remove conditional rules](https://vestjs.dev/docs/guides/conditional-sections)               | Pickup and delivery                  | `skipWhen`, `omitWhen`, and `optional`             |
+| [Validate a multi-step form](https://vestjs.dev/docs/guides/multi-step-workflows)                     | Onboarding                           | Groups, step validity, and cross-field rules       |
+| [Parse input and keep the typed result](https://vestjs.dev/docs/guides/typed-schemas)                 | Registration                         | Parsing, type inference, and Standard Schema       |
+| [Share validation between server and client](https://vestjs.dev/docs/guides/client-server-validation) | Server validation and browser resume | `runStatic`, serialization, and resumption         |
+| [Write rules for your own domain](https://vestjs.dev/docs/enforce/creating_custom_rules)              | Custom Enforce rules                 | `condition`, `enforce.extend`, and sibling context |
 
-## What the sequence demonstrates
+## A good order for learning Vest
 
-The first tutorial makes rules readable and independently testable. The next six show why Vest is a validation-state runtime: each interaction can run a deliberate subset of work while the suite retains trustworthy history and coordinates pending results. The final three connect that runtime to typed parsing, server authority, ecosystem tools, and domain-specific vocabulary.
+If Vest is new to you, read the first three in order. They introduce suites, focused runs, and async validation—the ideas most of the other guides build on. After that, choose the examples that match your application.
 
-You do not need every capability. Start with the tutorial closest to the failure mode in your application, then return to the sequence when the workflow grows.
+## See everything working together
 
-## After the tutorials
-
-- Use the [production registration architecture](https://vestjs.dev/docs/guides/production-architecture) to see the capabilities composed in one runnable React application.
-- Read [Vest, schema validators, and form libraries](https://vestjs.dev/docs/vest_vs_the_rest) before choosing responsibility boundaries.
-- Check [when not to use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest) for smaller or purely structural validation tasks.
+- Open the [complete registration example](https://vestjs.dev/docs/guides/production-architecture) for a runnable React application.
+- Read [Vest, schema validators, and form libraries](https://vestjs.dev/docs/vest_vs_the_rest) to decide which tool should handle each part of your form.
+- Check [when not to use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest) if your validation is simple or only runs once.
 
 
 import { SchemaTypedSandpack, ConfigTypedSandpack } from '@site/src/components/Sandpack/TypedSuites';
@@ -5088,7 +5115,7 @@ enforce(10).isWithinRange(5, 15);
 
 # Understanding Vest's State
 
-One of Vest's most powerful features is its **stateful validation**. Unlike schema-based validators that start fresh every time, Vest remembers previous results and merges them intelligently.
+Vest suites keep validation state between runs. A focused run updates the fields it checked and leaves the other field results in place.
 
 ## Why Stateful Validation?
 
@@ -5097,7 +5124,7 @@ Imagine a form with 10 fields. When a user updates just the "username" field, yo
 1. **Re-validate everything** - Slow, and might flash errors on untouched fields
 2. **Validate only "username"** - Fast, but you lose the state of other fields
 
-Vest gives you the best of both worlds: **validate one field, keep the full picture**.
+With Vest, you can validate one field and keep the rest of the result.
 
 ### How It Works
 
@@ -5503,7 +5530,7 @@ Vest 5 uses Javascript Proxies, which were introduced in ES2015. Therefore, Vest
 
 # Using Vest with React
 
-Vest integrates seamlessly with React applications, providing powerful validation capabilities for forms and user input. This guide covers common patterns and best practices.
+Vest suites do not depend on React. A component runs the suite when a value changes and renders the result from state. This guide shows the usual patterns.
 
 ## Quick Start
 
@@ -6298,27 +6325,28 @@ const fieldThreeClasses = cn('field_3'); // "some-tested-class my_warning_class"
 
 # Vest, Schema Validators, and Form Libraries
 
-Vest does not need every validation problem to be a Vest problem.
+Vest can work alongside the form and schema tools you already use.
 
-Different tools own different parts of the workflow:
+These capabilities can be composed, but they are not mutually exclusive:
 
-| Tool category                    | Primary responsibility                              |
-| -------------------------------- | --------------------------------------------------- |
-| Schema validators such as Zod    | Define and parse a valid data boundary              |
-| Form managers such as RHF/Formik | Manage values, registration, events, and submission |
-| **Vest**                         | Manage how validation evolves during interaction    |
+| Tool or layer                    | What it can own                                    |
+| -------------------------------- | -------------------------------------------------- |
+| Form managers such as RHF/Formik | Values, registration, events, and submission       |
+| Enforce schemas, Zod, or Valibot | Structural validation, transformation, and parsing |
+| **Vest suites**                  | Stateful and stateless validation workflows        |
+| **Vest suite + Enforce schema**  | Both parsed boundaries and validation over time    |
 
-## The distinction
+## Where Vest differs
 
 A schema validator is excellent at answering:
 
 > Does this submitted payload have the expected structure and values?
 
-Vest is designed to answer:
+A Vest suite also needs to answer:
 
 > The user changed one part of a workflow. What needs to run now, what previous state remains valid, and which async result should be trusted?
 
-Vest can also perform structural validation with Enforce schemas. The distinction is about the runtime model, not a claim that schema validation is unimportant.
+Vest can handle both jobs. Enforce schemas validate, transform, and parse data. A Vest suite keeps test results up to date while the user moves through a form.
 
 ## Vest and Zod
 
@@ -6330,6 +6358,31 @@ Zod is a strong choice for:
 - deriving TypeScript types;
 - one-shot validation.
 
+Enforce supports those same core boundary jobs. A schema created with `enforce.shape`, `enforce.loose`, or `enforce.partial` exposes `.parse()` and returns transformed output:
+
+```ts
+const accountSchema = enforce.shape({
+  age: enforce.isNumeric().toNumber(),
+  email: enforce.isString().trim(),
+});
+
+const account = accountSchema.parse(input);
+// account.age is a number
+```
+
+Attach the schema to a suite when the same boundary and parsed values should participate in Vest's runtime:
+
+```ts
+const accountSuite = create(parsedAccount => {
+  test('age', 'Must be an adult', () => {
+    enforce(parsedAccount.age).greaterThanOrEquals(18);
+  });
+}, accountSchema);
+
+const result = accountSuite.runStatic(input);
+if (result.isValid()) persist(result.value);
+```
+
 Vest is a strong choice for:
 
 - validating one field or step at a time;
@@ -6339,9 +6392,9 @@ Vest is a strong choice for:
 - multi-step workflows;
 - warnings, pending state, and progressive completion.
 
-### Use both
+### Use Vest on its own or with Zod
 
-A production application can use Zod for the submitted boundary and Vest for interaction:
+Vest can own both the interactive workflow and the submitted boundary:
 
 ```text
 User interaction
@@ -6349,13 +6402,19 @@ User interaction
   → UI shows errors, warnings, and pending work
 
 Final submission
-  → Zod parses the complete boundary payload
-  → server applies authoritative business rules
+  → Enforce schema parses and transforms the complete payload
+  → Vest runStatic applies the business rules
 ```
 
-The concise explanation is:
+If your application already uses Zod, parse the payload before a stateless Vest run:
 
-> **Zod defines what a valid submitted account looks like. Vest manages how the user gets there.**
+```text
+Final submission
+  → Zod parses the complete boundary payload
+  → Vest runStatic applies the business rules
+```
+
+Zod and Enforce can both parse the boundary. The Vest suite is what carries the validation result from one interaction to the next.
 
 ## Vest and form state managers
 
@@ -6373,19 +6432,19 @@ Vest implements Standard Schema so compatible tools can consume suites and Enfor
 
 ## Capability comparison
 
-| Capability                          | Schema validator   | Form state manager | Vest                               |
-| ----------------------------------- | ------------------ | ------------------ | ---------------------------------- |
-| Parse a complete object boundary    | Primary            | Varies             | Yes, with schemas                  |
-| Own field values and registration   | No                 | Primary            | No                                 |
-| Run selected fields or groups       | Varies             | Often              | Primary                            |
-| Retain validation between runs      | No                 | Often              | Primary                            |
-| Prevent stale async results         | Usually manual     | Varies             | Built in                           |
-| Model dependent fields              | Cross-object rule  | Varies             | `include` and ordinary JS          |
-| Model conditional sections          | Unions/refinements | Varies             | `skipWhen`, `omitWhen`, `optional` |
-| Warnings that do not block submit   | Usually custom     | Varies             | Built in                           |
-| Share rules across UI frameworks    | Yes                | Usually no         | Yes                                |
-| Stateless server execution          | Yes                | Not primary        | `runStatic()`                      |
-| Resume full server validation state | No                 | Framework-specific | `SuiteSerializer`                  |
+| Capability                          | Standalone schema tool | Form state manager | Vest                               |
+| ----------------------------------- | ---------------------- | ------------------ | ---------------------------------- |
+| Parse a complete object boundary    | Primary                | Varies             | `enforce.shape(...).parse()`       |
+| Own field values and registration   | No                     | Primary            | No                                 |
+| Run selected fields or groups       | Varies                 | Often              | Primary                            |
+| Retain validation between runs      | No                     | Often              | Primary                            |
+| Prevent stale async results         | Usually manual         | Varies             | Built in                           |
+| Model dependent fields              | Cross-object rule      | Varies             | `include` and ordinary JS          |
+| Model conditional sections          | Unions/refinements     | Varies             | `skipWhen`, `omitWhen`, `optional` |
+| Warnings that do not block submit   | Usually custom         | Varies             | Built in                           |
+| Share rules across UI frameworks    | Yes                    | Usually no         | Yes                                |
+| Stateless server execution          | Yes                    | Not primary        | `runStatic()`                      |
+| Resume full server validation state | No                     | Framework-specific | `SuiteSerializer`                  |
 
 ## Why use Vest instead of writing validation state manually?
 
@@ -6414,7 +6473,7 @@ Prefer a simpler solution when:
 - validation happens only once at an API boundary;
 - your primary problem is storing form values rather than validation behavior.
 
-The goal is not to replace every schema or form library. It is to make progressive validation a first-class part of the application architecture.
+You do not have to replace your schema or form library to use Vest. Add it when keeping validation correct between interactions is the hard part.
 
 
 # Debouncing Tests
@@ -7628,7 +7687,7 @@ A common challenge in form validation is "noise control." You don't want to scre
 
 Traditionally, libraries use an `isDirty` flag to track if a user has modified a field. Since Vest is **UI-agnostic** (it doesn't touch your DOM or listen to events), it doesn't track "dirty" state for you.
 
-Instead, Vest provides two powerful tools to handle user interaction: **`isTested()`** and **`suite.only()`**.
+Vest provides two tools for this: **`isTested()`** and **`suite.only()`**.
 
 ## 1. `isTested()`: The Vest Alternative to `isDirty`
 

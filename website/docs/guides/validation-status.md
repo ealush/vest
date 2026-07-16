@@ -1,6 +1,6 @@
 ---
 title: Errors, Warnings, Pending, and Untested State
-description: Model validation status precisely instead of reducing every incomplete workflow to valid or invalid.
+description: Show untested, pending, error, warning, and passing states correctly.
 keywords: [validation errors, warnings, pending validation, untested fields]
 ---
 
@@ -10,7 +10,7 @@ Interactive validation has more than two states. A field may be untested, pendin
 
 | State    | What it means                                      | Typical UI                |
 | -------- | -------------------------------------------------- | ------------------------- |
-| Untested | No authoritative test result exists yet            | Neutral guidance          |
+| Untested | The field has not been checked yet                 | Neutral guidance          |
 | Pending  | Asynchronous work for the current value is running | Progress indicator        |
 | Error    | A blocking rule failed                             | Error message             |
 | Warning  | Advisory guidance failed                           | Non-blocking message      |
@@ -67,6 +67,6 @@ Render status in this order:
 
 On submission, await the complete suite and require `isValid()`. Warnings do not make the suite invalid; errors, pending work, and incomplete required tests do.
 
-Do not merge warning messages into the error array. Their separate severity is what lets the same suite support nuanced feedback in the browser and on the server.
+Keep warnings separate from errors. That is what lets the UI show advice without blocking submission.
 
 Read the [result selector reference](../writing_your_suite/accessing_the_result.md) and [warning guide](../writing_tests/warn_only_tests.md).

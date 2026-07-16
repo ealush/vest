@@ -1,43 +1,40 @@
 ---
-title: Ten Vest 6 Tutorials
-description: Follow a practical learning path through stateful runs, async races, warnings, conditions, schemas, server validation, and custom rules.
-keywords:
-  [Vest tutorials, TypeScript validation, form validation tutorial, Vest 6]
+title: Vest Tutorials
+description: Learn Vest through examples covering focused runs, async checks, warnings, schemas, and server validation.
+keywords: [Vest tutorials, TypeScript validation, form validation tutorial]
 ---
 
-# Ten Vest 6 Tutorials
+# Vest Tutorials
 
-Vest becomes most useful when validation stops being a one-time check and starts behaving like a process. These tutorials progress from a small test-like suite to focused state, asynchronous work, conditional workflows, server continuity, and application-specific rules.
+Start with a small suite, or jump straight to the problem you are trying to solve. The examples cover focused validation, async checks, conditional fields, schemas, and sharing validation between the browser and server.
 
-Every example follows the Vest 6 API hierarchy:
+One API detail is worth knowing before you begin:
 
 1. Use `suite.run(data)` for stateful application validation.
 2. Use `suite.runStatic(data)` for an independent server request or isolated execution.
-3. Pass the suite to Standard Schema consumers. The `~standard.validate` hook is an interoperability contract, not Vest's general execution API.
+3. Pass the suite itself to a library that supports Standard Schema. The `~standard.validate` hook is for those integrations, not for calling directly in application code.
 
-## The learning path
+## Pick a tutorial
 
-|   # | Tutorial                                                                           | What you will build                         | Core capability                                      |
-| --: | ---------------------------------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------- |
-|   1 | [Validation that reads like unit tests](./get_started.md)                          | A signup suite outside the UI               | `create`, `test`, `enforce`, and result selectors    |
-|   2 | [Validate one field without forgetting the rest](./guides/focused-validation.md)   | Progressive profile validation              | Focused execution and retained results               |
-|   3 | [Async checks without stale results](./guides/async-validation-race-conditions.md) | Username availability validation            | Pending state, cancellation, and race safety         |
-|   4 | [Reduce repeated async validation](./guides/memo-and-debounce.md)                  | A coupon check with bounded reuse           | `memo`, `debounce`, and `AbortSignal`                |
-|   5 | [Warnings that do not block submission](./guides/validation-status.md)             | Password-strength guidance                  | Errors, warnings, pending, and untested state        |
-|   6 | [Choose between skipping and omitting](./guides/conditional-sections.md)           | Pickup and delivery sections                | Relevant-later versus not-applicable rules           |
-|   7 | [Validate a multi-step workflow](./guides/multi-step-workflows.md)                 | A typed onboarding wizard                   | Groups, step validity, and cross-field rules         |
-|   8 | [Parse typed input without losing Vest's runtime](./guides/typed-schemas.md)       | A schema-backed registration suite          | Input/output inference, parsing, and Standard Schema |
-|   9 | [Share validation between server and client](./guides/client-server-validation.md) | Stateless request validation with hydration | `runStatic`, serialization, and resumption           |
-|  10 | [Teach validation your domain language](./enforce/creating_custom_rules.md)        | Typed, context-aware Enforce rules          | `condition`, `enforce.extend`, and sibling context   |
+| Tutorial                                                                           | Example                              | What it covers                                     |
+| ---------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------------- |
+| [Write your first suite](./get_started.md)                                         | Signup                               | `create`, `test`, `enforce`, and result selectors  |
+| [Validate one field without forgetting the rest](./guides/focused-validation.md)   | Profile form                         | Focused runs and retained results                  |
+| [Handle async checks safely](./guides/async-validation-race-conditions.md)         | Username availability                | Pending state, cancellation, and race safety       |
+| [Avoid repeated async work](./guides/memo-and-debounce.md)                         | Coupon check                         | `memo`, `debounce`, and `AbortSignal`              |
+| [Show warnings without blocking submission](./guides/validation-status.md)         | Password strength                    | Errors, warnings, pending, and untested state      |
+| [Skip or remove conditional rules](./guides/conditional-sections.md)               | Pickup and delivery                  | `skipWhen`, `omitWhen`, and `optional`             |
+| [Validate a multi-step form](./guides/multi-step-workflows.md)                     | Onboarding                           | Groups, step validity, and cross-field rules       |
+| [Parse input and keep the typed result](./guides/typed-schemas.md)                 | Registration                         | Parsing, type inference, and Standard Schema       |
+| [Share validation between server and client](./guides/client-server-validation.md) | Server validation and browser resume | `runStatic`, serialization, and resumption         |
+| [Write rules for your own domain](./enforce/creating_custom_rules.md)              | Custom Enforce rules                 | `condition`, `enforce.extend`, and sibling context |
 
-## What the sequence demonstrates
+## A good order for learning Vest
 
-The first tutorial makes rules readable and independently testable. The next six show why Vest is a validation-state runtime: each interaction can run a deliberate subset of work while the suite retains trustworthy history and coordinates pending results. The final three connect that runtime to typed parsing, server authority, ecosystem tools, and domain-specific vocabulary.
+If Vest is new to you, read the first three in order. They introduce suites, focused runs, and async validation—the ideas most of the other guides build on. After that, choose the examples that match your application.
 
-You do not need every capability. Start with the tutorial closest to the failure mode in your application, then return to the sequence when the workflow grows.
+## See everything working together
 
-## After the tutorials
-
-- Use the [production registration architecture](./guides/production-architecture.md) to see the capabilities composed in one runnable React application.
-- Read [Vest, schema validators, and form libraries](./vest_vs_the_rest.md) before choosing responsibility boundaries.
-- Check [when not to use Vest](./guides/when-not-to-use-vest.md) for smaller or purely structural validation tasks.
+- Open the [complete registration example](./guides/production-architecture.md) for a runnable React application.
+- Read [Vest, schema validators, and form libraries](./vest_vs_the_rest.md) to decide which tool should handle each part of your form.
+- Check [when not to use Vest](./guides/when-not-to-use-vest.md) if your validation is simple or only runs once.

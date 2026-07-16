@@ -63,18 +63,22 @@
 }
 
 html[data-theme='dark'] {
+  --ifm-color-primary: #a7b3ff;
+  --ifm-color-primary-dark: #98a5ff;
+  --ifm-color-primary-darker: #8d9aff;
+  --ifm-color-primary-darkest: #7180f0;
+  --ifm-color-primary-light: #bbc4ff;
+  --ifm-color-primary-lighter: #ccd3ff;
+  --ifm-color-primary-lightest: #e6e9ff;
   --ifm-background-color: var(--vest-slate);
+  --ifm-background-surface-color: #151d2e;
   --ifm-font-color-base: #e6e9f4;
   --ifm-heading-color: #f8fafc;
   --ifm-navbar-background-color: rgba(15, 23, 42, 0.78);
   --ifm-card-background-color: rgba(22, 30, 46, 0.7);
   --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.15);
   --vest-body-bg-gradient: none;
-  --vest-footer-bg: linear-gradient(
-    180deg,
-    rgba(79, 70, 229, 0.12),
-    rgba(15, 23, 42, 0.92)
-  );
+  --vest-footer-bg: linear-gradient(180deg, #1b2135, #0f172a);
   --vest-footer-color: #e2e8f0;
   --vest-surface: rgba(22, 30, 46, 0.72);
   --vest-surface-strong: #151d2e;
@@ -331,6 +335,7 @@ html[data-theme='dark'] .token.class-name {
 html[data-theme='dark'] :not(pre) > code {
   background: rgba(99, 102, 241, 0.18);
   border: 1px solid rgba(129, 140, 248, 0.35);
+  color: #e6e9ff;
 }
 
 html[data-theme='light'] pre[class*='language-'] {
@@ -445,6 +450,11 @@ html[data-theme='dark'] .menu__link--active:not(.menu__link--sublist) {
   color: var(--ifm-color-primary-dark);
 }
 
+html[data-theme='dark'] .breadcrumbs__item--active .breadcrumbs__link {
+  background: rgba(129, 140, 248, 0.14);
+  color: var(--ifm-color-primary-lighter);
+}
+
 .theme-doc-version-badge {
   margin-bottom: 1rem;
   border: 1px solid rgba(99, 102, 241, 0.18);
@@ -454,6 +464,12 @@ html[data-theme='dark'] .menu__link--active:not(.menu__link--sublist) {
   font-size: 0.67rem;
   font-weight: 750;
   letter-spacing: 0.05em;
+}
+
+html[data-theme='dark'] .theme-doc-version-badge {
+  background: rgba(129, 140, 248, 0.14);
+  border-color: rgba(167, 179, 255, 0.35);
+  color: var(--ifm-color-primary-lighter);
 }
 
 .theme-doc-markdown {

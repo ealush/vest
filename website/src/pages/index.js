@@ -51,8 +51,8 @@ function HomepageHeader() {
             Your form changes one field at a time. Its validation should too.
           </p>
           <p className={clsx('hero__subtitle', styles.heroTagline)}>
-            Vest runs the rules that matter now, retains the truth established
-            before, and makes stale async answers irrelevant.
+            Run the rules for the field that changed. Keep the other results.
+            Ignore async responses that arrived too late.
           </p>
           <div className={styles.ctaGroup}>
             <button
@@ -187,8 +187,8 @@ export default function Home() {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title}: TypeScript validation-state framework`}
-      description="Validate what changed, retain previous results, and prevent stale async responses with Vest."
+      title={`${siteConfig.title}: Form validation that remembers`}
+      description="Validate what changed, keep previous results, and ignore stale async responses with Vest."
     >
       <HomepageHeader />
       <main>

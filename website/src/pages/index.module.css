@@ -171,9 +171,14 @@ html[data-theme='dark'] .heroTagline {
 }
 
 .secondaryCta {
+  --ifm-button-color: var(--vest-black);
   border: 1px solid var(--vest-black);
   border-left: 0;
   background: transparent;
+  color: var(--vest-black);
+}
+
+html[data-theme='dark'] .secondaryCta {
   color: var(--vest-black);
 }
 

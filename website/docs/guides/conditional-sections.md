@@ -6,7 +6,7 @@ keywords: [conditional validation, optional form section, omitWhen, skipWhen]
 
 # Conditional Form Sections
 
-Conditional interfaces create two different states that should not be conflated:
+Two conditional-field states can look similar but need different handling:
 
 - **Not ready to run:** the rule is still required, but a prerequisite currently fails.
 - **Not applicable:** the field should not count toward validity at all.
@@ -60,9 +60,9 @@ skipWhen(true, () => {
 
 `omitWhen`, by contrast, does not enter its callback when the condition is true because those tests do not belong to the current workflow at all.
 
-## Decision rule
+## Which one should you use?
 
-- Ask “will this rule matter later for the current workflow?” If yes, use `skipWhen`.
+- Ask “will this rule matter later in this form?” If yes, use `skipWhen`.
 - Ask “does this field or section currently exist conceptually?” If no, use `omitWhen`.
 - Use `optional(field)` when one value may be blank but must satisfy its tests when provided.
 

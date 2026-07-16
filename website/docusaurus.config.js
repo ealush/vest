@@ -41,8 +41,7 @@ const config = {
   baseUrl: '/',
   favicon: 'favicon.ico',
   title: 'Vest',
-  tagline:
-    'TypeScript validation-state framework for complex forms and progressive workflows.',
+  tagline: 'Form validation that remembers previous runs.',
   url: 'https://vestjs.dev',
   onBrokenLinks: 'throw',
   markdown: {

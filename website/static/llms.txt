@@ -1,5 +1,5 @@
 # Vest 6
-> TypeScript validation-state framework for complex interactive forms. Vest validates what changed, retains trustworthy previous results, and prevents stale async work from corrupting current state.
+> Form validation that remembers previous runs. Vest validates what changed, keeps the other results, and ignores stale async responses.
 
 - [Full Vest 6 documentation](https://vestjs.dev/llms-full.txt)
 - [Consumer usage guide](https://vestjs.dev/llms-consumer.txt)
@@ -20,7 +20,7 @@
 Vest composes with schema validators and form managers; these categories are not mutually exclusive.
 
 ## Start with a problem
-- [Ten Vest 6 tutorials](https://vestjs.dev/docs/tutorials)
+- [Vest tutorials](https://vestjs.dev/docs/tutorials)
 - [Async validation without race conditions](https://vestjs.dev/docs/guides/async-validation-race-conditions)
 - [Validate one field or step](https://vestjs.dev/docs/guides/focused-validation)
 - [Dependent and cross-field validation](https://vestjs.dev/docs/guides/dependent-fields)
@@ -31,14 +31,14 @@ Vest composes with schema validators and form managers; these categories are not
 - [Typed schemas and parsed results](https://vestjs.dev/docs/guides/typed-schemas)
 - [React Hook Form and schema integration](https://vestjs.dev/docs/guides/form-and-schema-integration)
 - [Next.js Server Actions and resumable state](https://vestjs.dev/docs/guides/nextjs-server-actions)
-- [Production registration architecture](https://vestjs.dev/docs/guides/production-architecture)
+- [Complete registration example](https://vestjs.dev/docs/guides/production-architecture)
 - [When not to use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest)
 
 ## Key Concepts
-- **Living Result**: A suite stores validation truth and reconciles new runs with previous field results.
+- **Retained Results**: A suite updates the fields that ran and keeps the results for the others.
 - **Focused Updates**: Validate a field, step, or group with `suite.only()` or `suite.focus()` while retaining everything else.
 - **Race-safe Async**: Pending work is tracked, obsolete runs are canceled, and stale async results are ignored.
-- **Progressive Workflows**: Model dependent fields, conditional sections, optional values, warnings, groups, and dynamic lists.
+- **Form Workflows**: Model dependent fields, conditional sections, optional values, warnings, groups, and dynamic lists.
 
 ## Advanced Features
 - **Server and SSR**: Use `runStatic()`, then serialize and resume full validation state in the browser.
@@ -48,7 +48,7 @@ Vest composes with schema validators and form managers; these categories are not
 
 ## Core Documentation
 - [Getting Started with Vest](https://vestjs.dev/docs/get_started)
-- [How Vest Thinks About Validation](https://vestjs.dev/docs/concepts)
+- [How Vest Handles Validation](https://vestjs.dev/docs/concepts)
 - [Vest, Schema Validators, and Form Libraries](https://vestjs.dev/docs/vest_vs_the_rest)
 - [Api reference](https://vestjs.dev/docs/api_reference)
 - [Server-Side Rendering (SSR)](https://vestjs.dev/docs/suite_serialization)
@@ -56,7 +56,7 @@ Vest composes with schema validators and form managers; these categories are not
 - [Server-Side & SSR](https://vestjs.dev/docs/server_side_validations)
 - [Typescript Support](https://vestjs.dev/docs/typescript_support)
 - [Upgrade guides](https://vestjs.dev/docs/upgrade_guide)
-- [Ten Vest 6 Tutorials](https://vestjs.dev/docs/tutorials)
+- [Vest Tutorials](https://vestjs.dev/docs/tutorials)
 
 ## Problem-first Guides
 - [Async Validation Without Race Conditions](https://vestjs.dev/docs/guides/async-validation-race-conditions)
@@ -69,7 +69,7 @@ Vest composes with schema validators and form managers; these categories are not
 - [Reduce Repeated Async Validation](https://vestjs.dev/docs/guides/memo-and-debounce)
 - [Validation for Multi-Step Forms](https://vestjs.dev/docs/guides/multi-step-workflows)
 - [Next.js Server Actions Without Double Validation](https://vestjs.dev/docs/guides/nextjs-server-actions)
-- [Production Registration Architecture](https://vestjs.dev/docs/guides/production-architecture)
+- [Complete Registration Example](https://vestjs.dev/docs/guides/production-architecture)
 - [Typed Schemas and Parsed Results](https://vestjs.dev/docs/guides/typed-schemas)
 - [Errors, Warnings, Pending, and Untested State](https://vestjs.dev/docs/guides/validation-status)
 - [When Not to Use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest)

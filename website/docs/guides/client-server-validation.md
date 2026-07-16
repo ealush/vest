@@ -1,6 +1,6 @@
 ---
 title: Client and Server Validation
-description: Use one Vest suite for progressive browser interaction and independent server validation.
+description: Use one Vest suite for field-by-field browser validation and independent server requests.
 keywords: [server validation, client validation, SSR validation, runStatic]
 ---
 
@@ -55,11 +55,11 @@ The suite now knows which tests passed, failed, or were skipped on the server an
 
 ## Why serialize more than errors?
 
-An error map does not describe successful tests, warnings, group status, skipped work, or omitted branches. Serialized Vest state retains that context, so the next browser interaction can continue from the authoritative server result instead of reconstructing an incomplete approximation.
+An error map leaves out successful tests, warnings, group status, skipped work, and omitted branches. Serialized Vest state keeps all of that, so the browser can continue from the server result instead of rebuilding part of it by hand.
 
 An error map also creates a second UI integration path. The application must store the server errors, route each message to the correct field component, decide how those messages interact with client errors and warnings, and clear or merge them when the user edits again.
 
-Resuming Vest state avoids that parallel wiring. If the form already renders from the suite, the same selectors immediately expose the server result after `SuiteSerializer.resume()`:
+Resuming Vest state avoids a second set of wiring. If the form already renders from the suite, the same selectors expose the server result after `SuiteSerializer.resume()`:
 
 ```ts
 registrationSuite.getMessage('email');
@@ -71,4 +71,4 @@ The UI does not need a special `serverErrors` branch. Its existing bindings keep
 
 Resume only when new server state arrives. Do not resume the same payload on every render.
 
-Use a separate boundary schema when you also need structural parsing or transformation. See the [production architecture](./production-architecture.md) and [SSR serialization reference](../suite_serialization.md).
+Add a schema when you also need to parse or transform the submitted data. See the [complete registration example](./production-architecture.md) and [SSR serialization reference](../suite_serialization.md).

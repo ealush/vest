@@ -1,6 +1,6 @@
 ---
-title: Production Registration Architecture
-description: A tested reference architecture combining progressive Vest validation with a final schema boundary and server validation.
+title: Complete Registration Example
+description: A tested registration form with focused validation, async checks, schema parsing, and server validation.
 keywords:
   [
     production form validation,
@@ -11,15 +11,15 @@ keywords:
 
 import ProductionRegistrationSandpack from '@site/src/components/Sandpack/ProductionRegistration';
 
-# Production Registration Architecture
+# Complete Registration Example
 
-The canonical example keeps three responsibilities explicit:
+This example splits the work between three pieces:
 
 > **The form layer owns the inputs, the schema owns the boundary, and Vest owns how validation evolves.**
 
 The executable source lives in [`examples/production-registration`](https://github.com/ealush/vest/tree/latest/examples/production-registration).
 
-## What it demonstrates
+## What is in the example
 
 - React Hook Form owns values, registration, and submission mechanics.
 - The official Standard Schema resolver connects full-form submission to Vest.
@@ -33,9 +33,9 @@ The executable source lives in [`examples/production-registration`](https://gith
 - A runnable Vite page demonstrates the architecture with deterministic local services.
 - Vitest proves focused retention, async race behavior, conditionals, warnings, and server isolation.
 
-## Try the browser workflow
+## Try it
 
-This playground loads the browser files directly from the canonical example—there is no second copy to drift. Try `taken` as the username, correct it before the delayed response returns, switch to a business account, and submit a weak password to see errors, pending state, conditional validation, and warnings interact.
+The playground loads its files from the example project, so the code shown here and the tested example stay in sync. Try `taken` as the username and change it before the delayed response returns. You can also switch to a business account or submit a weak password to see the conditional fields and warning state.
 
 <ProductionRegistrationSandpack />
 
@@ -62,11 +62,11 @@ Submission
   → persist parsed payload
 ```
 
-## Why does this example use both Vest and Zod?
+## Why the example also uses Zod
 
-Zod is used here to demonstrate composition with an existing schema stack. It parses this example's complete data boundary, while Vest coordinates focused validation, retained results, async races, warnings, conditionals, and stateless server business rules.
+Many applications already use Zod, so this example shows how to keep it. Zod parses the submitted payload; Vest handles focused runs, async checks, warnings, conditional fields, and server-side business rules.
 
-Zod is not required for this architecture. An Enforce schema created with `enforce.shape` can parse and transform the boundary directly with `.parse()`, or be passed to `create` so `run()` and `runStatic()` validate the schema and expose parsed output as `result.value`. In that version, Vest owns both the boundary and the validation lifecycle.
+Zod is optional here. An Enforce schema created with `enforce.shape` can parse and transform the payload with `.parse()`. You can also pass it to `create`; then `run()` and `runStatic()` expose the parsed value as `result.value`.
 
 ## Run the example
 

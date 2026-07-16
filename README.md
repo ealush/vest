@@ -1,4 +1,4 @@
-# Vest — TypeScript validation-state framework
+# Vest — form validation that remembers
 
 ![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo_250.png 'Vest')
 
@@ -6,7 +6,7 @@
 
 [![Join Discord](https://badgen.net/discord/online-members/WmADZpJnSe?icon=discord&label=Discord)](https://discord.gg/WmADZpJnSe) [![GitHub Stars](https://badgen.net/github/stars/ealush/vest?color=yellow&label=GitHub%20Stars)](https://github.com/ealush/vest) [![Version](https://badgen.net/npm/v/vest?icon=npm)](https://www.npmjs.com/package/vest) [![Downloads](https://badgen.net/npm/dt/vest?label=Downloads)](https://www.npmjs.com/package/vest) [![Bundle size](https://badgen.net/bundlephobia/minzip/vest)](https://bundlephobia.com/package/vest) [![Status](https://badgen.net/github/status/ealush/vest)](https://github.com/ealush/vest/actions)
 
-Vest manages validation as values change over time. It runs only the relevant field or step, retains trustworthy results from earlier interactions, and prevents stale asynchronous work from replacing the current result.
+Vest runs the tests for the field or step that changed and keeps the results for everything else. When async checks overlap, only the latest result can update the suite.
 
 > **Vest validates what changed, remembers what already passed, and prevents stale async validation results.**
 
@@ -43,7 +43,7 @@ await result;
 ## Why Vest?
 
 - **Incremental execution:** Validate a field, group, or step without rerunning everything.
-- **Retained validation state:** Focused runs merge into one complete living result.
+- **Retained validation state:** A focused run updates part of the existing result instead of replacing it.
 - **Race-safe async:** Track pending work, cancel obsolete requests, and ignore stale completions.
 - **Real workflow primitives:** Model dependent fields, conditional sections, warnings, optional values, groups, and dynamic lists.
 - **Client and server continuity:** Run statelessly on the server and resume full validation state in the browser.
@@ -62,9 +62,9 @@ await result;
 
 These layers are complementary. A common architecture uses a form manager for input mechanics, Vest for progressive interaction, and a schema validator for the final submitted boundary.
 
-## Strong use cases
+## Where Vest works well
 
-Vest is particularly useful for:
+Vest works well for:
 
 - async username, email, inventory, coupon, or eligibility checks;
 - onboarding and multi-step workflows;
@@ -86,10 +86,10 @@ npm i vest
 ## Start here
 
 - [Getting started](https://vestjs.dev/docs/get_started)
-- [Ten Vest 6 tutorials](https://vestjs.dev/docs/tutorials)
-- [How Vest thinks about validation](https://vestjs.dev/docs/concepts)
+- [Vest tutorials](https://vestjs.dev/docs/tutorials)
+- [How Vest handles validation](https://vestjs.dev/docs/concepts)
 - [Async validation without race conditions](https://vestjs.dev/docs/guides/async-validation-race-conditions)
-- [Canonical React Hook Form + Standard Schema architecture](https://vestjs.dev/docs/guides/production-architecture)
+- [Complete registration example](https://vestjs.dev/docs/guides/production-architecture)
 - [When not to use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest)
 - [Vest, schema validators, and form libraries](https://vestjs.dev/docs/vest_vs_the_rest)
 - [Consumer AI usage guide](https://vestjs.dev/llms-consumer.txt)

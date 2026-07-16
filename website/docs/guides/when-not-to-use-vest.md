@@ -1,12 +1,12 @@
 ---
 title: When Not to Use Vest
-description: Choose the smallest validation tool that matches the actual lifecycle and integration needs of your application.
+description: Know when HTML validation, a schema, or a form library is enough on its own.
 keywords: [Vest alternatives, form validation choice, Zod vs Vest]
 ---
 
 # When Not to Use Vest
 
-Vest is designed for validation that has a lifecycle. It is not automatically the best choice every time an application checks a value.
+Vest is most useful when validation changes during user interaction. It is more machinery than you need for every value check.
 
 ## Use native HTML validation when
 
@@ -42,6 +42,6 @@ Vest earns its place when several of these are true:
 
 ## Combine tools when responsibilities differ
 
-A production architecture can use React Hook Form for input mechanics and Vest for both progressive validation and an Enforce-powered API boundary. If a project already standardizes on Zod, it can keep Zod at the boundary and use Vest for the validation lifecycle. Both are valid compositions.
+You might use React Hook Form for input handling and Vest with Enforce for both interactive validation and the API boundary. If the project already uses Zod, keep Zod at the boundary and use Vest for the form. Either approach works.
 
 See the [production architecture](./production-architecture.md) and [comparison guide](../vest_vs_the_rest.md).

@@ -86,7 +86,7 @@ Debounced tests are asynchronous even when their inner callback is synchronous. 
 - Use only `debounce` when values rarely repeat but interactions arrive in bursts.
 - Use only `memo` when the application revisits a small number of dependency combinations.
 - Combine them when both behaviors occur and the cached answer is safe to reuse.
-- Skip caching when the answer is authoritative, volatile, or unsafe to retain. A short `ttl` can bound reuse when limited caching is acceptable.
+- Skip caching when the answer must always be fresh or is unsafe to retain. Use a short `ttl` when limited reuse is acceptable.
 
 ## Common mistakes
 

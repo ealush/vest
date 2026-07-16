@@ -187,7 +187,7 @@ const sectionOrder = [
 ];
 
 let llmsTxt = `# Vest 6
-> TypeScript validation-state framework for complex interactive forms. Vest validates what changed, retains trustworthy previous results, and prevents stale async work from corrupting current state.
+> Form validation that remembers previous runs. Vest validates what changed, keeps the other results, and ignores stale async responses.
 
 - [Full Vest 6 documentation](https://vestjs.dev/llms-full.txt)
 - [Consumer usage guide](https://vestjs.dev/llms-consumer.txt)
@@ -208,7 +208,7 @@ let llmsTxt = `# Vest 6
 Vest composes with schema validators and form managers; these categories are not mutually exclusive.
 
 ## Start with a problem
-- [Ten Vest 6 tutorials](https://vestjs.dev/docs/tutorials)
+- [Vest tutorials](https://vestjs.dev/docs/tutorials)
 - [Async validation without race conditions](https://vestjs.dev/docs/guides/async-validation-race-conditions)
 - [Validate one field or step](https://vestjs.dev/docs/guides/focused-validation)
 - [Dependent and cross-field validation](https://vestjs.dev/docs/guides/dependent-fields)
@@ -219,14 +219,14 @@ Vest composes with schema validators and form managers; these categories are not
 - [Typed schemas and parsed results](https://vestjs.dev/docs/guides/typed-schemas)
 - [React Hook Form and schema integration](https://vestjs.dev/docs/guides/form-and-schema-integration)
 - [Next.js Server Actions and resumable state](https://vestjs.dev/docs/guides/nextjs-server-actions)
-- [Production registration architecture](https://vestjs.dev/docs/guides/production-architecture)
+- [Complete registration example](https://vestjs.dev/docs/guides/production-architecture)
 - [When not to use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest)
 
 ## Key Concepts
-- **Living Result**: A suite stores validation truth and reconciles new runs with previous field results.
+- **Retained Results**: A suite updates the fields that ran and keeps the results for the others.
 - **Focused Updates**: Validate a field, step, or group with \`suite.only()\` or \`suite.focus()\` while retaining everything else.
 - **Race-safe Async**: Pending work is tracked, obsolete runs are canceled, and stale async results are ignored.
-- **Progressive Workflows**: Model dependent fields, conditional sections, optional values, warnings, groups, and dynamic lists.
+- **Form Workflows**: Model dependent fields, conditional sections, optional values, warnings, groups, and dynamic lists.
 
 ## Advanced Features
 - **Server and SSR**: Use \`runStatic()\`, then serialize and resume full validation state in the browser.

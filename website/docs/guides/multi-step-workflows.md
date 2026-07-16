@@ -1,13 +1,13 @@
 ---
 title: Validation for Multi-Step Forms
-description: Validate one step at a time while preserving the validation state of the complete workflow.
+description: Validate one step at a time and check the complete form before submission.
 keywords:
   [multi-step form validation, wizard validation, onboarding, Vest groups]
 ---
 
 # Validation for Multi-Step Forms
 
-Multi-step forms need local progress and global truth. A user should validate the current step without losing the results from completed steps, while final submission must still require the complete workflow.
+A multi-step form should validate the current step without forgetting the steps already completed. Submission still needs to check the whole form.
 
 Model steps with groups:
 
@@ -58,7 +58,7 @@ async function canContinue(step: Step, data: OnboardingData) {
 }
 ```
 
-The result from earlier steps remains in the suite, so a review screen can display the status of the full workflow without rerunning every remote check.
+Earlier step results remain in the suite, so a review screen can show the whole form without repeating every remote check.
 
 Cross-field rules remain ordinary TypeScript. Put password and confirmation tests in the same group, then run that group when either value changes. If a field outside the active group must also rerun, use the dependent-field patterns described in [dependent and cross-field validation](./dependent-fields.md).
 

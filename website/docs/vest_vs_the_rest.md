@@ -7,7 +7,7 @@ keywords: [Vest, Zod, React Hook Form, Schema Validation, Stateful Validation]
 
 # Vest, Schema Validators, and Form Libraries
 
-Vest does not need every validation problem to be a Vest problem.
+Vest can work alongside the form and schema tools you already use.
 
 These capabilities can be composed, but they are not mutually exclusive:
 
@@ -18,17 +18,17 @@ These capabilities can be composed, but they are not mutually exclusive:
 | **Vest suites**                  | Stateful and stateless validation workflows        |
 | **Vest suite + Enforce schema**  | Both parsed boundaries and validation over time    |
 
-## The distinction
+## Where Vest differs
 
 A schema validator is excellent at answering:
 
 > Does this submitted payload have the expected structure and values?
 
-Vest is designed to answer:
+A Vest suite also needs to answer:
 
 > The user changed one part of a workflow. What needs to run now, what previous state remains valid, and which async result should be trusted?
 
-Vest can answer both questions. Enforce schemas provide structural validation, transformation, and parsing; a Vest suite adds the stateful runtime model for validation that unfolds over time.
+Vest can handle both jobs. Enforce schemas validate, transform, and parse data. A Vest suite keeps test results up to date while the user moves through a form.
 
 ## Vest and Zod
 
@@ -74,7 +74,7 @@ Vest is a strong choice for:
 - multi-step workflows;
 - warnings, pending state, and progressive completion.
 
-### Use Vest end to end, or compose it with Zod
+### Use Vest on its own or with Zod
 
 Vest can own both the interactive workflow and the submitted boundary:
 
@@ -85,20 +85,18 @@ User interaction
 
 Final submission
   → Enforce schema parses and transforms the complete payload
-  → Vest runStatic applies authoritative business rules
+  → Vest runStatic applies the business rules
 ```
 
-If an application already uses Zod, it can parse the boundary before a stateless Vest run. That is an interoperability choice, not a limitation of Vest:
+If your application already uses Zod, parse the payload before a stateless Vest run:
 
 ```text
 Final submission
   → Zod parses the complete boundary payload
-  → Vest runStatic applies authoritative business rules
+  → Vest runStatic applies the business rules
 ```
 
-The concise explanation is:
-
-> **Zod can be the boundary schema. Enforce can be too. Vest's differentiator is carrying validation through the whole workflow.**
+Zod and Enforce can both parse the boundary. The Vest suite is what carries the validation result from one interaction to the next.
 
 ## Vest and form state managers
 
@@ -157,4 +155,4 @@ Prefer a simpler solution when:
 - validation happens only once at an API boundary;
 - your primary problem is storing form values rather than validation behavior.
 
-The goal is not to replace every schema or form library. It is to make progressive validation a first-class part of the application architecture.
+You do not have to replace your schema or form library to use Vest. Add it when keeping validation correct between interactions is the hard part.

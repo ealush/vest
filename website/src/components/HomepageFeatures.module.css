@@ -134,6 +134,11 @@ html[data-theme='dark'] .features {
   color: var(--feature-paper);
 }
 
+html[data-theme='dark'] .positioningBand {
+  background: #181818;
+  color: var(--feature-ink);
+}
+
 .positioningBand > div {
   display: flex;
   min-height: 210px;

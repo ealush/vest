@@ -125,6 +125,30 @@ describe('interactive code playgrounds', () => {
     expect(source).not.toMatch(/\.afterEach\(\([^)]+\) => setRes\(/);
   });
 
+  it('proves Enforce can parse a boundary used by a stateless suite', () => {
+    const schema = vest.enforce.shape({
+      age: vest.enforce.isNumeric().toNumber(),
+      email: vest.enforce.isString().trim(),
+    });
+    const suite = vest.create(data => {
+      vest.test('age', 'Must be an adult', () => {
+        vest.enforce(data.age).greaterThanOrEquals(18);
+      });
+    }, schema);
+
+    expect(schema.parse({ age: '36', email: '  ada@vestjs.dev  ' })).toEqual({
+      age: 36,
+      email: 'ada@vestjs.dev',
+    });
+
+    const result = suite.runStatic({
+      age: '36',
+      email: '  ada@vestjs.dev  ',
+    });
+    expect(result.isValid()).toBe(true);
+    expect(result.value).toEqual({ age: 36, email: 'ada@vestjs.dev' });
+  });
+
   it('executes the exact async API shown in the main playground', async () => {
     vi.useFakeTimers();
     const checkUsername = executeNamedFunction(

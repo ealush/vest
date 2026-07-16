@@ -9,13 +9,14 @@ keywords: [Vest, Zod, React Hook Form, Schema Validation, Stateful Validation]
 
 Vest does not need every validation problem to be a Vest problem.
 
-Different tools own different parts of the workflow:
+These capabilities can be composed, but they are not mutually exclusive:
 
-| Tool category                    | Primary responsibility                              |
-| -------------------------------- | --------------------------------------------------- |
-| Schema validators such as Zod    | Define and parse a valid data boundary              |
-| Form managers such as RHF/Formik | Manage values, registration, events, and submission |
-| **Vest**                         | Manage how validation evolves during interaction    |
+| Tool or layer                    | What it can own                                    |
+| -------------------------------- | -------------------------------------------------- |
+| Form managers such as RHF/Formik | Values, registration, events, and submission       |
+| Enforce schemas, Zod, or Valibot | Structural validation, transformation, and parsing |
+| **Vest suites**                  | Stateful and stateless validation workflows        |
+| **Vest suite + Enforce schema**  | Both parsed boundaries and validation over time    |
 
 ## The distinction
 
@@ -27,7 +28,7 @@ Vest is designed to answer:
 
 > The user changed one part of a workflow. What needs to run now, what previous state remains valid, and which async result should be trusted?
 
-Vest can also perform structural validation with Enforce schemas. The distinction is about the runtime model, not a claim that schema validation is unimportant.
+Vest can answer both questions. Enforce schemas provide structural validation, transformation, and parsing; a Vest suite adds the stateful runtime model for validation that unfolds over time.
 
 ## Vest and Zod
 
@@ -39,6 +40,31 @@ Zod is a strong choice for:
 - deriving TypeScript types;
 - one-shot validation.
 
+Enforce supports those same core boundary jobs. A schema created with `enforce.shape`, `enforce.loose`, or `enforce.partial` exposes `.parse()` and returns transformed output:
+
+```ts
+const accountSchema = enforce.shape({
+  age: enforce.isNumeric().toNumber(),
+  email: enforce.isString().trim(),
+});
+
+const account = accountSchema.parse(input);
+// account.age is a number
+```
+
+Attach the schema to a suite when the same boundary and parsed values should participate in Vest's runtime:
+
+```ts
+const accountSuite = create(parsedAccount => {
+  test('age', 'Must be an adult', () => {
+    enforce(parsedAccount.age).greaterThanOrEquals(18);
+  });
+}, accountSchema);
+
+const result = accountSuite.runStatic(input);
+if (result.isValid()) persist(result.value);
+```
+
 Vest is a strong choice for:
 
 - validating one field or step at a time;
@@ -48,9 +74,9 @@ Vest is a strong choice for:
 - multi-step workflows;
 - warnings, pending state, and progressive completion.
 
-### Use both
+### Use Vest end to end, or compose it with Zod
 
-A production application can use Zod for the submitted boundary and Vest for interaction:
+Vest can own both the interactive workflow and the submitted boundary:
 
 ```text
 User interaction
@@ -58,13 +84,21 @@ User interaction
   → UI shows errors, warnings, and pending work
 
 Final submission
+  → Enforce schema parses and transforms the complete payload
+  → Vest runStatic applies authoritative business rules
+```
+
+If an application already uses Zod, it can parse the boundary before a stateless Vest run. That is an interoperability choice, not a limitation of Vest:
+
+```text
+Final submission
   → Zod parses the complete boundary payload
-  → server applies authoritative business rules
+  → Vest runStatic applies authoritative business rules
 ```
 
 The concise explanation is:
 
-> **Zod defines what a valid submitted account looks like. Vest manages how the user gets there.**
+> **Zod can be the boundary schema. Enforce can be too. Vest's differentiator is carrying validation through the whole workflow.**
 
 ## Vest and form state managers
 
@@ -82,19 +116,19 @@ Vest implements Standard Schema so compatible tools can consume suites and Enfor
 
 ## Capability comparison
 
-| Capability                          | Schema validator   | Form state manager | Vest                               |
-| ----------------------------------- | ------------------ | ------------------ | ---------------------------------- |
-| Parse a complete object boundary    | Primary            | Varies             | Yes, with schemas                  |
-| Own field values and registration   | No                 | Primary            | No                                 |
-| Run selected fields or groups       | Varies             | Often              | Primary                            |
-| Retain validation between runs      | No                 | Often              | Primary                            |
-| Prevent stale async results         | Usually manual     | Varies             | Built in                           |
-| Model dependent fields              | Cross-object rule  | Varies             | `include` and ordinary JS          |
-| Model conditional sections          | Unions/refinements | Varies             | `skipWhen`, `omitWhen`, `optional` |
-| Warnings that do not block submit   | Usually custom     | Varies             | Built in                           |
-| Share rules across UI frameworks    | Yes                | Usually no         | Yes                                |
-| Stateless server execution          | Yes                | Not primary        | `runStatic()`                      |
-| Resume full server validation state | No                 | Framework-specific | `SuiteSerializer`                  |
+| Capability                          | Standalone schema tool | Form state manager | Vest                               |
+| ----------------------------------- | ---------------------- | ------------------ | ---------------------------------- |
+| Parse a complete object boundary    | Primary                | Varies             | `enforce.shape(...).parse()`       |
+| Own field values and registration   | No                     | Primary            | No                                 |
+| Run selected fields or groups       | Varies                 | Often              | Primary                            |
+| Retain validation between runs      | No                     | Often              | Primary                            |
+| Prevent stale async results         | Usually manual         | Varies             | Built in                           |
+| Model dependent fields              | Cross-object rule      | Varies             | `include` and ordinary JS          |
+| Model conditional sections          | Unions/refinements     | Varies             | `skipWhen`, `omitWhen`, `optional` |
+| Warnings that do not block submit   | Usually custom         | Varies             | Built in                           |
+| Share rules across UI frameworks    | Yes                    | Usually no         | Yes                                |
+| Stateless server execution          | Yes                    | Not primary        | `runStatic()`                      |
+| Resume full server validation state | No                     | Framework-specific | `SuiteSerializer`                  |
 
 ## Why use Vest instead of writing validation state manually?
 

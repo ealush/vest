@@ -29,7 +29,7 @@ The executable source lives in [`examples/production-registration`](https://gith
 - Business accounts reveal a conditional company section.
 - Password strength is a non-blocking warning.
 - The server uses a stateless Vest run.
-- Zod parses the final API boundary.
+- This implementation uses Zod for the final API boundary; an Enforce schema can own the same boundary through `.parse()` or as the suite schema.
 - A runnable Vite page demonstrates the architecture with deterministic local services.
 - Vitest proves focused retention, async race behavior, conditionals, warnings, and server isolation.
 
@@ -62,9 +62,11 @@ Submission
   → persist parsed payload
 ```
 
-## Why both Vest and a boundary schema?
+## Why does this example use both Vest and Zod?
 
-The schema protects a complete data boundary. It does not remember what happened during the previous interaction or decide which remote response is still relevant. Vest supplies that runtime behavior and then gets out of the way of parsing and persistence.
+Zod is used here to demonstrate composition with an existing schema stack. It parses this example's complete data boundary, while Vest coordinates focused validation, retained results, async races, warnings, conditionals, and stateless server business rules.
+
+Zod is not required for this architecture. An Enforce schema created with `enforce.shape` can parse and transform the boundary directly with `.parse()`, or be passed to `create` so `run()` and `runStatic()` validate the schema and expose parsed output as `result.value`. In that version, Vest owns both the boundary and the validation lifecycle.
 
 ## Run the example
 

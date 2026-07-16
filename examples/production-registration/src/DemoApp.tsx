@@ -47,8 +47,9 @@ export default function DemoApp() {
         <h1>Production registration with Vest</h1>
         <p>
           React Hook Form owns inputs, Vest owns progressive validation state,
-          and Zod protects the submitted boundary. Try <code>taken</code> to see
-          the async username rule.
+          and this version uses Zod at the submitted boundary. Enforce schemas
+          can own that boundary too. Try <code>taken</code> to see the async
+          username rule.
         </p>
       </section>
       <section className="form-card">

@@ -49,7 +49,7 @@ The resolver is the simplest path when the form manager should invoke complete v
 suite.only('email').run(form.getValues());
 ```
 
-See the tested [production architecture](../guides/production-architecture.md) for focused async validation, warnings, conditionals, Zod at the server boundary, and a stateless server run.
+See the tested [production architecture](../guides/production-architecture.md) for focused async validation, warnings, conditionals, a replaceable Zod boundary, and a stateless server run. An Enforce schema can own the boundary instead.
 
 ## Direct Standard Schema validation
 

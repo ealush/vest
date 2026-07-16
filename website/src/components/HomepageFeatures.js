@@ -93,13 +93,13 @@ export default function HomepageFeatures() {
         <div className={styles.positioningBand}>
           <div>
             <span className={styles.positioningLabel}>At the boundary</span>
-            <strong>Schema validators define the valid destination.</strong>
-            <p>Use them to parse and protect complete submitted payloads.</p>
+            <strong>Enforce parses and transforms submitted payloads.</strong>
+            <p>Use Vest end to end, or bring another Standard Schema tool.</p>
           </div>
           <span className={styles.positioningPlus}>+</span>
           <div>
             <span className={styles.positioningLabel}>During interaction</span>
-            <strong>Vest manages how the user gets there.</strong>
+            <strong>Vest manages how validity changes over time.</strong>
             <p>
               Use it as values change, async work overlaps, and steps unfold.
             </p>

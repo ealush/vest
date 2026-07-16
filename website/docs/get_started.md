@@ -116,7 +116,7 @@ Use Vest when validation behavior includes:
 - errors, warnings, pending states, and progressive completion;
 - validation shared between browser and server.
 
-For a one-shot API boundary parse, a schema validator may be all you need. A common architecture is to use a schema validator for the submitted payload and Vest for the interactive journey that produces it.
+For a one-shot API boundary parse, an Enforce schema's `.parse()` API may be all you need. For progressive workflows, the same Enforce schema can be attached to a Vest suite so Vest owns both parsed output and the interactive journey. Zod or another schema library can also be composed at the boundary.
 
 ## Next steps
 

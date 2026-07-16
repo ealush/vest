@@ -58,6 +58,6 @@ Resuming preserves more than an error map: the suite knows which rules passed, f
 
 ## Add a parsing boundary
 
-Parse untrusted action input with Zod, Valibot, Enforce, or another schema tool before persistence. Use Vest for business validation lifecycle and the schema for the submitted data contract.
+Parse untrusted action input before persistence. An Enforce schema can own that contract directly through `.parse()` or as the Vest suite's schema, while the suite applies authoritative business rules with `runStatic()`. Zod, Valibot, or another schema tool can be used instead when the application already standardizes on it.
 
 The reference implementation is in the [production registration example](./production-architecture.md). See [suite serialization](../suite_serialization.md) for the lower-level API.

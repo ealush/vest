@@ -2,7 +2,9 @@
 
 This is Vest's canonical production architecture:
 
-> React Hook Form owns the inputs, Zod owns the submitted boundary, and Vest owns how validation evolves.
+> React Hook Form owns the inputs, Vest owns how validation evolves, and this implementation uses Zod for the submitted boundary.
+
+Zod demonstrates interoperability here; it is not required. An Enforce schema can replace `boundarySchema` and parse the same boundary directly with `.parse()`, or be attached to the Vest suite so parsed output is available from `result.value`.
 
 It demonstrates:
 
@@ -26,7 +28,7 @@ It demonstrates:
   directly in the documentation Sandpack.
 - `src/main.tsx` — standalone Vite entry for the same demo app.
 - `src/styles.css` — standalone example presentation.
-- `src/boundarySchema.ts` — Zod input boundary.
+- `src/boundarySchema.ts` — this implementation's Zod input boundary, replaceable with an Enforce schema.
 - `src/server.ts` — stateless request handling.
 - `src/serverAction.ts` — a Next.js-style Server Action and resumable state.
 - `src/registrationSuite.test.ts` — runtime behavior proof.

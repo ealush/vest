@@ -14,13 +14,13 @@ Vest is designed for validation that has a lifecycle. It is not automatically th
 - `required`, `min`, `max`, `pattern`, and input types express the rules;
 - custom error timing and server rule sharing are unnecessary.
 
-## Use a schema validator alone when
+## Use only a schema API when
 
 - the primary job is parsing an API request, configuration file, or environment variables;
 - validation happens once at a clear boundary;
 - transformations, codecs, JSON Schema, or ecosystem-specific type integrations are more important than interaction state.
 
-Zod, Valibot, ArkType, Joi, and Ajv each have strengths in this category.
+An Enforce schema's `.parse()` API can be enough for this job without creating a Vest suite. Zod, Valibot, ArkType, Joi, and Ajv also have strengths in this category.
 
 ## Use a form manager's built-in validation when
 
@@ -42,6 +42,6 @@ Vest earns its place when several of these are true:
 
 ## Combine tools when responsibilities differ
 
-A common production architecture is React Hook Form for input mechanics, Vest for progressive validation state, and Zod for the final API boundary. This is not redundant when each layer owns a distinct failure mode.
+A production architecture can use React Hook Form for input mechanics and Vest for both progressive validation and an Enforce-powered API boundary. If a project already standardizes on Zod, it can keep Zod at the boundary and use Vest for the validation lifecycle. Both are valid compositions.
 
 See the [production architecture](./production-architecture.md) and [comparison guide](../vest_vs_the_rest.md).

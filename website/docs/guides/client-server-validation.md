@@ -22,12 +22,20 @@ const result = await registrationSuite.runStatic(requestBody);
 An API handler should await all async work before accepting data:
 
 ```ts
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
+
 export async function register(request) {
   const data = await request.json();
   const result = await registrationSuite.runStatic(data);
 
   if (!result.isValid()) {
-    return Response.json({ errors: result.getErrors() }, { status: 422 });
+    return Response.json(
+      {
+        errors: result.getErrors(),
+        vestState: SuiteSerializer.serialize(result),
+      },
+      { status: 422 },
+    );
   }
 
   return createAccount(data);

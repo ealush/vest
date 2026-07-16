@@ -48,6 +48,8 @@ async function validateUsername() {
 Use `enforce.shape` when you want Vest to parse the input as well as run the form's business rules:
 
 ```ts
+import { create, enforce, test } from 'vest';
+
 const registrationSchema = enforce.shape({
   age: enforce.isNumeric().toNumber(),
   email: enforce.isString().trim(),

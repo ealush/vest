@@ -90,10 +90,9 @@ Final submission
 
 If your application already uses Zod, parse the payload before a stateless Vest run:
 
-```text
-Final submission
-  → Zod parses the complete boundary payload
-  → Vest runStatic applies the business rules
+```ts
+const parsed = schema.parse(payload);
+const result = await suite.runStatic(parsed);
 ```
 
 Zod and Enforce can both parse the boundary. The Vest suite is what carries the validation result from one interaction to the next.

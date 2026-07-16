@@ -3651,12 +3651,20 @@ const result = await registrationSuite.runStatic(requestBody);
 An API handler should await all async work before accepting data:
 
 ```ts
+import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
+
 export async function register(request) {
   const data = await request.json();
   const result = await registrationSuite.runStatic(data);
 
   if (!result.isValid()) {
-    return Response.json({ errors: result.getErrors() }, { status: 422 });
+    return Response.json(
+      {
+        errors: result.getErrors(),
+        vestState: SuiteSerializer.serialize(result),
+      },
+      { status: 422 },
+    );
   }
 
   return createAccount(data);
@@ -3993,6 +4001,8 @@ async function validateUsername() {
 Use `enforce.shape` when you want Vest to parse the input as well as run the form's business rules:
 
 ```ts
+import { create, enforce, test } from 'vest';
+
 const registrationSchema = enforce.shape({
   age: enforce.isNumeric().toNumber(),
   email: enforce.isString().trim(),
@@ -4207,6 +4217,8 @@ A Server Action must validate every request independently. When it returns error
 
 ## Server Action
 
+This example uses a `registrationSuite` created with an Enforce schema, so a successful result contains the parsed input in `result.value`.
+
 ```ts
 'use server';
 
@@ -4224,7 +4236,7 @@ export async function register(data) {
     };
   }
 
-  await saveAccount(data);
+  await saveAccount(result.value);
   return { ok: true };
 }
 ```
@@ -6408,10 +6420,9 @@ Final submission
 
 If your application already uses Zod, parse the payload before a stateless Vest run:
 
-```text
-Final submission
-  → Zod parses the complete boundary payload
-  → Vest runStatic applies the business rules
+```ts
+const parsed = schema.parse(payload);
+const result = await suite.runStatic(parsed);
 ```
 
 Zod and Enforce can both parse the boundary. The Vest suite is what carries the validation result from one interaction to the next.

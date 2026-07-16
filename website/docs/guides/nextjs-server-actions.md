@@ -10,6 +10,8 @@ A Server Action must validate every request independently. When it returns error
 
 ## Server Action
 
+This example uses a `registrationSuite` created with an Enforce schema, so a successful result contains the parsed input in `result.value`.
+
 ```ts
 'use server';
 
@@ -27,7 +29,7 @@ export async function register(data) {
     };
   }
 
-  await saveAccount(data);
+  await saveAccount(result.value);
   return { ok: true };
 }
 ```

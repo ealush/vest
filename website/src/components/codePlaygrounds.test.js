@@ -22,7 +22,16 @@ function readTemplateLiteral(url, constantName) {
 }
 
 const getStartedSource = new URL('./Sandpack/GetStarted.js', import.meta.url);
+const anyTestRecipeSource = new URL(
+  './Sandpack/AnyTestRecipe.js',
+  import.meta.url,
+);
+const asyncTestsSource = new URL('./Sandpack/AsyncTests.js', import.meta.url);
 const rawExampleSource = new URL('./RawExample.js', import.meta.url);
+const anyTestRecipeSuiteCode = readTemplateLiteral(
+  anyTestRecipeSource,
+  'SuiteCode',
+);
 const getStartedSuiteCode = readTemplateLiteral(getStartedSource, 'SuiteCode');
 const rawExampleApiCode = readTemplateLiteral(rawExampleSource, 'ApiCode');
 const rawExampleSuiteCode = readTemplateLiteral(rawExampleSource, 'SuiteCode');
@@ -66,6 +75,54 @@ describe('interactive code playgrounds', () => {
 
     const valid = suite.runStatic({ password: 'secret', username: 'ada' });
     expect(valid.isValid()).toBe(true);
+  });
+
+  it('returns the summary failure shape used by the any-test recipe', () => {
+    const suite = executeDefaultExport(anyTestRecipeSuiteCode, { vest });
+
+    const empty = suite.runStatic({ email: false, push: false, sms: false });
+    expect(empty.getError()).toMatchObject({
+      fieldName: 'email',
+      message: 'Provide at least one channel',
+    });
+
+    const valid = suite.runStatic({ email: true, push: false, sms: false });
+    expect(valid.isValid()).toBe(true);
+  });
+
+  it('keeps Sandpack examples on the current Vest major', () => {
+    const packageJson = JSON.parse(
+      fs.readFileSync(
+        new URL('../../../packages/vest/package.json', import.meta.url),
+        'utf8',
+      ),
+    );
+    const expectedMajor = packageJson.version.split('.')[0];
+    const sandpackDirectory = new URL('./Sandpack/', import.meta.url);
+    const sandpackSources = fs
+      .readdirSync(sandpackDirectory)
+      .filter(fileName => fileName.endsWith('.js'))
+      .map(fileName =>
+        fs.readFileSync(new URL(fileName, sandpackDirectory), 'utf8'),
+      );
+    const runnableSources = [
+      fs.readFileSync(rawExampleSource, 'utf8'),
+      ...sandpackSources,
+    ].filter(source => source.includes("vest: '"));
+
+    expect(runnableSources.length).toBeGreaterThan(0);
+    runnableSources.forEach(source => {
+      const dependencyRange = source.match(/vest: '([^']+)'/)?.[1];
+      expect(dependencyRange).toMatch(new RegExp(`^\\^${expectedMajor}\\.`));
+      expect(source).not.toContain("vest: 'latest'");
+    });
+  });
+
+  it('reads async completion state from the suite', () => {
+    const source = fs.readFileSync(asyncTestsSource, 'utf8');
+
+    expect(source).toContain('.afterEach(() => setRes(suite.get()))');
+    expect(source).not.toMatch(/\.afterEach\(\([^)]+\) => setRes\(/);
   });
 
   it('executes the exact async API shown in the main playground', async () => {

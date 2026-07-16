@@ -49,16 +49,21 @@ const FeatureList = [
   },
 ];
 
-function Feature({ emoji, title, category, description }) {
+function Feature({ emoji, title, category, description, index }) {
   return (
-    <div className={styles.featureCard}>
-      <div className={styles.featureHeader}>
-        <span className={styles.emoji}>{emoji}</span>
+    <article className={styles.featureRow}>
+      <span className={styles.featureIndex}>
+        {String(index + 1).padStart(2, '0')}
+      </span>
+      <span className={styles.emoji} aria-hidden="true">
+        {emoji}
+      </span>
+      <div className={styles.featureHeading}>
         <span className={styles.category}>{category}</span>
+        <h3 className={styles.featureTitle}>{title}</h3>
       </div>
-      <h3 className={styles.featureTitle}>{title}</h3>
       <p className={styles.featureDescription}>{description}</p>
-    </div>
+    </article>
   );
 }
 
@@ -81,8 +86,8 @@ export default function HomepageFeatures() {
           </p>
         </div>
         <div className={styles.featuresGrid}>
-          {FeatureList.map(feature => (
-            <Feature key={feature.title} {...feature} />
+          {FeatureList.map((feature, index) => (
+            <Feature key={feature.title} index={index} {...feature} />
           ))}
         </div>
         <div className={styles.positioningBand}>

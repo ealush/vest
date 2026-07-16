@@ -1,6 +1,5 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import CodeBlock from '@theme/CodeBlock';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
 import React, { useState } from 'react';
@@ -29,45 +28,31 @@ function HomepageHeader() {
       ?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const heroCode = `import { create, test, enforce } from 'vest';
-
-const suite = create((data = {}) => {
-  test('username', 'is required', () => {
-    enforce(data.username).isNotBlank();
-  });
-
-  test('username', 'already taken', async ({ signal }) => {
-    const { available } = await checkUsername(data.username, { signal });
-    enforce(available).isTruthy();
-  });
-
-  test('password', 'must be 8+ chars', () => {
-    enforce(data.password).longerThan(7);
-  });
-});
-
-suite.run(formData);`;
-
   return (
     <header className={clsx('hero', styles.heroBanner)}>
-      <div className={styles.heroGlow} />
+      <img
+        className={styles.heroWatermark}
+        src="/img/logo.svg"
+        alt=""
+        aria-hidden="true"
+      />
       <div className={styles.heroGrid}>
         <div className={styles.heroContent}>
           <div className={styles.heroBrand}>
             <img src="/img/logo.svg" alt="Vest" className={styles.heroLogo} />
-            <span className={styles.heroLogoText}>Vest</span>
+            <span className={styles.heroLogoText}>VEST</span>
+            <span className={styles.heroEdition}>06 / validation runtime</span>
           </div>
-          <p className={styles.heroOverline}>
-            TypeScript validation-state framework
-          </p>
           <h1 className={clsx('hero__title', styles.heroTitle)}>
-            Validate what changed.{' '}
-            <span className={styles.heroHighlight}>Keep what passed.</span>
+            Validation that
+            <span className={styles.heroHighlight}> remembers.</span>
           </h1>
+          <p className={styles.heroStatement}>
+            Your form changes one field at a time. Its validation should too.
+          </p>
           <p className={clsx('hero__subtitle', styles.heroTagline)}>
-            Validate only the field or step changing now, retain previous
-            results, and prevent stale async responses from corrupting your form
-            state.
+            Vest runs the rules that matter now, retains the truth established
+            before, and makes stale async answers irrelevant.
           </p>
           <div className={styles.ctaGroup}>
             <button
@@ -77,7 +62,7 @@ suite.run(formData);`;
               onClick={handleDemoScroll}
               type="button"
             >
-              See async race protection
+              Run the async race <span aria-hidden="true">↓</span>
             </button>
             <Link
               className={clsx('button button--secondary', styles.secondaryCta)}
@@ -85,23 +70,13 @@ suite.run(formData);`;
               data-adoption-label="hero_get_started"
               to="/docs/get_started"
             >
-              Get started
+              Read the docs <span aria-hidden="true">→</span>
             </Link>
-            <Link
-              className={clsx('button', styles.tertiaryCta)}
-              data-adoption-event="docs_cta"
-              data-adoption-label="hero_tutorials"
-              to="/docs/tutorials"
-            >
-              Explore tutorials
-            </Link>
-          </div>
-          <div className={styles.capabilityRow} aria-label="Core capabilities">
-            <span>Stateful runs</span>
-            <span>Stateless server validation</span>
-            <span>Standard Schema</span>
           </div>
           <div className={styles.installBar}>
+            <span className={styles.prompt} aria-hidden="true">
+              $
+            </span>
             <code className={styles.installCommand}>{installCommand}</code>
             <button
               type="button"
@@ -139,26 +114,68 @@ suite.run(formData);`;
               <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
           </div>
-        </div>
-        <div className={styles.heroPanel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.windowControls} aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </span>
-            <span>registration-suite.ts</span>
-            <span className={styles.panelStatus}>Vest 6</span>
+          <div className={styles.capabilityRow} aria-label="Core capabilities">
+            <span>01 / focused</span>
+            <span>02 / stateful</span>
+            <span>03 / race-safe</span>
+            <span>04 / full-stack</span>
           </div>
-          <div className={styles.panelBody}>
-            <CodeBlock language="javascript" className={styles.panelCode}>
-              {heroCode}
-            </CodeBlock>
-            <div className={styles.panelFooter}>
-              <span>Framework agnostic</span>
-              <span className={styles.pulse} />
-              <span>Async ready</span>
+        </div>
+        <div className={styles.ledger} aria-label="A live Vest suite run">
+          <div className={styles.ledgerHeader}>
+            <div>
+              <span className={styles.ledgerKicker}>LIVE SUITE</span>
+              <strong>signup / run 04</strong>
             </div>
+            <span className={styles.runState}>RUNNING</span>
+          </div>
+          <div className={styles.ledgerCommand}>
+            <span aria-hidden="true">›</span>
+            <code>suite.only('username').run(data)</code>
+          </div>
+          <div className={styles.fieldLedger}>
+            <div className={styles.fieldRow}>
+              <span className={styles.fieldNumber}>01</span>
+              <div>
+                <strong>email</strong>
+                <small>from run 03</small>
+              </div>
+              <span className={styles.retainedState}>RETAINED · VALID</span>
+            </div>
+            <div className={clsx(styles.fieldRow, styles.activeField)}>
+              <span className={styles.fieldNumber}>02</span>
+              <div>
+                <strong>username</strong>
+                <small>request #18</small>
+              </div>
+              <span className={styles.pendingState}>PENDING</span>
+            </div>
+            <div className={styles.fieldRow}>
+              <span className={styles.fieldNumber}>03</span>
+              <div>
+                <strong>password</strong>
+                <small>from run 02</small>
+              </div>
+              <span className={styles.retainedState}>RETAINED · VALID</span>
+            </div>
+          </div>
+          <div className={styles.trace}>
+            <div>
+              <span>12:04:08.214</span>
+              <p>
+                request #17 <strong>ignored / stale</strong>
+              </p>
+            </div>
+            <div>
+              <span>12:04:08.228</span>
+              <p>
+                previous field state <strong>preserved</strong>
+              </p>
+            </div>
+          </div>
+          <div className={styles.ledgerFooter}>
+            <code>result.isPending('username')</code>
+            <strong>true</strong>
           </div>
         </div>
       </div>

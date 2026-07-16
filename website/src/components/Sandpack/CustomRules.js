@@ -113,7 +113,7 @@ export default function CustomRulesSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'latest',
+            vest: '^6.3.2',
           },
         }}
         options={{

@@ -166,7 +166,7 @@ export default function FocusedUpdatesSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'latest',
+            vest: '^6.3.2',
           },
         }}
         options={{

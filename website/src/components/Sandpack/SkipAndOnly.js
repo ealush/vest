@@ -92,7 +92,7 @@ export default function SkipAndOnlySandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'latest',
+            vest: '^6.3.2',
           },
         }}
         options={{

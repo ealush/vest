@@ -33,7 +33,7 @@ export default function App() {
     setForm(newForm);
     
     // Validate focus field
-    suite.focus({only: name}).run(newForm);
+    suite.only(name).run(newForm);
     setRes(suite.get());
   };
 
@@ -160,7 +160,7 @@ export default function SuiteMethodsSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: 'latest',
+            vest: '^6.3.2',
           },
         }}
         options={{

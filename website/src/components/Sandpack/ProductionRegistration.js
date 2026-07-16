@@ -27,7 +27,7 @@ export default function ProductionRegistrationSandpack() {
           dependencies: {
             '@hookform/resolvers': '^5.4.0',
             'react-hook-form': '^7.81.0',
-            vest: 'latest',
+            vest: '^6.3.2',
             zod: '^4.4.3',
           },
         }}

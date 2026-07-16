@@ -1,7 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
 import Sandpack from './Sandpack';
-import commonStyles from './Common.module.css';
 import styles from './RawExample.module.css';
 
 const SuiteCode = `import { create, test, enforce } from 'vest';
@@ -180,18 +178,15 @@ input:focus {
 
 export default function RawExample() {
   return (
-    <section
-      className={clsx(styles.section, commonStyles.main_section_centered)}
-    >
+    <section className={styles.section}>
       <div className={styles.desc}>
-        <strong>
+        <span className={styles.kicker}>THE SUITE / 02</span>
+        <strong>Rules read like tests. State lives outside the UI.</strong>
+        <p>
           Your suite contains the business rules. Vest manages how their truth
-          changes over time.
-        </strong>
-        <br />
-        The familiar test syntax keeps rules readable and testable while the
-        runtime handles focused execution, retained results, pending work, and
-        stale async responses.
+          changes over time: focused runs, retained results, pending work, and
+          stale async responses.
+        </p>
       </div>
       <div className={styles.codeWindow}>
         <Sandpack
@@ -205,7 +200,7 @@ export default function RawExample() {
           }}
           customSetup={{
             dependencies: {
-              vest: 'latest',
+              vest: '^6.3.2',
             },
           }}
           options={{

@@ -1,14 +1,10 @@
 .section {
   padding: 6rem 1.5rem;
   background:
-    radial-gradient(
-      circle at 12% 22%,
-      rgba(99, 102, 241, 0.12),
-      transparent 30%
-    ),
+    radial-gradient(circle at 12% 22%, rgba(240, 68, 68, 0.1), transparent 30%),
     radial-gradient(
       circle at 90% 70%,
-      rgba(34, 211, 238, 0.1),
+      rgba(240, 68, 68, 0.06),
       transparent 28%
     ),
     #0b1020;
@@ -24,7 +20,7 @@
 .eyebrow,
 .stepLabel {
   margin: 0;
-  color: #8b9cff;
+  color: #ff6868;
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -54,11 +50,11 @@
   margin: 0 auto;
   overflow: hidden;
   border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 24px;
+  border-radius: 0;
   background: #10162a;
   box-shadow:
-    0 32px 90px rgba(0, 0, 0, 0.36),
-    0 0 0 1px rgba(99, 102, 241, 0.08);
+    14px 14px 0 #f04444,
+    0 32px 90px rgba(0, 0, 0, 0.36);
 }
 
 .formPanel,
@@ -78,8 +74,8 @@
   flex-direction: column;
   border-left: 1px solid rgba(148, 163, 184, 0.14);
   background:
-    linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(240, 68, 68, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240, 68, 68, 0.035) 1px, transparent 1px),
     #0d1325;
   background-size: 28px 28px;
 }
@@ -234,9 +230,9 @@
   padding: 0.95rem 1.1rem;
   border: 0;
   border-radius: 11px;
-  background: linear-gradient(115deg, #6366f1, #7c3aed 58%, #c026d3);
+  background: #f04444;
   color: #ffffff;
-  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.24);
+  box-shadow: 0 12px 30px rgba(240, 68, 68, 0.22);
   cursor: pointer;
   font: inherit;
   font-size: 0.88rem;
@@ -249,7 +245,7 @@
 
 .runButton:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 16px 34px rgba(99, 102, 241, 0.32);
+  box-shadow: 0 16px 34px rgba(240, 68, 68, 0.3);
 }
 
 .runButton:disabled {

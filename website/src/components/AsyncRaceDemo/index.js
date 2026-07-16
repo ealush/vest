@@ -139,7 +139,7 @@ export default function AsyncRaceDemo() {
   return (
     <section id="async-race-demo" className={styles.section}>
       <div className={styles.intro}>
-        <p className={styles.eyebrow}>See stateful validation happen</p>
+        <p className={styles.eyebrow}>THE RACE / 01</p>
         <h2>When the network answers in the wrong order</h2>
         <p>
           Three username checks race. Vest applies the current answer, ignores

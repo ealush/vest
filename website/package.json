@@ -5,7 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "build": "docusaurus build",
+    "build": "cd .. && yarn vx build && yarn workspace website docusaurus build",
     "test": "vitest run",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",

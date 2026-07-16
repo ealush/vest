@@ -1,94 +1,125 @@
 .section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6rem 2rem;
-  background-color: var(--ifm-color-emphasis-100);
+  --example-ink: #121212;
+  --example-paper: #f2efe8;
+  --example-red: #f04444;
+  display: grid;
+  grid-template-columns: minmax(240px, 0.55fr) minmax(520px, 1fr);
+  gap: clamp(3rem, 7vw, 7rem);
+  align-items: start;
+  padding: 7rem max(2rem, calc((100vw - 1180px) / 2));
+  border-top: 1px solid var(--example-ink);
+  border-bottom: 1px solid var(--example-ink);
+  background: var(--example-paper);
+  color: var(--example-ink);
 }
 
-.section > * {
-  text-align: left;
+html[data-theme='dark'] .section {
+  --example-ink: #f1eee7;
+  --example-paper: #111111;
 }
 
 .desc {
-  max-width: 450px;
-  font-size: 1.2rem;
-  line-height: 1.6;
-  color: var(--ifm-color-emphasis-800);
+  position: sticky;
+  top: 6rem;
+  max-width: 430px;
+  text-align: left;
+}
+
+.kicker {
+  display: block;
+  margin-bottom: 1.4rem;
+  color: var(--example-red);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+}
+
+.desc strong {
+  display: block;
+  color: var(--example-ink);
+  font-size: clamp(2rem, 3.5vw, 3.25rem);
+  letter-spacing: -0.055em;
+  line-height: 1.02;
+}
+
+.desc p {
+  margin: 1.25rem 0 0;
+  color: color-mix(in srgb, var(--example-ink) 68%, transparent);
+  font-size: 0.98rem;
+  line-height: 1.7;
 }
 
 .codeWindow {
-  margin-left: 4rem;
-  margin-bottom: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.25);
+  min-width: 0;
+  margin: 0 12px 12px 0;
   overflow: hidden;
-  border: 1px solid var(--ifm-color-emphasis-200);
-  background-color: #282a36; /* Dracula background or similar */
-  min-width: 500px;
+  border: 1px solid #242424;
+  border-radius: 0;
+  background: #151515;
+  box-shadow: 12px 12px 0 var(--example-red);
 }
 
 .windowHeader {
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: #151515;
 }
 
 .fileName {
   margin-left: auto;
-  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.5);
   font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8rem;
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
+  width: 9px;
+  height: 9px;
+  margin-right: 7px;
   border-radius: 50%;
-  margin-right: 8px;
 }
 
 .red {
-  background-color: #ff5f56;
+  background-color: #f04444;
 }
+
 .yellow {
-  background-color: #ffbd2e;
+  background-color: #eabf45;
 }
+
 .green {
-  background-color: #27c93f;
+  background-color: #58c886;
 }
 
 .codeBlock {
   margin: 0 !important;
   border-radius: 0 !important;
-  box-shadow: none !important;
   background-color: transparent !important;
+  box-shadow: none !important;
   font-size: 0.9rem;
 }
 
 @media screen and (max-width: 966px) {
-  .codeWindow {
-    margin-left: 0;
-    margin-top: 2rem;
-    width: 100%;
-    min-width: auto;
-  }
-
   .section {
-    flex-direction: column;
-    padding: 4rem 1.5rem;
+    grid-template-columns: 1fr;
+    padding: 5rem 1.5rem;
   }
 
   .desc {
-    text-align: left;
+    position: static;
+    max-width: 680px;
   }
 }
 
 @media screen and (max-width: 600px) {
+  .section {
+    padding: 4rem 1rem;
+  }
+
   .codeWindow {
-    display: block; /* Show code on mobile but maybe smaller */
     font-size: 0.8rem;
   }
 }

@@ -44,7 +44,10 @@ export default function App() {
     setForm(newForm);
     
     // Validate
-    suite.focus({only: name}).afterEach((r) => setRes(r)).run(newForm);
+    suite
+      .only(name)
+      .afterEach(() => setRes(suite.get()))
+      .run(newForm);
     
     // Update pending state immediately for UI feedback
     setRes(suite.get());

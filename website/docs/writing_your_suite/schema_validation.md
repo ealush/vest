@@ -104,7 +104,8 @@ The first rule in a chain determines the input type, and the last parser in the 
 With `create(callback, schema)`, TypeScript narrows:
 
 - callback data (`data`) to the schema input shape.
-- `suite.run(...)` / `suite.validate(...)` first argument to the schema input shape.
+- `suite.run(...)` / `suite.runStatic(...)` first argument to the schema input shape.
+- the Standard Schema `~standard.validate(...)` input and output types.
 - field-oriented happy-path APIs (`test`, `optional`, `include`) to schema keys.
 - `result.types.input` and `result.types.output` to schema input/output types.
 

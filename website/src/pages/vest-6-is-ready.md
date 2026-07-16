@@ -78,8 +78,10 @@ const suite = create(data => {
 Vest 6 implements the [Standard Schema](https://github.com/standard-schema/standard-schema) specification. This allows Vest suites to be used directly by other libraries and tools that support this standard, increasing interoperability across the ecosystem.
 
 ```javascript
-const result = await suite.validate(data);
+const result = await suite['~standard'].validate(data);
 ```
+
+Standard Schema consumers normally call this hook automatically. Vest application code should continue to use `suite.run()` for stateful execution and `suite.runStatic()` for independent server execution.
 
 ### Top-Level Memoization
 

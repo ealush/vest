@@ -1,60 +1,74 @@
 ---
 title: Standard Schema Support
 sidebar_label: Standard Schema
-description: Vest implements the Standard Schema specification, allowing seamless integration with libraries like React Hook Form.
-keywords: [Vest, Standard Schema, Validation, React Hook Form, Interoperability]
+description: Use Vest suites with tools that implement the Standard Schema V1 interface.
+keywords: [Vest, Standard Schema, React Hook Form, interoperability]
 ---
 
 # Standard Schema Support
 
-Vest implements the [Standard Schema V1](https://github.com/standard-schema/standard-schema) specification. This makes Vest compatible with the broader ecosystem of validation tools and form libraries that support this standard (like React Hook Form via a standard-schema resolver).
+Vest suites and Enforce rules implement [Standard Schema V1](https://standardschema.dev/). This gives ecosystem tools a vendor-neutral way to call Vest without a Vest-specific adapter.
 
-## Why Standard Schema?
+## React Hook Form
 
-The JavaScript ecosystem has many validation libraries (Zod, Yup, Valibot, etc.). Historically, integrating them with form libraries required specific adapters for each one.
+The official React Hook Form resolver package includes a Standard Schema resolver:
 
-**Standard Schema** solves this by defining a common interface. Because Vest implements this interface, it can "plug and play" with any tool that supports Standard Schema, without needing a dedicated Vest adapter.
-
-## Usage
-
-Both **Suites** and **Enforce Rules** implement the `~standard` interface.
-
-### Using Vest with Libraries
-
-You can pass your suite directly to any library accepting a Standard Schema.
-
-```javascript
-import { create } from 'vest';
-import { useForm } from 'react-hook-form'; // Example
-import { vestResolver } from '@hookform/resolvers/vest'; // Hypothetical or generic standard resolver
-
-const suite = create(() => {
-  /* ... */
-});
-
-// Library usage (conceptual)
-// The library calls suite['~standard'].validate(data) internally
-useForm({
-  resolver: vestResolver(suite), // Or a generic standard-schema resolver
-});
+```shell
+npm install vest react-hook-form @hookform/resolvers
 ```
 
-### Validating Directly
+```tsx
+import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
+import { useForm } from 'react-hook-form';
+import { create, enforce, test } from 'vest';
 
-You can also use the `.validate()` method on the suite, which is an alias for the Standard Schema validation entry point.
+const suite = create(data => {
+  test('email', 'Enter a valid email address', () => {
+    enforce(data.email).isEmail();
+  });
+});
 
-```javascript
-const result = await suite.validate(data);
+function EmailForm() {
+  const form = useForm({
+    resolver: standardSchemaResolver(suite),
+  });
 
-if (result.issues) {
-  // Handle validation errors (Standard Schema format)
-  console.log(result.issues);
-} else {
-  // Valid data
-  console.log(result.value);
+  return (
+    <form onSubmit={form.handleSubmit(console.log)}>
+      <input {...form.register('email')} />
+      <p>{form.formState.errors.email?.message}</p>
+      <button type="submit">Continue</button>
+    </form>
+  );
 }
 ```
 
-:::tip
-Use `suite.validate()` primarily when integrating with third-party libraries (like React Hook Form or Zod resolvers). For direct usage within your application logic, `suite.run()` provides a richer API (`hasErrors`, `isPending`, etc.).
-:::
+The resolver is the simplest path when the form manager should invoke complete validation. To use Vest's progressive runtime during interaction, also run the changed field through the same suite:
+
+```ts
+suite.only('email').run(form.getValues());
+```
+
+See the tested [production architecture](../guides/production-architecture.md) for focused async validation, warnings, conditionals, a replaceable Zod boundary, and a stateless server run. An Enforce schema can own the boundary instead.
+
+## Direct Standard Schema validation
+
+Most application code should pass the suite to a compatible consumer and let that tool invoke the Standard Schema contract. If you are implementing or testing an integration directly, call the contract explicitly:
+
+```ts
+const output = await suite['~standard'].validate(data);
+
+if (output.issues) {
+  console.log(output.issues);
+} else {
+  console.log(output.value);
+}
+```
+
+For normal Vest application code, use `suite.run()` for stateful execution or `suite.runStatic()` for an independent server run. Those are the primary APIs and expose Vest selectors such as `isPending`, `isTested`, `getWarnings`, and group status. `.validate()` exists only for Standard Schema interoperability.
+
+## Enforce rules
+
+Enforce schemas also expose the Standard Schema interface, making them suitable for parsing-oriented integrations that do not need Vest's stateful suite runtime.
+
+Read [Vest, schema validators, and form libraries](../vest_vs_the_rest.md) for guidance on assigning responsibilities between these layers.

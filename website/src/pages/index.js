@@ -1,29 +1,18 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import CodeBlock from '@theme/CodeBlock';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-import Demo from '../components/Demo';
+import AsyncRaceDemo from '../components/AsyncRaceDemo';
 import HomepageFeatures from '../components/HomepageFeatures';
 import RawExample from '../components/RawExample';
-import Typewriter from '../components/Typewriter';
-import { TYPEWRITER_DATA } from '../components/Typewriter/data';
 
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const { siteConfig } = useDocusaurusContext();
   const [copied, setCopied] = useState(false);
   const installCommand = 'npm i vest';
-  const [[prefix, values], setTypewriterData] = useState(TYPEWRITER_DATA[0]);
-
-  useEffect(() => {
-    setTypewriterData(
-      TYPEWRITER_DATA[Math.floor(Math.random() * TYPEWRITER_DATA.length)],
-    );
-  }, []);
 
   const handleCopy = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -33,71 +22,67 @@ function HomepageHeader() {
     }
   };
 
-  const heroCode = `import { create, test, enforce } from 'vest';
-
-const suite = create((data = {}) => {
-  test('username', 'is required', () => {
-    enforce(data.username).isNotBlank();
-  });
-
-  test('username', 'already taken', async () => {
-    await doesUsernameExist(data.username);
-  });
-
-  test('password', 'must be 8+ chars', () => {
-    enforce(data.password).longerThan(7);
-  });
-});
-
-suite.run(formData);`;
+  const handleDemoScroll = () => {
+    document
+      .getElementById('async-race-demo')
+      ?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <header className={clsx('hero', styles.heroBanner)}>
-      <div className={styles.heroGlow} />
+      <img
+        className={styles.heroWatermark}
+        src="/img/logo.svg"
+        alt=""
+        aria-hidden="true"
+      />
       <div className={styles.heroGrid}>
         <div className={styles.heroContent}>
           <div className={styles.heroBrand}>
             <img src="/img/logo.svg" alt="Vest" className={styles.heroLogo} />
-            <span className={styles.heroLogoText}>Vest</span>
+            <span className={styles.heroLogoText}>VEST</span>
+            <span className={styles.heroEdition}>06 / validation runtime</span>
           </div>
-          <p className={styles.heroOverline}>
-            Form validation that feels like writing tests
-          </p>
-          <h1 className="hero__title">
-            <Typewriter
-              prefix={prefix}
-              values={values}
-              highlightClassName={styles.heroHighlight}
-            />
+          <h1 className={clsx('hero__title', styles.heroTitle)}>
+            Validation that
+            <span className={styles.heroHighlight}> remembers.</span>
           </h1>
+          <p className={styles.heroStatement}>
+            Your form changes one field at a time. Its validation should too.
+          </p>
           <p className={clsx('hero__subtitle', styles.heroTagline)}>
-            {siteConfig.tagline}
+            Vest runs the rules that matter now, retains the truth established
+            before, and makes stale async answers irrelevant.
           </p>
           <div className={styles.ctaGroup}>
-            <Link
+            <button
               className={clsx('button button--primary', styles.primaryCta)}
-              to="/docs/get_started"
+              data-adoption-event="run_demo"
+              data-adoption-label="hero_async_race"
+              onClick={handleDemoScroll}
+              type="button"
             >
-              Get started
-            </Link>
+              Run the async race <span aria-hidden="true">↓</span>
+            </button>
             <Link
               className={clsx('button button--secondary', styles.secondaryCta)}
-              to="/docs/api_reference"
+              data-adoption-event="docs_cta"
+              data-adoption-label="hero_get_started"
+              to="/docs/get_started"
             >
-              Explore the API
-            </Link>
-            <Link
-              className={clsx('button', styles.tertiaryCta)}
-              to="/docs/upgrade_guide"
-            >
-              Try Vest v6
+              Read the docs <span aria-hidden="true">→</span>
             </Link>
           </div>
           <div className={styles.installBar}>
+            <span className={styles.prompt} aria-hidden="true">
+              $
+            </span>
             <code className={styles.installCommand}>{installCommand}</code>
             <button
               type="button"
               className={styles.copyPill}
+              data-adoption-event="copy_install"
+              data-adoption-label="hero_npm_install"
               onClick={handleCopy}
             >
               <svg
@@ -129,18 +114,68 @@ suite.run(formData);`;
               <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
           </div>
+          <div className={styles.capabilityRow} aria-label="Core capabilities">
+            <span>01 / focused</span>
+            <span>02 / stateful</span>
+            <span>03 / race-safe</span>
+            <span>04 / full-stack</span>
+          </div>
         </div>
-        <div className={styles.heroPanel}>
-          <div className={styles.panelHeader}>Complex forms, simplified</div>
-          <div className={styles.panelBody}>
-            <CodeBlock language="javascript" className={styles.panelCode}>
-              {heroCode}
-            </CodeBlock>
-            <div className={styles.panelFooter}>
-              <span>Framework agnostic</span>
-              <span className={styles.pulse} />
-              <span>Async ready</span>
+        <div className={styles.ledger} aria-label="A live Vest suite run">
+          <div className={styles.ledgerHeader}>
+            <div>
+              <span className={styles.ledgerKicker}>LIVE SUITE</span>
+              <strong>signup / run 04</strong>
             </div>
+            <span className={styles.runState}>RUNNING</span>
+          </div>
+          <div className={styles.ledgerCommand}>
+            <span aria-hidden="true">›</span>
+            <code>suite.only('username').run(data)</code>
+          </div>
+          <div className={styles.fieldLedger}>
+            <div className={styles.fieldRow}>
+              <span className={styles.fieldNumber}>01</span>
+              <div>
+                <strong>email</strong>
+                <small>from run 03</small>
+              </div>
+              <span className={styles.retainedState}>RETAINED · VALID</span>
+            </div>
+            <div className={clsx(styles.fieldRow, styles.activeField)}>
+              <span className={styles.fieldNumber}>02</span>
+              <div>
+                <strong>username</strong>
+                <small>request #18</small>
+              </div>
+              <span className={styles.pendingState}>PENDING</span>
+            </div>
+            <div className={styles.fieldRow}>
+              <span className={styles.fieldNumber}>03</span>
+              <div>
+                <strong>password</strong>
+                <small>from run 02</small>
+              </div>
+              <span className={styles.retainedState}>RETAINED · VALID</span>
+            </div>
+          </div>
+          <div className={styles.trace}>
+            <div>
+              <span>12:04:08.214</span>
+              <p>
+                request #17 <strong>ignored / stale</strong>
+              </p>
+            </div>
+            <div>
+              <span>12:04:08.228</span>
+              <p>
+                previous field state <strong>preserved</strong>
+              </p>
+            </div>
+          </div>
+          <div className={styles.ledgerFooter}>
+            <code>result.isPending('username')</code>
+            <strong>true</strong>
           </div>
         </div>
       </div>
@@ -152,14 +187,14 @@ export default function Home() {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title} Validations Framework`}
-      description="Vest is a validations framework inspired by the syntax and style of testing libraries."
+      title={`${siteConfig.title}: TypeScript validation-state framework`}
+      description="Validate what changed, retain previous results, and prevent stale async responses with Vest."
     >
       <HomepageHeader />
       <main>
+        <AsyncRaceDemo />
         <RawExample />
         <HomepageFeatures />
-        <Demo />
       </main>
     </Layout>
   );

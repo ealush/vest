@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { create, test, enforce } from '../../vest';
 
@@ -32,6 +32,47 @@ describe('StandardSchemaV1 Adherence', () => {
 
       expect(result).toHaveProperty('value');
       expect(result).not.toHaveProperty('issues');
+    });
+
+    it('should await async tests before returning a Standard Schema result', async () => {
+      const suite = create((data: { username: string }) => {
+        test('username', 'Username is already taken', async () => {
+          await Promise.resolve();
+          enforce(data.username).notEquals('taken');
+        });
+      });
+
+      const result = await suite['~standard'].validate({ username: 'taken' });
+
+      expect(result).toEqual({
+        issues: [
+          {
+            message: 'Username is already taken',
+            path: ['username'],
+          },
+        ],
+      });
+    });
+
+    it('should return parsed output from a schema-backed suite', async () => {
+      const schema = enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+      });
+      const suite = create(() => {}, schema);
+      type StandardTypes = NonNullable<(typeof suite)['~standard']['types']>;
+
+      expectTypeOf<StandardTypes['input']>().toEqualTypeOf<{
+        age: string | number;
+      }>();
+      expectTypeOf<StandardTypes['output']>().toEqualTypeOf<{ age: number }>();
+
+      expect(suite.runStatic({ age: '42' }).run.data.parsed).toEqual({
+        age: 42,
+      });
+
+      const result = await suite['~standard'].validate({ age: '42' });
+
+      expect(result).toEqual({ value: { age: 42 } });
     });
   });
 

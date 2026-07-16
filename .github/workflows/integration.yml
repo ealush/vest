@@ -52,6 +52,14 @@ jobs:
         run: yarn build
       - name: Test
         run: yarn test
+      - name: Test executable documentation and demos
+        run: yarn docs:examples:test
+      - name: Test canonical production example
+        run: yarn example:production:test
+      - name: Typecheck canonical production example
+        run: yarn example:production:typecheck
+      - name: Build canonical production example
+        run: yarn example:production:build
       - name: Format
         run: yarn format
       - name: Lint

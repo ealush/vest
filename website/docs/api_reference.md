@@ -31,6 +31,9 @@ keywords:
     mode,
     hasErrors,
     hasWarnings,
+    getError,
+    getWarning,
+    getMessage,
     getErrors,
     getWarnings,
     hasErrorsByGroup,
@@ -148,9 +151,9 @@ Hydrates the suite with a serialized state.
 - `data`: The serialized state string.
 - [Read more about SSR Hydration](./server_side_validations.md#ssr--hydration)
 
-#### `suite.validate(data)`
+#### `suite['~standard'].validate(data)`
 
-Runs the suite and returns a result compatible with the [Standard Schema](https://github.com/standard-schema/standard-schema) specification.
+Implements the [Standard Schema](https://standardschema.dev/) interoperability contract. Compatible consumers invoke this hook automatically. For application code, use the primary `suite.run(data)` stateful API or `suite.runStatic(data)` stateless API.
 
 - [Read more about Standard Schema Support](./community_resources/standard_schema.md)
 
@@ -271,8 +274,11 @@ After running your suite, the results object is returned. It has the following f
 
 - `hasErrors(fieldName?)`: Returns true if the suite or the provided field has errors.
 - `hasWarnings(fieldName?)`: Returns true if the suite or the provided field has warnings.
-- `getErrors(fieldName?)`: Returns an object with errors in the suite, or an array of objects for a specific field.
-- `getWarnings(fieldName?)`: Returns an object with warnings in the suite, or an array of objects for a specific field.
+- `getError(fieldName?)`: Without a field, returns the first summary object (`{ fieldName, message, groupName }`). With a field, returns that field's first error message string. Returns `undefined` when none exists.
+- `getWarning(fieldName?)`: Without a field, returns the first summary object. With a field, returns that field's first warning message string. Returns `undefined` when none exists.
+- `getMessage(fieldName)`: Returns the field's first error or warning message string, preferring an error when both exist.
+- `getErrors(fieldName?)`: Without a field, returns an object whose keys are field names and values are arrays of message strings. With a field, returns that field's array of error message strings.
+- `getWarnings(fieldName?)`: Without a field, returns an object whose keys are field names and values are arrays of message strings. With a field, returns that field's array of warning message strings.
 - `hasErrorsByGroup(groupName)`: Returns true if the provided group has errors.
 - `hasWarningByGroup(groupName)`: Returns true if the provided group has warnings.
 - `getErrorsByGroup(groupName)`: Returns an object with errors in the provided group.

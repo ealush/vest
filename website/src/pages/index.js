@@ -44,8 +44,8 @@ function HomepageHeader() {
             <span className={styles.heroEdition}>06 / validation runtime</span>
           </div>
           <h1 className={clsx('hero__title', styles.heroTitle)}>
-            Validation that
-            <span className={styles.heroHighlight}> remembers.</span>
+            Validation
+            <span className={styles.heroHighlight}> like unit tests.</span>
           </h1>
           <p className={styles.heroStatement}>
             Your form changes one field at a time. Its validation should too.
@@ -187,7 +187,7 @@ export default function Home() {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title}: Form validation that remembers`}
+      title={`${siteConfig.title}: Form validation written like unit tests`}
       description="Validate what changed, keep previous results, and ignore stale async responses with Vest."
     >
       <HomepageHeader />

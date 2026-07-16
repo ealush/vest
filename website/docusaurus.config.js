@@ -41,7 +41,7 @@ const config = {
   baseUrl: '/',
   favicon: 'favicon.ico',
   title: 'Vest',
-  tagline: 'Form validation that remembers previous runs.',
+  tagline: 'Form validation written like unit tests.',
   url: 'https://vestjs.dev',
   onBrokenLinks: 'throw',
   markdown: {

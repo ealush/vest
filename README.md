@@ -1,4 +1,4 @@
-# Vest — form validation that remembers
+# Vest — form validation written like unit tests
 
 ![Vest](https://cdn.jsdelivr.net/gh/ealush/vest@assets/logo_250.png 'Vest')
 

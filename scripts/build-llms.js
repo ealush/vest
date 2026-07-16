@@ -187,7 +187,7 @@ const sectionOrder = [
 ];
 
 let llmsTxt = `# Vest 6
-> Form validation that remembers previous runs. Vest validates what changed, keeps the other results, and ignores stale async responses.
+> Form validation written like unit tests. Vest validates what changed, keeps the other results, and ignores stale async responses.
 
 - [Full Vest 6 documentation](https://vestjs.dev/llms-full.txt)
 - [Consumer usage guide](https://vestjs.dev/llms-consumer.txt)

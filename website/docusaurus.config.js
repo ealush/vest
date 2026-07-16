@@ -14,6 +14,28 @@ function badgeLink(url, badge, name) {
   </a>`;
 }
 
+function rawProductionExamplePlugin() {
+  return {
+    name: 'raw-production-example',
+    configureWebpack() {
+      return {
+        module: {
+          rules: [
+            {
+              include: path.resolve(
+                __dirname,
+                '../examples/production-registration/src',
+              ),
+              resourceQuery: /raw/,
+              type: 'asset/source',
+            },
+          ],
+        },
+      };
+    },
+  };
+}
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   baseUrl: '/',
@@ -30,6 +52,7 @@ const config = {
     },
   },
   organizationName: 'ealush', // Usually your GitHub org/user name.
+  plugins: [rawProductionExamplePlugin],
   presets: [
     [
       '@docusaurus/preset-classic',

@@ -9,6 +9,8 @@ keywords:
   ]
 ---
 
+import ProductionRegistrationSandpack from '@site/src/components/Sandpack/ProductionRegistration';
+
 # Production Registration Architecture
 
 The canonical example keeps three responsibilities explicit:
@@ -30,6 +32,14 @@ The executable source lives in [`examples/production-registration`](https://gith
 - Zod parses the final API boundary.
 - A runnable Vite page demonstrates the architecture with deterministic local services.
 - Vitest proves focused retention, async race behavior, conditionals, warnings, and server isolation.
+
+## Try the browser workflow
+
+This playground loads the browser files directly from the canonical example—there is no second copy to drift. Try `taken` as the username, correct it before the delayed response returns, switch to a business account, and submit a weak password to see errors, pending state, conditional validation, and warnings interact.
+
+<ProductionRegistrationSandpack />
+
+The server handler and Server Action remain in the standalone project because a browser sandbox cannot faithfully demonstrate request isolation, HTTP failures, or secret handling. Those paths stay covered by the example's Vitest suite.
 
 ## Request flow
 

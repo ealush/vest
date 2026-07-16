@@ -22,7 +22,9 @@ It demonstrates:
 
 - `src/registrationSuite.ts` — progressive business validation.
 - `src/RegistrationForm.tsx` — React values and interactions.
-- `src/main.tsx` — runnable browser entry with deterministic demo services.
+- `src/DemoApp.tsx` — browser demo with deterministic services; embedded
+  directly in the documentation Sandpack.
+- `src/main.tsx` — standalone Vite entry for the same demo app.
 - `src/styles.css` — standalone example presentation.
 - `src/boundarySchema.ts` — Zod input boundary.
 - `src/server.ts` — stateless request handling.

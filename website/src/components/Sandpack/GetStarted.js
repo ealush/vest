@@ -141,7 +141,7 @@ export default function GetStartedSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: '^6.3.2',
+            vest: 'latest',
           },
         }}
         options={{

@@ -160,7 +160,7 @@ export default function SuiteMethodsSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: '^6.3.2',
+            vest: 'latest',
           },
         }}
         options={{

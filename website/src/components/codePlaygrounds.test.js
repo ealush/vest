@@ -90,14 +90,7 @@ describe('interactive code playgrounds', () => {
     expect(valid.isValid()).toBe(true);
   });
 
-  it('keeps Sandpack examples on the current Vest major', () => {
-    const packageJson = JSON.parse(
-      fs.readFileSync(
-        new URL('../../../packages/vest/package.json', import.meta.url),
-        'utf8',
-      ),
-    );
-    const expectedMajor = packageJson.version.split('.')[0];
+  it('keeps Sandpack examples on the latest published Vest release', () => {
     const sandpackDirectory = new URL('./Sandpack/', import.meta.url);
     const sandpackSources = fs
       .readdirSync(sandpackDirectory)
@@ -113,8 +106,7 @@ describe('interactive code playgrounds', () => {
     expect(runnableSources.length).toBeGreaterThan(0);
     runnableSources.forEach(source => {
       const dependencyRange = source.match(/vest: '([^']+)'/)?.[1];
-      expect(dependencyRange).toMatch(new RegExp(`^\\^${expectedMajor}\\.`));
-      expect(source).not.toContain("vest: 'latest'");
+      expect(dependencyRange).toBe('latest');
     });
   });
 

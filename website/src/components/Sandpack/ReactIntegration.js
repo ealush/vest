@@ -191,7 +191,7 @@ export default function ReactIntegrationSandpack() {
         }}
         customSetup={{
           dependencies: {
-            vest: '^6.3.2',
+            vest: 'latest',
           },
         }}
         options={{

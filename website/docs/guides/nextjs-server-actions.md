@@ -10,6 +10,8 @@ A Server Action must validate every request independently. When it returns error
 
 ## Server Action
 
+This example uses a `registrationSuite` created with an Enforce schema, so a successful result contains the parsed input in `result.value`.
+
 ```ts
 'use server';
 
@@ -27,7 +29,7 @@ export async function register(data) {
     };
   }
 
-  await saveAccount(data);
+  await saveAccount(result.value);
   return { ok: true };
 }
 ```
@@ -54,10 +56,10 @@ export function RegistrationForm({ actionState }) {
 }
 ```
 
-Resuming preserves more than an error map: the suite knows which rules passed, failed, or were skipped. The next browser interaction can therefore run one field while retaining trustworthy server conclusions.
+Resuming restores more than an error map: the suite knows which rules passed, failed, or were skipped. The next browser interaction can run one field while keeping the other server results.
 
 ## Add a parsing boundary
 
-Parse untrusted action input before persistence. An Enforce schema can own that contract directly through `.parse()` or as the Vest suite's schema, while the suite applies authoritative business rules with `runStatic()`. Zod, Valibot, or another schema tool can be used instead when the application already standardizes on it.
+Parse action input before saving it. You can use an Enforce schema directly through `.parse()` or attach it to the Vest suite and call `runStatic()`. If the application already uses Zod, Valibot, or another schema tool, it can stay in that role.
 
 The reference implementation is in the [production registration example](./production-architecture.md). See [suite serialization](../suite_serialization.md) for the lower-level API.

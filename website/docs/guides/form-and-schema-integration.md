@@ -1,6 +1,6 @@
 ---
 title: Use Vest with Form and Schema Libraries
-description: Let form managers own inputs while Vest can manage progressive validation state and parse submitted data with Enforce schemas.
+description: Use Vest with a form manager, an Enforce schema, or a schema library you already have.
 keywords: [React Hook Form Vest, Zod Vest, Standard Schema, form integration]
 ---
 
@@ -31,7 +31,7 @@ const form = useForm({
 });
 ```
 
-That resolver is useful for full form-library validation. For Vest's progressive runtime behavior, call focused runs from the relevant field interaction and render the Vest result:
+The resolver covers full-form validation. To validate as the user types or leaves a field, run the relevant field through the same suite and render the Vest result:
 
 ```ts
 async function validateUsername() {
@@ -43,11 +43,13 @@ async function validateUsername() {
 }
 ```
 
-## Boundary option 1: Vest and Enforce
+## Parse with Enforce
 
-Use `enforce.shape` when Vest should own the complete path from untrusted input to progressive business validation:
+Use `enforce.shape` when you want Vest to parse the input as well as run the form's business rules:
 
 ```ts
+import { create, enforce, test } from 'vest';
+
 const registrationSchema = enforce.shape({
   age: enforce.isNumeric().toNumber(),
   email: enforce.isString().trim(),
@@ -63,9 +65,9 @@ const result = await registrationSuite.runStatic(values);
 if (result.isValid()) await api.register(result.value);
 ```
 
-The schema parses and transforms the payload. The suite applies the authoritative business rules, and `result.value` contains the parsed output.
+The schema parses and transforms the payload. The suite runs the remaining rules, and `result.value` contains the parsed output.
 
-## Boundary option 2: Compose with another schema library
+## Keep another schema library
 
 An application that already uses Zod or another schema library can keep it at the boundary:
 
@@ -78,7 +80,7 @@ if (result.isValid()) {
 }
 ```
 
-This is deliberate overlap: Zod parses this particular application's data contract while Vest manages the validation lifecycle and business rules. Enforce could replace Zod here when a single Vest-native schema and runtime are preferred.
+Here Zod parses the application's data contract and Vest handles validation during interaction. You can replace Zod with Enforce if you would rather keep both jobs in Vest.
 
 See the complete [production architecture](./production-architecture.md), [Standard Schema reference](../community_resources/standard_schema.md), and [tool comparison](../vest_vs_the_rest.md).
 

@@ -108,7 +108,7 @@ html[data-theme='dark'] .heroEdition {
   display: block;
   color: var(--vest-red);
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.76em;
+  font-size: 0.56em;
   font-weight: 500;
   letter-spacing: -0.07em;
 }
@@ -171,9 +171,15 @@ html[data-theme='dark'] .heroTagline {
 }
 
 .secondaryCta {
+  --ifm-button-color: var(--vest-black);
+
   border: 1px solid var(--vest-black);
   border-left: 0;
   background: transparent;
+  color: var(--vest-black);
+}
+
+html[data-theme='dark'] .secondaryCta {
   color: var(--vest-black);
 }
 

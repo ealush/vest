@@ -7,9 +7,9 @@ keywords: [Vest, Tutorial, Stateful Validation, JavaScript, React, Vue, Svelte]
 
 # Getting Started
 
-Vest is a **stateful validation runtime for complex forms and progressive workflows**.
+Vest is a validation library for forms and other flows that change over time.
 
-It validates the field or step changing now, retains trustworthy results from earlier runs, and prevents obsolete asynchronous work from corrupting current validation state.
+It can validate only the field or step that changed, keep the results from earlier runs, and ignore an old async response when a newer one has already finished.
 
 If you know Jest or Mocha, the authoring model will feel familiar: define a suite of named tests and use assertions to express the rules. The test-like syntax makes Vest approachable; its persistent validation runtime is what makes it different.
 
@@ -17,7 +17,7 @@ import GetStartedSandpack from '@site/src/components/Sandpack/GetStarted';
 
 ## The problem Vest solves
 
-Interactive validation is not a one-time parse. A real form unfolds over time:
+Forms are rarely validated just once. While someone fills one out:
 
 1. The user changes one field.
 2. Only the related rules should run.
@@ -26,7 +26,7 @@ Interactive validation is not a one-time parse. A real form unfolds over time:
 5. Async responses may arrive in the wrong order.
 6. The complete workflow still needs one reliable validation result.
 
-Vest owns that process without owning your form values, DOM, or UI components.
+Vest handles the validation state without taking over your values, DOM, or components.
 
 ## Installation
 
@@ -104,7 +104,7 @@ expect(invalid.hasErrors('password')).toBe(true);
 
 The test exercises the same rules as the UI without rendering a component. Interactive application code should still use stateful `run()` so focused results can accumulate over time.
 
-## When Vest is a strong fit
+## When Vest is useful
 
 Use Vest when validation behavior includes:
 
@@ -116,12 +116,12 @@ Use Vest when validation behavior includes:
 - errors, warnings, pending states, and progressive completion;
 - validation shared between browser and server.
 
-For a one-shot API boundary parse, an Enforce schema's `.parse()` API may be all you need. For progressive workflows, the same Enforce schema can be attached to a Vest suite so Vest owns both parsed output and the interactive journey. Zod or another schema library can also be composed at the boundary.
+If you only need to parse an API payload once, an Enforce schema's `.parse()` method may be enough. Attach the same schema to a Vest suite when you also need validation while the user works through a form. You can use Zod or another schema library at the boundary instead if that is already part of your stack.
 
 ## Next steps
 
-- **[Follow the ten-tutorial learning path](./tutorials.md)**: Build from a basic suite through async state, schemas, server validation, and custom rules.
-- **[Understand Vest's living result](./concepts.md)**: Learn the stateful runtime mental model.
+- **[Browse the tutorials](./tutorials.md)**: Start with a basic suite or jump to async checks, schemas, server validation, or custom rules.
+- **[See how Vest handles validation](./concepts.md)**: Understand what the suite remembers between runs.
 - **[Async validation without stale results](./writing_tests/async_tests.md)**: Coordinate overlapping server checks safely.
 - **[Focused updates](./writing_your_suite/focused_updates.md)**: Validate one field, step, or group.
 - **[Dependent fields](./writing_your_suite/including_and_excluding/include.md)**: Rerun related rules together.

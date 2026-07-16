@@ -1,26 +1,26 @@
 ---
 sidebar_position: 2
-title: How Vest Thinks About Validation
-description: Understand Vest as a stateful runtime for validation that unfolds over time.
+title: How Vest Handles Validation
+description: See what a Vest suite remembers between runs and why that matters for interactive forms.
 keywords:
   [Vest, Stateful Validation, Progressive Validation, Validation Suite, Async]
 ---
 
-# How Vest Thinks About Validation
+# How Vest Handles Validation
 
-Vest models validation as an evolving process, not just a function that parses an object once.
+Most validators inspect a value and return an answer. Vest can do that too, but a suite can also keep its result between runs.
 
 A schema validator usually answers:
 
 > Does this value match the required structure right now?
 
-Vest answers a different set of questions:
+An interactive form has a few more questions:
 
-> What changed? Which rules need to run? Which previous results are still trustworthy? Which async result is still current? Is the complete workflow ready to proceed?
+> What changed? Which rules need to run again? Can the other results stay as they are? Is this async response still current? Can the user continue?
 
-This is why Vest is particularly useful for complex forms, onboarding flows, wizards, configuration interfaces, and other progressive workflows.
+Those questions come up in forms, onboarding, checkout flows, settings screens, and anywhere validation happens a little at a time.
 
-## The three layers
+## What a suite gives you
 
 ### 1. Executable business rules
 
@@ -42,9 +42,9 @@ const suite = create(data => {
 
 The familiar syntax is valuable because it gives validation logic a consistent structure. Rules live outside UI components, support multiple tests per field, and can be unit-tested without simulating DOM events.
 
-### 2. A living validation result
+### 2. One result that updates over time
 
-A suite is more than a validation function. It stores the current truth about the workflow.
+A suite keeps the latest result for every test it has seen.
 
 When `suite.run()` executes, Vest:
 
@@ -65,13 +65,13 @@ Username changes
   → ignore an older username request if it finishes late
 ```
 
-This is Vest's central capability: **do the minimum new work without losing the conclusions already earned**.
+The result is still complete even when the latest run only checked one field.
 
 ### 3. Assertions, schemas, and integration
 
 `enforce` provides assertions, schemas, parsing, and custom rules. Vest suites and Enforce rules also implement Standard Schema for interoperability with compatible tools.
 
-Schema validation answers structural questions before behavioral tests run. Stateful suite execution then manages how validation evolves during interaction.
+The schema checks and parses the input. The suite then keeps track of test results as the user interacts with the form.
 
 ## Validation state, not form state
 
@@ -150,7 +150,7 @@ Real workflows are rarely independent field maps. Vest includes primitives for r
 - `each()` tracks dynamic list items with stable keys;
 - warnings provide guidance without blocking completion.
 
-These are workflow concepts, not merely value matchers.
+These tools describe relationships between tests, not just the shape of a value.
 
 ## Errors are not the same as incompleteness
 
@@ -166,12 +166,12 @@ That is different from an active validation error. Vest exposes `isTested`, `isP
 
 Because suites do not depend on UI components, the same validation contract can be used with React, Vue, Svelte, Angular, vanilla JavaScript, or Node.js.
 
-The framework decides when to invoke the suite and how to render it. Vest decides what validation work is relevant and maintains the resulting truth.
+Your framework decides when to run the suite and how to show its result. Vest keeps track of the validation itself.
 
-## The core idea
+## In short
 
-The test-like syntax makes Vest easy to learn. The stateful runtime is why it exists.
+Vest's test-like syntax is familiar, but the state kept by the suite is the important part.
 
-> **Vest validates what changed, remembers what already passed, and prevents stale asynchronous validation results.**
+It lets you validate what changed without forgetting what already passed, and it prevents an old async response from overwriting a newer result.
 
 Continue with [Understanding Vest's State](./understanding_state.md) or see [Vest alongside schema and form libraries](./vest_vs_the_rest.md).

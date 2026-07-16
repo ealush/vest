@@ -1,6 +1,6 @@
 # Vest 6 — Consumer Usage Guide
 
-Vest is a framework-independent, stateful validation runtime for complex forms and progressive workflows.
+Vest is a validation library that keeps test results between runs and does not depend on a UI framework.
 
 Use Vest when validation unfolds over time: only some fields should run, earlier results must remain available, fields depend on one another, or async checks can overlap.
 

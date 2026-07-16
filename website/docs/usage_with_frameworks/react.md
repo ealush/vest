@@ -5,7 +5,7 @@ title: React
 
 # Using Vest with React
 
-Vest integrates seamlessly with React applications, providing powerful validation capabilities for forms and user input. This guide covers common patterns and best practices.
+Vest suites do not depend on React. A component runs the suite when a value changes and renders the result from state. This guide shows the usual patterns.
 
 ## Quick Start
 

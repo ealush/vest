@@ -10,21 +10,21 @@ const FeatureList = [
     emoji: '◎',
     category: 'Focused',
     description:
-      'Validate the active field, step, or group without rerunning unrelated rules or exposing errors for untouched inputs.',
+      'Validate the active field, step, or group without rerunning unrelated rules or showing errors on untouched inputs.',
   },
   {
     title: 'Keep what already passed',
     emoji: '↺',
     category: 'Stateful',
     description:
-      'Vest merges each focused run into a living result, preserving trustworthy validation state from earlier interactions.',
+      'Each focused run updates the same result, so fields you did not run keep their previous status.',
   },
   {
     title: 'Trust the latest response',
     emoji: '⇄',
     category: 'Race-safe',
     description:
-      'Track pending work, cancel obsolete requests, and prevent slow stale responses from replacing the current result.',
+      'Track pending work, cancel old requests, and stop a slow response from replacing the result for the current value.',
   },
   {
     title: 'Model real workflows',
@@ -38,14 +38,14 @@ const FeatureList = [
     emoji: '↗',
     category: 'Full stack',
     description:
-      'Run statelessly on the server, resume validation state in the browser, or share one suite across UI frameworks.',
+      'Run each server request in isolation, restore its result in the browser, and share the same suite across frameworks.',
   },
   {
     title: 'Write rules like tests',
     emoji: '✓',
     category: 'Maintainable',
     description:
-      'Keep business rules outside feature code in readable suites that are straightforward to unit-test and reuse.',
+      'Keep rules in readable suites outside your components, then unit-test and reuse them like any other code.',
   },
 ];
 
@@ -75,14 +75,14 @@ export default function HomepageFeatures() {
       <div className="container">
         <div className={styles.sectionHeader}>
           <p className={styles.sectionEyebrow}>
-            A runtime for validation over time
+            Built for validation over time
           </p>
           <h2 className={styles.sectionTitle}>
-            The complete picture, without repeating all the work
+            Run less. Keep the full result.
           </h2>
           <p className={styles.sectionDescription}>
-            A suite is a living validation result. It knows what ran, what can
-            be retained, what is pending, and which result is still relevant.
+            A suite remembers what ran, what passed, what is pending, and which
+            async response belongs to the current value.
           </p>
         </div>
         <div className={styles.featuresGrid}>
@@ -107,11 +107,11 @@ export default function HomepageFeatures() {
         </div>
         <div className={styles.nextStep}>
           <div>
-            <span className={styles.positioningLabel}>Learn by solving</span>
-            <h3>Start with the validation problem you already have.</h3>
+            <span className={styles.positioningLabel}>Learn Vest</span>
+            <h3>Start with the problem you are trying to solve.</h3>
             <p>
-              Ten practical tutorials move from a first suite to async state,
-              typed schemas, and browser/server continuity.
+              Write a first suite, handle async checks, parse typed input, or
+              share validation between the browser and server.
             </p>
           </div>
           <Link

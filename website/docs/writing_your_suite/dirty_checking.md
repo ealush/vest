@@ -11,7 +11,7 @@ A common challenge in form validation is "noise control." You don't want to scre
 
 Traditionally, libraries use an `isDirty` flag to track if a user has modified a field. Since Vest is **UI-agnostic** (it doesn't touch your DOM or listen to events), it doesn't track "dirty" state for you.
 
-Instead, Vest provides two powerful tools to handle user interaction: **`isTested()`** and **`suite.only()`**.
+Vest provides two tools for this: **`isTested()`** and **`suite.only()`**.
 
 ## 1. `isTested()`: The Vest Alternative to `isDirty`
 

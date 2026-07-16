@@ -43,7 +43,7 @@ function EmailForm() {
 }
 ```
 
-The resolver is the simplest path when the form manager should invoke complete validation. To use Vest's progressive runtime during interaction, also run the changed field through the same suite:
+The resolver is the simplest option when the form manager should validate the whole form. To validate one field during interaction, run that field through the same suite:
 
 ```ts
 suite.only('email').run(form.getValues());

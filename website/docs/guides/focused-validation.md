@@ -1,12 +1,12 @@
 ---
 title: Validate One Field or Step
-description: Run only the validation affected by the current interaction while retaining trustworthy earlier results.
+description: Validate the field or step that changed without losing earlier results.
 keywords: [focused validation, field validation, progressive form, Vest only]
 ---
 
 # Validate One Field or Step
 
-Rerunning an entire form on every interaction wastes work and often exposes errors for untouched fields. Vest lets the UI describe the current validation scope while the suite retains results established by earlier runs.
+Running every rule after each keystroke wastes work and can show errors for fields the user has not touched. With Vest, the UI says what changed and the suite keeps the other results.
 
 ```ts
 const result = signupSuite.only('email').run(formData);
@@ -14,7 +14,7 @@ const result = signupSuite.only('email').run(formData);
 
 Only tests named `email` execute. Passing or failing results for fields such as `username` and `password` remain available.
 
-## Watch the result accumulate
+## The result still contains the other fields
 
 ```ts
 const data = {

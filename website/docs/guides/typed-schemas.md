@@ -1,13 +1,13 @@
 ---
 title: Typed Schemas and Parsed Results
-description: Parse serialized input into typed output while keeping Vest's stateful suite runtime and Standard Schema interoperability.
+description: Parse form input, use the typed value in your suite, and read it from the result.
 keywords:
   [Vest TypeScript schema, parsed validation, Enforce schema, Standard Schema]
 ---
 
 # Typed Schemas and Parsed Results
 
-Interactive validation and structural parsing solve different parts of the same workflow. A Vest suite can accept an Enforce schema as the second argument to `create`, giving the run a typed input, a parsed output, and behavioral tests.
+An Enforce schema can parse the input before the suite's tests run. Pass it as the second argument to `create`; the suite callback receives the parsed type and a successful result exposes the parsed value.
 
 ## Define input and output together
 
@@ -73,8 +73,8 @@ const output = await registrationSuite['~standard'].validate({
 
 Successful Standard Schema output contains the parsed values, so `output.value.age` is a number.
 
-## Assign clear responsibilities
+## Using another schema library
 
-An Enforce schema can be the application's boundary schema. It is also reasonable to use Zod, Valibot, or another schema at an external API boundary while Vest manages progressive interaction. What matters is that the form manager, boundary parser, and validation-state runtime each have an explicit job.
+Enforce can parse your API boundary, but it does not have to. If your application already uses Zod, Valibot, or another schema library there, keep it and use Vest for validation during interaction.
 
 Read [form and schema library integration](./form-and-schema-integration.md), the [Standard Schema reference](../community_resources/standard_schema.md), and the [production registration architecture](./production-architecture.md) for complete compositions.

@@ -88,8 +88,12 @@ html[data-theme='dark'] {
   --vest-shadow-md: 0 22px 60px rgba(0, 0, 0, 0.28);
 }
 
+html[data-theme],
 body {
   background: var(--vest-body-bg-gradient), var(--ifm-background-color);
+}
+
+body {
   color: var(--ifm-font-color-base);
 }
 

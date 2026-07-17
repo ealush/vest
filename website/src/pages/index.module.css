@@ -268,6 +268,9 @@ html[data-theme='dark'] .capabilityRow {
 
 .ledger {
   position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   border: 1px solid #232323;
   background: #151515;
   color: #efede7;
@@ -294,7 +297,7 @@ html[data-theme='dark'] .capabilityRow {
   border-bottom: 1px solid #333;
 }
 
-.ledgerHeader > div {
+.ledgerMeta {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -311,29 +314,54 @@ html[data-theme='dark'] .capabilityRow {
   letter-spacing: 0.14em;
 }
 
-.runState {
-  color: #ff6868;
-  font-size: 0.65rem;
+.ledgerTabs {
+  display: flex;
+  border: 1px solid #444;
+}
+
+.ledgerTab {
+  min-width: 58px;
+  padding: 0.42rem 0.55rem;
+  border: 0;
+  background: transparent;
+  color: #777;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.58rem;
   font-weight: 800;
   letter-spacing: 0.08em;
 }
 
-.runState::before {
-  display: inline-block;
-  width: 0.45rem;
-  height: 0.45rem;
-  margin-right: 0.45rem;
-  border-radius: 50%;
-  background: #ff5454;
-  box-shadow: 0 0 0 4px rgba(255, 84, 84, 0.12);
-  content: '';
-  animation: blink 1.5s ease-in-out infinite;
+.ledgerTab + .ledgerTab {
+  border-left: 1px solid #444;
 }
 
-@keyframes blink {
-  50% {
-    opacity: 0.4;
-  }
+.ledgerTab:hover {
+  color: #efede7;
+}
+
+.ledgerTab[aria-selected='true'] {
+  background: #efede7;
+  color: #151515;
+}
+
+.ledgerTab:first-child[aria-selected='true']::before {
+  display: inline-block;
+  width: 0.38rem;
+  height: 0.38rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: #f04444;
+  content: '';
+}
+
+.ledgerTab:focus-visible {
+  outline: 2px solid #ff6868;
+  outline-offset: 2px;
+}
+
+.ledgerPanel {
+  min-height: 446px;
 }
 
 .ledgerCommand {
@@ -450,6 +478,75 @@ html[data-theme='dark'] .capabilityRow {
   color: #ff6868;
 }
 
+.codePanel {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  background: #151515;
+}
+
+.ledger .suiteCode {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 1rem 0;
+  overflow-x: auto;
+  border-radius: 0;
+  background: #151515 !important;
+  color: #d4d4d4 !important;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.61rem;
+  line-height: 1.62;
+  text-align: left;
+}
+
+.codeLine {
+  display: grid;
+  grid-template-columns: 56px auto;
+  width: max-content;
+  min-width: 100%;
+  min-height: 1rem;
+  padding-right: 1rem;
+}
+
+.codeLineNumber {
+  margin-right: 0.8rem;
+  padding-right: 0.8rem;
+  border-right: 1px solid #333;
+  color: #555;
+  text-align: right;
+  user-select: none;
+}
+
+.codeNote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 53px;
+  padding: 0.75rem 1.2rem 0.75rem 4.6rem;
+  border-top: 1px solid #333;
+  color: #777;
+  font-size: 0.58rem;
+}
+
+.codeNote > span {
+  color: #ff6868;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.codeNote code {
+  overflow: hidden;
+  background: transparent;
+  color: #b9b9b9;
+  font-size: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media screen and (max-width: 1024px) {
   .heroBanner {
     padding-top: 4.75rem;
@@ -530,10 +627,28 @@ html[data-theme='dark'] .capabilityRow {
   .trace {
     display: none;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .runState::before {
-    animation: none;
+  .ledgerHeader {
+    align-items: center;
+    padding-left: 4rem;
+  }
+
+  .ledgerTab {
+    min-width: 50px;
+    padding-inline: 0.4rem;
+  }
+
+  .ledgerPanel {
+    min-height: 349px;
+  }
+
+  .suiteCode {
+    font-size: 0.54rem;
+  }
+
+  .codeNote {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-left: 4rem;
   }
 }

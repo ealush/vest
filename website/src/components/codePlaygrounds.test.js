@@ -28,6 +28,7 @@ const anyTestRecipeSource = new URL(
 );
 const asyncTestsSource = new URL('./Sandpack/AsyncTests.js', import.meta.url);
 const rawExampleSource = new URL('./RawExample.js', import.meta.url);
+const homepageSource = new URL('../pages/index.js', import.meta.url);
 const anyTestRecipeSuiteCode = readTemplateLiteral(
   anyTestRecipeSource,
   'SuiteCode',
@@ -35,8 +36,9 @@ const anyTestRecipeSuiteCode = readTemplateLiteral(
 const getStartedSuiteCode = readTemplateLiteral(getStartedSource, 'SuiteCode');
 const rawExampleApiCode = readTemplateLiteral(rawExampleSource, 'ApiCode');
 const rawExampleSuiteCode = readTemplateLiteral(rawExampleSource, 'SuiteCode');
+const heroSuiteCode = readTemplateLiteral(homepageSource, 'HeroSuiteCode');
 
-function executeDefaultExport(source, modules) {
+function executeDefaultExport(source, modules, scope = {}) {
   const executable = source
     .replace(
       /import \{ ([^}]+) \} from '([^']+)';/g,
@@ -50,7 +52,10 @@ function executeDefaultExport(source, modules) {
     )
     .replace(/export default ([A-Za-z_$][\w$]*);/, 'return $1;');
 
-  return new Function('modules', executable)(modules);
+  return new Function('modules', ...Object.keys(scope), executable)(
+    modules,
+    ...Object.values(scope),
+  );
 }
 
 function executeNamedFunction(source, functionName) {
@@ -107,6 +112,30 @@ describe('interactive code playgrounds', () => {
     runnableSources.forEach(source => {
       const dependencyRange = source.match(/vest: '([^']+)'/)?.[1];
       expect(dependencyRange).toBe('latest');
+    });
+  });
+
+  it('executes the exact suite shown in the homepage run ledger', async () => {
+    const isUsernameAvailable = vi.fn().mockResolvedValue(true);
+    const suite = executeDefaultExport(
+      heroSuiteCode,
+      { vest },
+      { isUsernameAvailable },
+    );
+
+    suite.only('email').run({ email: 'dev@vestjs.dev' });
+    suite.only('password').run({ password: 'correct horse battery staple' });
+    const usernameRun = suite.only('username').run({ username: 'evyatar' });
+
+    expect(usernameRun.isPending('username')).toBe(true);
+    expect(usernameRun.isValid('email')).toBe(true);
+    expect(usernameRun.isValid('password')).toBe(true);
+
+    await usernameRun;
+
+    expect(suite.isValid()).toBe(true);
+    expect(isUsernameAvailable).toHaveBeenCalledWith('evyatar', {
+      signal: expect.any(AbortSignal),
     });
   });
 

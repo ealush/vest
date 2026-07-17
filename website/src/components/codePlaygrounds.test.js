@@ -28,6 +28,7 @@ const anyTestRecipeSource = new URL(
 );
 const asyncTestsSource = new URL('./Sandpack/AsyncTests.js', import.meta.url);
 const rawExampleSource = new URL('./RawExample.js', import.meta.url);
+const homepageSource = new URL('../pages/index.js', import.meta.url);
 const anyTestRecipeSuiteCode = readTemplateLiteral(
   anyTestRecipeSource,
   'SuiteCode',
@@ -35,8 +36,17 @@ const anyTestRecipeSuiteCode = readTemplateLiteral(
 const getStartedSuiteCode = readTemplateLiteral(getStartedSource, 'SuiteCode');
 const rawExampleApiCode = readTemplateLiteral(rawExampleSource, 'ApiCode');
 const rawExampleSuiteCode = readTemplateLiteral(rawExampleSource, 'SuiteCode');
+const heroSuiteCode = readTemplateLiteral(homepageSource, 'HeroSuiteCode');
 
-function executeDefaultExport(source, modules) {
+function executeDefaultExport(source, modules, scope = {}) {
+  const scopeNames = Object.keys(scope);
+
+  scopeNames.forEach(name => {
+    if (name === 'modules' || !/^[A-Za-z_$][\w$]*$/.test(name)) {
+      throw new Error(`Invalid injected scope name: ${name}`);
+    }
+  });
+
   const executable = source
     .replace(
       /import \{ ([^}]+) \} from '([^']+)';/g,
@@ -50,7 +60,10 @@ function executeDefaultExport(source, modules) {
     )
     .replace(/export default ([A-Za-z_$][\w$]*);/, 'return $1;');
 
-  return new Function('modules', executable)(modules);
+  return new Function('modules', ...scopeNames, executable)(
+    modules,
+    ...scopeNames.map(name => scope[name]),
+  );
 }
 
 function executeNamedFunction(source, functionName) {
@@ -64,6 +77,19 @@ function executeNamedFunction(source, functionName) {
 describe('interactive code playgrounds', () => {
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it('rejects invalid injected scope names', () => {
+    expect(() =>
+      executeDefaultExport('export default true;', {}, { modules: true }),
+    ).toThrow('Invalid injected scope name: modules');
+    expect(() =>
+      executeDefaultExport(
+        'export default true;',
+        {},
+        { 'invalid-name': true },
+      ),
+    ).toThrow('Invalid injected scope name: invalid-name');
   });
 
   it('executes the exact Getting Started Sandpack suite', () => {
@@ -108,6 +134,31 @@ describe('interactive code playgrounds', () => {
       const dependencyRange = source.match(/vest: '([^']+)'/)?.[1];
       expect(dependencyRange).toBe('latest');
     });
+  });
+
+  it('executes the exact suite shown in the homepage run ledger', async () => {
+    const isUsernameAvailable = vi.fn().mockResolvedValue(true);
+    const suite = executeDefaultExport(
+      heroSuiteCode,
+      { vest },
+      { isUsernameAvailable },
+    );
+
+    suite.only('email').run({ email: 'dev@vestjs.dev' });
+    suite.only('password').run({ password: 'correct horse battery staple' });
+    const usernameRun = suite.only('username').run({ username: 'evyatar' });
+
+    expect(usernameRun.isPending('username')).toBe(true);
+    expect(usernameRun.isValid('email')).toBe(true);
+    expect(usernameRun.isValid('password')).toBe(true);
+
+    await usernameRun;
+
+    expect(suite.isValid()).toBe(true);
+    expect(isUsernameAvailable).toHaveBeenCalledWith(
+      'evyatar',
+      expect.any(AbortSignal),
+    );
   });
 
   it('reads async completion state from the suite', () => {

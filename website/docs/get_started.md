@@ -49,7 +49,7 @@ export const signupSuite = create((data = {}) => {
   });
 
   test('username', 'Username is already taken', async ({ signal }) => {
-    const response = await checkUsername(data.username, { signal });
+    const response = await checkUsername(data.username, signal);
     enforce(response.available).isTruthy();
   });
 });

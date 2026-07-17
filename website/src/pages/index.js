@@ -19,7 +19,7 @@ const signupSuite = create(data => {
   });
 
   test('username', 'Username is taken', async ({ signal }) => {
-    const available = await isUsernameAvailable(data.username, { signal });
+    const available = await isUsernameAvailable(data.username, signal);
     enforce(available).isTruthy();
   });
 
@@ -47,6 +47,22 @@ function HomepageHeader() {
     document
       .getElementById('async-race-demo')
       ?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleLedgerTabKeyDown = event => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+
+    event.preventDefault();
+    const views = ['run', 'suite'];
+    const direction = event.key === 'ArrowRight' ? 1 : -1;
+    const currentIndex = views.indexOf(ledgerView);
+    const nextView =
+      views[(currentIndex + direction + views.length) % views.length];
+
+    setLedgerView(nextView);
+    event.currentTarget.parentElement
+      ?.querySelector(`#ledger-${nextView}-tab`)
+      ?.focus();
   };
 
   return (
@@ -161,7 +177,9 @@ function HomepageHeader() {
                 className={styles.ledgerTab}
                 id="ledger-run-tab"
                 onClick={() => setLedgerView('run')}
+                onKeyDown={handleLedgerTabKeyDown}
                 role="tab"
+                tabIndex={ledgerView === 'run' ? 0 : -1}
                 type="button"
               >
                 RUN
@@ -172,7 +190,9 @@ function HomepageHeader() {
                 className={styles.ledgerTab}
                 id="ledger-suite-tab"
                 onClick={() => setLedgerView('suite')}
+                onKeyDown={handleLedgerTabKeyDown}
                 role="tab"
+                tabIndex={ledgerView === 'suite' ? 0 : -1}
                 type="button"
               >
                 SUITE
@@ -185,6 +205,7 @@ function HomepageHeader() {
               className={styles.ledgerPanel}
               id="ledger-run-panel"
               role="tabpanel"
+              tabIndex={0}
             >
               <div className={styles.ledgerCommand}>
                 <span aria-hidden="true">›</span>
@@ -241,6 +262,7 @@ function HomepageHeader() {
               className={clsx(styles.ledgerPanel, styles.codePanel)}
               id="ledger-suite-panel"
               role="tabpanel"
+              tabIndex={0}
             >
               <Highlight
                 code={HeroSuiteCode}
@@ -249,25 +271,29 @@ function HomepageHeader() {
               >
                 {({ getLineProps, getTokenProps, tokens }) => (
                   <pre className={styles.suiteCode}>
-                    {tokens.map((line, lineIndex) => (
-                      <div
-                        key={lineIndex}
-                        {...getLineProps({ line })}
-                        className={styles.codeLine}
-                      >
-                        <span className={styles.codeLineNumber}>
-                          {String(lineIndex + 1).padStart(2, '0')}
-                        </span>
-                        <span>
-                          {line.map((token, tokenIndex) => (
-                            <span
-                              key={tokenIndex}
-                              {...getTokenProps({ token })}
-                            />
-                          ))}
-                        </span>
-                      </div>
-                    ))}
+                    {tokens.map((line, lineIndex) => {
+                      const lineProps = getLineProps({ line });
+
+                      return (
+                        <div
+                          key={lineIndex}
+                          {...lineProps}
+                          className={clsx(lineProps.className, styles.codeLine)}
+                        >
+                          <span className={styles.codeLineNumber}>
+                            {String(lineIndex + 1).padStart(2, '0')}
+                          </span>
+                          <span>
+                            {line.map((token, tokenIndex) => (
+                              <span
+                                key={tokenIndex}
+                                {...getTokenProps({ token })}
+                              />
+                            ))}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </pre>
                 )}
               </Highlight>

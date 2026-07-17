@@ -39,6 +39,14 @@ const rawExampleSuiteCode = readTemplateLiteral(rawExampleSource, 'SuiteCode');
 const heroSuiteCode = readTemplateLiteral(homepageSource, 'HeroSuiteCode');
 
 function executeDefaultExport(source, modules, scope = {}) {
+  const scopeNames = Object.keys(scope);
+
+  scopeNames.forEach(name => {
+    if (name === 'modules' || !/^[A-Za-z_$][\w$]*$/.test(name)) {
+      throw new Error(`Invalid injected scope name: ${name}`);
+    }
+  });
+
   const executable = source
     .replace(
       /import \{ ([^}]+) \} from '([^']+)';/g,
@@ -52,9 +60,9 @@ function executeDefaultExport(source, modules, scope = {}) {
     )
     .replace(/export default ([A-Za-z_$][\w$]*);/, 'return $1;');
 
-  return new Function('modules', ...Object.keys(scope), executable)(
+  return new Function('modules', ...scopeNames, executable)(
     modules,
-    ...Object.values(scope),
+    ...scopeNames.map(name => scope[name]),
   );
 }
 
@@ -69,6 +77,19 @@ function executeNamedFunction(source, functionName) {
 describe('interactive code playgrounds', () => {
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it('rejects invalid injected scope names', () => {
+    expect(() =>
+      executeDefaultExport('export default true;', {}, { modules: true }),
+    ).toThrow('Invalid injected scope name: modules');
+    expect(() =>
+      executeDefaultExport(
+        'export default true;',
+        {},
+        { 'invalid-name': true },
+      ),
+    ).toThrow('Invalid injected scope name: invalid-name');
   });
 
   it('executes the exact Getting Started Sandpack suite', () => {
@@ -134,9 +155,10 @@ describe('interactive code playgrounds', () => {
     await usernameRun;
 
     expect(suite.isValid()).toBe(true);
-    expect(isUsernameAvailable).toHaveBeenCalledWith('evyatar', {
-      signal: expect.any(AbortSignal),
-    });
+    expect(isUsernameAvailable).toHaveBeenCalledWith(
+      'evyatar',
+      expect.any(AbortSignal),
+    );
   });
 
   it('reads async completion state from the suite', () => {

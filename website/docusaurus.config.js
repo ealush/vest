@@ -76,6 +76,10 @@ const config = {
             },
           },
         },
+        sitemap: {
+          // Legacy docs remain available for direct links but are not promoted to crawlers.
+          ignorePatterns: ['/docs/4.x/**', '/docs/5.x/**'],
+        },
         pages: {
           path: 'src/pages',
           include: ['**/*.{js,jsx,ts,tsx,md,mdx}'],

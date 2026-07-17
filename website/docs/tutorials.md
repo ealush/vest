@@ -38,4 +38,3 @@ If Vest is new to you, read the first three in order. They introduce suites, foc
 - Open the [complete registration example](./guides/production-architecture.md) for a runnable React application.
 - Read [Vest, schema validators, and form libraries](./vest_vs_the_rest.md) to decide which tool should handle each part of your form.
 - Check [when not to use Vest](./guides/when-not-to-use-vest.md) if your validation is simple or only runs once.
-- Watch or read the [talks and articles behind Vest](./community_resources/talks-and-articles.md) for the reasoning and live demos behind the API.

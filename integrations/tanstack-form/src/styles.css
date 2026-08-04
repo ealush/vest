@@ -1,0 +1,49 @@
+:root {
+  color: #e8eefc;
+  background: #0c1220;
+  font-family: system-ui, sans-serif;
+}
+body {
+  margin: 0;
+}
+main {
+  width: min(620px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0;
+}
+.eyebrow {
+  color: #8eafff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+form,
+label {
+  display: grid;
+  gap: 8px;
+}
+form {
+  gap: 20px;
+  margin-top: 28px;
+}
+input,
+button,
+pre {
+  border: 1px solid #334365;
+  border-radius: 9px;
+  padding: 12px;
+  color: inherit;
+  background: #141d30;
+}
+button {
+  background: #315dbd;
+  cursor: pointer;
+  font-weight: 700;
+}
+span {
+  color: #ff9d9d;
+  font-size: 0.875rem;
+}
+pre {
+  white-space: pre-wrap;
+}

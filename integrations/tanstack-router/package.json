@@ -1,0 +1,25 @@
+{
+  "name": "@vest/integration-tanstack-router",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run --config vitest.config.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "1.170.18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vest": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.37",
+    "@types/react-dom": "^18.0.11",
+    "typescript": "^5.4.5",
+    "vite": "^7.2.2",
+    "vitest": "4.0.18"
+  }
+}

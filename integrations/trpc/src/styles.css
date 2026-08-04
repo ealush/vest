@@ -1,0 +1,28 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+  background: #111827;
+  color: #f9fafb;
+}
+main {
+  display: grid;
+  gap: 1rem;
+  margin: 2rem auto;
+  max-width: 48rem;
+  padding: 1rem;
+}
+textarea,
+pre {
+  min-height: 10rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #1f2937;
+  color: inherit;
+}
+button {
+  width: max-content;
+  padding: 0.7rem 1rem;
+}

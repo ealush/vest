@@ -30,4 +30,10 @@ Vest package version: `6.3.2`
 
 ## Integration inventory
 
-No third-party integration workspace is registered yet. Standard Schema is the first implementation target after this infrastructure slice is reviewed.
+- [x] Standard Schema: local runtime, types, browser demo, and generated website page.
+- [x] TanStack Form: local runtime, types, React demo, and generated website page.
+- [x] Hono: local request tests, types, browser request demo, and generated website page.
+- [x] tRPC: local procedure tests, inferred types, browser caller demo, and generated website page.
+- [x] T3 Env: local configuration tests, inferred transforms, browser parsing demo, and generated website page.
+- [x] TanStack Router: local route tests, inferred search types, browser route demo, and generated website page.
+- [ ] Additional Standard Schema consumer libraries that work without upstream package changes.

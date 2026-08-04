@@ -4531,6 +4531,54 @@ See the [production architecture](https://vestjs.dev/docs/guides/production-arch
 
 <!-- GENERATED FILE. Run yarn integrations:docs; do not edit manually. -->
 
+import HonoIntegration from '@site/src/components/Sandpack/HonoIntegration';
+
+# Vest with Hono
+
+Hono's Standard Validator middleware accepts a Vest suite directly. The local proof executes in-memory requests, rejects invalid JSON before the handler, and passes parsed output to valid handlers.
+
+## Installation
+
+```shell
+npm install vest hono @hono/standard-validator
+```
+
+The compatibility workspace pins Hono 4.13.0; @hono/standard-validator 0.3.0 and imports only public package entry points.
+
+## Runnable demonstration
+
+The playground loads the suite, Enforce schema, consumer normalization function, and React demo directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/hono). Edit the JSON and switch validation surfaces to inspect their normalized Standard Schema results.
+
+<HonoIntegration />
+
+## Tested versions
+
+- Vest 6.3.2
+- Hono 4.13.0; @hono/standard-validator 0.3.0
+
+## Proven capabilities
+
+- asynchronous
+- input inference
+- multiple issues
+- nested paths
+- output inference
+- synchronous
+- transformed output
+
+Runtime tests, compile-time inference tests, and the browser build run through `yarn integrations:verify`.
+
+## Known limitations
+
+- Standard Schema middleware validates complete requests and does not expose Vest stateful interaction features.
+
+## Upstream status
+
+No upstream change has been created. This page and the local workspace are the Vest-owned proof.
+
+
+<!-- GENERATED FILE. Run yarn integrations:docs; do not edit manually. -->
+
 # Ecosystem Integrations
 
 Every listed integration is backed by a private local workspace that imports the real consumer package, runs runtime and type checks, and builds its documented example. An upstream contribution is proposed only after the Vest-side proof is green.
@@ -4539,27 +4587,408 @@ Standard Schema entries prove full-payload interoperability. Focused execution, 
 
 ## Specifications and interoperability
 
-_No local integration has been registered in this category yet._
+| Integration                                           | Status     | Tested versions                         | Mechanism       | Runtime | Types | Demo | Upstream   |
+| ----------------------------------------------------- | ---------- | --------------------------------------- | --------------- | ------- | ----- | ---- | ---------- |
+| [Standard Schema](https://vestjs.dev/docs/integrations/standard-schema) | docs-green | Vest 6.3.2; @standard-schema/spec 1.0.0 | standard-schema | ✅      | ✅    | ✅   | Not opened |
 
 ## Form state and framework forms
 
-_No local integration has been registered in this category yet._
+| Integration                                       | Status     | Tested versions                         | Mechanism       | Runtime | Types | Demo | Upstream   |
+| ------------------------------------------------- | ---------- | --------------------------------------- | --------------- | ------- | ----- | ---- | ---------- |
+| [TanStack Form](https://vestjs.dev/docs/integrations/tanstack-form) | docs-green | Vest 6.3.2; @tanstack/react-form 1.33.3 | standard-schema | ✅      | ✅    | ✅   | Not opened |
 
 ## Server and APIs
 
-_No local integration has been registered in this category yet._
+| Integration                     | Status     | Tested versions                                         | Mechanism       | Runtime | Types | Demo | Upstream   |
+| ------------------------------- | ---------- | ------------------------------------------------------- | --------------- | ------- | ----- | ---- | ---------- |
+| [Hono](https://vestjs.dev/docs/integrations/hono) | docs-green | Vest 6.3.2; Hono 4.13.0; @hono/standard-validator 0.3.0 | standard-schema | ✅      | ✅    | ✅   | Not opened |
+| [tRPC](https://vestjs.dev/docs/integrations/trpc) | docs-green | Vest 6.3.2; @trpc/server 11.18.0                        | standard-schema | ✅      | ✅    | ✅   | Not opened |
 
 ## Routers and actions
 
-_No local integration has been registered in this category yet._
+| Integration                                           | Status     | Tested versions                             | Mechanism       | Runtime | Types | Demo | Upstream   |
+| ----------------------------------------------------- | ---------- | ------------------------------------------- | --------------- | ------- | ----- | ---- | ---------- |
+| [TanStack Router](https://vestjs.dev/docs/integrations/tanstack-router) | docs-green | Vest 6.3.2; @tanstack/react-router 1.170.18 | standard-schema | ✅      | ✅    | ✅   | Not opened |
 
 ## Configuration
 
-_No local integration has been registered in this category yet._
+| Integration                         | Status     | Tested versions                      | Mechanism       | Runtime | Types | Demo | Upstream   |
+| ----------------------------------- | ---------- | ------------------------------------ | --------------- | ------- | ----- | ---- | ---------- |
+| [T3 Env](https://vestjs.dev/docs/integrations/t3-env) | docs-green | Vest 6.3.2; @t3-oss/env-core 0.13.11 | standard-schema | ✅      | ✅    | ✅   | Not opened |
 
 ## Data and transport
 
 _No local integration has been registered in this category yet._
+
+
+<!-- GENERATED FILE. Run yarn integrations:docs; do not edit manually. -->
+
+# Vest with Standard Schema
+
+Standard Schema lets validation consumers invoke a Vest suite or an Enforce schema through a shared interface. This integration uses full-payload Standard Schema validation; it does not substitute for Vest's native focused, retained-state workflow APIs.
+
+## Installation
+
+```shell
+npm install vest
+```
+
+The compatibility workspace pins @standard-schema/spec 1.0.0 and imports only public package entry points.
+
+## Implementation example
+
+This source is exercised by the runtime and compile-time checks in the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/standard-schema).
+
+```ts
+import { create, enforce, mode, Modes, test } from 'vest';
+
+export const accountSchema = enforce.shape({
+  email: enforce.isString().trim().toLower(),
+  profile: enforce.shape({
+    age: enforce.isNumeric().toNumber(),
+    name: enforce.isString().trim(),
+  }),
+});
+
+export type AccountInput = Parameters<typeof accountSchema.parse>[0];
+export type AccountOutput = ReturnType<typeof accountSchema.parse>;
+
+export const accountSuite = create(data => {
+  mode(Modes.ALL);
+  test('profile.name', 'Name must contain at least 2 characters', () => {
+    enforce(data.profile.name.trim()).longerThanOrEquals(2);
+  });
+  test('email', 'Email must contain an @ sign', () => {
+    enforce(data.email.trim().toLowerCase()).matches(/@/);
+  });
+  test('email', 'Email must use the example.com domain', () => {
+    enforce(data.email.trim().toLowerCase()).endsWith('@example.com');
+  });
+}, accountSchema);
+
+export const usernameSchema = enforce.shape({
+  username: enforce.isString().trim(),
+});
+
+export type UsernameInput = Parameters<typeof usernameSchema.parse>[0];
+export type UsernameOutput = ReturnType<typeof usernameSchema.parse>;
+
+export function createUsernameSuite(
+  isAvailable: (username: string) => Promise<boolean>,
+) {
+  return create(data => {
+    test('username', 'Username is already taken', async () => {
+      enforce(await isAvailable(data.username)).isTruthy();
+    });
+  }, usernameSchema);
+}
+```
+
+## Tested versions
+
+- Vest 6.3.2
+- @standard-schema/spec 1.0.0
+
+## Proven capabilities
+
+- asynchronous
+- input inference
+- multiple issues
+- nested paths
+- output inference
+- synchronous
+- transformed output
+
+Runtime tests, compile-time inference tests, and the browser build run through `yarn integrations:verify`.
+
+## Known limitations
+
+- Standard Schema runs complete validation and does not expose focused execution, retained state, warnings, groups, or race coordination.
+- Enforce schemas identify their Standard Schema vendor as n4s; Vest suites identify their vendor as vest.
+
+## Upstream status
+
+No upstream change has been created. This page and the local workspace are the Vest-owned proof.
+
+
+<!-- GENERATED FILE. Run yarn integrations:docs; do not edit manually. -->
+
+# Vest with T3 Env
+
+T3 Env accepts Standard Schema validators for individual environment variables. Vest's Enforce schemas validate server and client configuration and return parsed values such as a numeric port.
+
+## Installation
+
+```shell
+npm install vest @t3-oss/env-core
+```
+
+The compatibility workspace pins @t3-oss/env-core 0.13.11 and imports only public package entry points.
+
+## Implementation example
+
+This source is exercised by the runtime and compile-time checks in the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/t3-env).
+
+```ts
+import { createEnv } from '@t3-oss/env-core';
+import { enforce } from 'vest';
+import 'vest/isURL';
+
+export function parseEnvironment(
+  runtimeEnv: Record<string, string | undefined>,
+) {
+  return createEnv({
+    client: {
+      PUBLIC_APP_NAME: enforce.isString().trim(),
+    },
+    clientPrefix: 'PUBLIC_',
+    emptyStringAsUndefined: true,
+    isServer: true,
+    onValidationError: issues => {
+      throw new Error('Invalid environment', { cause: issues });
+    },
+    runtimeEnv,
+    server: {
+      API_URL: enforce.isURL(),
+      PORT: enforce.isNumeric().toNumber(),
+    },
+  });
+}
+
+export function readClientEnvironment(
+  runtimeEnv: Record<string, string | undefined>,
+) {
+  const env = createEnv({
+    client: { PUBLIC_APP_NAME: enforce.isString().trim() },
+    clientPrefix: 'PUBLIC_',
+    isServer: false,
+    runtimeEnv,
+    server: { SECRET: enforce.isString() },
+  });
+
+  return {
+    appName: env.PUBLIC_APP_NAME,
+    readSecret: () => env.SECRET,
+  };
+}
+```
+
+## Tested versions
+
+- Vest 6.3.2
+- @t3-oss/env-core 0.13.11
+
+## Proven capabilities
+
+- input inference
+- multiple issues
+- output inference
+- synchronous
+- transformed output
+
+Runtime tests, compile-time inference tests, and the browser build run through `yarn integrations:verify`.
+
+## Known limitations
+
+- T3 Env validates each variable independently, so Enforce schemas are a more natural fit than a stateful Vest suite.
+- Environment parsing is a one-shot configuration boundary rather than an interactive workflow.
+
+## Upstream status
+
+No upstream change has been created. This page and the local workspace are the Vest-owned proof.
+
+
+<!-- GENERATED FILE. Run yarn integrations:docs; do not edit manually. -->
+
+import TanStackFormIntegration from '@site/src/components/Sandpack/TanStackFormIntegration';
+
+# Vest with TanStack Form
+
+TanStack Form accepts a Vest suite directly as a form-level Standard Schema validator. TanStack owns field state and submission mechanics while Vest validates the complete payload.
+
+## Installation
+
+```shell
+npm install vest @tanstack/react-form
+```
+
+The compatibility workspace pins @tanstack/react-form 1.33.3 and imports only public package entry points.
+
+## Runnable demonstration
+
+The playground loads the suite, Enforce schema, consumer normalization function, and React demo directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-form). Edit the JSON and switch validation surfaces to inspect their normalized Standard Schema results.
+
+<TanStackFormIntegration />
+
+## Tested versions
+
+- Vest 6.3.2
+- @tanstack/react-form 1.33.3
+
+## Proven capabilities
+
+- input inference
+- multiple issues
+- nested paths
+- synchronous
+
+Runtime tests, compile-time inference tests, and the browser build run through `yarn integrations:verify`.
+
+## Known limitations
+
+- Generic Standard Schema validation does not use Vest focused execution or retained state.
+- TanStack Form validates Standard Schema output but does not forward transformed output to the submit callback.
+
+## Upstream status
+
+No upstream change has been created. This page and the local workspace are the Vest-owned proof.
+
+
+<!-- GENERATED FILE. Run yarn integrations:docs; do not edit manually. -->
+
+import TanStackRouterIntegration from '@site/src/components/Sandpack/TanStackRouterIntegration';
+
+# Vest with TanStack Router
+
+TanStack Router accepts a Vest Enforce schema directly as a Standard Schema search-parameter validator. The route rejects invalid URLs and exposes Vest's parsed output as its inferred search type.
+
+## Installation
+
+```shell
+npm install vest @tanstack/react-router
+```
+
+The compatibility workspace pins @tanstack/react-router 1.170.18 and imports only public package entry points.
+
+## Runnable demonstration
+
+The playground loads the suite, Enforce schema, consumer normalization function, and React demo directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-router). Edit the JSON and switch validation surfaces to inspect their normalized Standard Schema results.
+
+<TanStackRouterIntegration />
+
+## Tested versions
+
+- Vest 6.3.2
+- @tanstack/react-router 1.170.18
+
+## Proven capabilities
+
+- input inference
+- output inference
+- synchronous
+- transformed output
+
+Runtime tests, compile-time inference tests, and the browser build run through `yarn integrations:verify`.
+
+## Known limitations
+
+- TanStack Router requires search validation to be synchronous.
+- Search parsing is one-shot boundary validation and does not expose Vest stateful interaction features.
+
+## Upstream status
+
+No upstream change has been created. This page and the local workspace are the Vest-owned proof.
+
+
+<!-- GENERATED FILE. Run yarn integrations:docs; do not edit manually. -->
+
+# Vest with tRPC
+
+tRPC accepts Standard Schema validators in its procedure input parser. This proof uses a real router and in-process caller, so invalid data is rejected before the procedure and Vest's parsed output reaches valid procedures.
+
+## Installation
+
+```shell
+npm install vest @trpc/server
+```
+
+The compatibility workspace pins @trpc/server 11.18.0 and imports only public package entry points.
+
+## Implementation example
+
+This source is exercised by the runtime and compile-time checks in the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/trpc).
+
+```ts
+import { initTRPC, type inferRouterInputs } from '@trpc/server';
+import { create, enforce, test } from 'vest';
+
+const accountSchema = enforce.shape({
+  email: enforce.isString().trim().toLower(),
+  profile: enforce.shape({ age: enforce.isNumeric().toNumber() }),
+});
+
+const usernameSchema = enforce.shape({
+  username: enforce.isString().trim(),
+});
+
+export const accountSuite = create(data => {
+  test('profile.age', 'Must be at least 18', () => {
+    enforce(Number(data.profile.age)).greaterThanOrEquals(18);
+  });
+  test('email', 'Use an example.com email', () => {
+    enforce(data.email.trim().toLowerCase()).endsWith('@example.com');
+  });
+}, accountSchema);
+
+const trpc = initTRPC.create();
+
+export const appRouter = trpc.router({
+  createAccount: trpc.procedure.input(accountSuite).mutation(({ input }) => ({
+    account: input,
+    accepted: true as const,
+  })),
+});
+
+export type AppRouter = typeof appRouter;
+
+export async function createAccount(
+  input: inferRouterInputs<AppRouter>['createAccount'],
+) {
+  return appRouter.createCaller({}).createAccount(input);
+}
+
+export function createAsyncRouter(
+  isAvailable: (username: string) => Promise<boolean>,
+) {
+  const usernameSuite = create(data => {
+    test('username', 'Username is already taken', async () => {
+      enforce(await isAvailable(data.username)).isTruthy();
+    });
+  }, usernameSchema);
+
+  return trpc.router({
+    reserveUsername: trpc.procedure
+      .input(usernameSuite)
+      .mutation(({ input }) => input),
+  });
+}
+```
+
+## Tested versions
+
+- Vest 6.3.2
+- @trpc/server 11.18.0
+
+## Proven capabilities
+
+- asynchronous
+- input inference
+- multiple issues
+- nested paths
+- output inference
+- synchronous
+- transformed output
+
+Runtime tests, compile-time inference tests, and the browser build run through `yarn integrations:verify`.
+
+## Known limitations
+
+- Procedure input parsing validates complete payloads and does not expose Vest stateful interaction features.
+- tRPC wraps Standard Schema failures in a BAD_REQUEST error.
+
+## Upstream status
+
+No upstream change has been created. This page and the local workspace are the Vest-owned proof.
 
 
 import AnyTestRecipeSandpack from '@site/src/components/Sandpack/AnyTestRecipe';

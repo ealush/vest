@@ -1,11 +1,16 @@
-export interface NestedAccountInput {
-  profile: {
-    name: string;
-  };
-  contacts: Array<{
-    email: string;
-  }>;
-}
+import { enforce } from 'vest';
+
+export const nestedAccountSchema = enforce.shape({
+  profile: enforce.shape({ name: enforce.isString().trim() }),
+  contacts: enforce.isArrayOf(
+    enforce.shape({ email: enforce.isString().trim().toLower() }),
+  ),
+});
+
+export type NestedAccountInput = Parameters<
+  typeof nestedAccountSchema.parse
+>[0];
+export type NestedAccountOutput = ReturnType<typeof nestedAccountSchema.parse>;
 
 export const validNestedAccount: NestedAccountInput = {
   profile: { name: 'Ada Lovelace' },

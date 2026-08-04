@@ -1,9 +1,12 @@
 import { create, enforce, test } from 'vest';
 
-export interface AccountInput {
-  email: string;
-  password: string;
-}
+export const accountSchema = enforce.shape({
+  email: enforce.isString().trim().toLower(),
+  password: enforce.isString(),
+});
+
+export type AccountInput = Parameters<typeof accountSchema.parse>[0];
+export type AccountOutput = ReturnType<typeof accountSchema.parse>;
 
 export const validAccount: AccountInput = {
   email: 'dev@example.com',
@@ -16,12 +19,12 @@ export const invalidAccount: AccountInput = {
 };
 
 export function createAccountSuite() {
-  return create((data: AccountInput) => {
+  return create(data => {
     test('email', 'Enter a valid email address', () => {
       enforce(data.email).matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
     });
     test('password', 'Use at least 10 characters', () => {
       enforce(data.password).longerThanOrEquals(10);
     });
-  });
+  }, accountSchema);
 }

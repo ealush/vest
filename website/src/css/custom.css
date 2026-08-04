@@ -74,6 +74,9 @@ html[data-theme='dark'] {
   --ifm-background-surface-color: #151d2e;
   --ifm-font-color-base: #e6e9f4;
   --ifm-heading-color: #f8fafc;
+  --ifm-color-emphasis-600: #aeb8ca;
+  --ifm-color-emphasis-700: #c5cedd;
+  --ifm-color-emphasis-800: #e2e8f0;
   --ifm-navbar-background-color: rgba(15, 23, 42, 0.78);
   --ifm-card-background-color: rgba(22, 30, 46, 0.7);
   --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.15);
@@ -178,6 +181,11 @@ html[data-theme='dark'] .navbar__link:hover,
 html[data-theme='dark'] .navbar__link--active {
   background: rgba(129, 140, 248, 0.12);
   color: #c7d2fe;
+}
+
+html[data-theme='dark'] .navbar__link,
+html[data-theme='dark'] .navbar__title {
+  color: #e2e8f0;
 }
 
 .navbar::before {
@@ -731,6 +739,7 @@ h1 {
 html[data-theme='dark'] [class*='announcementBar'] {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+  color: #f1f5f9;
 }
 
 html[data-theme='dark'] [class*='announcementBar'] a {

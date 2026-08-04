@@ -2,12 +2,7 @@ import React from 'react';
 
 import Sandpack from './index';
 import commonStyles from '../RawExample.module.css';
-import appCode from '../../../../examples/production-registration/src/DemoApp.tsx?raw';
-import boundarySchemaCode from '../../../../examples/production-registration/src/boundarySchema.ts?raw';
-import formCode from '../../../../examples/production-registration/src/RegistrationForm.tsx?raw';
-import suiteCode from '../../../../examples/production-registration/src/registrationSuite.ts?raw';
-import stylesCode from '../../../../examples/production-registration/src/styles.css?raw';
-import typesCode from '../../../../examples/production-registration/src/types.ts?raw';
+import { productionRegistrationFiles } from '../../generated/sandpackSources';
 
 export default function ProductionRegistrationSandpack() {
   return (
@@ -15,14 +10,7 @@ export default function ProductionRegistrationSandpack() {
       <Sandpack
         template="react-ts"
         theme="dark"
-        files={{
-          '/App.tsx': appCode,
-          '/RegistrationForm.tsx': formCode,
-          '/boundarySchema.ts': boundarySchemaCode,
-          '/registrationSuite.ts': suiteCode,
-          '/styles.css': stylesCode,
-          '/types.ts': typesCode,
-        }}
+        files={productionRegistrationFiles}
         customSetup={{
           dependencies: {
             '@hookform/resolvers': '^5.4.0',

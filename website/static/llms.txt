@@ -131,3 +131,6 @@ Vest composes with schema validators and form managers; these categories are not
 - [showcase](https://vestjs.dev/docs/community_resources/showcase)
 - [Standard Schema](https://vestjs.dev/docs/community_resources/standard_schema)
 
+## Integrations
+- [Ecosystem Integrations](https://vestjs.dev/docs/integrations/index)
+

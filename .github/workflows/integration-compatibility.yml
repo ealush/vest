@@ -1,0 +1,32 @@
+name: Integration compatibility
+
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: yarn
+      - name: Install locked dependencies
+        run: yarn install --immutable
+      - name: Build Vest packages
+        run: yarn build
+      - name: Verify ecosystem integrations
+        run: yarn integrations:verify
+      - name: Write compatibility status
+        run: node scripts/integrations/status.js "$RUNNER_TEMP/integration-status.json"
+      - name: Upload compatibility status
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-status
+          path: ${{ runner.temp }}/integration-status.json

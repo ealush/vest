@@ -16,6 +16,12 @@
     "example:production:build": "yarn workspace @vest/example-production-registration build",
     "example:production:test": "yarn workspace @vest/example-production-registration test",
     "example:production:typecheck": "yarn workspace @vest/example-production-registration typecheck",
+    "integrations:test": "node scripts/integrations/run.js test",
+    "integrations:typecheck": "node scripts/integrations/run.js typecheck",
+    "integrations:build": "node scripts/integrations/run.js build",
+    "integrations:verify": "node scripts/integrations/run.js verify",
+    "integrations:docs": "node scripts/integrations/generate-docs.js",
+    "integrations:status": "node scripts/integrations/status.js",
     "docs:examples:test": "yarn workspace vest vitest run src/suite/__tests__/docsExamples.test.ts && yarn workspace website test",
     "ai:eval": "node scripts/score-ai-eval.js",
     "postinstall": "husky install"
@@ -29,6 +35,7 @@
   "workspaces": [
     "website",
     "examples/*",
+    "integrations/*",
     "packages/*",
     "./vx/",
     "./vx/eslint-plugin-vest-internal"

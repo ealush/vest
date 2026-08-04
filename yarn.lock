@@ -4470,7 +4470,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@standard-schema/spec@npm:^1.0.0":
+"@standard-schema/spec@npm:1.0.0, @standard-schema/spec@npm:^1.0.0":
   version: 1.0.0
   resolution: "@standard-schema/spec@npm:1.0.0"
   checksum: 2d7d73a1c9706622750ab06fc40ef7c1d320b52d5e795f8a1c7a77d0d6a9f978705092bc4149327b3cff4c9a14e5b3800d3b00dc945489175a2d3031ded8332a
@@ -5434,6 +5434,17 @@ __metadata:
     vite: ^7.2.2
     vitest: 4.0.18
     zod: ^4.4.3
+  languageName: unknown
+  linkType: soft
+
+"@vest/integration-kit@workspace:integrations/kit":
+  version: 0.0.0-use.local
+  resolution: "@vest/integration-kit@workspace:integrations/kit"
+  dependencies:
+    "@standard-schema/spec": 1.0.0
+    typescript: ^5.4.5
+    vest: "workspace:*"
+    vitest: 4.0.18
   languageName: unknown
   linkType: soft
 

@@ -60,6 +60,16 @@ jobs:
         run: yarn example:production:typecheck
       - name: Build canonical production example
         run: yarn example:production:build
+      - name: Test ecosystem integrations
+        run: yarn integrations:test
+      - name: Typecheck ecosystem integrations
+        run: yarn integrations:typecheck
+      - name: Build ecosystem demos
+        run: yarn integrations:build
+      - name: Verify generated integration docs
+        run: |
+          yarn integrations:docs
+          git diff --exit-code
       - name: Format
         run: yarn format
       - name: Lint

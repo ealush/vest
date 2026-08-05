@@ -3466,6 +3466,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hono/standard-validator@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@hono/standard-validator@npm:0.3.0"
+  peerDependencies:
+    "@standard-schema/spec": ^1.0.0
+    hono: ">=4.11.2"
+  checksum: 4efc1ad5c6e4026f439f6696061ea3509ab62151d339237ff1bb6c61e8d518f46b95ceb8d25ed6075f1436268442668e642ceb8c6b4b1c079a7e9af75688e27f
+  languageName: node
+  linkType: hard
+
 "@hookform/resolvers@npm:^5.4.0":
   version: 5.4.0
   resolution: "@hookform/resolvers@npm:5.4.0"
@@ -4470,7 +4480,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@standard-schema/spec@npm:^1.0.0":
+"@standard-schema/spec@npm:1.0.0, @standard-schema/spec@npm:^1.0.0":
   version: 1.0.0
   resolution: "@standard-schema/spec@npm:1.0.0"
   checksum: 2d7d73a1c9706622750ab06fc40ef7c1d320b52d5e795f8a1c7a77d0d6a9f978705092bc4149327b3cff4c9a14e5b3800d3b00dc945489175a2d3031ded8332a
@@ -4656,10 +4666,158 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@t3-oss/env-core@npm:0.13.11":
+  version: 0.13.11
+  resolution: "@t3-oss/env-core@npm:0.13.11"
+  peerDependencies:
+    arktype: ^2.1.0
+    typescript: ">=5.0.0"
+    valibot: ^1.0.0-beta.7 || ^1.0.0
+    zod: ^3.24.0 || ^4.0.0
+  peerDependenciesMeta:
+    arktype:
+      optional: true
+    typescript:
+      optional: true
+    valibot:
+      optional: true
+    zod:
+      optional: true
+  checksum: 7017a809d7b822f5d86dabee9f75b655face148575abb0c45b8a10d15120dee7c2bb15c8ab4f0b3c90f20edda2deda61f7a5a1f38cb13d67b398c38e64f15e24
+  languageName: node
+  linkType: hard
+
+"@tanstack/devtools-event-client@npm:^0.4.1":
+  version: 0.4.4
+  resolution: "@tanstack/devtools-event-client@npm:0.4.4"
+  bin:
+    intent: ./bin/intent.js
+  checksum: 4c32acf10812cdc9ac873aa15043f5eb8b109e659b39524843cd6330f42a7d82ad22826c6f3c931642d9e4dd96f600264c0c44cee021e60be1b22a8361a6141e
+  languageName: node
+  linkType: hard
+
+"@tanstack/form-core@npm:1.33.3":
+  version: 1.33.3
+  resolution: "@tanstack/form-core@npm:1.33.3"
+  dependencies:
+    "@tanstack/devtools-event-client": ^0.4.1
+    "@tanstack/pacer-lite": ^0.1.1
+    "@tanstack/store": ^0.11.0
+  checksum: ff732aa23a4af44cde8d9f74a5f23f10d034711e9aa4e53cb77d549ed5b06036b605be2a9ad43a778d7261d9d4cbf66966d035700b64780280ad8fd197da1712
+  languageName: node
+  linkType: hard
+
+"@tanstack/history@npm:1.162.0":
+  version: 1.162.0
+  resolution: "@tanstack/history@npm:1.162.0"
+  checksum: 6e5ae8e629a3bfdd8c219b2fda3537d80d55e1f1d1b0d437711dbabcbe20f6717faac53f6b51f07bddd0e37a6b166a9ad92b77560b08614dda9fbe7a18b3c966
+  languageName: node
+  linkType: hard
+
+"@tanstack/pacer-lite@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@tanstack/pacer-lite@npm:0.1.1"
+  checksum: b9cebb813d0c3f755df2437ae8e7080489166282236971734dde33b86f0697ed77325ebf49a7c4a962a09368f719c0c1ee8c872f00bdf6e218b4752028fb57c4
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-form@npm:1.33.3":
+  version: 1.33.3
+  resolution: "@tanstack/react-form@npm:1.33.3"
+  dependencies:
+    "@tanstack/form-core": 1.33.3
+    "@tanstack/react-store": ^0.11.0
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@tanstack/react-start":
+      optional: true
+  checksum: c982c82420b5162bd35aad3081907f07e49741f3d2ffb832fa5e2c2cc0e71586326d288e921e6dd0c3414fac1b1799a4328d9d38436cda99717c715a5a2ac769
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-router@npm:1.170.18":
+  version: 1.170.18
+  resolution: "@tanstack/react-router@npm:1.170.18"
+  dependencies:
+    "@tanstack/history": 1.162.0
+    "@tanstack/react-store": ^0.9.3
+    "@tanstack/router-core": 1.171.15
+    isbot: ^5.1.22
+  peerDependencies:
+    react: ">=18.0.0 || >=19.0.0"
+    react-dom: ">=18.0.0 || >=19.0.0"
+  checksum: 3d759d466e3c10a6c04d43e75454ec0a9a234ae89d0d5e21e7e80630e9d706ed3b0d25315dfd4b94de08b47beaa6044c213f6b79efbe7afa1adb74463f0f7389
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-store@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@tanstack/react-store@npm:0.11.0"
+  dependencies:
+    "@tanstack/store": 0.11.0
+    use-sync-external-store: ^1.6.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 2b73cc857b11f790bcb68f6230053a601bf426f3a590a0d73e4d2a096ce750246e04d49ecfb7e756f1a20e8337eb40ecfb90c1bcc20427df199a2f3eda366b91
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-store@npm:^0.9.3":
+  version: 0.9.3
+  resolution: "@tanstack/react-store@npm:0.9.3"
+  dependencies:
+    "@tanstack/store": 0.9.3
+    use-sync-external-store: ^1.6.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 6271c1826d861bf99a0207e51f332bafac046725f4ccfd2861e1986ac891ead3a3567797ef6e415ca7ebd712cc0e6bdc1e972bb444cb03bef77a08fd6ca886bb
+  languageName: node
+  linkType: hard
+
+"@tanstack/router-core@npm:1.171.15":
+  version: 1.171.15
+  resolution: "@tanstack/router-core@npm:1.171.15"
+  dependencies:
+    "@tanstack/history": 1.162.0
+    cookie-es: ^3.0.0
+    seroval: ^1.5.4
+    seroval-plugins: ^1.5.4
+  checksum: f3dd65a355552ccb6913497387d08eb14e7f7d6bb0e7f5e7920a9a285f7200c9ac1efdc41bb481e71f6a8f5fa837b486e5af44d6156e38ac1f6df47e64efe1fb
+  languageName: node
+  linkType: hard
+
+"@tanstack/store@npm:0.11.0, @tanstack/store@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@tanstack/store@npm:0.11.0"
+  checksum: e59a290f64e7d81f1af9cf7e5a6da3d3a6b6fd17c043238a371294f3da6e9c0bf2e847eeec6666ebb02bf855a18fd50f0e94330f1592f4e8764fa5809e6e28b2
+  languageName: node
+  linkType: hard
+
+"@tanstack/store@npm:0.9.3":
+  version: 0.9.3
+  resolution: "@tanstack/store@npm:0.9.3"
+  checksum: cfb047df73beb68c280d9b2f20bedd6d2779ce5a645bdc9cad16383dd87b7574fd2a9c9ccba3799531431574215a0d1d0bd93122006d9cb4eb82ec1f99410798
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
   checksum: ad87447820dd3f24825d2d947ebc03072b20a42bfc96cbafec16bff8bbda6c1a81fcb0be56d5b21968560c5359a0af4038a68ba150c3e1694fe4c109a063bed8
+  languageName: node
+  linkType: hard
+
+"@trpc/server@npm:11.18.0":
+  version: 11.18.0
+  resolution: "@trpc/server@npm:11.18.0"
+  peerDependencies:
+    typescript: ">=5.7.2"
+  bin:
+    intent: bin/intent.js
+  checksum: dcb9ed5a9d0d0eb86e1a2fdceb4848499f9978691806d89038370b047adc9bd0aeaf0956e836fb399bd4e2ad056b2ff455d22efe9860b29622546fbac97eafc9
   languageName: node
   linkType: hard
 
@@ -5434,6 +5592,116 @@ __metadata:
     vite: ^7.2.2
     vitest: 4.0.18
     zod: ^4.4.3
+  languageName: unknown
+  linkType: soft
+
+"@vest/integration-hono@workspace:integrations/hono":
+  version: 0.0.0-use.local
+  resolution: "@vest/integration-hono@workspace:integrations/hono"
+  dependencies:
+    "@hono/standard-validator": 0.3.0
+    "@types/react": ^18.0.37
+    "@types/react-dom": ^18.0.11
+    hono: 4.13.0
+    react: ^18.3.1
+    react-dom: ^18.3.1
+    typescript: ^5.4.5
+    vest: "workspace:*"
+    vite: ^7.2.2
+    vitest: 4.0.18
+  languageName: unknown
+  linkType: soft
+
+"@vest/integration-kit@workspace:*, @vest/integration-kit@workspace:integrations/kit":
+  version: 0.0.0-use.local
+  resolution: "@vest/integration-kit@workspace:integrations/kit"
+  dependencies:
+    "@standard-schema/spec": 1.0.0
+    typescript: ^5.4.5
+    vest: "workspace:*"
+    vitest: 4.0.18
+  languageName: unknown
+  linkType: soft
+
+"@vest/integration-standard-schema@workspace:integrations/standard-schema":
+  version: 0.0.0-use.local
+  resolution: "@vest/integration-standard-schema@workspace:integrations/standard-schema"
+  dependencies:
+    "@standard-schema/spec": 1.0.0
+    "@types/react": ^18.0.37
+    "@types/react-dom": ^18.0.11
+    "@vest/integration-kit": "workspace:*"
+    react: ^18.3.1
+    react-dom: ^18.3.1
+    typescript: ^5.4.5
+    vest: "workspace:*"
+    vite: ^7.2.2
+    vitest: 4.0.18
+  languageName: unknown
+  linkType: soft
+
+"@vest/integration-t3-env@workspace:integrations/t3-env":
+  version: 0.0.0-use.local
+  resolution: "@vest/integration-t3-env@workspace:integrations/t3-env"
+  dependencies:
+    "@t3-oss/env-core": 0.13.11
+    "@types/react": ^18.0.37
+    "@types/react-dom": ^18.0.11
+    react: ^18.3.1
+    react-dom: ^18.3.1
+    typescript: ^5.4.5
+    vest: "workspace:*"
+    vite: ^7.2.2
+    vitest: 4.0.18
+  languageName: unknown
+  linkType: soft
+
+"@vest/integration-tanstack-form@workspace:integrations/tanstack-form":
+  version: 0.0.0-use.local
+  resolution: "@vest/integration-tanstack-form@workspace:integrations/tanstack-form"
+  dependencies:
+    "@tanstack/react-form": 1.33.3
+    "@types/react": ^18.0.37
+    "@types/react-dom": ^18.0.11
+    "@vest/integration-kit": "workspace:*"
+    react: ^18.3.1
+    react-dom: ^18.3.1
+    typescript: ^5.4.5
+    vest: "workspace:*"
+    vite: ^7.2.2
+    vitest: 4.0.18
+  languageName: unknown
+  linkType: soft
+
+"@vest/integration-tanstack-router@workspace:integrations/tanstack-router":
+  version: 0.0.0-use.local
+  resolution: "@vest/integration-tanstack-router@workspace:integrations/tanstack-router"
+  dependencies:
+    "@tanstack/react-router": 1.170.18
+    "@types/react": ^18.0.37
+    "@types/react-dom": ^18.0.11
+    react: ^18.3.1
+    react-dom: ^18.3.1
+    typescript: ^5.4.5
+    vest: "workspace:*"
+    vite: ^7.2.2
+    vitest: 4.0.18
+  languageName: unknown
+  linkType: soft
+
+"@vest/integration-trpc@workspace:integrations/trpc":
+  version: 0.0.0-use.local
+  resolution: "@vest/integration-trpc@workspace:integrations/trpc"
+  dependencies:
+    "@trpc/server": 11.18.0
+    "@types/react": ^18.0.37
+    "@types/react-dom": ^18.0.11
+    react: ^18.3.1
+    react-dom: ^18.3.1
+    typescript: ^5.4.5
+    vest: "workspace:*"
+    vite: ^7.2.2
+    vitest: 4.0.18
   languageName: unknown
   linkType: soft
 
@@ -7157,6 +7425,13 @@ __metadata:
   version: 2.0.0
   resolution: "convert-source-map@npm:2.0.0"
   checksum: 63ae9933be5a2b8d4509daca5124e20c14d023c820258e484e32dc324d34c2754e71297c94a05784064ad27615037ef677e3f0c00469fb55f409d2bb21261035
+  languageName: node
+  linkType: hard
+
+"cookie-es@npm:^3.0.0":
+  version: 3.1.1
+  resolution: "cookie-es@npm:3.1.1"
+  checksum: 2b196bf591a177a3602c26eb5a7253b6e08176262158d02c7dedb30903b7ffda83943b9099c25c739acedfaed143add2a39209522712b59e5b447e28c7c21469
   languageName: node
   linkType: hard
 
@@ -9885,6 +10160,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hono@npm:4.13.0":
+  version: 4.13.0
+  resolution: "hono@npm:4.13.0"
+  checksum: bf0d008334f1daaee0c2c2669e40036c8f32137493c43e93488e78b2314426feb0baf944f45fee20890a7538262deb21c0f6912ad5bb145a6c9a61d0d702f093
+  languageName: node
+  linkType: hard
+
 "hookable@npm:^5.5.3":
   version: 5.5.3
   resolution: "hookable@npm:5.5.3"
@@ -10907,6 +11189,13 @@ __metadata:
   version: 1.0.0
   resolution: "isarray@npm:1.0.0"
   checksum: f032df8e02dce8ec565cf2eb605ea939bdccea528dbcf565cdf92bfa2da9110461159d86a537388ef1acef8815a330642d7885b29010e8f7eac967c9993b65ab
+  languageName: node
+  linkType: hard
+
+"isbot@npm:^5.1.22":
+  version: 5.2.1
+  resolution: "isbot@npm:5.2.1"
+  checksum: 121fde7d26c4692f865603c936cfadc7ff055c4cde326265195ba5d5c0319cca8eadda0b561ec6ee89d9987f27140e57a29297f769b23699e609d55a9fa0035b
   languageName: node
   linkType: hard
 
@@ -15447,6 +15736,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"seroval-plugins@npm:^1.5.4":
+  version: 1.6.2
+  resolution: "seroval-plugins@npm:1.6.2"
+  peerDependencies:
+    seroval: ^1.0
+  checksum: dcd419a1c37286e2f444924ad63552efdef53335fe7e39981a9e121c228ef027468e9f822d74392676d417b58a9939ac0b9953625b20adfb130929d3f221ea56
+  languageName: node
+  linkType: hard
+
+"seroval@npm:^1.5.4":
+  version: 1.6.2
+  resolution: "seroval@npm:1.6.2"
+  checksum: 794a59405ade80a4f4d36ab14ce036099e9f6f95a25a3c237fafed3d085a5c01a1ff14b3bc18f32451865e8de9b8b8520ffdce86f23d4962983656072c9388f6
+  languageName: node
+  linkType: hard
+
 "serve-handler@npm:^6.1.6":
   version: 6.1.6
   resolution: "serve-handler@npm:6.1.6"
@@ -16501,7 +16806,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.21.0":
+"tsx@npm:4.21.0, tsx@npm:^4.21.0":
   version: 4.21.0
   resolution: "tsx@npm:4.21.0"
   dependencies:
@@ -16975,7 +17280,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.4.0":
+"use-sync-external-store@npm:^1.4.0, use-sync-external-store@npm:^1.6.0":
   version: 1.6.0
   resolution: "use-sync-external-store@npm:1.6.0"
   peerDependencies:
@@ -17073,6 +17378,7 @@ __metadata:
     tsc: ^2.0.4
     tsdown: ^0.17.0-beta.5
     tslib: ^2.8.1
+    tsx: 4.21.0
     typescript: ^5.4.5
     vitest: ^4.0.18
     vx: "workspace:*"

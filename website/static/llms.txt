@@ -131,3 +131,12 @@ Vest composes with schema validators and form managers; these categories are not
 - [showcase](https://vestjs.dev/docs/community_resources/showcase)
 - [Standard Schema](https://vestjs.dev/docs/community_resources/standard_schema)
 
+## Integrations
+- [Vest with Hono](https://vestjs.dev/docs/integrations/hono)
+- [Ecosystem Integrations](https://vestjs.dev/docs/integrations/index)
+- [Vest with Standard Schema](https://vestjs.dev/docs/integrations/standard-schema)
+- [Vest with T3 Env](https://vestjs.dev/docs/integrations/t3-env)
+- [Vest with TanStack Form](https://vestjs.dev/docs/integrations/tanstack-form)
+- [Vest with TanStack Router](https://vestjs.dev/docs/integrations/tanstack-router)
+- [Vest with tRPC](https://vestjs.dev/docs/integrations/trpc)
+

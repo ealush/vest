@@ -3476,6 +3476,90 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hookform/resolvers@npm:5.7.1":
+  version: 5.7.1
+  resolution: "@hookform/resolvers@npm:5.7.1"
+  dependencies:
+    "@standard-schema/utils": ^0.3.0
+  peerDependencies:
+    "@sinclair/typebox": ">=0.25.24"
+    "@standard-schema/spec": ^1.0.0
+    "@typeschema/main": ">=0.13.7"
+    "@vinejs/vine": ^2.0.0 || ^3.0.0 || ^4.0.0
+    ajv: ^8.12.0
+    ajv-errors: ^3.0.0
+    ajv-formats: ^2.1.1
+    arktype: ^2.0.0
+    ata-validator: ^1.2.0
+    class-transformer: ">=0.4.0"
+    class-validator: ">=0.12.0"
+    computed-types: ^1.0.0
+    effect: ^3.10.3
+    fluentvalidation-ts: ^3.0.0
+    fp-ts: ^2.7.0
+    io-ts: ^2.0.0
+    joi: ^17.0.0
+    nope-validator: ">=0.12.0"
+    react-hook-form: ^7.55.0
+    superstruct: ">=0.12.0"
+    typanion: ^3.3.2
+    valibot: ">=0.31.0 || ^1.0.0-beta.4 || ^1.0.0-rc"
+    vest: ">=3.0.0"
+    yup: ^1.0.0
+    zod: ^3.25.0 || ^4.0.0
+  peerDependenciesMeta:
+    "@sinclair/typebox":
+      optional: true
+    "@standard-schema/spec":
+      optional: true
+    "@typeschema/main":
+      optional: true
+    "@vinejs/vine":
+      optional: true
+    ajv:
+      optional: true
+    ajv-errors:
+      optional: true
+    ajv-formats:
+      optional: true
+    arktype:
+      optional: true
+    ata-validator:
+      optional: true
+    class-transformer:
+      optional: true
+    class-validator:
+      optional: true
+    computed-types:
+      optional: true
+    effect:
+      optional: true
+    fluentvalidation-ts:
+      optional: true
+    fp-ts:
+      optional: true
+    io-ts:
+      optional: true
+    joi:
+      optional: true
+    nope-validator:
+      optional: true
+    superstruct:
+      optional: true
+    typanion:
+      optional: true
+    valibot:
+      optional: true
+    vest:
+      optional: true
+    yup:
+      optional: true
+    zod:
+      optional: true
+  checksum: c6e325fccf8d8c2ac7cc4e0f1fe7530039d688e39f724e20929e4fc33f48941dce0b4bcfe79bbff2830f983cbfc1d53dfdb09860d51299520c4ee5bfd7d89611
+  languageName: node
+  linkType: hard
+
 "@hookform/resolvers@npm:^5.4.0":
   version: 5.4.0
   resolution: "@hookform/resolvers@npm:5.4.0"
@@ -4484,6 +4568,13 @@ __metadata:
   version: 1.0.0
   resolution: "@standard-schema/spec@npm:1.0.0"
   checksum: 2d7d73a1c9706622750ab06fc40ef7c1d320b52d5e795f8a1c7a77d0d6a9f978705092bc4149327b3cff4c9a14e5b3800d3b00dc945489175a2d3031ded8332a
+  languageName: node
+  linkType: hard
+
+"@standard-schema/spec@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@standard-schema/spec@npm:1.1.0"
+  checksum: 6245ebef5e698bb04752a22e996a7cc40406a404d9f68a9d4e1a7a10f2422da287247508e7b495a2f32bb38f3d57b4daf2c9ab4bf22d9bca13e20a3dc5ec575e
   languageName: node
   linkType: hard
 
@@ -5619,6 +5710,25 @@ __metadata:
     "@standard-schema/spec": 1.0.0
     typescript: ^5.4.5
     vest: "workspace:*"
+    vitest: 4.0.18
+  languageName: unknown
+  linkType: soft
+
+"@vest/integration-react-hook-form@workspace:integrations/react-hook-form":
+  version: 0.0.0-use.local
+  resolution: "@vest/integration-react-hook-form@workspace:integrations/react-hook-form"
+  dependencies:
+    "@hookform/resolvers": 5.7.1
+    "@standard-schema/spec": 1.1.0
+    "@types/react": ^18.0.37
+    "@types/react-dom": ^18.0.11
+    "@vest/integration-kit": "workspace:*"
+    react: ^18.3.1
+    react-dom: ^18.3.1
+    react-hook-form: 7.84.0
+    typescript: ^5.4.5
+    vest: "workspace:*"
+    vite: ^7.2.2
     vitest: 4.0.18
   languageName: unknown
   linkType: soft
@@ -14776,6 +14886,15 @@ __metadata:
     react: ^16.6.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.6.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 2bd080035aa4145761cc08caa2a64f1d8e867ddda71967936b1325f84c5bc7161ac77c1095818952bc5bb09c78ffbd594e7d0508d54255c5bfbc15e3769ef538
+  languageName: node
+  linkType: hard
+
+"react-hook-form@npm:7.84.0":
+  version: 7.84.0
+  resolution: "react-hook-form@npm:7.84.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: f92b5ac5e20d8fc11ebd9f4f9a8d10016a646781c36a74312bcf85351da6e87015b8e79aae53f076736fa06a0031a3a8d2d874ef051b554f9aeb5ebef2b914d6
   languageName: node
   linkType: hard
 

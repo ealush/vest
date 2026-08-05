@@ -19,9 +19,10 @@ Standard Schema entries prove full-payload interoperability. Focused execution, 
 
 ## Form state and framework forms
 
-| Integration                                       | Status     | Tested versions                         | Mechanism            | Runtime | Types | Demo | Upstream   |
-| ------------------------------------------------- | ---------- | --------------------------------------- | -------------------- | ------- | ----- | ---- | ---------- |
-| [TanStack Form](/docs/integrations/tanstack-form) | docs-green | Vest 6.3.2; @tanstack/react-form 1.33.3 | native-plus-standard | ✅      | ✅    | ✅   | Not opened |
+| Integration                                           | Status     | Tested versions                                                  | Mechanism            | Runtime | Types | Demo | Upstream   |
+| ----------------------------------------------------- | ---------- | ---------------------------------------------------------------- | -------------------- | ------- | ----- | ---- | ---------- |
+| [React Hook Form](/docs/integrations/react-hook-form) | docs-green | Vest 6.3.2; react-hook-form 7.84.0 and @hookform/resolvers 5.7.1 | dedicated-adapter    | ✅      | ✅    | ✅   | Not opened |
+| [TanStack Form](/docs/integrations/tanstack-form)     | docs-green | Vest 6.3.2; @tanstack/react-form 1.33.3                          | native-plus-standard | ✅      | ✅    | ✅   | Not opened |
 
 ## Server and APIs
 

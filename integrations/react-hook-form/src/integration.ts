@@ -9,20 +9,24 @@ import type {
 import { vestResolver } from './vestResolver';
 
 export function createRegistrationIntegration() {
+  let isDisposed = false;
   let suite = createRegistrationSuite();
+  let lifecycle = new AbortController();
   let resolver = vestResolver<typeof suite, RegistrationContext>(
     suite,
     registrationSchema,
-    { suiteFactory: createRegistrationSuite },
+    { signal: lifecycle.signal, suiteFactory: createRegistrationSuite },
   );
-  let lifecycle = new AbortController();
 
   const stableResolver: Resolver<
     RegistrationInput,
     RegistrationContext,
     RegistrationOutput
-  > = (values, context, options) =>
-    resolver(
+  > = (values, context, options) => {
+    if (isDisposed) {
+      return { errors: {}, values: values as unknown as RegistrationOutput };
+    }
+    return resolver(
       values,
       context && {
         ...context,
@@ -35,23 +39,31 @@ export function createRegistrationIntegration() {
       },
       options,
     );
+  };
 
-  function replaceSuite() {
+  function reset() {
     lifecycle.abort();
     suite.reset();
+    isDisposed = false;
     lifecycle = new AbortController();
     suite = createRegistrationSuite();
     resolver = vestResolver<typeof suite, RegistrationContext>(
       suite,
       registrationSchema,
-      { suiteFactory: createRegistrationSuite },
+      { signal: lifecycle.signal, suiteFactory: createRegistrationSuite },
     );
   }
 
+  function dispose() {
+    lifecycle.abort();
+    suite.reset();
+    isDisposed = true;
+  }
+
   return {
-    dispose: replaceSuite,
+    dispose,
     getSuite: () => suite,
-    reset: replaceSuite,
+    reset,
     resolver: stableResolver,
   };
 }

@@ -9,12 +9,12 @@ import ReactHookFormIntegration from '@site/src/components/Sandpack/ReactHookFor
 
 # Vest with React Hook Form
 
-This local resolver connects React Hook Form to a stateful Vest 6 suite and returns transformed submission data.
+This repository-local resolver candidate connects React Hook Form to a stateful Vest 6 suite and returns transformed submission data.
 
 ## Installation
 
 ```shell
-npm install vest react-hook-form @hookform/resolvers @standard-schema/spec
+npm install vest react-hook-form @hookform/resolvers @standard-schema/spec # demo dependencies (vestResolver source is repository-local)
 ```
 
 The compatibility workspace pins react-hook-form 7.84.0 and @hookform/resolvers 5.7.1 and imports only public package entry points.

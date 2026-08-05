@@ -29,9 +29,10 @@ export default {
       sourceExport: 'reactHookFormFiles',
       type: 'sandpack',
     },
-    install: 'vest react-hook-form @hookform/resolvers @standard-schema/spec',
+    install:
+      'vest react-hook-form @hookform/resolvers @standard-schema/spec # demo dependencies (vestResolver source is repository-local)',
     purpose:
-      'This local resolver connects React Hook Form to a stateful Vest 6 suite and returns transformed submission data.',
+      'This repository-local resolver candidate connects React Hook Form to a stateful Vest 6 suite and returns transformed submission data.',
   },
   id: 'react-hook-form',
   lastVerified: '2026-08-05',
@@ -43,7 +44,7 @@ export default {
     'When an unrelated invalid field prevents whole-form transformation during a focused run, the resolver preserves the current input; full-form runs still require and return parsed output.',
     'RHF reset and unmount events are not part of the Resolver contract, so the local integration owner aborts and replaces its suite explicitly; asynchronous checks must honor their AbortSignal.',
   ],
-  status: 'docs-green',
+  status: 'local-green',
   strategy: 'dedicated-adapter',
   testedVersions: {
     integration: 'react-hook-form 7.84.0 and @hookform/resolvers 5.7.1',

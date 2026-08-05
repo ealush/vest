@@ -4593,10 +4593,10 @@ Standard Schema entries prove full-payload interoperability. Focused execution, 
 
 ## Form state and framework forms
 
-| Integration                                           | Status     | Tested versions                                                  | Mechanism            | Runtime | Types | Demo | Upstream   |
-| ----------------------------------------------------- | ---------- | ---------------------------------------------------------------- | -------------------- | ------- | ----- | ---- | ---------- |
-| [React Hook Form](https://vestjs.dev/docs/integrations/react-hook-form) | docs-green | Vest 6.3.2; react-hook-form 7.84.0 and @hookform/resolvers 5.7.1 | dedicated-adapter    | ✅      | ✅    | ✅   | Not opened |
-| [TanStack Form](https://vestjs.dev/docs/integrations/tanstack-form)     | docs-green | Vest 6.3.2; @tanstack/react-form 1.33.3                          | native-plus-standard | ✅      | ✅    | ✅   | Not opened |
+| Integration                                           | Status      | Tested versions                                                  | Mechanism            | Runtime | Types | Demo | Upstream   |
+| ----------------------------------------------------- | ----------- | ---------------------------------------------------------------- | -------------------- | ------- | ----- | ---- | ---------- |
+| [React Hook Form](https://vestjs.dev/docs/integrations/react-hook-form) | local-green | Vest 6.3.2; react-hook-form 7.84.0 and @hookform/resolvers 5.7.1 | dedicated-adapter    | ✅      | ✅    | ⏳   | Not opened |
+| [TanStack Form](https://vestjs.dev/docs/integrations/tanstack-form)     | docs-green  | Vest 6.3.2; @tanstack/react-form 1.33.3                          | native-plus-standard | ✅      | ✅    | ✅   | Not opened |
 
 ## Server and APIs
 
@@ -4628,12 +4628,12 @@ import ReactHookFormIntegration from '@site/src/components/Sandpack/ReactHookFor
 
 # Vest with React Hook Form
 
-This local resolver connects React Hook Form to a stateful Vest 6 suite and returns transformed submission data.
+This repository-local resolver candidate connects React Hook Form to a stateful Vest 6 suite and returns transformed submission data.
 
 ## Installation
 
 ```shell
-npm install vest react-hook-form @hookform/resolvers @standard-schema/spec
+npm install vest react-hook-form @hookform/resolvers @standard-schema/spec # demo dependencies (vestResolver source is repository-local)
 ```
 
 The compatibility workspace pins react-hook-form 7.84.0 and @hookform/resolvers 5.7.1 and imports only public package entry points.

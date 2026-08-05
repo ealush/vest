@@ -31,7 +31,7 @@ Vest package version: `6.3.2`
 ## Integration inventory
 
 - [x] Standard Schema: local runtime, types, browser demo, and generated website page.
-- [x] React Hook Form: local Vest 6 resolver candidate, runtime and type contracts, browser demo, and generated website page.
+- [x] React Hook Form: local Vest 6 resolver candidate, runtime and type contracts, browser demo, and generated website page. Status downgraded to `local-green` pending resolution of submit-detection heuristic, split-brain state, lifecycle coupling, and Vest core async settlement issues.
 - [x] TanStack Form: local runtime, types, React demo, and generated website page.
 - [x] Hono: local request tests, types, browser request demo, and generated website page.
 - [x] tRPC: local procedure tests, inferred types, browser caller demo, and generated website page.

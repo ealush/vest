@@ -56,6 +56,7 @@ export type VestResolverOptions<SuiteType extends AnyVestSuite = AnyVestSuite> =
   {
     mode?: 'async' | 'sync';
     raw?: boolean;
+    signal?: AbortSignal;
     suiteFactory: () => SuiteType;
   };
 
@@ -109,6 +110,7 @@ export function vestResolver<SuiteType extends AnyVestSuite, Context = unknown>(
       suite,
       resolverOptions.suiteFactory,
       runRequest,
+      resolverOptions.signal,
     ).then(result =>
       toResolverResult({
         focusedNames,
@@ -134,36 +136,57 @@ function waitForRelevantResult(
   suite: AnyVestSuite,
   suiteFactory: () => AnyVestSuite,
   request: RunRequest,
+  signal?: AbortSignal,
 ): Promise<AnySuiteResult> {
   const selectedSuite = selectSuite(suite, suiteFactory, request);
+
+  if (signal?.aborted) {
+    return Promise.resolve(selectedSuite.get());
+  }
 
   return new Promise((resolve, reject) => {
     let started = false;
     let settled = false;
+
+    const cleanup = () => {
+      settled = true;
+      unsubscribe();
+      signal?.removeEventListener('abort', onAbort);
+    };
+
+    const onAbort = () => {
+      if (!settled) {
+        cleanup();
+        resolve(selectedSuite.get());
+      }
+    };
+
+    signal?.addEventListener('abort', onAbort, { once: true });
+
     const unsubscribe = selectedSuite.subscribe(() => {
-      Promise.resolve().then(checkCurrentResult);
+      if (started && !settled) {
+        Promise.resolve().then(() => {
+          if (
+            !settled &&
+            !hasPendingFields(selectedSuite.get(), request.focusedNames)
+          ) {
+            cleanup();
+            resolve(selectedSuite.get());
+          }
+        });
+      }
     });
 
     try {
       const result = runSuiteInstance(selectedSuite, request);
       started = true;
-      settleIfComplete(result);
+      if (!hasPendingFields(result, request.focusedNames)) {
+        cleanup();
+        resolve(result);
+      }
     } catch (error) {
-      settled = true;
-      unsubscribe();
+      cleanup();
       reject(error);
-    }
-
-    function checkCurrentResult() {
-      if (!started || settled) return;
-      settleIfComplete(selectedSuite.get());
-    }
-
-    function settleIfComplete(result: AnySuiteResult) {
-      if (settled || hasPendingFields(result, request.focusedNames)) return;
-      settled = true;
-      unsubscribe();
-      resolve(result);
     }
   });
 }
@@ -288,7 +311,7 @@ function isFocusedIssue(
   focusedNames: readonly string[],
 ): boolean {
   const path = standardSchemaPath(issue.path);
-  if (path === '__root__') return true;
+  if (!path) return true;
 
   return focusedNames.some(
     name =>
@@ -323,8 +346,7 @@ function parseVestErrors(
   const errors = Object.create(null) as Record<string, FieldError>;
 
   for (const issue of issues) {
-    const path = issue.fieldName;
-    if (!path) continue;
+    const path = issue.fieldName || 'root';
 
     const message =
       typeof issue.message === 'string' ? issue.message : 'Validation failed';
@@ -349,7 +371,7 @@ function parseStandardSchemaIssues(
       errors,
       {
         message: issue.message,
-        path: standardSchemaPath(issue.path),
+        path: standardSchemaPath(issue.path) || 'root',
         type: 'schema',
       },
       validateAllFieldCriteria,
@@ -359,26 +381,34 @@ function parseStandardSchemaIssues(
   return errors;
 }
 
+function appendTypeError(existing: unknown, message: string) {
+  if (typeof existing === 'string') return [existing, message];
+  if (Array.isArray(existing)) return [...existing, message];
+  return message;
+}
+
 function addFieldError(
   errors: Record<string, FieldError>,
   issue: FlatIssue,
   validateAllFieldCriteria: boolean,
 ): void {
-  if (!errors[issue.path]) {
-    errors[issue.path] = { message: issue.message, type: issue.type };
-  }
+  const current = errors[issue.path] ?? {
+    message: issue.message,
+    type: issue.type,
+  };
+  errors[issue.path] = current;
 
-  if (validateAllFieldCriteria) {
-    const types = errors[issue.path].types ?? {};
-    errors[issue.path].types = {
-      ...types,
-      [Object.keys(types).length]: issue.message,
-    };
-  }
+  if (!validateAllFieldCriteria) return;
+
+  const types = current.types ?? {};
+  current.types = {
+    ...types,
+    [issue.type]: appendTypeError(types[issue.type], issue.message),
+  };
 }
 
 function standardSchemaPath(path: StandardSchemaV1.Issue['path']): string {
-  if (!path?.length) return '__root__';
+  if (!path?.length) return '';
 
   return path
     .map(segment =>
@@ -414,29 +444,40 @@ function isPromiseLike<T>(value: unknown): value is PromiseLike<T> {
   );
 }
 
+function isPathMatch(path: string, name: string): boolean {
+  return path === name || path.startsWith(`${name}.`);
+}
+
+function expandMatchingLeaves(
+  name: string,
+  leafPaths: readonly string[],
+): string[] {
+  const matching = leafPaths.filter(path => isPathMatch(path, name));
+  return matching.length ? matching : [name];
+}
+
+function isWholeValueCovered(
+  leafPaths: readonly string[],
+  names: readonly string[],
+): boolean {
+  return leafPaths.every(path => names.some(name => isPathMatch(path, name)));
+}
+
 function getFocusedNames<Input extends FieldValues>(
   values: Input,
   options: ResolverOptions<Input>,
 ): readonly string[] | undefined {
-  const names = options.names?.map(String);
-  if (!names?.length) return undefined;
+  const names = options.names;
+  if (!names || names.length === 0) return undefined;
 
+  const stringNames = names.map(String);
   const leafPaths = collectLeafPaths(values);
-  const coversWholeValue = leafPaths.every(path =>
-    names.some(name => path === name || path.startsWith(`${name}.`)),
-  );
-
-  if (coversWholeValue) return undefined;
+  if (leafPaths.length === 0) return stringNames;
+  if (isWholeValueCovered(leafPaths, stringNames)) return undefined;
 
   return [
     ...new Set(
-      names.flatMap(name => {
-        const matchingLeaves = leafPaths.filter(
-          path => path === name || path.startsWith(`${name}.`),
-        );
-
-        return matchingLeaves.length ? matchingLeaves : name;
-      }),
+      stringNames.flatMap(name => expandMatchingLeaves(name, leafPaths)),
     ),
   ];
 }

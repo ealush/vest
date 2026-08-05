@@ -7,7 +7,7 @@ description: Tested runtime and type compatibility between Vest and tRPC.
 
 # Vest with tRPC
 
-tRPC accepts Standard Schema validators in its procedure input parser. This proof uses a real router and in-process caller, so invalid data is rejected before the procedure and Vest's parsed output reaches valid procedures.
+tRPC accepts Standard Schema validators in its procedure input parser. This example uses a real router and in-process caller, so invalid data is rejected before the procedure and Vest's parsed output reaches valid procedures.
 
 ## Installation
 

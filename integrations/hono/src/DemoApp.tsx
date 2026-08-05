@@ -19,7 +19,9 @@ export default function DemoApp() {
       <p className="eyebrow">Hono request validation</p>
       <h1>Vest with Hono</h1>
       <p>A real in-memory Hono request is validated before its handler runs.</p>
+      <label htmlFor="account-json">Account request JSON</label>
       <textarea
+        id="account-json"
         rows={9}
         value={source}
         onChange={e => setSource(e.target.value)}

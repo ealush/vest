@@ -90,4 +90,4 @@ Runtime tests, compile-time inference tests, and the browser build run through `
 
 ## Upstream status
 
-No upstream change has been created. This page and the local workspace are the Vest-owned proof.
+Tracked in [standard-schema/standard-schema PR](https://github.com/standard-schema/standard-schema/pull/177).

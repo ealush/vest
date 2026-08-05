@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 
-import { registrationSuite, validateRegistrationField } from './suite';
+import { createRegistrationIntegration } from './suite';
 import './styles.css';
 
 function errorMessage(error: unknown) {
@@ -13,10 +13,11 @@ function errorMessage(error: unknown) {
 
 export default function DemoApp() {
   const [submitted, setSubmitted] = useState<string>();
+  const integration = useMemo(createRegistrationIntegration, []);
   const form = useForm({
     defaultValues: { email: '', profile: { name: '' } },
     validators: {
-      onSubmit: registrationSuite,
+      onSubmit: integration.suite,
     },
     onSubmit: ({ value }) => setSubmitted(JSON.stringify(value, null, 2)),
   });
@@ -36,7 +37,7 @@ export default function DemoApp() {
           name="profile.name"
           validators={{
             onChange: ({ value, fieldApi }) =>
-              validateRegistrationField('profile.name', {
+              integration.validateField('profile.name', {
                 ...fieldApi.form.state.values,
                 profile: {
                   ...fieldApi.form.state.values.profile,
@@ -61,7 +62,7 @@ export default function DemoApp() {
           name="email"
           validators={{
             onChange: ({ value, fieldApi }) =>
-              validateRegistrationField('email', {
+              integration.validateField('email', {
                 ...fieldApi.form.state.values,
                 email: value,
               }),

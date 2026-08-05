@@ -5,7 +5,7 @@ Each directory below `integrations/` is a private consumer workspace. It must im
 ## Adding an integration
 
 1. Create a private workspace with `test`, `typecheck`, and `build` scripts.
-2. Record the exact tested versions and honest capability limits in `kit/src/registry.ts`.
+2. Record the exact tested versions, capability limits, documentation, and demo sources in the workspace's `integration.config.ts`.
 3. Run `yarn integrations:verify` and build the website.
 4. Add the first-party page from the same implementation source.
 5. Prepare and locally review an upstream patch.

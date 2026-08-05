@@ -1,9 +1,15 @@
 import { enforce } from 'vest';
 
 export const nestedAccountSchema = enforce.shape({
-  profile: enforce.shape({ name: enforce.isString().trim() }),
+  profile: enforce.shape({ name: enforce.isString().trim().isNotBlank() }),
   contacts: enforce.isArrayOf(
-    enforce.shape({ email: enforce.isString().trim().toLower() }),
+    enforce.shape({
+      email: enforce
+        .isString()
+        .trim()
+        .toLower()
+        .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
+    }),
   ),
 });
 

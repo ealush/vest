@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { validateJson, validators } from './integration';
 import type { ValidationDisplay } from './integration';
@@ -18,9 +18,14 @@ export default function DemoApp() {
     useState<keyof typeof validators>('Vest suite');
   const [source, setSource] = useState(initialJson);
   const [result, setResult] = useState<ValidationDisplay>();
+  const requestId = useRef(0);
 
   async function runValidation() {
-    setResult(await validateJson(validators[validatorName], source));
+    const currentRequest = ++requestId.current;
+    const nextResult = await validateJson(validators[validatorName], source);
+    if (currentRequest === requestId.current) {
+      setResult(nextResult);
+    }
   }
 
   return (

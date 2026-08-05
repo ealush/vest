@@ -9,7 +9,7 @@ import HonoIntegration from '@site/src/components/Sandpack/HonoIntegration';
 
 # Vest with Hono
 
-Hono's Standard Validator middleware accepts a Vest suite directly. The local proof executes in-memory requests, rejects invalid JSON before the handler, and passes parsed output to valid handlers.
+Hono's Standard Validator middleware accepts a Vest suite directly. The local example executes in-memory requests, rejects invalid JSON before the handler, and passes parsed output to valid handlers.
 
 ## Installation
 
@@ -21,7 +21,7 @@ The compatibility workspace pins Hono 4.13.0; @hono/standard-validator 0.3.0 and
 
 ## Runnable demonstration
 
-The playground loads the suite, Enforce schema, consumer normalization function, and React demo directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/hono). Edit the JSON and switch validation surfaces to inspect their normalized Standard Schema results.
+The playground loads its tested source directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/hono). Edit the request JSON and use the file tabs to inspect the middleware, Vest suite, and React client.
 
 <HonoIntegration />
 

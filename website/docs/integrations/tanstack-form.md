@@ -9,7 +9,7 @@ import TanStackFormIntegration from '@site/src/components/Sandpack/TanStackFormI
 
 # Vest with TanStack Form
 
-TanStack Form accepts a Vest suite directly as a form-level Standard Schema validator. TanStack owns field state and submission mechanics while Vest validates the complete payload.
+TanStack Form owns field state while an instance-owned Vest suite provides focused change validation and Standard Schema submission validation.
 
 ## Installation
 
@@ -21,7 +21,7 @@ The compatibility workspace pins @tanstack/react-form 1.33.3 and imports only pu
 
 ## Runnable demonstration
 
-The playground loads the suite, Enforce schema, consumer normalization function, and React demo directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-form). Edit the JSON and switch validation surfaces to inspect their normalized Standard Schema results.
+The playground loads its tested source directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-form). Edit either field and use the file tabs to inspect focused change validation and full-form submission validation.
 
 <TanStackFormIntegration />
 
@@ -32,16 +32,18 @@ The playground loads the suite, Enforce schema, consumer normalization function,
 
 ## Proven capabilities
 
+- focused execution
 - input inference
 - multiple issues
 - nested paths
+- retained state
 - synchronous
 
 Runtime tests, compile-time inference tests, and the browser build run through `yarn integrations:verify`.
 
 ## Known limitations
 
-- Generic Standard Schema validation does not use Vest focused execution or retained state.
+- TanStack Form's generic Standard Schema submission validation does not expose Vest's focused execution or retained state; the field validators use the Suite Object API directly.
 - TanStack Form validates Standard Schema output but does not forward transformed output to the submit callback.
 
 ## Upstream status

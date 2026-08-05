@@ -13,15 +13,15 @@ Standard Schema entries prove full-payload interoperability. Focused execution, 
 
 ## Specifications and interoperability
 
-| Integration                                           | Status     | Tested versions                         | Mechanism       | Runtime | Types | Demo | Upstream   |
-| ----------------------------------------------------- | ---------- | --------------------------------------- | --------------- | ------- | ----- | ---- | ---------- |
-| [Standard Schema](/docs/integrations/standard-schema) | docs-green | Vest 6.3.2; @standard-schema/spec 1.0.0 | standard-schema | ✅      | ✅    | ✅   | Not opened |
+| Integration                                           | Status      | Tested versions                         | Mechanism       | Runtime | Types | Demo | Upstream                                                          |
+| ----------------------------------------------------- | ----------- | --------------------------------------- | --------------- | ------- | ----- | ---- | ----------------------------------------------------------------- |
+| [Standard Schema](/docs/integrations/standard-schema) | upstream-pr | Vest 6.3.2; @standard-schema/spec 1.0.0 | standard-schema | ✅      | ✅    | ✅   | [PR](https://github.com/standard-schema/standard-schema/pull/177) |
 
 ## Form state and framework forms
 
-| Integration                                       | Status     | Tested versions                         | Mechanism       | Runtime | Types | Demo | Upstream   |
-| ------------------------------------------------- | ---------- | --------------------------------------- | --------------- | ------- | ----- | ---- | ---------- |
-| [TanStack Form](/docs/integrations/tanstack-form) | docs-green | Vest 6.3.2; @tanstack/react-form 1.33.3 | standard-schema | ✅      | ✅    | ✅   | Not opened |
+| Integration                                       | Status     | Tested versions                         | Mechanism            | Runtime | Types | Demo | Upstream   |
+| ------------------------------------------------- | ---------- | --------------------------------------- | -------------------- | ------- | ----- | ---- | ---------- |
+| [TanStack Form](/docs/integrations/tanstack-form) | docs-green | Vest 6.3.2; @tanstack/react-form 1.33.3 | native-plus-standard | ✅      | ✅    | ✅   | Not opened |
 
 ## Server and APIs
 

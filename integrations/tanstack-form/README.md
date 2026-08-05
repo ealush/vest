@@ -2,7 +2,7 @@
 
 ## Status
 
-Local implementation, tests, types, demo, and Vest documentation are in progress. No upstream change is planned in this workspace.
+Local implementation, tests, types, demo, and Vest documentation are complete. No upstream change is planned in this workspace.
 
 ## Tested versions
 
@@ -15,7 +15,7 @@ TanStack Form accepts a Vest suite as a form-level Standard Schema validator and
 
 ## What this does not prove
 
-Generic Standard Schema validation does not use Vest focused execution or retained interactive state. TanStack Form currently validates but does not submit Standard Schema transformed output.
+Standard Schema submission validation does not use Vest's focused execution or retained state. The field validators use an instance-owned suite directly, and TanStack Form currently validates but does not submit Standard Schema transformed output.
 
 ## Run locally
 
@@ -23,7 +23,7 @@ Run this workspace's `test`, `typecheck`, `build`, or `dev` script through Yarn.
 
 ## Runtime behavior
 
-Tests cover invalid and valid forms, nested paths, multiple issues, corrected errors, submission, and independent instances.
+Tests cover invalid and valid forms, nested paths, multiple issues, focused retained-state isolation, corrected errors, submission, and independent instances.
 
 ## Type behavior
 

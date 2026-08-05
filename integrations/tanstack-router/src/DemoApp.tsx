@@ -12,7 +12,12 @@ export default function DemoApp() {
   return (
     <main>
       <h1>Vest + TanStack Router</h1>
-      <input value={url} onChange={event => setUrl(event.target.value)} />
+      <label htmlFor="route-url">Route URL</label>
+      <input
+        id="route-url"
+        value={url}
+        onChange={event => setUrl(event.target.value)}
+      />
       <button type="button" onClick={() => setActiveUrl(url)}>
         Load route
       </button>

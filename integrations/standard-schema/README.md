@@ -2,7 +2,7 @@
 
 ## Status
 
-Docs green. The Vest-side runtime, types, demo, and documentation are locally verified; no upstream contribution has been opened.
+The Vest-side runtime, types, demo, and documentation are locally verified. The upstream registry contribution is open as [standard-schema/standard-schema#177](https://github.com/standard-schema/standard-schema/pull/177).
 
 ## Tested versions
 
@@ -40,4 +40,4 @@ The Enforce surface identifies its vendor as `n4s`, while a Vest suite identifie
 
 ## Upstream status
 
-Not opened. Vest-side proof must be publicly available before proposing the registry addition.
+[standard-schema/standard-schema#177](https://github.com/standard-schema/standard-schema/pull/177) adds Vest to the schema implementers list.

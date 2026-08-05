@@ -1,15 +1,20 @@
 import { FormApi } from '@tanstack/react-form';
 
-import { registrationSuite } from './suite';
+import { createRegistrationIntegration } from './suite';
 import type { RegistrationInput } from './suite';
 
 export function createRegistrationForm(
   defaultValues: RegistrationInput,
   onSubmit: (value: RegistrationInput) => void | Promise<void> = () => {},
 ) {
+  const integration = createRegistrationIntegration();
+
   return new FormApi({
     defaultValues,
     onSubmit: ({ value }) => onSubmit(value),
-    validators: { onChange: registrationSuite, onSubmit: registrationSuite },
+    validators: {
+      onChange: integration.suite,
+      onSubmit: integration.suite,
+    },
   });
 }

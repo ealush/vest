@@ -1,4 +1,5 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec';
+import { isDeepStrictEqual } from 'node:util';
 
 import { assertIssue } from '../assertions/issues.js';
 import { assert } from '../assertions/types.js';
@@ -31,9 +32,9 @@ export async function runStandardSchemaContract<Input, Output>(
   assertExecutionMode(validRun, cases.synchronous);
   const valid = await validRun;
   assert('value' in valid, 'Expected valid input to produce a value');
-  if (cases.expectedOutput !== undefined) {
+  if ('expectedOutput' in cases) {
     assert(
-      JSON.stringify(valid.value) === JSON.stringify(cases.expectedOutput),
+      isDeepStrictEqual(valid.value, cases.expectedOutput),
       'Validated output did not match the expected parsed value',
     );
   }

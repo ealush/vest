@@ -21,7 +21,7 @@ The compatibility workspace pins @tanstack/react-router 1.170.18 and imports onl
 
 ## Runnable demonstration
 
-The playground loads the suite, Enforce schema, consumer normalization function, and React demo directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-router). Edit the JSON and switch validation surfaces to inspect their normalized Standard Schema results.
+The playground loads its tested source directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-router). Edit the URL and use the file tabs to inspect search validation and inferred parsed values.
 
 <TanStackRouterIntegration />
 

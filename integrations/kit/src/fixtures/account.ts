@@ -13,6 +13,16 @@ export const validAccount: AccountInput = {
   password: 'securepass1',
 };
 
+export const rawAccountInput: AccountInput = {
+  email: '  DEV@EXAMPLE.COM  ',
+  password: 'securepass1',
+};
+
+export const canonicalAccountOutput: AccountOutput = {
+  email: 'dev@example.com',
+  password: 'securepass1',
+};
+
 export const invalidAccount: AccountInput = {
   email: 'invalid',
   password: 'short',

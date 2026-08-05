@@ -32,7 +32,7 @@ async function generate() {
       fs.writeFileSync(pagePath, page);
     }
   }
-  writeSandpackSources();
+  writeSandpackSources(registry);
   execFileSync(
     'yarn',
     [
@@ -43,37 +43,38 @@ async function generate() {
     ],
     { cwd: repositoryRoot, stdio: 'inherit' },
   );
+  execFileSync('yarn', ['build:llms'], {
+    cwd: repositoryRoot,
+    stdio: 'inherit',
+  });
   process.stdout.write(
     `Generated ${path.relative(repositoryRoot, outputPath)}\n`,
   );
 }
 
-function writeSandpackSources() {
-  const groups = {
-    honoFiles: [
-      'integrations/hono/src',
-      ['DemoApp.tsx', 'app.ts', 'styles.css'],
+function writeSandpackSources(registry) {
+  const groups = Object.fromEntries(
+    registry
+      .filter(record => record.documentation.example.type === 'sandpack')
+      .map(record => {
+        const example = record.documentation.example;
+        return [
+          example.sourceExport,
+          [path.join(record.workspace, 'src'), example.files],
+        ];
+      }),
+  );
+  groups.productionRegistrationFiles = [
+    'examples/production-registration/src',
+    [
+      'DemoApp.tsx',
+      'RegistrationForm.tsx',
+      'boundarySchema.ts',
+      'registrationSuite.ts',
+      'styles.css',
+      'types.ts',
     ],
-    productionRegistrationFiles: [
-      'examples/production-registration/src',
-      [
-        'DemoApp.tsx',
-        'RegistrationForm.tsx',
-        'boundarySchema.ts',
-        'registrationSuite.ts',
-        'styles.css',
-        'types.ts',
-      ],
-    ],
-    tanStackFormFiles: [
-      'integrations/tanstack-form/src',
-      ['DemoApp.tsx', 'suite.ts', 'styles.css'],
-    ],
-    tanStackRouterFiles: [
-      'integrations/tanstack-router/src',
-      ['DemoApp.tsx', 'router.tsx', 'styles.css'],
-    ],
-  };
+  ];
 
   const exports = Object.entries(groups).map(([exportName, [base, files]]) => {
     const sources = Object.fromEntries(
@@ -93,51 +94,7 @@ function writeSandpackSources() {
 }
 
 function renderIntegrationPage(record) {
-  const definitions = {
-    hono: {
-      component: 'HonoIntegration',
-      componentPath: 'HonoIntegration',
-      install: 'vest hono @hono/standard-validator',
-      purpose:
-        "Hono's Standard Validator middleware accepts a Vest suite directly. The local proof executes in-memory requests, rejects invalid JSON before the handler, and passes parsed output to valid handlers.",
-    },
-    'standard-schema': {
-      exampleSource: 'integrations/standard-schema/src/suite.ts',
-      install: 'vest',
-      purpose:
-        "Standard Schema lets validation consumers invoke a Vest suite or an Enforce schema through a shared interface. This integration uses full-payload Standard Schema validation; it does not substitute for Vest's native focused, retained-state workflow APIs.",
-    },
-    't3-env': {
-      exampleSource: 'integrations/t3-env/src/env.ts',
-      install: 'vest @t3-oss/env-core',
-      purpose:
-        "T3 Env accepts Standard Schema validators for individual environment variables. Vest's Enforce schemas validate server and client configuration and return parsed values such as a numeric port.",
-    },
-    'tanstack-form': {
-      component: 'TanStackFormIntegration',
-      componentPath: 'TanStackFormIntegration',
-      install: 'vest @tanstack/react-form',
-      purpose:
-        'TanStack Form accepts a Vest suite directly as a form-level Standard Schema validator. TanStack owns field state and submission mechanics while Vest validates the complete payload.',
-    },
-    'tanstack-router': {
-      component: 'TanStackRouterIntegration',
-      componentPath: 'TanStackRouterIntegration',
-      install: 'vest @tanstack/react-router',
-      purpose:
-        "TanStack Router accepts a Vest Enforce schema directly as a Standard Schema search-parameter validator. The route rejects invalid URLs and exposes Vest's parsed output as its inferred search type.",
-    },
-    trpc: {
-      exampleSource: 'integrations/trpc/src/router.ts',
-      install: 'vest @trpc/server',
-      purpose:
-        "tRPC accepts Standard Schema validators in its procedure input parser. This proof uses a real router and in-process caller, so invalid data is rejected before the procedure and Vest's parsed output reaches valid procedures.",
-    },
-  };
-  const definition = definitions[record.id];
-  if (!definition) {
-    return undefined;
-  }
+  const documentation = record.documentation;
 
   const provenCapabilities = Object.entries(record.capabilities)
     .filter(([, supported]) => supported)
@@ -146,10 +103,11 @@ function renderIntegrationPage(record) {
   const limitations = record.limitations
     .map(limitation => `- ${limitation}`)
     .join('\n');
-  const example = renderExample(definition, record);
-  const componentImport = definition.component
-    ? `\nimport ${definition.component} from '@site/src/components/Sandpack/${definition.componentPath}';\n`
-    : '';
+  const example = renderExample(documentation.example, record);
+  const componentImport =
+    documentation.example.type === 'sandpack'
+      ? `\nimport ${documentation.example.component} from '@site/src/components/Sandpack/${documentation.example.component}';\n`
+      : '';
 
   return `---
 title: Vest with ${record.title}
@@ -161,12 +119,12 @@ ${componentImport}
 
 # Vest with ${record.title}
 
-${definition.purpose}
+${documentation.purpose}
 
 ## Installation
 
 \`\`\`shell
-npm install ${definition.install}
+npm install ${documentation.install}
 \`\`\`
 
 The compatibility workspace pins ${record.testedVersions.integration} and imports only public package entry points.
@@ -190,14 +148,17 @@ ${limitations}
 
 ## Upstream status
 
-No upstream change has been created. This page and the local workspace are the Vest-owned proof.
+${renderUpstreamStatus(record)}
 `;
 }
 
-function renderExample(definition, record) {
-  if (definition.exampleSource) {
+function renderExample(example, record) {
+  if (example.type === 'source') {
     const source = fs
-      .readFileSync(path.join(repositoryRoot, definition.exampleSource), 'utf8')
+      .readFileSync(
+        path.join(repositoryRoot, record.workspace, example.source),
+        'utf8',
+      )
       .trim();
     return `## Implementation example
 
@@ -210,9 +171,19 @@ ${source}
 
   return `## Runnable demonstration
 
-The playground loads the suite, Enforce schema, consumer normalization function, and React demo directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/${record.workspace}). Edit the JSON and switch validation surfaces to inspect their normalized Standard Schema results.
+The playground loads its tested source directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/${record.workspace}). ${example.description}
 
-<${definition.component} />`;
+<${example.component} />`;
+}
+
+function renderUpstreamStatus(record) {
+  if (record.upstream.pullRequest) {
+    return `Tracked in [${record.upstream.repository} PR](${record.upstream.pullRequest}).`;
+  }
+  if (record.upstream.issue) {
+    return `Tracked in [${record.upstream.repository}](${record.upstream.issue}).`;
+  }
+  return 'No upstream change has been created. This page and the local workspace are the Vest-owned proof.';
 }
 
 function formatCapability(capability) {

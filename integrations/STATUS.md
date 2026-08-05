@@ -26,7 +26,7 @@ Vest package version: `6.3.2`
 - [x] Add registry-driven test, typecheck, build, docs, verify, and status commands.
 - [x] Add deterministic integration index generation and website navigation.
 - [x] Add pull-request and scheduled CI coverage.
-- [ ] Merge the infrastructure PR before beginning an upstream contribution.
+- [x] Open the first upstream registry contribution after the local proof passed: [standard-schema/standard-schema#177](https://github.com/standard-schema/standard-schema/pull/177).
 
 ## Integration inventory
 

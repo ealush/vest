@@ -21,7 +21,7 @@ async function run() {
     for (const verificationTask of ['test', 'typecheck', 'build']) {
       await runTask(verificationTask);
     }
-    execFileSync(process.execPath, ['scripts/integrations/generate-docs.js'], {
+    execFileSync('yarn', ['integrations:docs'], {
       cwd: repositoryRoot,
       stdio: 'inherit',
     });

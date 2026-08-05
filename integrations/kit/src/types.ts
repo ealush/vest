@@ -31,6 +31,25 @@ export interface IntegrationCapabilities {
   raceSafety: boolean;
 }
 
+export interface IntegrationSourceExample {
+  type: 'source';
+  source: `${string}.ts`;
+}
+
+export interface IntegrationSandpackExample {
+  type: 'sandpack';
+  component: string;
+  description: string;
+  files: readonly string[];
+  sourceExport: string;
+}
+
+export interface IntegrationDocumentation {
+  install: string;
+  purpose: string;
+  example: IntegrationSourceExample | IntegrationSandpackExample;
+}
+
 export interface IntegrationRecord {
   id: string;
   title: string;
@@ -43,6 +62,7 @@ export interface IntegrationRecord {
     integration: string;
   };
   capabilities: IntegrationCapabilities;
+  documentation: IntegrationDocumentation;
   upstream: {
     repository: string;
     targetFiles: readonly string[];

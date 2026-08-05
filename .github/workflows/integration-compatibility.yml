@@ -1,4 +1,4 @@
-name: Integration compatibility
+name: Integration regression
 
 on:
   schedule:
@@ -23,10 +23,10 @@ jobs:
         run: yarn build
       - name: Verify ecosystem integrations
         run: yarn integrations:verify
-      - name: Write compatibility status
-        run: node scripts/integrations/status.js "$RUNNER_TEMP/integration-status.json"
-      - name: Upload compatibility status
+      - name: Write regression status
+        run: yarn integrations:status "$RUNNER_TEMP/integration-status.json"
+      - name: Upload regression status
         uses: actions/upload-artifact@v4
         with:
-          name: integration-status
+          name: integration-regression-status
           path: ${{ runner.temp }}/integration-status.json

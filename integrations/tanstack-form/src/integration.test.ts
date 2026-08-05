@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { createRegistrationForm } from './integration';
-import { registrationSuite, validateRegistrationField } from './suite';
+import { createRegistrationIntegration } from './suite';
 
 const validValues = {
   email: 'dev@example.com',
@@ -10,16 +10,37 @@ const validValues = {
 
 describe('Vest with TanStack Form', () => {
   it('focuses change validation on the changed field', () => {
-    registrationSuite.reset();
-    const errors = validateRegistrationField('email', {
+    const integration = createRegistrationIntegration();
+    const errors = integration.validateField('email', {
       email: 'invalid',
       profile: { name: 'A' },
     });
-    const result = registrationSuite.get();
+    const result = integration.suite.get();
 
     expect(errors).toHaveLength(2);
     expect(result.isTested('email')).toBe(true);
     expect(result.isTested('profile.name')).toBe(false);
+  });
+
+  it('keeps focused retained state isolated between integration instances', () => {
+    const emailIntegration = createRegistrationIntegration();
+    const nameIntegration = createRegistrationIntegration();
+
+    emailIntegration.validateField('email', {
+      email: 'invalid',
+      profile: { name: 'Ada' },
+    });
+    nameIntegration.validateField('profile.name', {
+      email: 'dev@example.com',
+      profile: { name: 'A' },
+    });
+
+    expect(emailIntegration.suite.get().getErrors('email')).toHaveLength(2);
+    expect(emailIntegration.suite.get().isTested('profile.name')).toBe(false);
+    expect(nameIntegration.suite.get().getErrors('profile.name')).toHaveLength(
+      1,
+    );
+    expect(nameIntegration.suite.get().isTested('email')).toBe(false);
   });
 
   it('maps nested paths and multiple issues into form state', async () => {

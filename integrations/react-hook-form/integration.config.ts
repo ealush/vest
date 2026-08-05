@@ -30,18 +30,18 @@ export default {
       type: 'sandpack',
     },
     install:
-      'vest react-hook-form @hookform/resolvers @standard-schema/spec # demo dependencies (vestResolver source is repository-local)',
+      'react-hook-form @hookform/resolvers @standard-schema/spec # demo dependencies (vestResolver source is repository-local)',
     purpose:
-      'This repository-local resolver candidate connects React Hook Form to a stateful Vest 6 suite and returns transformed submission data.',
+      'Experimental local integration proof connecting React Hook Form to a stateful Vest 6 suite. Transformed output works for full submissions and focused runs where the complete output schema succeeds. Known correctness gaps remain; do not use this resolver in production.',
   },
   id: 'react-hook-form',
   lastVerified: '2026-08-05',
   limitations: [
     'The resolver candidate exists only in this Vest workspace and is not yet available from @hookform/resolvers/vest.',
-    'React Hook Form does not identify submission calls explicitly; unregistered default values and empty containers can make the full-run heuristic ambiguous.',
+    'React Hook Form does not identify submission calls explicitly; unregistered default values or unmounted fields can cause the full-run heuristic to misclassify calls.',
     'Vest Suite Objects do not expose a cloning API, so the candidate requires a suite factory to isolate full-form calls from retained focused state.',
     'Retained field-array state requires stable item IDs, supplied by getContactKey in this example.',
-    'When an unrelated invalid field prevents whole-form transformation during a focused run, the resolver preserves the current input; full-form runs still require and return parsed output.',
+    'When an unrelated invalid field prevents whole-form transformation during a focused run, the resolver preserves current input; full-form runs still require and return parsed output.',
     'RHF reset and unmount events are not part of the Resolver contract, so the local integration owner aborts and replaces its suite explicitly; asynchronous checks must honor their AbortSignal.',
   ],
   status: 'local-green',

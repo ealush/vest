@@ -24,7 +24,9 @@ export function createRegistrationIntegration() {
     RegistrationOutput
   > = (values, context, options) => {
     if (isDisposed) {
-      return { errors: {}, values: values as unknown as RegistrationOutput };
+      throw new Error(
+        'The Vest React Hook Form integration has been disposed.',
+      );
     }
     return resolver(
       values,

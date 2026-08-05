@@ -475,12 +475,13 @@ describe('Vest 6 React Hook Form resolver candidate', () => {
     expect(integration.getSuite()).toBe(resetSuite);
     expect(integration.getSuite().get().isTested('profile.name')).toBe(false);
 
-    const disposedResult = await integration.resolver(
-      invalidRegistration,
-      availableContext,
-      resolverOptions(['email']),
-    );
-    expect(disposedResult.errors).toEqual({});
+    expect(() =>
+      integration.resolver(
+        invalidRegistration,
+        availableContext,
+        resolverOptions(['email']),
+      ),
+    ).toThrow('The Vest React Hook Form integration has been disposed.');
   });
 
   it.each(['reset', 'dispose'] as const)(
@@ -648,59 +649,8 @@ describe('Vest 6 React Hook Form resolver candidate', () => {
   });
 });
 
-describe('Known correctness gaps (review-identified)', () => {
-  it.fails(
-    'gap 1: unregistered defaultValues field causes focused run on submit',
-    async () => {
-      // When a form has defaultValues with fields that are not registered,
-      // RHF's submit call passes only the registered field names.
-      // The resolver sees uncovered value leaves and treats submission as
-      // a focused run, potentially skipping validation for unregistered fields.
-      const integration = createRegistrationIntegration();
-      const onValid = vi.fn<(values: RegistrationOutput) => void>();
-      const onInvalid = vi.fn();
-
-      const form = createFormControl<
-        RegistrationInput,
-        RegistrationContext,
-        RegistrationOutput
-      >({
-        context: availableContext,
-        defaultValues: {
-          ...validRegistration,
-          // All fields present in values, but only 'email' will be registered
-        },
-        resolver: integration.resolver,
-      });
-
-      // Register only a subset of fields
-      form.register('email');
-      // profile.name, profile.age, username, contacts.0.email are NOT registered
-
-      await form.handleSubmit(onValid, onInvalid)();
-
-      // On submit, RHF calls _runSchema() with names = mounted fields only = ['email'].
-      // The resolver sees that ['email'] doesn't cover all value leaves
-      // (profile.name, profile.age, etc.), so it treats this as a focused run.
-      // This means it only validates 'email' and considers the form valid,
-      // even though a full submission should validate everything.
-      //
-      // The test expects that submission validates ALL fields, not just registered ones.
-      // This will fail because the heuristic misclassifies the call.
-      expect(onValid).toHaveBeenCalled();
-      // Even if onValid is called, the suite should have tested all fields
-      const suiteResult = integration.getSuite().get();
-      expect(suiteResult.isTested('profile.name')).toBe(true);
-      expect(suiteResult.isTested('profile.age')).toBe(true);
-      expect(suiteResult.isTested('username')).toBe(true);
-    },
-  );
-
-  it('gap 2: empty containers during single-field validation', async () => {
-    // collectLeafPaths({}) and collectLeafPaths([]) return [].
-    // Since [].every(...) === true, a single-field call on a form
-    // whose values contain only empty containers can be classified
-    // as a full-form call instead of a focused call.
+describe('review regressions', () => {
+  it('empty containers during single-field validation', async () => {
     const integration = createRegistrationIntegration();
     const emptyContainerValues: RegistrationInput = {
       contacts: [],
@@ -715,67 +665,13 @@ describe('Known correctness gaps (review-identified)', () => {
       resolverOptions(['email']),
     );
 
-    // With empty containers, collectLeafPaths produces only ['email', 'username']
-    // (or similar), which means requesting ['email'] doesn't cover 'username',
-    // so it should remain a focused run. But if ALL value leaves happen to
-    // be covered by the requested names (edge case), it becomes a full run.
-    //
-    // The key assertion: the suite should NOT have tested fields we didn't request.
     const suiteResult = integration.getSuite().get();
     expect(suiteResult.isTested('email')).toBe(true);
-    // This documents the heuristic's behavior with empty containers
+    expect(suiteResult.isTested('username')).toBe(false);
     expect(result.errors.email).toBeUndefined();
   });
 
-  it.fails(
-    'gap 3: invalid submit then correct one field — split-brain state',
-    async () => {
-      // The resolver uses a fresh suite for full runs and the retained suite
-      // for focused runs. After an invalid submission, correcting one field
-      // causes the retained focused suite to return empty errors.
-      // RHF uses the complete resolver error result to compute isValid,
-      // so it would consider the form valid despite uncorrected fields.
-      const integration = createRegistrationIntegration();
-
-      // Step 1: Full submission with invalid data (uses fresh suite)
-      const fullResult = await integration.resolver(
-        invalidRegistration,
-        availableContext,
-        resolverOptions(allFields),
-      );
-      // Full run correctly reports errors
-      expect(Object.keys(fullResult.errors).length).toBeGreaterThan(0);
-
-      // Step 2: Correct only email via focused run (uses retained suite)
-      const focusedResult = await integration.resolver(
-        { ...invalidRegistration, email: 'dev@example.com' },
-        availableContext,
-        resolverOptions(['email']),
-      );
-      void focusedResult;
-
-      // The focused suite only tested 'email'. It returned empty errors
-      // because email is now valid. But profile.name, profile.age, etc.
-      // are still invalid — the retained suite has never seen them.
-      //
-      // If RHF computes isValid = isEmptyObject(focusedResult.errors),
-      // it will mark the form valid. That's the split-brain problem.
-      //
-      // We assert that the retained suite should know about the invalid
-      // fields from the submission. This fails because submission used
-      // a different (fresh) suite.
-      const retainedResult = integration.getSuite().get();
-      expect(retainedResult.hasErrors('profile.name')).toBe(true);
-      expect(retainedResult.hasErrors('profile.age')).toBe(true);
-    },
-  );
-
-  it('gap 4: trigger() without args vs trigger with all fields vs handleSubmit', async () => {
-    // RHF's trigger() without args calls _runSchema(undefined),
-    // which passes _names.mount as the names. This is identical
-    // to submission's _runSchema() call, but the intent is different.
-    // trigger(['field1', 'field2']) passes specific names.
-    // The resolver cannot distinguish these call types.
+  it('trigger() without args vs trigger with all fields vs handleSubmit', async () => {
     const integration = createRegistrationIntegration();
     const form = createFormControl<
       RegistrationInput,
@@ -789,68 +685,17 @@ describe('Known correctness gaps (review-identified)', () => {
 
     for (const field of allFields) form.register(field);
 
-    // trigger() without args — should validate all
     const allValid = await form.trigger();
     expect(allValid).toBe(false);
 
-    // trigger with specific fields
     const emailValid = await form.trigger('email');
     expect(emailValid).toBe(false);
 
-    // trigger with all fields explicitly
     const explicitAllValid = await form.trigger([...allFields]);
     expect(explicitAllValid).toBe(false);
   });
 
-  it.fails(
-    'gap 5: RHF reset without integration.reset leaks old state',
-    async () => {
-      // The resolver's retained suite holds state across runs.
-      // If the user calls form.reset() without calling integration.reset(),
-      // the old errors remain in the suite and may affect subsequent
-      // isValid calculations.
-      const integration = createRegistrationIntegration();
-      const form = createFormControl<
-        RegistrationInput,
-        RegistrationContext,
-        RegistrationOutput
-      >({
-        context: availableContext,
-        defaultValues: invalidRegistration,
-        resolver: integration.resolver,
-      });
-
-      for (const field of allFields) form.register(field);
-
-      // Validate email — creates errors in the retained suite
-      await integration.resolver(
-        invalidRegistration,
-        availableContext,
-        resolverOptions(['email']),
-      );
-      expect(integration.getSuite().get().hasErrors('email')).toBe(true);
-
-      // RHF reset WITHOUT calling integration.reset()
-      form.reset(validRegistration);
-
-      // The retained suite still has old errors
-      // After reset, the suite should be clean, but it isn't
-      // because the integration lifecycle wasn't coordinated.
-      expect(integration.getSuite().get().hasErrors('email')).toBe(false);
-    },
-  );
-
-  it('gap 6: async dependent-field — suite.only prevents cross-field async from starting', async () => {
-    // hasPendingFields only checks the requested field names.
-    // In theory, if validating 'email' triggered cross-field async work
-    // that reports against 'username', the resolver would settle before
-    // that work completes.
-    //
-    // However, Vest's suite.only(['email']) prevents the username test
-    // from running at all, so this scenario doesn't actually arise
-    // with the current resolver + Vest only() mechanism.
-    // The gap is theoretical: it would require a Vest test that is
-    // focused on 'email' but schedules async work against 'username'.
+  it('async dependent-field — suite.only prevents cross-field async from starting', async () => {
     let resolveUsername: ((available: boolean) => void) | undefined;
     const crossFieldContext: RegistrationContext = {
       ...availableContext,
@@ -865,25 +710,17 @@ describe('Known correctness gaps (review-identified)', () => {
     const resultPromise = integration.resolver(
       validRegistration,
       crossFieldContext,
-      resolverOptions(['email']), // Only requesting 'email'
+      resolverOptions(['email']),
     );
 
-    // suite.only(['email']) skips username entirely, so there's no
-    // pending async work for username. The resolver settles correctly.
     const result = await resultPromise;
-
-    // Clean up — resolveUsername was never called because the test was skipped
     resolveUsername?.(true);
 
     expect(result.errors).toEqual({});
-    // Verify username was indeed not tested
     expect(integration.getSuite().get().isTested('username')).toBe(false);
   });
 
-  it('maps root-level errors to errors.root', async () => {
-    // Vest issues without a fieldName are silently dropped in parseVestErrors.
-    // Standard Schema issues without a path are mapped to '__root__' instead
-    // of RHF's recognized 'root' namespace.
+  it('maps pathless issues to errors.root', async () => {
     const schema = enforce.shape({ email: enforce.isString().trim() });
     const createSuiteWithRoot = () =>
       create<'email', string, (data: { email: string }) => void, typeof schema>(
@@ -891,7 +728,6 @@ describe('Known correctness gaps (review-identified)', () => {
           test('email', 'Email required', () => {
             enforce(data.email).isNotBlank();
           });
-          // A pathless/root-level test
           test('' as unknown as 'email', 'Form-level error', () => {
             enforce(false).isTruthy();
           });
@@ -911,12 +747,10 @@ describe('Known correctness gaps (review-identified)', () => {
     ) as ResolverResult<{ email: string }>;
 
     expect(result.errors.root).toBeDefined();
+    expect(result.errors.root?.message).toBe('Form-level error');
   });
 
-  it('gap 8: shouldUnregister does not affect resolver behavior', async () => {
-    // The resolver is unaware of shouldUnregister because it doesn't
-    // receive that option. RHF handles unregistration separately.
-    // This test documents that the resolver works the same either way.
+  it('shouldUnregister does not affect resolver behavior', async () => {
     const integration = createRegistrationIntegration();
     const form = createFormControl<
       RegistrationInput,
@@ -932,22 +766,109 @@ describe('Known correctness gaps (review-identified)', () => {
     form.register('email');
     form.register('profile.name');
 
-    // With shouldUnregister, only registered fields are in _names.mount
     const onInvalid = vi.fn();
     await form.handleSubmit(vi.fn(), onInvalid)();
 
-    // The form should still validate the registered fields
     expect(onInvalid).toHaveBeenCalled();
+  });
+});
+
+describe('known unresolved gaps', () => {
+  it.fails(
+    'unregistered invalid defaultValues field passes submit validation',
+    async () => {
+      const integration = createRegistrationIntegration();
+      const onValid = vi.fn<(values: RegistrationOutput) => void>();
+      const onInvalid = vi.fn();
+
+      const form = createFormControl<
+        RegistrationInput,
+        RegistrationContext,
+        RegistrationOutput
+      >({
+        context: availableContext,
+        defaultValues: {
+          ...validRegistration,
+          profile: {
+            ...validRegistration.profile,
+            age: 'not-a-number',
+          },
+        },
+        resolver: integration.resolver,
+      });
+
+      form.register('email');
+
+      await form.handleSubmit(onValid, onInvalid)();
+
+      expect(onValid).not.toHaveBeenCalled();
+      expect(onInvalid).toHaveBeenCalled();
+      expect(onInvalid.mock.calls[0]?.[0].profile?.age).toBeDefined();
+    },
+  );
+
+  it.fails(
+    'invalid submit followed by correcting one field marks formState.isValid true',
+    async () => {
+      const integration = createRegistrationIntegration();
+
+      const form = createFormControl<
+        RegistrationInput,
+        RegistrationContext,
+        RegistrationOutput
+      >({
+        context: availableContext,
+        defaultValues: invalidRegistration,
+        resolver: integration.resolver,
+      });
+
+      for (const field of allFields) form.register(field);
+
+      const onValid = vi.fn();
+      const onInvalid = vi.fn();
+      await form.handleSubmit(onValid, onInvalid)();
+      expect(onInvalid).toHaveBeenCalled();
+
+      form.setValue('email', 'dev@example.com');
+      await form.trigger('email');
+
+      expect(form.getFieldState('profile.name').error).toBeDefined();
+
+      const formState = (form as unknown as { formState: { isValid: boolean } })
+        .formState;
+      expect(formState.isValid).toBe(false);
+    },
+  );
+
+  it.fails('RHF reset without integration.reset leaks old state', async () => {
+    const integration = createRegistrationIntegration();
+    const form = createFormControl<
+      RegistrationInput,
+      RegistrationContext,
+      RegistrationOutput
+    >({
+      context: availableContext,
+      defaultValues: invalidRegistration,
+      resolver: integration.resolver,
+    });
+
+    for (const field of allFields) form.register(field);
+
+    await integration.resolver(
+      invalidRegistration,
+      availableContext,
+      resolverOptions(['email']),
+    );
+    expect(integration.getSuite().get().hasErrors('email')).toBe(true);
+
+    form.reset(validRegistration);
+
+    expect(integration.getSuite().get().hasErrors('email')).toBe(false);
   });
 
   it.fails(
-    'gap 9: focused call returns untransformed input cast as output type',
+    'focused call returns untransformed input cast as output type',
     async () => {
-      // When a focused run finds the requested fields valid but the output
-      // schema fails for unrelated fields, the resolver returns:
-      //   { errors: {}, values: request.values as unknown as Output }
-      // This is type-unsound: the runtime value has age: 'not-a-number'
-      // but the type says age: number.
       const integration = createRegistrationIntegration();
       const values = {
         ...validRegistration,
@@ -959,16 +880,8 @@ describe('Known correctness gaps (review-identified)', () => {
         resolverOptions(['email']),
       );
 
-      // The resolver returns success (no errors for email)
       expect(result.errors).toEqual({});
 
-      // But the values are the RAW input, not the parsed output.
-      // The type says RegistrationOutput (age: number) but the runtime
-      // value is the raw input (age: 'not-a-number').
-      // A sound resolver should either:
-      // 1. Return errors for the unrelated field, or
-      // 2. Return properly transformed output
-      // Instead it returns raw input cast as output.
       const output = result.values as RegistrationOutput;
       expect(typeof output.profile.age).toBe('number');
     },

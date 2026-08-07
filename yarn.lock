@@ -5771,6 +5771,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vitest/pretty-format@npm:4.1.2":
+  version: 4.1.2
+  resolution: "@vitest/pretty-format@npm:4.1.2"
+  dependencies:
+    tinyrainbow: ^3.1.0
+  checksum: 78f2ee16c9cb9481b081d5d13ee4a1eaf28ef9218ab2231025b96769b25d2590123ee36b45b8b07fa5c6e5cd17d29b115ed0f72d6ec2a32aa0ee791d9aaf87ed
+  languageName: node
+  linkType: hard
+
 "@vitest/runner@npm:4.0.18":
   version: 4.0.18
   resolution: "@vitest/runner@npm:4.0.18"
@@ -5799,20 +5808,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/ui@npm:4.0.18":
-  version: 4.0.18
-  resolution: "@vitest/ui@npm:4.0.18"
+"@vitest/ui@npm:4.1.2":
+  version: 4.1.2
+  resolution: "@vitest/ui@npm:4.1.2"
   dependencies:
-    "@vitest/utils": 4.0.18
+    "@vitest/utils": 4.1.2
     fflate: ^0.8.2
-    flatted: ^3.3.3
+    flatted: ^3.4.2
     pathe: ^2.0.3
     sirv: ^3.0.2
     tinyglobby: ^0.2.15
-    tinyrainbow: ^3.0.3
+    tinyrainbow: ^3.1.0
   peerDependencies:
-    vitest: 4.0.18
-  checksum: 7e0ee8523f0a1f2c75b852a4236434f075558e09ea273c338b025632a7e0d3b1c85cd29dfc4bdeb9366a8f3c12e2101ee715a11dc2ad1cd8436353723b5db37c
+    vitest: 4.1.2
+  checksum: 038513c29dc8eaf4792a43cfdea026eba240a6afeed619eb30fab53f0c62d638f7c242476e439ebe1f7fd8f535574192367fa948c171fe9c1b2965a22eb12c41
   languageName: node
   linkType: hard
 
@@ -5823,6 +5832,17 @@ __metadata:
     "@vitest/pretty-format": 4.0.18
     tinyrainbow: ^3.0.3
   checksum: f536bf5700cbf72703b6cd17083f321fef16ce40910c8a7e6a5939bac8dac2a421518ffa0ea825b18d002bb4f0f62c697e971e725cbf55744b56ea748e424c35
+  languageName: node
+  linkType: hard
+
+"@vitest/utils@npm:4.1.2":
+  version: 4.1.2
+  resolution: "@vitest/utils@npm:4.1.2"
+  dependencies:
+    "@vitest/pretty-format": 4.1.2
+    convert-source-map: ^2.0.0
+    tinyrainbow: ^3.1.0
+  checksum: 90c4acd015f00fd7752392d6a30371faff2ed70166ffbe8016cb9002f11c39b636220e23133ffdcd8667aae0d99870c45e1c1b5a35d823422229ac82ef934755
   languageName: node
   linkType: hard
 
@@ -9450,7 +9470,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatted@npm:^3.2.9, flatted@npm:^3.3.3":
+"flatted@npm:^3.2.9, flatted@npm:^3.4.2":
   version: 3.4.2
   resolution: "flatted@npm:3.4.2"
   checksum: 1b2536fccbbf75d67a823dea67819f764c19266ad5e4aca6b47f6bf84d3b5e1c15eb5862f7dec1fb87129b60741524933192051286de52baddbc97129896380d
@@ -16670,6 +16690,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tinyrainbow@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "tinyrainbow@npm:3.1.0"
+  checksum: dbb16b4aa5dc7398d2501c6ee216471b01f5f1a3c372233113254625d190b08eb2cfb532f1bb46d2cce7deb1bc3d418945949898b7f95e32e09167f5c797cf0a
+  languageName: node
+  linkType: hard
+
 "to-regex-range@npm:^5.0.1":
   version: 5.0.1
   resolution: "to-regex-range@npm:5.0.1"
@@ -17364,7 +17391,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^7
     "@typescript-eslint/parser": ^7
     "@vitest/coverage-v8": 4.0.18
-    "@vitest/ui": 4.0.18
+    "@vitest/ui": 4.1.2
     eslint: ^9
     eslint-config-prettier: ^9
     eslint-import-resolver-typescript: ^3

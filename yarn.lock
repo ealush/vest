@@ -11516,20 +11516,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^16.3.0":
-  version: 16.3.0
-  resolution: "lint-staged@npm:16.3.0"
+"lint-staged@npm:^16.4.0":
+  version: 16.4.0
+  resolution: "lint-staged@npm:16.4.0"
   dependencies:
     commander: ^14.0.3
     listr2: ^9.0.5
-    micromatch: ^4.0.8
-    nano-spawn: ^2.0.0
+    picomatch: ^4.0.3
     string-argv: ^0.3.2
-    tinyexec: ^1.0.2
+    tinyexec: ^1.0.4
     yaml: ^2.8.2
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 1c1dc765c7760d4e739d2606ba1624ced1092f9015c5de6baed16dc878c56c7166e607cbaaf956fb170db5ac1d46d1130262575d36c2b7c8fa67ef31d2f44ac0
+  checksum: 72e9e0089556722a509db70579a10451ac7dd976b15b704a7b419caaed9404f14bbc5fb6d29d4d05075531113fb261a8728911b29c65c5960084d4b79a2d074b
   languageName: node
   linkType: hard
 
@@ -12633,7 +12632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5, micromatch@npm:^4.0.8":
+"micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
   dependencies:
@@ -12931,13 +12930,6 @@ __metadata:
     vest-utils: ^2.0.17
   languageName: unknown
   linkType: soft
-
-"nano-spawn@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "nano-spawn@npm:2.0.0"
-  checksum: 48223f6f5b2ab3f7562d0e6e85abb9b9c4ee52f5c096bd50012c0776664ddc63cd2602c9e4dc3d6cd47ae5189e9c71b51afb2d44b2746d8ca80cb52fc8013904
-  languageName: node
-  linkType: hard
 
 "nanoid@npm:^3.3.11":
   version: 3.3.11
@@ -16646,6 +16638,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tinyexec@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "tinyexec@npm:1.0.4"
+  checksum: b1b8693116d26296eaf60e398e36fe52a1831df8e44098a29d5c331731f5c8f140fba49303f3b6960cc82cc2f9eadfe44b4aeb09405c8bbec58f6b8d05fb1723
+  languageName: node
+  linkType: hard
+
 "tinyglobby@npm:^0.2.13, tinyglobby@npm:^0.2.15":
   version: 0.2.15
   resolution: "tinyglobby@npm:0.2.15"
@@ -17372,7 +17371,7 @@ __metadata:
     eslint-plugin-prettier: ^5
     eslint-plugin-vitest: ^0
     husky: ^8.0.3
-    lint-staged: ^16.3.0
+    lint-staged: ^16.4.0
     lodash: ^4.17.21
     prettier: ^3.7.3
     tsc: ^2.0.4

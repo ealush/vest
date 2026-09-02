@@ -8,14 +8,17 @@ import {
 } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
-import { RuleInstance } from '../../utils/RuleInstance';
+import type {
+  RuleInstance,
+  ScopeHandle,
+} from '../../utils/RuleInstance';
 
 import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 
-export type RuleFunctions<T extends RuleInstance<any, any>> = Record<
-  keyof Omit<T, 'infer' | 'test' | 'validate' | 'parse' | '~standard'>,
-  (...args: any[]) => boolean | ReturnType<Predicate>
+export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
+  keyof Omit<T, 'infer' | 'test' | 'validate' | 'parse' | '~standard' | 'dependsOn' | 'revalidates' | 'describe'>,
+  (...args: unknown[]) => boolean | ReturnType<Predicate>
 >;
 
 type LazyMessage = DynamicValue<
@@ -28,12 +31,16 @@ type LazyMessage = DynamicValue<
  * Provides methods to add predicates, run validation, and apply custom messages.
  * Implements StandardSchema v1 support.
  */
-export function createChainBuilder<T extends RuleInstance<any, any>>(
-  rules: RuleFunctions<T> | Record<string, (...args: any[]) => any>,
+export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
+  rules: RuleFunctions<T> | Record<string, (...args: unknown[]) => unknown>,
 ) {
   const chain: Predicate[] = [];
   const target: Partial<T> = {};
   let lazyMessage: Maybe<LazyMessage> = undefined;
+  const unresolvedDeps: Array<{
+    resolver: (scope: ScopeHandle) => unknown;
+    isRevalidates: boolean;
+  }> = [];
 
   const add = (p: Predicate): T => {
     chain.push(p);
@@ -56,49 +63,49 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     return dynamicValue(lazyMessage, value, result.message) ?? defaultMessage;
   };
 
-  const validate: T['validate'] = ((...args: any[]) => {
-    const result = executeChain(chain, args[0]);
+  const validate = ((...args: unknown[]) => {
+    const result = executeChain(chain, args[0] as unknown);
     if (result.pass) {
-      return { value: result.type };
+      return { value: result.type } as ReturnType<T['validate']>;
     }
     return {
       issues: [
         {
-          message: resolveMessage(result, args[0]),
+          message: resolveMessage(result, args[0] as unknown),
           path: result.path || [],
         },
       ],
-    };
-  }) as T['validate'];
+    } as ReturnType<T['validate']>;
+  }) as unknown as T['validate'];
 
-  const test: T['test'] = ((...args: any[]) => {
-    const result = validate(...args);
+  const test = ((...args: unknown[]) => {
+    const result = (validate as unknown as (...a: unknown[]) => ReturnType<T['validate']>)(...args);
     return !result.issues;
-  }) as T['test'];
+  }) as unknown as T['test'];
 
   // Internal compatibility method - converts StandardSchema Result to RuleRunReturn
 
-  const parse: T['parse'] = ((...args: any[]) => {
-    const result = validate(...args);
+  const parse = ((...args: unknown[]) => {
+    const result = (validate as unknown as (...a: unknown[]) => ReturnType<T['validate']>)(...args);
     if (!result.issues) {
-      return result.value;
+      return result.value as ReturnType<T['parse']>;
     }
 
-    const [firstIssue] = result.issues;
+    const [firstIssue] = result.issues as Array<{ message?: string }>;
     throw new TypeError(firstIssue?.message || 'Validation failed');
-  }) as T['parse'];
+  }) as unknown as T['parse'];
 
-  const run: T['run'] = ((...args: any[]) => {
-    const result = executeChain(chain, args[0]);
+  const run = ((...args: unknown[]) => {
+    const result = executeChain(chain, args[0] as unknown);
     if (!result.pass && lazyMessage) {
       return {
         ...result,
         message:
-          dynamicValue(lazyMessage, args[0], result.message) ?? result.message,
-      };
+          dynamicValue(lazyMessage, args[0] as unknown, result.message) ?? result.message,
+      } as ReturnType<T['run']>;
     }
-    return result;
-  }) as T['run'];
+    return result as ReturnType<T['run']>;
+  }) as unknown as T['run'];
 
   const message = (msg: Stringable): T => {
     if (msg) {
@@ -107,27 +114,79 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
     return proxy;
   };
 
+  const dependsOn = (resolver: (scope: ScopeHandle) => unknown): T => {
+    unresolvedDeps.push({ resolver, isRevalidates: false });
+    // also store on target for external inspection (shape resolver)
+    (target as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+    (proxy as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+    return proxy;
+  };
+
+  const revalidates = (resolver: (scope: ScopeHandle) => unknown): T => {
+    unresolvedDeps.push({ resolver, isRevalidates: true });
+    (target as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+    (proxy as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+    return proxy;
+  };
+
+  const describe = (): ReturnType<T['describe']> => {
+    const raw =
+      (target as unknown as Record<symbol, unknown>)[Symbol.for('vest:resolvedRelationships')] ||
+      (proxy as unknown as Record<symbol, unknown>)[Symbol.for('vest:resolvedRelationships')] ||
+      [];
+    const rawArray = raw as Array<Record<string, unknown>>;
+    // Clean internal flags
+    const resolved = rawArray.map(rel => {
+      const { __isRootSource, __isRootTarget, ...clean } = rel as Record<string, unknown> & {
+        __isRootSource?: unknown;
+        __isRootTarget?: unknown;
+      };
+      return clean;
+    });
+    // Group by target to produce dependencies
+    const depMap = new Map<string, { target: unknown; sources: unknown[] }>();
+    for (const rel of resolved) {
+      const relRecord = rel as { target: unknown; source: unknown };
+      const key = JSON.stringify(relRecord.target);
+      if (!depMap.has(key)) {
+        depMap.set(key, { target: relRecord.target, sources: [] });
+      }
+      depMap.get(key)!.sources.push(relRecord.source);
+    }
+    const dependencies = Array.from(depMap.values());
+    return {
+      dependencies,
+      relationships: resolved,
+    } as ReturnType<T['describe']>;
+  };
+
   const proxy: T = new Proxy(
     target as T,
     createChainProxyHandlers(rules, {
       '~standard': {
         types: {
-          input: undefined!,
-          output: undefined!,
+          input: undefined as unknown as T extends RuleInstance<infer I, unknown[]> ? I : unknown,
+          output: undefined as unknown as T extends RuleInstance<infer O, unknown[]> ? O : unknown,
         },
-        validate,
+        validate: validate as unknown as StandardSchemaV1.Props<unknown, unknown>['validate'],
         vendor: 'n4s',
         version: 1 as const,
-      } as StandardSchemaV1.Props<any, any>,
+      } as StandardSchemaV1.Props<unknown, unknown>,
       add,
+      dependsOn,
+      describe,
       message,
       parse,
       prepend,
+      revalidates,
       run,
       test,
       validate,
     }),
   );
+
+  // Ensure symbols are accessible via proxy get trap fallback
+  (proxy as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
 
   return { add, proxy } as const;
 }

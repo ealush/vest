@@ -27,6 +27,7 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
+import { getAffectedFields } from './changed';
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 
 type SchemaRunResult = {
@@ -42,7 +43,6 @@ type SchemaRunResult = {
  * The runner performs schema preprocessing once per run, stores the original input
  * and parsed output, and then executes the suite callback within SuiteContext.
  */
-// eslint-disable-next-line max-lines-per-function
 export function useCreateSuiteRunner<
   F extends TFieldName,
   G extends TGroupName,
@@ -53,7 +53,11 @@ export function useCreateSuiteRunner<
   modifiers: SuiteModifiers<F, G>,
   schema?: S,
 ) {
-  const transformedModifiers = useTransformedModifiers<F, G>(modifiers);
+  // Defer changed() expansion: if __changed is present, compute affected
+  // using the actual run data (enables root->array fan-out).
+  const hasChanged = !!(modifiers as any).__changed;
+  // Note: we cannot compute affected here without data, so we do it inside runSuite below.
+  const transformedModifiersBase = useTransformedModifiers<F, G>(modifiers);
 
   return function runSuite(
     ...args: S extends undefined
@@ -64,6 +68,22 @@ export function useCreateSuiteRunner<
     const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
 
     const schemaInput = args[0];
+    // If suite was created via changed(), expand affected fields using actual data
+    let transformedModifiers: any = transformedModifiersBase;
+    if (hasChanged) {
+      const rawChanged = (modifiers as any).__changed as string[];
+      const affected = getAffectedFields(rawChanged, schema, schemaInput);
+      const mergedOnly: any = (() => {
+        const baseOnly = (modifiers as any).only;
+        if (!baseOnly) return affected;
+        const baseArr = Array.isArray(baseOnly) ? baseOnly : [baseOnly];
+        return [...new Set([...(baseArr as string[]), ...affected])];
+      })();
+      const withAffected: any = { ...modifiers, only: mergedOnly };
+      delete withAffected.__changed;
+      transformedModifiers = useTransformedModifiers<F, G>(withAffected);
+    }
+
     const schemaRunResult = shouldRunSchema(schema)
       ? runSchemaWithParse(schema, schemaInput, transformedModifiers)
       : undefined;
@@ -82,7 +102,7 @@ export function useCreateSuiteRunner<
       {
         suiteParams: callbackArgs,
         schema,
-        modifiers: transformedModifiers,
+        modifiers: transformedModifiers as any,
       },
       () => {
         useEmit('SUITE_RUN_STARTED');

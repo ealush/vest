@@ -14,8 +14,11 @@ import {
 import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
+import { FieldExclusion } from '../hooks/focused/focused';
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 import { useDeferDoneCallback } from './after/deferDoneCallback';
+import { assertNoAbortSignal } from './changed';
+import type { ChangedOptions } from './changed';
 import { createSuite } from './createSuite';
 import { getStandardSchema } from './getStandardSchema';
 import { getTypedMethods } from './getTypedMethods';
@@ -102,12 +105,20 @@ function useGetSuiteMethods<
     get,
     ...bindSuiteSelectors<F, G, S>(get),
     ...getTypedMethods<F, G>(),
-    // focus and only must come after the spreads to prevent spread keys from overriding them
+    // focus, only and changed must come after the spreads to prevent spread keys from overriding them
     focus: VestRuntime.persist(
       useCreateFocus<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
     only: VestRuntime.persist(
       useCreateOnly<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
+    ),
+    changed: VestRuntime.persist(
+      useCreateChanged<F, G, T, S>(
+        suiteCallback,
+        modifiers,
+        subscribe,
+        schema,
+      ),
     ),
   };
 }
@@ -256,6 +267,42 @@ function useCreateOnly<
   );
   return function only(onlyField: NonNullable<SuiteModifiers<F, G>['only']>) {
     return focus({ only: onlyField });
+  };
+}
+
+function useCreateChanged<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(
+  suiteCallback: SuiteCallbackWithSchema<S, T>,
+  modifiers: SuiteModifiers<F, G>,
+  subscribe: Subscribe,
+  schema?: S,
+) {
+  // Defer affected-set expansion until run(data) so root->array targets
+  // can be expanded using the actual runtime data (rows.length).
+  // Without deferral, changed('global') with target rows[$item].tax would
+  // produce the unusable field 'rows.rows.$item.tax' and nothing would run.
+  return function changed(
+    changedField: string | string[] | FieldExclusion<F>,
+    options?: ChangedOptions,
+  ) {
+    /** @deferred v2 — AbortSignal abort deferred */
+    assertNoAbortSignal(options);
+    const changedArray = Array.isArray(changedField)
+      ? (changedField as string[])
+      : [changedField as string];
+    // Store raw changed fields; useCreateSuiteRunner will expand using run data
+    // Fallback to immediate expansion for pre-run inspection (e.g., suite.get)
+    // is handled by runner; here we just create a focused suite with deferred modifier.
+    return useCreateSuiteMethods<F, G, T, S>(
+      suiteCallback,
+      { ...modifiers, __changed: changedArray } as SuiteModifiers<F, G>,
+      subscribe,
+      schema,
+    );
   };
 }
 

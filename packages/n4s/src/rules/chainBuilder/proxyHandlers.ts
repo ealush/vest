@@ -11,39 +11,51 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   rules: Record<string, (...args: any[]) => any>,
   {
     add,
+    dependsOn,
+    describe,
+    message,
+    parse,
+    prepend,
+    revalidates,
+    run,
     test,
     validate,
-    run,
-    parse,
-    message,
-    prepend,
     '~standard': standard,
   }: {
     add: (p: Predicate) => T;
+    dependsOn: (resolver: any) => T;
+    describe: () => any;
+    message: (msg: any) => T;
+    parse: T['parse'];
+    prepend: (p: Predicate) => T;
+    revalidates: (resolver: any) => T;
+    run: T['run'];
     test: T['test'];
     validate: T['validate'];
-    run: T['run'];
-    parse: T['parse'];
-    message: (msg: any) => T;
-    prepend: (p: Predicate) => T;
     '~standard': StandardSchemaV1.Props<any, any>;
   },
 ) {
   const methods = {
     '~standard': standard,
+    dependsOn,
+    describe,
     message,
     parse,
+    revalidates,
     run,
     test,
     validate,
   };
   const methodKeys = new Set([
+    'dependsOn',
+    'describe',
     'infer',
+    'message',
+    'parse',
+    'revalidates',
+    'run',
     'test',
     'validate',
-    'run',
-    'parse',
-    'message',
     '~standard',
   ]);
 

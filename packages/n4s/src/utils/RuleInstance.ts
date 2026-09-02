@@ -23,6 +23,15 @@ import { RuleRunReturn } from './RuleRunReturn';
  * console.log(schemaResult.value); // 'hello'
  * ```
  */
+export type ScopeHandle = Record<PropertyKey, unknown> & {
+  readonly root: Record<PropertyKey, unknown>;
+};
+
+export type DescribeResult = {
+  dependencies: Array<{ target: unknown; sources: unknown[] }>;
+  relationships: unknown[];
+};
+
 export class RuleInstance<T, Args extends any[] = any[]> {
   // The runtime object produced by create() supports dynamic chaining.
 
@@ -55,6 +64,11 @@ export class RuleInstance<T, Args extends any[] = any[]> {
   '~standard'!: StandardSchemaV1.Props<Args[0], T> & {
     readonly types: StandardSchemaV1.Types<Args[0], T>;
   };
+
+  // Schema relationship API — typed to allow inference of $ without annotation
+  dependsOn!: (resolver: (scope: ScopeHandle) => unknown) => this;
+  revalidates!: (resolver: (scope: ScopeHandle) => unknown) => this;
+  describe!: () => DescribeResult;
 
   private constructor() {}
 

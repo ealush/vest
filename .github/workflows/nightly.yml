@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GH_TOKEN }}
+          persist-credentials: false
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -30,8 +30,13 @@ jobs:
       - name: Verify changes require nightly publish
         id: verify
         run: |
+          set -o pipefail
           echo "Checking for package changes since stable..."
-          HAS_CHANGES=$(STABLE_BRANCH=stable CURRENT_BRANCH=latest node --loader ./vx/ts-loader.js ./vx/scripts/release/checkNightlyChanges.ts 2>&1 | grep -E "^(true|false)$" | tail -n 1)
+          HAS_CHANGES="$(STABLE_BRANCH=stable CURRENT_BRANCH=latest node --loader ./vx/ts-loader.js ./vx/scripts/release/checkNightlyChanges.ts 2>&1 | grep -xE 'true|false' | tail -n 1)"
+          if [ "$HAS_CHANGES" != "true" ] && [ "$HAS_CHANGES" != "false" ]; then
+            echo "Failed to detect changes (HAS_CHANGES='$HAS_CHANGES')" >&2
+            exit 1
+          fi
           echo "Has package changes: $HAS_CHANGES"
 
           # Also skip if latest and nightly point to the same commit (already published)
@@ -41,15 +46,15 @@ jobs:
           echo "nightly: $NIGHTLY_SHA"
           if [ -n "$LATEST_SHA" ] && [ "$LATEST_SHA" = "$NIGHTLY_SHA" ]; then
             echo "Latest and nightly are at the same commit. No new changes to publish."
-            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           if [ "$HAS_CHANGES" = "true" ]; then
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
           else
             echo "No package changes detected since stable. Skipping nightly publish."
-            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Push To Nightly Branch
         if: steps.verify.outputs.has_changes == 'true'
@@ -57,6 +62,7 @@ jobs:
           echo "Pushing to nightly branch"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
           git branch -D nightly || echo "No nightly branch"
           git push origin --delete nightly || echo "No nightly branch"
           git checkout -b nightly || git checkout nightly

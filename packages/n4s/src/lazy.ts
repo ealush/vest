@@ -333,38 +333,12 @@ const schemaAttacher =
       }
     }
 
-    // Validate rooted paths — defer any root that is not found in current schema.
-    // Those are intended for an outer mount (e.g., company.taxId -> $.root.accountType
-    // where accountType is not in company). Top-level missing will be validated at outer
-    // if that outer exists; standalone top-level missing will be caught because the
-    // root key truly does not exist anywhere — but we defer here and rely on outer.
-    // To still throw for standalone top-level missing, we check if the relationship
-    // was created via direct resolveInlineDeps (source root not found in current) and
-    // the current schema is not being used as a nested value elsewhere — we cannot know,
-    // so we defer all root-missing and let outer handle. For standalone top-level case
-    // where shape is never nested, the missing will remain undetected if we defer.
-    // Instead, we validate root paths only when they ARE found to be missing AND the
-    // current schema is the one that ultimately will be top-level. Heuristic: defer
-    // only when the target field exists in current schema and source root key does NOT.
-    // Now validate remaining (non-deferred) root relationships
-    // Defer all rooted relationships until final composition (outer mount / suite)
-    // to support valid nesting like company.taxId -> $.root.accountType where inner
-    // shape does not yet contain the provider. Validation at suite creation will
-    // surface dangling top-level roots.
-    for (const rel of relationships) {
-      if ((rel as any).__isRootSource || (rel as any).__isRootTarget) {
-        continue;
-      }
-      const targetKey = String(
-        (rel.target[rel.target.length - 1] as any)?.key ?? 'unknown',
-      );
-      if ((rel as any).__isRootSource) {
-        validateRootPathExists(rel.source, schema, targetKey);
-      }
-      if ((rel as any).__isRootTarget) {
-        validateRootPathExists(rel.target, schema, targetKey);
-      }
-    }
+    // Rooted validation is deferred to suite finalizer (validateDeferredRoots in
+    // createSuite). Do not validate $.root paths at intermediate shape creation
+    // to support nesting like company.taxId -> $.root.accountType where inner
+    // shape does not yet contain the provider. Dangling top-level roots are
+    // surfaced at suite creation.
+    void validateRootPathExists;
 
     const rule = ruleFn(schema);
     rule.__schema = schema;

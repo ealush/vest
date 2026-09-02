@@ -427,6 +427,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
   // D5 warn + optional intersection
   {
     const d5Suite = create((data: any) => {
+      optional('confirmPassword');
       test('password', () => {
         enforce(data.password).isString();
       });

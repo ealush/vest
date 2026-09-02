@@ -105,15 +105,7 @@ function validateDeferredRoots(schema: any): void {
       | Array<Record<string, any>>
       | undefined;
     const relationships: Array<Record<string, any>> =
-      rawRels && Array.isArray(rawRels)
-        ? rawRels
-        : (() => {
-            const desc =
-              typeof schema.describe === 'function' ? schema.describe() : null;
-            return desc && Array.isArray(desc.relationships)
-              ? (desc.relationships as Array<Record<string, any>>)
-              : [];
-          })();
+      rawRels && Array.isArray(rawRels) ? rawRels : [];
     if (!relationships.length) return;
     // topKeys kept for fallback when __schema missing
     const _topKeys = new Set(Object.keys((schema as any).__schema || {}));

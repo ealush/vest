@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type { SchemaPath } from './SchemaPath';
 import type { InternalRelationship } from './SchemaRelationship';
 

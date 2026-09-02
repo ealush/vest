@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { FirstParam } from './eager/typeUtils';
 import { adaptDynamicRules } from './lazy/ruleAdapter';
 import { typeRules } from './lazy/typeRules';
@@ -173,8 +174,24 @@ function createPickWrapper() {
       const collected: InternalRelationship[] = [];
       // eslint-disable-next-line complexity -- filter checks both endpoints
       const directKept = all.filter(rel => {
-        if ((rel as any).__isRootSource || (rel as any).__isRootTarget)
-          return true;
+        const isRootSource = (rel as any).__isRootSource === true;
+        const isRootTarget = (rel as any).__isRootTarget === true;
+        // For rooted relationships, ignore the rooted endpoint and require the local endpoint in keysSet
+        if (isRootSource && !isRootTarget) {
+          const tKey =
+            rel.target[0]?.type === 'property'
+              ? String((rel.target[0] as any).key)
+              : null;
+          return tKey ? keysSet.has(tKey) : true;
+        }
+        if (isRootTarget && !isRootSource) {
+          const sKey =
+            rel.source[0]?.type === 'property'
+              ? String((rel.source[0] as any).key)
+              : null;
+          return sKey ? keysSet.has(sKey) : true;
+        }
+        if (isRootSource && isRootTarget) return true;
         const targetFirst = rel.target[0];
         const sourceFirst = rel.source[0];
         const tKey =
@@ -216,11 +233,26 @@ function createPickWrapper() {
         }
       }
       // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are kept.
-      // For rooted (deferred) relationships, still filter by intentional pick/omit — a -> child.leaf
-      // must be dropped when its source `a` is not picked, but its existence is still deferred
-      // until suite finalization.
+      // For rooted relationships, ignore the rooted endpoint as above.
       // eslint-disable-next-line complexity -- filter checks both endpoints
       relationships = collected.filter(rel => {
+        const isRootSource = (rel as any).__isRootSource === true;
+        const isRootTarget = (rel as any).__isRootTarget === true;
+        if (isRootSource && !isRootTarget) {
+          const tTop =
+            rel.target[0]?.type === 'property'
+              ? String((rel.target[0] as any).key)
+              : null;
+          return tTop ? keysSet.has(tTop) : true;
+        }
+        if (isRootTarget && !isRootSource) {
+          const sTop =
+            rel.source[0]?.type === 'property'
+              ? String((rel.source[0] as any).key)
+              : null;
+          return sTop ? keysSet.has(sTop) : true;
+        }
+        if (isRootSource && isRootTarget) return true;
         const sTop =
           rel.source[0]?.type === 'property'
             ? String((rel.source[0] as any).key)
@@ -272,8 +304,23 @@ function createOmitWrapper() {
       const collected: InternalRelationship[] = [];
       // eslint-disable-next-line complexity -- filter checks both endpoints
       const directKept = all.filter(rel => {
-        if ((rel as any).__isRootSource || (rel as any).__isRootTarget)
-          return true;
+        const isRootSource = (rel as any).__isRootSource === true;
+        const isRootTarget = (rel as any).__isRootTarget === true;
+        if (isRootSource && !isRootTarget) {
+          const tKey =
+            rel.target[0]?.type === 'property'
+              ? String((rel.target[0] as any).key)
+              : null;
+          return tKey ? !keysSet.has(tKey) : true;
+        }
+        if (isRootTarget && !isRootSource) {
+          const sKey =
+            rel.source[0]?.type === 'property'
+              ? String((rel.source[0] as any).key)
+              : null;
+          return sKey ? !keysSet.has(sKey) : true;
+        }
+        if (isRootSource && isRootTarget) return true;
         const targetFirst = rel.target[0];
         const sourceFirst = rel.source[0];
         const tKey =
@@ -315,9 +362,26 @@ function createOmitWrapper() {
         }
       }
       // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are not omitted.
-      // For rooted (deferred) relationships, still filter by intentional omit.
+      // For rooted, filter only by local endpoint as above.
       // eslint-disable-next-line complexity -- filter checks both endpoints
       relationships = collected.filter(rel => {
+        const isRootSource = (rel as any).__isRootSource === true;
+        const isRootTarget = (rel as any).__isRootTarget === true;
+        if (isRootSource && !isRootTarget) {
+          const tTop =
+            rel.target[0]?.type === 'property'
+              ? String((rel.target[0] as any).key)
+              : null;
+          return tTop ? !keysSet.has(tTop) : true;
+        }
+        if (isRootTarget && !isRootSource) {
+          const sTop =
+            rel.source[0]?.type === 'property'
+              ? String((rel.source[0] as any).key)
+              : null;
+          return sTop ? !keysSet.has(sTop) : true;
+        }
+        if (isRootSource && isRootTarget) return true;
         const sTop =
           rel.source[0]?.type === 'property'
             ? String((rel.source[0] as any).key)

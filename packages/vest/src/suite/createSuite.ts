@@ -1,3 +1,4 @@
+/* eslint-disable complexity -- suite finalization */
 import { CB, makeResult, Result } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
@@ -98,46 +99,70 @@ function createSuite<
 // eslint-disable-next-line complexity -- suite finalization walks deferred roots
 function validateDeferredRoots(schema: any): void {
   try {
-    const desc =
-      typeof schema.describe === 'function' ? schema.describe() : null;
-    if (!desc || !Array.isArray(desc.relationships)) return;
-    const topKeys = new Set(Object.keys((schema as any).__schema || {}));
+    // Use raw internal relationships to preserve __isRootSource/Target flags
+    // (describe() strips them). Fall back to describe() for non-shape schemas.
+    const RESOLVED = Symbol.for('vest:resolvedRelationships');
+    const rawRels = (schema as any)[RESOLVED] as
+      | Array<Record<string, any>>
+      | undefined;
+    const relationships: Array<Record<string, any>> =
+      rawRels && Array.isArray(rawRels)
+        ? rawRels
+        : (() => {
+            const desc =
+              typeof schema.describe === 'function' ? schema.describe() : null;
+            return desc && Array.isArray(desc.relationships)
+              ? (desc.relationships as Array<Record<string, any>>)
+              : [];
+          })();
+    if (!relationships.length) return;
+    // topKeys kept for fallback when __schema missing
+    const _topKeys = new Set(Object.keys((schema as any).__schema || {}));
+    void _topKeys;
     // Also consider top-level keys from describe dependencies target
-    for (const rel of desc.relationships as Array<Record<string, any>>) {
+    for (const rel of relationships) {
       const isRootSource = (rel as any).__isRootSource === true;
       const isRootTarget = (rel as any).__isRootTarget === true;
       if (!isRootSource && !isRootTarget) continue;
-      // For root source, check source top-level key exists in final schema
-      const sourceTop =
-        Array.isArray(rel.source) && rel.source[0]?.type === 'property'
-          ? String(rel.source[0].key)
-          : null;
-      const targetTop =
-        Array.isArray(rel.target) && rel.target[0]?.type === 'property'
-          ? String(rel.target[0].key)
-          : null;
-      // Source root: sourceTop must be in topKeys
-      if (isRootSource && sourceTop && !topKeys.has(sourceTop)) {
-        const {
-          EnforceSchemaError,
-        } = require('n4s/src/errors/EnforceSchemaError');
-        const targetField =
-          targetTop ||
-          (Array.isArray(rel.target)
-            ? String(rel.target[rel.target.length - 1]?.key ?? 'unknown')
-            : 'unknown');
-        throw new EnforceSchemaError(
-          `EnforceSchemaError: "${targetField}" depends on unknown field "${sourceTop}"`,
-        );
+      // For root source, check full path exists in final schema (not just top-level)
+      // to catch missing descendant like $.root.account.missing
+      // eslint-disable-next-line complexity -- full path walk
+      const checkPath = (path: any[], fieldForMsg: string): void => {
+        let current: any = (schema as any).__schema || {};
+        path.forEach((seg: any, i: number) => {
+          if (seg.type !== 'property') return;
+          const key = String(seg.key);
+          if (!Object.prototype.hasOwnProperty.call(current, key)) {
+            const {
+              EnforceSchemaError,
+            } = require('n4s/src/errors/EnforceSchemaError');
+            throw new EnforceSchemaError(
+              `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${key}"`,
+            );
+          }
+          const rule: any = current[key];
+          if (i < path.length - 1) {
+            if (rule?.__schema) current = rule.__schema;
+            else if (rule?.[Symbol.for('vest:itemSchema')]) {
+              const item: any = rule[Symbol.for('vest:itemSchema')];
+              current = item?.__schema ?? {};
+            } else current = {};
+          }
+        });
+      };
+      const targetField =
+        Array.isArray(rel.target) && rel.target.length
+          ? String((rel.target[rel.target.length - 1] as any)?.key ?? 'unknown')
+          : 'unknown';
+      const sourceField =
+        Array.isArray(rel.source) && rel.source.length
+          ? String((rel.source[rel.source.length - 1] as any)?.key ?? 'unknown')
+          : 'unknown';
+      if (isRootSource) {
+        checkPath(rel.source as any[], targetField);
       }
-      if (isRootTarget && targetTop && !topKeys.has(targetTop)) {
-        const {
-          EnforceSchemaError,
-        } = require('n4s/src/errors/EnforceSchemaError');
-        const sourceField = sourceTop || 'unknown';
-        throw new EnforceSchemaError(
-          `EnforceSchemaError: "${sourceField}" depends on unknown field "${targetTop}"`,
-        );
+      if (isRootTarget) {
+        checkPath(rel.target as any[], sourceField);
       }
     }
   } catch (e) {

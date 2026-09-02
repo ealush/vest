@@ -124,6 +124,7 @@ function typeChecks() {
 
 describe('inference vest schemaRelationships', () => {
   it('suite with schema infers without any', () => {
+    typeChecks();
     expect(true).toBe(true);
   });
 });

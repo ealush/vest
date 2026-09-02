@@ -122,9 +122,12 @@ function typeChecks() {
   void deps;
 }
 
+// typeChecks is type-only — not invoked at runtime to avoid enforce.shape side effects;
+// tsc --noEmit with expectTypeOf validates it statically
+void typeChecks;
+
 describe('inference vest schemaRelationships', () => {
   it('suite with schema infers without any', () => {
-    typeChecks();
     expect(true).toBe(true);
   });
 });

@@ -3,6 +3,7 @@ import listAllChangedPackages from './github/listAllChangedPackages.js';
 
 import * as logger from 'vx/logger.js';
 import { packageNames } from 'vx/packageNames.js';
+import { isNightlyBranch } from 'vx/util/taggedBranch.js';
 
 // Gets all the packages that need to be released in the correct order
 
@@ -13,6 +14,14 @@ function packagesToRelease(): {
   const deps = buildDepsTree();
   const changedPackagesSet = listAllChangedPackages();
   const isTopLevelChange = changedPackagesSet.size === 0;
+
+  if (isNightlyBranch && isTopLevelChange) {
+    logger.info(
+      '🌙 Nightly branch: No package changes detected since stable. Skipping publish.',
+    );
+    return { packageListToRelease: [], isTopLevelChange: false };
+  }
+
   const changedPackagesArray = Array.from(changedPackagesSet);
   const release = new Set<string>();
   const unchangedDependents = new Set<string>();

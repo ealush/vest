@@ -123,16 +123,14 @@ describe('Schema Relationships — vest suite V1 boundary', () => {
       state: enforce.isString().dependsOn($ => $.country),
     });
 
-    let schema: ReturnType<typeof enforce.shape>;
+    const schema = enforce.shape({ billingAddress: addressSchema });
     const suite = create(
       data => {
         test('billingAddress.state', () => {
           enforce(data.billingAddress.state).isNotBlank();
         });
       },
-      (schema = enforce.shape({
-        billingAddress: addressSchema,
-      })),
+      schema,
     );
 
     const res = suite.run({

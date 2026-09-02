@@ -572,7 +572,7 @@ describe('Acceptance — Unrelated unaffected', () => {
 
 // 5. Performance sanity
 describe('Acceptance — Performance sanity', () => {
-  it.skip('changed() is minimal and deduplicated — TODO', async () => {
+  it('changed() is minimal and deduplicated', async () => {
     const schema = enforce.shape({
       a: enforce.isString(),
       b: enforce.isString().dependsOn($ => $.a),
@@ -618,7 +618,7 @@ describe('Acceptance — Performance sanity', () => {
 
 // 6. Repeated calls don't accumulate garbage
 describe('Acceptance — Stateful lifecycle', () => {
-  it.skip('repeated changed() does not accumulate garbage — TODO', async () => {
+  it('repeated changed() does not accumulate garbage', async () => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
@@ -701,7 +701,7 @@ describe('Acceptance — Stateful lifecycle', () => {
     expect(logB.get()).toEqual(['shipping.country', 'shipping.state']);
   });
 
-  it.skip('relationship metadata does not leak between suite instances — TODO', async () => {
+  it('relationship metadata does not leak between suite instances', async () => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
@@ -755,7 +755,7 @@ describe('Acceptance — Stateful lifecycle', () => {
     expect(callbackInvoked).toBe(true);
   });
 
-  it.skip('keeps cross-field validation correct across user interactions (docs-like) — TODO', async () => {
+  it('keeps cross-field validation correct across user interactions (docs-like)', async () => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),

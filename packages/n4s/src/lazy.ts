@@ -18,8 +18,16 @@ import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
 import { type RuleInstance } from './utils/RuleInstance';
 import { ctx } from './enforceContext';
 import { RuleRunReturn } from './utils/RuleRunReturn';
-import { resolveInlineDeps } from './schema/dependencyResolver';
-import { rebaseRelationships } from './schema/rebase';
+import {
+  ITEM_SCHEMA,
+  RESOLVED_RELATIONSHIPS,
+  UNRESOLVED_DEPS,
+  resolveInlineDeps,
+} from './schema/dependencyResolver';
+import {
+  rebaseRelationships,
+  rebaseRelationshipsForArray,
+} from './schema/rebase';
 import type { InternalRelationship } from './schema/SchemaRelationship';
 
 /**
@@ -131,12 +139,13 @@ function createPartialWrapper() {
         if (item) {
           const itemRels = item[RESOLVED] || [];
           if (itemRels.length > 0) {
-            const binding = `${String(key)}.$item`;
-            const prefix = [
-              { type: 'property', key } as const,
-              { type: 'item', binding } as const,
-            ];
-            relationships.push(...rebaseRelationships(itemRels, prefix));
+            relationships.push(
+              ...rebaseRelationshipsForArray(
+                itemRels,
+                key,
+                `${String(key)}.$item`,
+              ),
+            );
           }
         }
       }
@@ -223,12 +232,13 @@ function createPickWrapper() {
               | InternalRelationship[]
               | undefined) || [];
           if (itemRels.length > 0) {
-            const binding = `${String(key)}.$item`;
-            const prefix = [
-              { type: 'property', key } as const,
-              { type: 'item', binding } as const,
-            ];
-            collected.push(...rebaseRelationships(itemRels, prefix));
+            collected.push(
+              ...rebaseRelationshipsForArray(
+                itemRels,
+                key,
+                `${String(key)}.$item`,
+              ),
+            );
           }
         }
       }
@@ -352,12 +362,13 @@ function createOmitWrapper() {
               | InternalRelationship[]
               | undefined) || [];
           if (itemRels.length > 0) {
-            const binding = `${String(key)}.$item`;
-            const prefix = [
-              { type: 'property', key } as const,
-              { type: 'item', binding } as const,
-            ];
-            collected.push(...rebaseRelationships(itemRels, prefix));
+            collected.push(
+              ...rebaseRelationshipsForArray(
+                itemRels,
+                key,
+                `${String(key)}.$item`,
+              ),
+            );
           }
         }
       }
@@ -476,13 +487,13 @@ const schemaAttacher =
           const itemRels =
             (itemSchema as any)[Symbol.for('vest:resolvedRelationships')] || [];
           if (itemRels.length > 0) {
-            const itemBinding = `${String(key)}.$item`;
-            const prefix = [
-              { type: 'property', key } as const,
-              { type: 'item', binding: itemBinding } as const,
-            ];
-            const rebased = rebaseRelationships(itemRels, prefix);
-            relationships.push(...rebased);
+            relationships.push(
+              ...rebaseRelationshipsForArray(
+                itemRels,
+                key,
+                `${String(key)}.$item`,
+              ),
+            );
           }
         }
       }

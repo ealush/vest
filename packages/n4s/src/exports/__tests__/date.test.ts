@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import { enforce } from '../../n4s';
 import '../date';
@@ -90,6 +90,15 @@ describe('date', () => {
     });
 
     describe('Regression: timezone-sensitive date validation (#1152)', () => {
+      const originalTZ = process.env.TZ;
+
+      beforeEach(() => {
+        process.env.TZ = 'America/New_York';
+      });
+
+      afterEach(() => {
+        process.env.TZ = originalTZ;
+      });
       it('Should pass for YYYY-MM-DD dates at month boundaries', () => {
         expect(() => enforce('2024-01-31').isDate()).not.toThrow();
         expect(() => enforce('2024-02-29').isDate()).not.toThrow();

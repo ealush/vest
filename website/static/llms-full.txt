@@ -9772,7 +9772,7 @@ Schema Relationships are **metadata + `suite.changed()` in V1**. `describe()` re
 | `skipWhen` (retains) | records | `run()` unchanged; `changed()` treats dependent as candidate but Vest skips if `skipWhen` hides it |
 | `omitWhen` (removes) | records | `run()` unchanged; `changed()` still records edge but omitted test never runs |
 | `optional('field')` | records | `run()` unchanged — edge exists even if optional field is absent; `changed()` includes it when source changes |
-| `include().when()` | records | `include` stays legacy escape hatch (unchanged) |
+| `include().when()` | **does not record** — `include` is a Vest suite modifier, not an n4s schema relationship; `schema.describe()` has no `include` metadata; `changed()` remains the interaction-aware operation |
 | `only` / `skip` / `onlyGroup` / `skipGroup` | records | **not affected** — `only('password')` does not auto-include `confirmPassword`; `changed('password')` does |
 | `group` / `each` | records (rebased) | `run()` unchanged; `changed()` respects rebasing and same-item scoping |
 | `warn` | records | `run()` unchanged; `changed()` includes warn dependents as normal tests |

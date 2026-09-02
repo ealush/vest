@@ -91,7 +91,7 @@ export function resolveInlineDeps(
       const refs = normalizeResolverResult(result);
       if (refs.length === 0 && result !== undefined) {
         throw new EnforceSchemaError(
-          `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver must return a dependency ref (e.g., $ => $.other) or array of refs, got ${String(result)}`,
+          `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver must return a dependency ref (e.g., $ => $.other) or array of refs, got ${typeof result}`,
         );
       }
       if (Array.isArray(result) && refs.length !== (result as unknown[]).length) {

@@ -8,16 +8,23 @@ import {
 } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
-import type {
-  RuleInstance,
-  ScopeHandle,
-} from '../../utils/RuleInstance';
+import type { RuleInstance, ScopeHandle } from '../../utils/RuleInstance';
 
 import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 
 export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
-  keyof Omit<T, 'infer' | 'test' | 'validate' | 'parse' | '~standard' | 'dependsOn' | 'revalidates' | 'describe'>,
+  keyof Omit<
+    T,
+    | 'infer'
+    | 'test'
+    | 'validate'
+    | 'parse'
+    | '~standard'
+    | 'dependsOn'
+    | 'revalidates'
+    | 'describe'
+  >,
   (...args: unknown[]) => boolean | ReturnType<Predicate>
 >;
 
@@ -79,14 +86,18 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   }) as unknown as T['validate'];
 
   const test = ((...args: unknown[]) => {
-    const result = (validate as unknown as (...a: unknown[]) => ReturnType<T['validate']>)(...args);
+    const result = (
+      validate as unknown as (...a: unknown[]) => ReturnType<T['validate']>
+    )(...args);
     return !result.issues;
   }) as unknown as T['test'];
 
   // Internal compatibility method - converts StandardSchema Result to RuleRunReturn
 
   const parse = ((...args: unknown[]) => {
-    const result = (validate as unknown as (...a: unknown[]) => ReturnType<T['validate']>)(...args);
+    const result = (
+      validate as unknown as (...a: unknown[]) => ReturnType<T['validate']>
+    )(...args);
     if (!result.issues) {
       return result.value as ReturnType<T['parse']>;
     }
@@ -101,7 +112,8 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
       return {
         ...result,
         message:
-          dynamicValue(lazyMessage, args[0] as unknown, result.message) ?? result.message,
+          dynamicValue(lazyMessage, args[0] as unknown, result.message) ??
+          result.message,
       } as ReturnType<T['run']>;
     }
     return result as ReturnType<T['run']>;
@@ -117,27 +129,42 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   const dependsOn = (resolver: (scope: ScopeHandle) => unknown): T => {
     unresolvedDeps.push({ resolver, isRevalidates: false });
     // also store on target for external inspection (shape resolver)
-    (target as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
-    (proxy as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+    (target as unknown as Record<symbol, unknown>)[
+      Symbol.for('vest:unresolvedDeps')
+    ] = unresolvedDeps;
+    (proxy as unknown as Record<symbol, unknown>)[
+      Symbol.for('vest:unresolvedDeps')
+    ] = unresolvedDeps;
     return proxy;
   };
 
   const revalidates = (resolver: (scope: ScopeHandle) => unknown): T => {
     unresolvedDeps.push({ resolver, isRevalidates: true });
-    (target as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
-    (proxy as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+    (target as unknown as Record<symbol, unknown>)[
+      Symbol.for('vest:unresolvedDeps')
+    ] = unresolvedDeps;
+    (proxy as unknown as Record<symbol, unknown>)[
+      Symbol.for('vest:unresolvedDeps')
+    ] = unresolvedDeps;
     return proxy;
   };
 
   const describe = (): ReturnType<T['describe']> => {
     const raw =
-      (target as unknown as Record<symbol, unknown>)[Symbol.for('vest:resolvedRelationships')] ||
-      (proxy as unknown as Record<symbol, unknown>)[Symbol.for('vest:resolvedRelationships')] ||
+      (target as unknown as Record<symbol, unknown>)[
+        Symbol.for('vest:resolvedRelationships')
+      ] ||
+      (proxy as unknown as Record<symbol, unknown>)[
+        Symbol.for('vest:resolvedRelationships')
+      ] ||
       [];
     const rawArray = raw as Array<Record<string, unknown>>;
     // Clean internal flags
     const resolved = rawArray.map(rel => {
-      const { __isRootSource, __isRootTarget, ...clean } = rel as Record<string, unknown> & {
+      const { __isRootSource, __isRootTarget, ...clean } = rel as Record<
+        string,
+        unknown
+      > & {
         __isRootSource?: unknown;
         __isRootTarget?: unknown;
       };
@@ -165,10 +192,23 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
     createChainProxyHandlers(rules, {
       '~standard': {
         types: {
-          input: undefined as unknown as T extends RuleInstance<infer I, unknown[]> ? I : unknown,
-          output: undefined as unknown as T extends RuleInstance<infer O, unknown[]> ? O : unknown,
+          input: undefined as unknown as T extends RuleInstance<
+            infer I,
+            unknown[]
+          >
+            ? I
+            : unknown,
+          output: undefined as unknown as T extends RuleInstance<
+            infer O,
+            unknown[]
+          >
+            ? O
+            : unknown,
         },
-        validate: validate as unknown as StandardSchemaV1.Props<unknown, unknown>['validate'],
+        validate: validate as unknown as StandardSchemaV1.Props<
+          unknown,
+          unknown
+        >['validate'],
         vendor: 'n4s',
         version: 1 as const,
       } as StandardSchemaV1.Props<unknown, unknown>,
@@ -186,7 +226,9 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   );
 
   // Ensure symbols are accessible via proxy get trap fallback
-  (proxy as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+  (proxy as unknown as Record<symbol, unknown>)[
+    Symbol.for('vest:unresolvedDeps')
+  ] = unresolvedDeps;
 
   return { add, proxy } as const;
 }

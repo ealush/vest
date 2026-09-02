@@ -33,14 +33,26 @@ function typeChecks() {
 
   // data should be { password: string, confirmPassword: string, profile: { age: number, displayName: string } }
   // The following should be valid
-  suite.run({ password: 'a', confirmPassword: 'a', profile: { age: 1, displayName: 'x' } });
+  suite.run({
+    password: 'a',
+    confirmPassword: 'a',
+    profile: { age: 1, displayName: 'x' },
+  });
 
   // @ts-expect-error - missing required field
   suite.run({ password: 'a', confirmPassword: 'a' });
 
   // changed() should accept field names from schema
-  suite.changed('password').run({ password: 'a', confirmPassword: 'a', profile: { age: 1, displayName: 'x' } });
-  suite.changed('profile.displayName').run({ password: 'a', confirmPassword: 'a', profile: { age: 1, displayName: 'x' } });
+  suite.changed('password').run({
+    password: 'a',
+    confirmPassword: 'a',
+    profile: { age: 1, displayName: 'x' },
+  });
+  suite.changed('profile.displayName').run({
+    password: 'a',
+    confirmPassword: 'a',
+    profile: { age: 1, displayName: 'x' },
+  });
 
   // describe should be on schema
   const d = schema.describe();

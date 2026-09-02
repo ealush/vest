@@ -196,10 +196,7 @@ export function getAffectedFields(
           // Root -> array item case: need to expand to all indices present in data
           // For V1, if data is available and target is array item, expand to all indices
           if (data) {
-            const expanded = expandArrayTargets(
-              rel.target as SchemaPath,
-              data,
-            );
+            const expanded = expandArrayTargets(rel.target as SchemaPath, data);
             for (const ef of expanded) affectedSet.add(ef);
           } else {
             // Without data, fallback to wildcard field name (not ideal, but for describe tests)
@@ -224,24 +221,20 @@ export function getAffectedFields(
  * -> ['travelers.0.visa', 'travelers.1.visa', 'travelers.2.visa']
  * Nested: [groups, $item, members, $item, email] -> all group/member combos.
  */
-function expandArrayTargets(
-  targetPath: SchemaPath,
-  data: any,
-): string[] {
+function expandArrayTargets(targetPath: SchemaPath, data: any): string[] {
   const results: string[] = [];
   // eslint-disable-next-line complexity -- recursive DFS for nested $item expansion
-  function dfs(
-    pathIdx: number,
-    dataNode: any,
-    built: SchemaPath,
-  ): void {
+  function dfs(pathIdx: number, dataNode: any, built: SchemaPath): void {
     if (pathIdx >= targetPath.length) {
       results.push(pathToFieldName(built as SchemaPath));
       return;
     }
     const seg = targetPath[pathIdx];
     if (seg.type === 'property') {
-      dfs(pathIdx + 1, dataNode?.[(seg as any).key], [...built, seg] as SchemaPath);
+      dfs(pathIdx + 1, dataNode?.[(seg as any).key], [
+        ...built,
+        seg,
+      ] as SchemaPath);
     } else {
       // item segment — dataNode should be the array at this position
       if (!Array.isArray(dataNode)) {
@@ -249,7 +242,10 @@ function expandArrayTargets(
         return;
       }
       for (let i = 0; i < dataNode.length; i++) {
-        dfs(pathIdx + 1, dataNode[i], [...built, { type: 'item', binding: String(i) }] as SchemaPath);
+        dfs(pathIdx + 1, dataNode[i], [
+          ...built,
+          { type: 'item', binding: String(i) },
+        ] as SchemaPath);
       }
     }
   }

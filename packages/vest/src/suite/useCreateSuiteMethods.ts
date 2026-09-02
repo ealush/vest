@@ -113,12 +113,7 @@ function useGetSuiteMethods<
       useCreateOnly<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
     changed: VestRuntime.persist(
-      useCreateChanged<F, G, T, S>(
-        suiteCallback,
-        modifiers,
-        subscribe,
-        schema,
-      ),
+      useCreateChanged<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
   };
 }

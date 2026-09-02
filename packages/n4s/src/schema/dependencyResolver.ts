@@ -6,10 +6,7 @@ import type {
   InternalRelationship,
   SchemaRelationship,
 } from './SchemaRelationship';
-import {
-  createScopeProxy,
-  normalizeResolverResult,
-} from './scopeProxy';
+import { createScopeProxy, normalizeResolverResult } from './scopeProxy';
 import type { Scope } from './scopeProxy';
 
 // Symbols for storing unresolved deps on RuleInstance — must use Symbol.for to match chainBuilder
@@ -27,27 +24,37 @@ export type UnresolvedDep = {
 export function getUnresolvedDeps(
   rule: RuleInstance<unknown, unknown[]>,
 ): UnresolvedDep[] {
-  return ((rule as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] as UnresolvedDep[]) || [];
+  return (
+    ((rule as unknown as Record<symbol, unknown>)[
+      UNRESOLVED_DEPS
+    ] as UnresolvedDep[]) || []
+  );
 }
 
 export function setUnresolvedDeps(
   rule: RuleInstance<unknown, unknown[]>,
   deps: UnresolvedDep[],
 ): void {
-  (rule as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] = deps as unknown;
+  (rule as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] =
+    deps as unknown;
 }
 
 export function getResolvedRelationships(
   rule: RuleInstance<unknown, unknown[]>,
 ): SchemaRelationship[] {
-  return ((rule as unknown as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS] as SchemaRelationship[]) || [];
+  return (
+    ((rule as unknown as Record<symbol, unknown>)[
+      RESOLVED_RELATIONSHIPS
+    ] as SchemaRelationship[]) || []
+  );
 }
 
 export function setResolvedRelationships(
   rule: RuleInstance<unknown, unknown[]>,
   rels: SchemaRelationship[],
 ): void {
-  (rule as unknown as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS] = rels as unknown;
+  (rule as unknown as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS] =
+    rels as unknown;
 }
 
 /**
@@ -67,7 +74,9 @@ export function resolveInlineDeps(
     const fieldRule = shape[fieldKey];
     if (!fieldRule) continue;
 
-    const unresolved = getUnresolvedDeps(fieldRule as unknown as RuleInstance<unknown, unknown[]>);
+    const unresolved = getUnresolvedDeps(
+      fieldRule as unknown as RuleInstance<unknown, unknown[]>,
+    );
     if (!unresolved || unresolved.length === 0) continue;
 
     const targetPath: SchemaPath = [...scopePath, propertySegment(fieldKey)];
@@ -94,7 +103,10 @@ export function resolveInlineDeps(
           `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver must return a dependency ref (e.g., $ => $.other) or array of refs, got ${typeof result}`,
         );
       }
-      if (Array.isArray(result) && refs.length !== (result as unknown[]).length) {
+      if (
+        Array.isArray(result) &&
+        refs.length !== (result as unknown[]).length
+      ) {
         throw new EnforceSchemaError(
           `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver array contains non-dependency values`,
         );
@@ -110,7 +122,10 @@ export function resolveInlineDeps(
         if (
           sourcePath.length > 0 &&
           sourcePath[sourcePath.length - 1].type === 'property' &&
-          String((sourcePath[sourcePath.length - 1] as unknown as PropertySegment).key) === 'self'
+          String(
+            (sourcePath[sourcePath.length - 1] as unknown as PropertySegment)
+              .key,
+          ) === 'self'
         ) {
           // Single self: $.self => owning field
           if (
@@ -185,21 +200,33 @@ function validateSourceExists(
   targetField: string,
   scopePath: SchemaPath,
 ): void {
-  let current: Record<PropertyKey, unknown> = rootShape as unknown as Record<PropertyKey, unknown>;
+  let current: Record<PropertyKey, unknown> = rootShape as unknown as Record<
+    PropertyKey,
+    unknown
+  >;
   // Walk to scopePath to find the containing shape
   for (const seg of scopePath) {
     if (seg.type === 'property') {
-      const next = (current as Record<PropertyKey, unknown>)[seg.key as PropertyKey];
+      const next = (current as Record<PropertyKey, unknown>)[
+        seg.key as PropertyKey
+      ];
       if (next && typeof next === 'object' && '__schema' in (next as object)) {
-        current = (next as unknown as { __schema: Record<PropertyKey, unknown> }).__schema;
+        current = (
+          next as unknown as { __schema: Record<PropertyKey, unknown> }
+        ).__schema;
       } else if (next && typeof next === 'object') {
         current = next as Record<PropertyKey, unknown>;
       } else {
         return;
       }
     } else if (seg.type === 'item') {
-      if (current && (current as unknown as Record<PropertyKey, unknown>).__itemSchema) {
-        current = (current as unknown as { __itemSchema: Record<PropertyKey, unknown> }).__itemSchema as Record<PropertyKey, unknown>;
+      if (
+        current &&
+        (current as unknown as Record<PropertyKey, unknown>).__itemSchema
+      ) {
+        current = (
+          current as unknown as { __itemSchema: Record<PropertyKey, unknown> }
+        ).__itemSchema as Record<PropertyKey, unknown>;
       }
     }
   }
@@ -210,8 +237,11 @@ function validateSourceExists(
   // prefix before the next property is a shape-like (has __schema), not a scalar.
   // For path [obj, leaf] where obj is string, the field `obj` scalar has a child `leaf` → error.
   // We check from the effective root of sourcePath.
-  const sourceRoot: Record<PropertyKey, unknown> = (isRooted ? rootShape : current) as Record<PropertyKey, unknown>;
-  let walkShape: Record<PropertyKey, unknown> | null = sourceRoot as unknown as Record<PropertyKey, unknown> | null;
+  const sourceRoot: Record<PropertyKey, unknown> = (
+    isRooted ? rootShape : current
+  ) as Record<PropertyKey, unknown>;
+  let walkShape: Record<PropertyKey, unknown> | null =
+    sourceRoot as unknown as Record<PropertyKey, unknown> | null;
   // For non-rooted paths, strip scopePath prefix to get relative path within current scope
   const relativePath: SchemaPath = isRooted
     ? sourcePath
@@ -220,7 +250,9 @@ function validateSourceExists(
   for (let i = 0; i < relativePath.length - 1; i++) {
     const seg = relativePath[i];
     if (seg.type !== 'property') continue;
-    const rule = (walkShape as Record<PropertyKey, unknown>)?.[seg.key as string];
+    const rule = (walkShape as Record<PropertyKey, unknown>)?.[
+      seg.key as string
+    ];
     if (!rule) continue;
     const isShapeLike =
       rule &&
@@ -230,40 +262,75 @@ function validateSourceExists(
         Symbol.for('vest:itemSchema') in rule);
     if (!isShapeLike) {
       // This segment is scalar but has a descendant — invalid
-      const descendant = String((relativePath[relativePath.length - 1] as unknown as PropertySegment).key);
+      const descendant = String(
+        (relativePath[relativePath.length - 1] as unknown as PropertySegment)
+          .key,
+      );
       const scalarKey = String(seg.key);
       throw new EnforceSchemaError(
         `EnforceSchemaError: "${targetField}" depends on "${scalarKey}.${descendant}" but "${scalarKey}" is a scalar field and has no child "${descendant}"`,
       );
     }
     // Descend into shape for next iteration
-    if ((rule as unknown as { __schema?: Record<PropertyKey, unknown> }).__schema) {
-      walkShape = (rule as unknown as { __schema: Record<PropertyKey, unknown> }).__schema;
-    } else if ((rule as unknown as Record<symbol, unknown>)[Symbol.for('vest:itemSchema')]) {
-      const itemSchema = (rule as unknown as Record<symbol, unknown>)[Symbol.for('vest:itemSchema')] as unknown as Record<PropertyKey, unknown>;
-      walkShape = (itemSchema as unknown as { __schema?: Record<PropertyKey, unknown> })?.__schema ?? itemSchema;
+    if (
+      (rule as unknown as { __schema?: Record<PropertyKey, unknown> }).__schema
+    ) {
+      walkShape = (
+        rule as unknown as { __schema: Record<PropertyKey, unknown> }
+      ).__schema;
+    } else if (
+      (rule as unknown as Record<symbol, unknown>)[
+        Symbol.for('vest:itemSchema')
+      ]
+    ) {
+      const itemSchema = (rule as unknown as Record<symbol, unknown>)[
+        Symbol.for('vest:itemSchema')
+      ] as unknown as Record<PropertyKey, unknown>;
+      walkShape =
+        (itemSchema as unknown as { __schema?: Record<PropertyKey, unknown> })
+          ?.__schema ?? itemSchema;
     } else {
       walkShape = null;
     }
   }
 
-  const shapeToCheck: Record<PropertyKey, unknown> = isRooted ? rootShape : current;
+  const shapeToCheck: Record<PropertyKey, unknown> = isRooted
+    ? rootShape
+    : current;
   // For scalar-descendant with chained path, leaf already handled above;
   // for simple path, check leaf existence.
   // Resolve the immediate parent shape for leaf check
-  let parentShape: Record<PropertyKey, unknown> | null = sourceRoot as unknown as Record<PropertyKey, unknown> | null;
+  let parentShape: Record<PropertyKey, unknown> | null =
+    sourceRoot as unknown as Record<PropertyKey, unknown> | null;
   if (relativePath.length > 1) {
     // Walk to parent of leaf
     for (let i = 0; i < relativePath.length - 1; i++) {
       const seg = relativePath[i];
       if (seg.type !== 'property') continue;
-      const rule = (parentShape as Record<PropertyKey, unknown>)?.[seg.key as string] as Record<PropertyKey, unknown> & {
+      const rule = (parentShape as Record<PropertyKey, unknown>)?.[
+        seg.key as string
+      ] as Record<PropertyKey, unknown> & {
         __schema?: Record<PropertyKey, unknown>;
         [key: symbol]: unknown;
       };
-      if ((rule as unknown as { __schema?: Record<PropertyKey, unknown> })?.__schema) parentShape = (rule as unknown as { __schema: Record<PropertyKey, unknown> }).__schema;
-      else if ((rule as unknown as Record<symbol, unknown>)[Symbol.for('vest:itemSchema')])
-        parentShape = ((rule as unknown as Record<symbol, unknown>)[Symbol.for('vest:itemSchema')] as unknown as { __schema?: Record<PropertyKey, unknown> })?.__schema ?? parentShape;
+      if (
+        (rule as unknown as { __schema?: Record<PropertyKey, unknown> })
+          ?.__schema
+      )
+        parentShape = (
+          rule as unknown as { __schema: Record<PropertyKey, unknown> }
+        ).__schema;
+      else if (
+        (rule as unknown as Record<symbol, unknown>)[
+          Symbol.for('vest:itemSchema')
+        ]
+      )
+        parentShape =
+          (
+            (rule as unknown as Record<symbol, unknown>)[
+              Symbol.for('vest:itemSchema')
+            ] as unknown as { __schema?: Record<PropertyKey, unknown> }
+          )?.__schema ?? parentShape;
       else parentShape = null;
     }
   } else {
@@ -272,7 +339,10 @@ function validateSourceExists(
   const keyToCheck = sourcePath[sourcePath.length - 1];
   if (!keyToCheck || keyToCheck.type !== 'property') return;
 
-  const checkShape = (parentShape ?? shapeToCheck) as Record<PropertyKey, unknown>;
+  const checkShape = (parentShape ?? shapeToCheck) as Record<
+    PropertyKey,
+    unknown
+  >;
   const exists = Object.prototype.hasOwnProperty.call(
     checkShape,
     keyToCheck.key as string,
@@ -295,9 +365,17 @@ function pathsEqual(a: SchemaPath, b: SchemaPath): boolean {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) {
     if (a[i].type !== b[i].type) return false;
-    if (a[i].type === 'property' && (a[i] as unknown as PropertySegment).key !== (b[i] as unknown as PropertySegment).key)
+    if (
+      a[i].type === 'property' &&
+      (a[i] as unknown as PropertySegment).key !==
+        (b[i] as unknown as PropertySegment).key
+    )
       return false;
-    if (a[i].type === 'item' && (a[i] as unknown as ItemSegment).binding !== (b[i] as unknown as ItemSegment).binding)
+    if (
+      a[i].type === 'item' &&
+      (a[i] as unknown as ItemSegment).binding !==
+        (b[i] as unknown as ItemSegment).binding
+    )
       return false;
   }
   return true;
@@ -311,7 +389,8 @@ function isPathPrefixedBy(path: SchemaPath, prefix: SchemaPath): boolean {
     if (path[i].type !== prefix[i].type) return false;
     if (
       path[i].type === 'property' &&
-      (path[i] as unknown as PropertySegment).key !== (prefix[i] as unknown as PropertySegment).key
+      (path[i] as unknown as PropertySegment).key !==
+        (prefix[i] as unknown as PropertySegment).key
     )
       return false;
   }

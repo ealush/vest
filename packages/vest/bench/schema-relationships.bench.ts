@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, no-unused-expressions */
- // @ts-nocheck
+// @ts-nocheck
 import { bench, describe } from 'vitest';
 import {
   create,
@@ -319,19 +319,16 @@ const dFanoutSchema = enforce.shape({
 describe('Integration matrix — changed() meets Vest features', () => {
   // D1 skipWhen
   {
-    const d1Suite = create(
-      (data: any) => {
-        test('country', () => {
-          enforce(data.country).isString();
+    const d1Suite = create((data: any) => {
+      test('country', () => {
+        enforce(data.country).isString();
+      });
+      skipWhen(data.country !== 'US', () => {
+        test('state', () => {
+          enforce(data.state).isString();
         });
-        skipWhen(data.country !== 'US', () => {
-          test('state', () => {
-            enforce(data.state).isString();
-          });
-        });
-      },
-      dSkipWhenSchema,
-    );
+      });
+    }, dSkipWhenSchema);
     d1Suite.run({ country: 'CA', state: '' });
     bench(
       'D1 skipWhen changed(country) CA→US [candidate but Vest skips]',
@@ -344,24 +341,23 @@ describe('Integration matrix — changed() meets Vest features', () => {
 
   // D2 omitWhen
   {
-    const d2Suite = create(
-      (data: any) => {
-        test('country', () => {
-          enforce(data.country).isString();
+    const d2Suite = create((data: any) => {
+      test('country', () => {
+        enforce(data.country).isString();
+      });
+      omitWhen(data.omitNickname, () => {
+        test('nickname', () => {
+          enforce(data.nickname).isString();
         });
-        omitWhen(data.omitNickname, () => {
-          test('nickname', () => {
-            enforce(data.nickname).isString();
-          });
-        });
-      },
-      dOmitWhenSchema,
-    );
+      });
+    }, dOmitWhenSchema);
     d2Suite.run({ country: 'US', nickname: 'x', omitNickname: false });
     bench(
       'D2 omitWhen changed(country) with omit guard [omitted branch]',
       () => {
-        d2Suite.changed('country').run({ country: 'CA', nickname: 'x', omitNickname: true });
+        d2Suite
+          .changed('country')
+          .run({ country: 'CA', nickname: 'x', omitNickname: true });
       },
       { time: 250 },
     );
@@ -374,26 +370,27 @@ describe('Integration matrix — changed() meets Vest features', () => {
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
-    const d3Suite = create(
-      (data: any) => {
-        optional('password');
-        test('password', () => {
-          enforce(data.password).isString();
-        });
-        test('confirmPassword', () => {
-          enforce(data.confirmPassword).equals(data.password);
-        });
-        test('email', () => {
-          enforce(data.email).isString();
-        });
-      },
-      d3Schema,
-    );
+    const d3Suite = create((data: any) => {
+      optional('password');
+      test('password', () => {
+        enforce(data.password).isString();
+      });
+      test('confirmPassword', () => {
+        enforce(data.confirmPassword).equals(data.password);
+      });
+      test('email', () => {
+        enforce(data.email).isString();
+      });
+    }, d3Schema);
     d3Suite.run({ email: 'a@b.com', password: '', confirmPassword: '' });
     bench(
       'D3 optional suite changed(password) [optional field + dependent]',
       () => {
-        d3Suite.changed('password').run({ email: 'a@b.com', password: 'secret123', confirmPassword: '' });
+        d3Suite.changed('password').run({
+          email: 'a@b.com',
+          password: 'secret123',
+          confirmPassword: '',
+        });
       },
       { time: 250 },
     );
@@ -428,23 +425,22 @@ describe('Integration matrix — changed() meets Vest features', () => {
 
   // D5 warn + optional intersection
   {
-    const d5Suite = create(
-      (data: any) => {
-        test('password', () => {
-          enforce(data.password).isString();
-        });
-        test('confirmPassword', () => {
-          warn();
-          enforce(data.confirmPassword).equals(data.password);
-        });
-      },
-      dOptionalSchema,
-    );
+    const d5Suite = create((data: any) => {
+      test('password', () => {
+        enforce(data.password).isString();
+      });
+      test('confirmPassword', () => {
+        warn();
+        enforce(data.confirmPassword).equals(data.password);
+      });
+    }, dOptionalSchema);
     d5Suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     bench(
       'D5 warn intersection changed(password) [warn field rerun]',
       () => {
-        d5Suite.changed('password').run({ password: 'xyz', confirmPassword: 'abcdefgh' });
+        d5Suite
+          .changed('password')
+          .run({ password: 'xyz', confirmPassword: 'abcdefgh' });
       },
       { time: 250 },
     );
@@ -456,22 +452,21 @@ describe('Integration matrix — changed() meets Vest features', () => {
       country: enforce.isString(),
       passport: enforce.isString().dependsOn($ => $.country),
     });
-    const d6Schema = enforce.shape({ travelers: enforce.isArrayOf(d6Traveler) });
-    const d6Suite = create(
-      (data: any) => {
-        group('travelers' as TGroupName, () => {
-          each(data.travelers, (t: any, i: number) => {
-            test(`travelers.${i}.country` as TFieldName, () => {
-              enforce(t.country).isString();
-            });
-            test(`travelers.${i}.passport` as TFieldName, () => {
-              enforce(t.passport).isString();
-            });
+    const d6Schema = enforce.shape({
+      travelers: enforce.isArrayOf(d6Traveler),
+    });
+    const d6Suite = create((data: any) => {
+      group('travelers' as TGroupName, () => {
+        each(data.travelers, (t: any, i: number) => {
+          test(`travelers.${i}.country` as TFieldName, () => {
+            enforce(t.country).isString();
+          });
+          test(`travelers.${i}.passport` as TFieldName, () => {
+            enforce(t.passport).isString();
           });
         });
-      },
-      d6Schema,
-    );
+      });
+    }, d6Schema);
     const d6Data = { travelers: travelersData(5) };
     d6Suite.run(d6Data);
     bench(
@@ -493,23 +488,23 @@ describe('Integration matrix — changed() meets Vest features', () => {
         }),
       ),
     });
-    const d7Suite = create(
-      (data: any) => {
-        each(data.items, (item: any, index: number) => {
-          group(`item_${index}` as TGroupName, () => {
-            test(`items.${index}.label` as TFieldName, () => {
-              enforce(item.label).isString();
-            });
-            test(`items.${index}.value` as TFieldName, () => {
-              enforce(item.value).isString();
-            });
+    const d7Suite = create((data: any) => {
+      each(data.items, (item: any, index: number) => {
+        group(`item_${index}` as TGroupName, () => {
+          test(`items.${index}.label` as TFieldName, () => {
+            enforce(item.label).isString();
+          });
+          test(`items.${index}.value` as TFieldName, () => {
+            enforce(item.value).isString();
           });
         });
-      },
-      d7Schema,
-    );
+      });
+    }, d7Schema);
     const d7Data = {
-      items: Array.from({ length: 10 }, (_, i) => ({ label: `l${i}`, value: `v${i}` })),
+      items: Array.from({ length: 10 }, (_, i) => ({
+        label: `l${i}`,
+        value: `v${i}`,
+      })),
     };
     d7Suite.run(d7Data);
     bench(
@@ -578,27 +573,26 @@ describe('Integration matrix — changed() meets Vest features', () => {
       username: enforce.isString().dependsOn($ => $.organizationId),
       email: enforce.isString(),
     });
-    const d9Suite = create(
-      (data: any) => {
-        test('organizationId', () => {
-          enforce(data.organizationId).isString();
-        });
-        test('username', async () => {
-          const available = await Promise.resolve(data.username !== 'taken');
-          enforce(available).isTruthy();
-        });
-        test('email', async () => {
-          await Promise.resolve();
-          enforce(data.email).isString();
-        });
-      },
-      d9Schema,
-    );
+    const d9Suite = create((data: any) => {
+      test('organizationId', () => {
+        enforce(data.organizationId).isString();
+      });
+      test('username', async () => {
+        const available = await Promise.resolve(data.username !== 'taken');
+        enforce(available).isTruthy();
+      });
+      test('email', async () => {
+        await Promise.resolve();
+        enforce(data.email).isString();
+      });
+    }, d9Schema);
     d9Suite.run({ organizationId: 'A', username: 'free', email: 'a@b.com' });
     bench(
       'D9 async waterfall changed(organizationId) [2 async dependents]',
       () => {
-        d9Suite.changed('organizationId').run({ organizationId: 'B', username: 'free', email: 'a@b.com' });
+        d9Suite
+          .changed('organizationId')
+          .run({ organizationId: 'B', username: 'free', email: 'a@b.com' });
       },
       { time: 250 },
     );
@@ -608,7 +602,8 @@ describe('Integration matrix — changed() meets Vest features', () => {
   {
     const d10Count = 100;
     const d10Fields: Record<string, any> = {};
-    for (let i = 0; i < d10Count; i++) d10Fields[`field_${i}`] = enforce.isString();
+    for (let i = 0; i < d10Count; i++)
+      d10Fields[`field_${i}`] = enforce.isString();
     // one dependency to give changed() something to do
     d10Fields['dependent'] = enforce.isString().dependsOn($ => $.field_0);
     const d10Schema = enforce.shape(d10Fields);
@@ -630,7 +625,9 @@ describe('Integration matrix — changed() meets Vest features', () => {
     bench(
       'D10 serialize large(100) after changed(field_0) [retain+serialize]',
       () => {
-        const res = d10Suite.changed('field_0').run({ ...d10Data, field_0: 'new' });
+        const res = d10Suite
+          .changed('field_0')
+          .run({ ...d10Data, field_0: 'new' });
         SuiteSerializer.serialize(res);
       },
       { time: 250 },
@@ -650,30 +647,28 @@ describe('Integration matrix — changed() meets Vest features', () => {
         state: enforce.isString().dependsOn($ => $.country),
       }),
     });
-    const regSuite = create(
-      (data: any) => {
-        test('email', () => {
-          enforce(data.email).isNotBlank();
-        });
-        test('password', () => {
-          enforce(data.password).longerThanOrEquals(8);
-        });
-        test('confirmPassword', () => {
-          enforce(data.confirmPassword).equals(data.password);
-        });
-        test('username', async () => {
-          const available = await Promise.resolve(data.username !== 'taken');
-          enforce(available).isTruthy();
-        });
-        test('profile.country', () => {
-          enforce(data.profile.country).isNotBlank();
-        });
-        test('profile.state', () => {
-          if (data.profile.country === 'US') enforce(data.profile.state).isNotBlank();
-        });
-      },
-      regSchema,
-    );
+    const regSuite = create((data: any) => {
+      test('email', () => {
+        enforce(data.email).isNotBlank();
+      });
+      test('password', () => {
+        enforce(data.password).longerThanOrEquals(8);
+      });
+      test('confirmPassword', () => {
+        enforce(data.confirmPassword).equals(data.password);
+      });
+      test('username', async () => {
+        const available = await Promise.resolve(data.username !== 'taken');
+        enforce(available).isTruthy();
+      });
+      test('profile.country', () => {
+        enforce(data.profile.country).isNotBlank();
+      });
+      test('profile.state', () => {
+        if (data.profile.country === 'US')
+          enforce(data.profile.state).isNotBlank();
+      });
+    }, regSchema);
     // initial warm run
     regSuite.run({
       email: '',
@@ -748,35 +743,32 @@ describe('Integration matrix — changed() meets Vest features', () => {
       shipping: checkoutAddress,
       travelers: enforce.isArrayOf(checkoutTraveler),
     });
-    const checkoutSuite = create(
-      (data: any) => {
-        group('billing' as TGroupName, () => {
-          test('billing.country' as TFieldName, () => {
-            enforce(data.billing.country).isString();
-          });
-          test('billing.state' as TFieldName, () => {
-            enforce(data.billing.state).isString();
-          });
+    const checkoutSuite = create((data: any) => {
+      group('billing' as TGroupName, () => {
+        test('billing.country' as TFieldName, () => {
+          enforce(data.billing.country).isString();
         });
-        group('shipping' as TGroupName, () => {
-          test('shipping.country' as TFieldName, () => {
-            enforce(data.shipping.country).isString();
-          });
-          test('shipping.state' as TFieldName, () => {
-            enforce(data.shipping.state).isString();
-          });
+        test('billing.state' as TFieldName, () => {
+          enforce(data.billing.state).isString();
         });
-        each(data.travelers, (t: any, i: number) => {
-          test(`travelers.${i}.country` as TFieldName, () => {
-            enforce(t.country).isString();
-          });
-          test(`travelers.${i}.passportNumber` as TFieldName, () => {
-            enforce(t.passportNumber).isString();
-          });
+      });
+      group('shipping' as TGroupName, () => {
+        test('shipping.country' as TFieldName, () => {
+          enforce(data.shipping.country).isString();
         });
-      },
-      checkoutSchema,
-    );
+        test('shipping.state' as TFieldName, () => {
+          enforce(data.shipping.state).isString();
+        });
+      });
+      each(data.travelers, (t: any, i: number) => {
+        test(`travelers.${i}.country` as TFieldName, () => {
+          enforce(t.country).isString();
+        });
+        test(`travelers.${i}.passportNumber` as TFieldName, () => {
+          enforce(t.passportNumber).isString();
+        });
+      });
+    }, checkoutSchema);
     const checkoutData = {
       billing: { country: 'US', state: 'CA' },
       shipping: { country: 'US', state: 'NY' },
@@ -786,9 +778,13 @@ describe('Integration matrix — changed() meets Vest features', () => {
     bench(
       'D12 realistic checkout flow — billing+shipping+travelers [9 travelers total]',
       () => {
-        checkoutSuite.changed('billing.country').run({ ...checkoutData, billing: { country: 'CA', state: 'CA' } });
+        checkoutSuite
+          .changed('billing.country')
+          .run({ ...checkoutData, billing: { country: 'CA', state: 'CA' } });
         checkoutSuite.changed('travelers.2.country').run(checkoutData);
-        checkoutSuite.changed('shipping.country').run({ ...checkoutData, shipping: { country: 'CA', state: '' } });
+        checkoutSuite
+          .changed('shipping.country')
+          .run({ ...checkoutData, shipping: { country: 'CA', state: '' } });
       },
       { time: 250 },
     );

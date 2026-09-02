@@ -26,7 +26,10 @@ function typeChecks() {
   // Chained dependsOn
   const schema3 = enforce.shape({
     country: enforce.isString(),
-    state: enforce.isString().dependsOn($ => $.country).revalidates($ => $.country),
+    state: enforce
+      .isString()
+      .dependsOn($ => $.country)
+      .revalidates($ => $.country),
   });
 
   // Root escape

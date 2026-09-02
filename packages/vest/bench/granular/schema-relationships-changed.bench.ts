@@ -31,20 +31,17 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   };
 
   const makeFlatSuite = () =>
-    create(
-      (data: any) => {
-        test('password', () => {
-          enforce(data.password).isString();
-        });
-        test('confirmPassword', () => {
-          enforce(data.confirmPassword).equals(data.password);
-        });
-        test('email', () => {
-          enforce(data.email).isString();
-        });
-      },
-      flatSchema,
-    );
+    create((data: any) => {
+      test('password', () => {
+        enforce(data.password).isString();
+      });
+      test('confirmPassword', () => {
+        enforce(data.confirmPassword).equals(data.password);
+      });
+      test('email', () => {
+        enforce(data.email).isString();
+      });
+    }, flatSchema);
 
   // Pre-warmed reused suites — bench measures steady-state throughput,
   // not creation+warmup. Each bench reuses its own suite to avoid cross-bench focus leakage.
@@ -78,7 +75,9 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   bench(
     'C3 flat changed(password) [2/3 fields] password→confirm',
     () => {
-      flatSuiteChangedPw.changed('password').run({ ...flatData, password: 'newpass1' });
+      flatSuiteChangedPw
+        .changed('password')
+        .run({ ...flatData, password: 'newpass1' });
     },
     { time: 1000, warmupTime: 500 },
   );
@@ -86,7 +85,9 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   bench(
     'C4 flat changed(confirmPassword) [1/3 fields] directionality',
     () => {
-      flatSuiteChangedConfirm.changed('confirmPassword').run({ ...flatData, confirmPassword: 'xyz' });
+      flatSuiteChangedConfirm
+        .changed('confirmPassword')
+        .run({ ...flatData, confirmPassword: 'xyz' });
     },
     { time: 1000, warmupTime: 500 },
   );
@@ -108,23 +109,23 @@ describe('changed() vs only() vs run() — minimality proof', () => {
     email: enforce.isString(),
   });
 
-  const nestedData = { profile: { country: 'CA', state: '' }, email: 'a@b.com' };
+  const nestedData = {
+    profile: { country: 'CA', state: '' },
+    email: 'a@b.com',
+  };
 
   const makeNestedSuite = () =>
-    create(
-      (data: any) => {
-        test('profile.country', () => {
-          enforce(data.profile.country).isString();
-        });
-        test('profile.state', () => {
-          enforce(data.profile.state).isString();
-        });
-        test('email', () => {
-          enforce(data.email).isString();
-        });
-      },
-      nestedSchema,
-    );
+    create((data: any) => {
+      test('profile.country', () => {
+        enforce(data.profile.country).isString();
+      });
+      test('profile.state', () => {
+        enforce(data.profile.state).isString();
+      });
+      test('email', () => {
+        enforce(data.email).isString();
+      });
+    }, nestedSchema);
 
   const nestedSuiteRun = makeNestedSuite();
   nestedSuiteRun.run(nestedData);
@@ -142,7 +143,9 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   bench(
     'C7 nested changed(profile.country) [2/3 fields] country→state',
     () => {
-      nestedSuiteChanged.changed('profile.country').run({ profile: { country: 'US', state: '' }, email: 'a@b.com' });
+      nestedSuiteChanged
+        .changed('profile.country')
+        .run({ profile: { country: 'US', state: '' }, email: 'a@b.com' });
     },
     { time: 1000, warmupTime: 500 },
   );
@@ -163,27 +166,24 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   };
 
   const makeReuseSuite = () =>
-    create(
-      (data: any) => {
-        group('billing' as TGroupName, () => {
-          test('billing.country' as TFieldName, () => {
-            enforce(data.billing.country).isString();
-          });
-          test('billing.state' as TFieldName, () => {
-            enforce(data.billing.state).isString();
-          });
+    create((data: any) => {
+      group('billing' as TGroupName, () => {
+        test('billing.country' as TFieldName, () => {
+          enforce(data.billing.country).isString();
         });
-        group('shipping' as TGroupName, () => {
-          test('shipping.country' as TFieldName, () => {
-            enforce(data.shipping.country).isString();
-          });
-          test('shipping.state' as TFieldName, () => {
-            enforce(data.shipping.state).isString();
-          });
+        test('billing.state' as TFieldName, () => {
+          enforce(data.billing.state).isString();
         });
-      },
-      reuseSchema,
-    );
+      });
+      group('shipping' as TGroupName, () => {
+        test('shipping.country' as TFieldName, () => {
+          enforce(data.shipping.country).isString();
+        });
+        test('shipping.state' as TFieldName, () => {
+          enforce(data.shipping.state).isString();
+        });
+      });
+    }, reuseSchema);
 
   const reuseSuiteRun = makeReuseSuite();
   reuseSuiteRun.run(reuseData);
@@ -214,23 +214,22 @@ describe('changed() vs only() vs run() — minimality proof', () => {
     country: enforce.isString(),
     passportNumber: enforce.isString().dependsOn(($: any) => $.country),
   });
-  const arraySchema = enforce.shape({ travelers: enforce.isArrayOf(travelerSchema) });
+  const arraySchema = enforce.shape({
+    travelers: enforce.isArrayOf(travelerSchema),
+  });
 
   const makeArraySuite = (n: number) => {
     const data = { travelers: travelersData(n) };
-    const suite = create(
-      (d: any) => {
-        each(d.travelers, (t: any, i: number) => {
-          test(`travelers.${i}.country` as TFieldName, () => {
-            enforce(t.country).isString();
-          });
-          test(`travelers.${i}.passportNumber` as TFieldName, () => {
-            enforce(t.passportNumber).isString();
-          });
+    const suite = create((d: any) => {
+      each(d.travelers, (t: any, i: number) => {
+        test(`travelers.${i}.country` as TFieldName, () => {
+          enforce(t.country).isString();
         });
-      },
-      arraySchema,
-    );
+        test(`travelers.${i}.passportNumber` as TFieldName, () => {
+          enforce(t.passportNumber).isString();
+        });
+      });
+    }, arraySchema);
     suite.run(data);
     return { suite, data };
   };
@@ -299,23 +298,20 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   };
 
   const makeFanoutSuite = () =>
-    create(
-      (data: any) => {
-        test('password', () => {
-          enforce(data.password).isString();
-        });
-        test('confirmPassword', () => {
-          enforce(data.confirmPassword).equals(data.password);
-        });
-        test('hint', () => {
-          enforce(data.hint).isString();
-        });
-        test('email', () => {
-          enforce(data.email).isString();
-        });
-      },
-      fanoutSchema,
-    );
+    create((data: any) => {
+      test('password', () => {
+        enforce(data.password).isString();
+      });
+      test('confirmPassword', () => {
+        enforce(data.confirmPassword).equals(data.password);
+      });
+      test('hint', () => {
+        enforce(data.hint).isString();
+      });
+      test('email', () => {
+        enforce(data.email).isString();
+      });
+    }, fanoutSchema);
 
   const fanoutSuiteRun = makeFanoutSuite();
   fanoutSuiteRun.run(fanoutData);
@@ -333,7 +329,9 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   bench(
     'C15 fan-out changed(password) [3/4 fields] deduped 1→2',
     () => {
-      fanoutSuiteChanged.changed('password').run({ ...fanoutData, password: 'newpass1' });
+      fanoutSuiteChanged
+        .changed('password')
+        .run({ ...fanoutData, password: 'newpass1' });
     },
     { time: 1000, warmupTime: 500 },
   );
@@ -348,20 +346,17 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   const chainData = { a: '1', b: '2', c: '3' };
 
   const makeChainSuite = () =>
-    create(
-      (data: any) => {
-        test('a', () => {
-          enforce(data.a).isString();
-        });
-        test('b', () => {
-          enforce(data.b).isString();
-        });
-        test('c', () => {
-          enforce(data.c).isString();
-        });
-      },
-      chainSchema,
-    );
+    create((data: any) => {
+      test('a', () => {
+        enforce(data.a).isString();
+      });
+      test('b', () => {
+        enforce(data.b).isString();
+      });
+      test('c', () => {
+        enforce(data.c).isString();
+      });
+    }, chainSchema);
 
   const chainSuiteRun = makeChainSuite();
   chainSuiteRun.run(chainData);
@@ -383,19 +378,16 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   });
 
   const makeSkipWhenSuite = () =>
-    create(
-      (data: any) => {
-        test('country', () => {
-          enforce(data.country).isString();
+    create((data: any) => {
+      test('country', () => {
+        enforce(data.country).isString();
+      });
+      skipWhen(data.country !== 'US', () => {
+        test('state', () => {
+          enforce(data.state).isString();
         });
-        skipWhen(data.country !== 'US', () => {
-          test('state', () => {
-            enforce(data.state).isString();
-          });
-        });
-      },
-      skipWhenSchema,
-    );
+      });
+    }, skipWhenSchema);
 
   const skipWhenSuiteChanged = makeSkipWhenSuite();
   skipWhenSuiteChanged.run({ country: 'CA', state: '' });
@@ -415,18 +407,15 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   });
 
   const makeAsyncSuite = () =>
-    create(
-      (data: any) => {
-        test('organizationId', () => {
-          enforce(data.organizationId).isString();
-        });
-        test('username', async () => {
-          const available = await Promise.resolve(data.username !== 'taken');
-          enforce(available).isTruthy();
-        });
-      },
-      asyncSchema,
-    );
+    create((data: any) => {
+      test('organizationId', () => {
+        enforce(data.organizationId).isString();
+      });
+      test('username', async () => {
+        const available = await Promise.resolve(data.username !== 'taken');
+        enforce(available).isTruthy();
+      });
+    }, asyncSchema);
 
   const asyncSuiteChanged = makeAsyncSuite();
   asyncSuiteChanged.run({ organizationId: 'A', username: 'free' });
@@ -434,7 +423,9 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   bench(
     'C18 async changed(organizationId) reruns username [pending] [2/2 fields]',
     () => {
-      asyncSuiteChanged.changed('organizationId').run({ organizationId: 'B', username: 'free' });
+      asyncSuiteChanged
+        .changed('organizationId')
+        .run({ organizationId: 'B', username: 'free' });
     },
     { time: 1000, warmupTime: 500 },
   );

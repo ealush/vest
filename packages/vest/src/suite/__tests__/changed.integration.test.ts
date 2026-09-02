@@ -636,7 +636,12 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
 
     const data = {
       orders: [
-        { items: [{ name: 'A', discount: '5%' }, { name: 'B', discount: '10%' }] },
+        {
+          items: [
+            { name: 'A', discount: '5%' },
+            { name: 'B', discount: '10%' },
+          ],
+        },
         { items: [{ name: 'C', discount: '0%' }] },
       ],
     };
@@ -644,7 +649,10 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     log.reset();
     // Change nested leaf in order 0, item 1 — only that item's dependent reruns
     await suite.changed('orders.0.items.1.name').run(data);
-    expect(log.get()).toEqual(['orders.0.items.1.name', 'orders.0.items.1.discount']);
+    expect(log.get()).toEqual([
+      'orders.0.items.1.name',
+      'orders.0.items.1.discount',
+    ]);
     expect(log.get()).not.toContain('orders.0.items.0.discount');
     expect(log.get()).not.toContain('orders.1.items.0.discount');
 
@@ -683,7 +691,9 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
 
     await suite.run({ a: { b: { c: 'x', d: 'y', other: 'z' } } });
     log.reset();
-    await suite.changed('a.b.c').run({ a: { b: { c: 'xx', d: 'y', other: 'z' } } });
+    await suite
+      .changed('a.b.c')
+      .run({ a: { b: { c: 'xx', d: 'y', other: 'z' } } });
     expect(log.get()).toEqual(['a.b.c', 'a.b.d']);
     expect(log.get()).not.toContain('a.b.other');
   });
@@ -693,7 +703,9 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       accountType: enforce.isString(),
       company: enforce.shape({
         country: enforce.isString(),
-        taxId: enforce.isString().dependsOn($ => [$.country, $.root.accountType]),
+        taxId: enforce
+          .isString()
+          .dependsOn($ => [$.country, $.root.accountType]),
       }),
     });
     const log = createExecutionLog();
@@ -712,16 +724,27 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       });
     }, schema);
 
-    await suite.run({ accountType: 'personal', company: { country: 'US', taxId: '123' } });
+    await suite.run({
+      accountType: 'personal',
+      company: { country: 'US', taxId: '123' },
+    });
     log.reset();
-    await suite.changed('accountType').run({ accountType: 'business', company: { country: 'US', taxId: '123' } });
+    await suite.changed('accountType').run({
+      accountType: 'business',
+      company: { country: 'US', taxId: '123' },
+    });
     // accountType change must invalidate company.taxId via $.root edge
-    expect(log.get()).toEqual(expect.arrayContaining(['accountType', 'company.taxId']));
+    expect(log.get()).toEqual(
+      expect.arrayContaining(['accountType', 'company.taxId']),
+    );
     expect(log.get()).toContain('company.taxId');
 
     // Changing sibling country also invalidates taxId, but via local edge
     log.reset();
-    await suite.changed('company.country').run({ accountType: 'business', company: { country: 'CA', taxId: '123' } });
+    await suite.changed('company.country').run({
+      accountType: 'business',
+      company: { country: 'CA', taxId: '123' },
+    });
     expect(log.get()).toEqual(['company.country', 'company.taxId']);
   });
 

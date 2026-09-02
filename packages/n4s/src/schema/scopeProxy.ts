@@ -69,14 +69,21 @@ function createDependencyRef(path: SchemaPath, isRoot: boolean): DependencyRef {
       if (prop === DEPENDENCY_REF) return true;
       if (prop === 'path') return (target as unknown as DependencyRef).path;
       if (prop === 'isRoot') return (target as unknown as DependencyRef).isRoot;
-      if (typeof prop === 'symbol') return (target as unknown as Record<symbol, unknown>)[prop];
+      if (typeof prop === 'symbol')
+        return (target as unknown as Record<symbol, unknown>)[prop];
       // Prevent Promise-like then confusion and other internal props
       if (prop === 'then' || prop === 'toJSON' || prop === 'valueOf') {
         return undefined;
       }
       const propStr = String(prop);
-      const extendedPath: SchemaPath = [...(target as unknown as DependencyRef).path, propertySegment(propStr)];
-      return createDependencyRef(extendedPath, (target as unknown as DependencyRef).isRoot);
+      const extendedPath: SchemaPath = [
+        ...(target as unknown as DependencyRef).path,
+        propertySegment(propStr),
+      ];
+      return createDependencyRef(
+        extendedPath,
+        (target as unknown as DependencyRef).isRoot,
+      );
     },
   }) as DependencyRef;
 }
@@ -84,9 +91,7 @@ function createDependencyRef(path: SchemaPath, isRoot: boolean): DependencyRef {
 /**
  * Normalizes resolver return value to array of DependencyRefs.
  */
-export function normalizeResolverResult(
-  result: unknown,
-): DependencyRef[] {
+export function normalizeResolverResult(result: unknown): DependencyRef[] {
   if (!result) return [];
   if (Array.isArray(result)) {
     return result.filter(isDependencyRef);

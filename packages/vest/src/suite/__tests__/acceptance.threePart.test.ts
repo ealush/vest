@@ -1,7 +1,15 @@
 import { enforce } from 'n4s';
 import { describe, it, expect } from 'vitest';
 
-import { create, test, group, skipWhen, omitWhen, optional, warn } from '../../vest';
+import {
+  create,
+  test,
+  group,
+  skipWhen,
+  omitWhen,
+  optional,
+  warn,
+} from '../../vest';
 import { each } from '../../isolates/each';
 
 function createLog() {
@@ -92,7 +100,9 @@ describe('Acceptance — Sanity', () => {
     const rWith = await suiteWith.run(data);
     const rWithout = await suiteWithout.run(data);
     expect(logWith.get()).toEqual(logWithout.get());
-    expect(rWith.hasErrors('confirmPassword')).toBe(rWithout.hasErrors('confirmPassword'));
+    expect(rWith.hasErrors('confirmPassword')).toBe(
+      rWithout.hasErrors('confirmPassword'),
+    );
   });
 });
 
@@ -116,7 +126,9 @@ describe('Acceptance — Feature success (before/after)', () => {
     }, schema);
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     log.reset();
-    const result = await suite.changed('password').run({ password: 'abcdefgh2', confirmPassword: 'abcdefgh' });
+    const result = await suite
+      .changed('password')
+      .run({ password: 'abcdefgh2', confirmPassword: 'abcdefgh' });
     expect(log.get()).toEqual(['password']);
     expect(result.hasErrors('confirmPassword')).toBe(false); // stale
   });
@@ -139,7 +151,9 @@ describe('Acceptance — Feature success (before/after)', () => {
     }, schema);
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     log.reset();
-    const result = await suite.changed('password').run({ password: 'abcdefgh2', confirmPassword: 'abcdefgh' });
+    const result = await suite
+      .changed('password')
+      .run({ password: 'abcdefgh2', confirmPassword: 'abcdefgh' });
     expect(log.get()).toEqual(['password', 'confirmPassword']);
     expect(result.hasErrors('confirmPassword')).toBe(true);
   });
@@ -158,9 +172,13 @@ describe('Acceptance — Feature success (before/after)', () => {
       });
     }, schema);
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
-    let result = await suite.changed('password').run({ password: 'newpass1', confirmPassword: 'abcdefgh' });
+    let result = await suite
+      .changed('password')
+      .run({ password: 'newpass1', confirmPassword: 'abcdefgh' });
     expect(result.hasErrors('confirmPassword')).toBe(true);
-    result = await suite.changed('confirmPassword').run({ password: 'newpass1', confirmPassword: 'newpass1' });
+    result = await suite
+      .changed('confirmPassword')
+      .run({ password: 'newpass1', confirmPassword: 'newpass1' });
     expect(result.hasErrors('confirmPassword')).toBe(false);
   });
 
@@ -183,7 +201,8 @@ describe('Acceptance — Feature success (before/after)', () => {
           enforce(data.profile.country).isNotBlank();
         });
         test('profile.state', () => {
-          if (data.profile.country === 'US') enforce(data.profile.state).isNotBlank();
+          if (data.profile.country === 'US')
+            enforce(data.profile.state).isNotBlank();
         });
       }, schema);
     const suiteWithout = makeSuite(schemaWithout);
@@ -191,9 +210,13 @@ describe('Acceptance — Feature success (before/after)', () => {
     await suiteWithout.run({ profile: { country: 'CA', state: '' } });
     await suiteWith.run({ profile: { country: 'CA', state: '' } });
     // Monkey-patch to capture - simpler: just check hasErrors after changed
-    await suiteWithout.changed('profile.country').run({ profile: { country: 'US', state: '' } });
+    await suiteWithout
+      .changed('profile.country')
+      .run({ profile: { country: 'US', state: '' } });
     const rWithoutHasError = suiteWithout.get().hasErrors('profile.state');
-    await suiteWith.changed('profile.country').run({ profile: { country: 'US', state: '' } });
+    await suiteWith
+      .changed('profile.country')
+      .run({ profile: { country: 'US', state: '' } });
     const rWithHasError = suiteWith.get().hasErrors('profile.state');
     expect(rWithoutHasError).toBe(false); // stale-valid
     expect(rWithHasError).toBe(true);
@@ -211,9 +234,12 @@ describe('Acceptance — Feature success (before/after)', () => {
     const makeSuite = (schema: any) =>
       create((data: any) => {
         test('username', async () => {
-          const _available = await Promise.resolve(data.username !== 'taken' || data.organizationId === 'A');
+          const _available = await Promise.resolve(
+            data.username !== 'taken' || data.organizationId === 'A',
+          );
           // For org B, 'taken' should be invalid
-          const isAvailable = data.organizationId === 'B' ? data.username !== 'taken' : true;
+          const isAvailable =
+            data.organizationId === 'B' ? data.username !== 'taken' : true;
           enforce(isAvailable).isTruthy();
         });
       }, schema);
@@ -221,9 +247,13 @@ describe('Acceptance — Feature success (before/after)', () => {
     const suiteWith = makeSuite(schemaWith);
     await suiteWithout.run({ organizationId: 'A', username: 'free' });
     await suiteWith.run({ organizationId: 'A', username: 'free' });
-    await suiteWithout.changed('organizationId').run({ organizationId: 'B', username: 'taken' });
+    await suiteWithout
+      .changed('organizationId')
+      .run({ organizationId: 'B', username: 'taken' });
     expect(suiteWithout.get().hasErrors('username')).toBe(false); // stale
-    await suiteWith.changed('organizationId').run({ organizationId: 'B', username: 'taken' });
+    await suiteWith
+      .changed('organizationId')
+      .run({ organizationId: 'B', username: 'taken' });
     expect(suiteWith.get().hasErrors('username')).toBe(true);
   });
 });
@@ -243,7 +273,10 @@ describe('Acceptance — No regression', () => {
         enforce(data.confirmPassword).equals(data.password);
       });
     }, schema);
-    const result = await suite.run({ password: 'abcdefgh', confirmPassword: 'xyz' });
+    const result = await suite.run({
+      password: 'abcdefgh',
+      confirmPassword: 'xyz',
+    });
     expect(result.hasErrors('confirmPassword')).toBe(true);
     // Should run complete suite, not just changed
     const log = createLog();
@@ -279,10 +312,14 @@ describe('Acceptance — No regression', () => {
     }, schema);
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     log.reset();
-    await suite.only('password').run({ password: 'xyz', confirmPassword: 'mismatch' });
+    await suite
+      .only('password')
+      .run({ password: 'xyz', confirmPassword: 'mismatch' });
     expect(log.get()).toEqual(['password']);
     log.reset();
-    await suite.changed('password').run({ password: 'xyz2', confirmPassword: 'mismatch' });
+    await suite
+      .changed('password')
+      .run({ password: 'xyz2', confirmPassword: 'mismatch' });
     expect(log.get()).toEqual(['password', 'confirmPassword']);
   });
 
@@ -299,7 +336,9 @@ describe('Acceptance — No regression', () => {
         enforce(data.b).isNotBlank();
       });
     }, schema);
-    const resultFocused = await suite.focus({ only: 'a' }).run({ a: '', b: '' });
+    const resultFocused = await suite
+      .focus({ only: 'a' })
+      .run({ a: '', b: '' });
     expect(resultFocused.hasErrors('a')).toBe(true);
     // b should not have run (focused)
     const resultFull = await suite.run({ a: '', b: '' });
@@ -569,7 +608,9 @@ describe('Acceptance — Performance sanity', () => {
     await suite.changed('a').run({ a: 'x', b: '2', c: '3', d: '4', e: '5' });
     expect(counts).toEqual({ a: 1, b: 1, c: 0, d: 0, e: 0 });
     Object.keys(counts).forEach(k => (counts[k as keyof typeof counts] = 0));
-    await suite.changed(['a', 'b']).run({ a: 'x', b: 'y', c: '3', d: '4', e: '5' });
+    await suite
+      .changed(['a', 'b'])
+      .run({ a: 'x', b: 'y', c: '3', d: '4', e: '5' });
     expect(counts.a).toBe(1);
     expect(counts.b).toBe(1);
   });
@@ -596,7 +637,9 @@ describe('Acceptance — Stateful lifecycle', () => {
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     for (let i = 0; i < 4; i++) {
       log.reset();
-      await suite.changed('password').run({ password: `pass${i}`, confirmPassword: 'abcdefgh' });
+      await suite
+        .changed('password')
+        .run({ password: `pass${i}`, confirmPassword: 'abcdefgh' });
       expect(log.get()).toEqual(['password', 'confirmPassword']);
     }
     // Ensure no extra focused nodes remain — suite should still be usable via normal run
@@ -635,7 +678,9 @@ describe('Acceptance — Stateful lifecycle', () => {
     await suiteA.run({ billing: { country: 'US', state: 'CA' } });
     await suiteB.run({ shipping: { country: 'US', state: 'NY' } });
     // Run A changed
-    await suiteA.changed('billing.country').run({ billing: { country: 'CA', state: 'CA' } });
+    await suiteA
+      .changed('billing.country')
+      .run({ billing: { country: 'CA', state: 'CA' } });
     // B should still be independent
     const logB = createLog();
     const suiteB2 = create((data: any) => {
@@ -650,7 +695,9 @@ describe('Acceptance — Stateful lifecycle', () => {
     }, schemaB);
     await suiteB2.run({ shipping: { country: 'US', state: 'NY' } });
     logB.reset();
-    await suiteB2.changed('shipping.country').run({ shipping: { country: 'CA', state: 'NY' } });
+    await suiteB2
+      .changed('shipping.country')
+      .run({ shipping: { country: 'CA', state: 'NY' } });
     expect(logB.get()).toEqual(['shipping.country', 'shipping.state']);
   });
 
@@ -677,7 +724,9 @@ describe('Acceptance — Stateful lifecycle', () => {
     }, schema);
     await suiteA.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     await suiteB.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
-    await suiteA.changed('password').run({ password: 'xyz', confirmPassword: 'abcdefgh' });
+    await suiteA
+      .changed('password')
+      .run({ password: 'xyz', confirmPassword: 'abcdefgh' });
     expect(suiteA.get().hasErrors('confirmPassword')).toBe(true);
     expect(suiteB.get().hasErrors('confirmPassword')).toBe(false);
     await suiteB.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });

@@ -85,7 +85,10 @@ export class RuleInstance<T, Args extends any[] = any[]> {
   static create<R extends RuleInstance<T, Args>, T, Args extends any[]>(
     rule: (...args: Args) => RuleRunReturn<T>,
   ): R {
-    const unresolvedDeps: Array<{ resolver: (scope: ScopeHandle) => unknown; isRevalidates: boolean }> = [];
+    const unresolvedDeps: Array<{
+      resolver: (scope: ScopeHandle) => unknown;
+      isRevalidates: boolean;
+    }> = [];
     const validate = (...args: Args): StandardSchemaV1.Result<T> => {
       const result = rule(...args);
       if (result.pass) {
@@ -142,36 +145,55 @@ export class RuleInstance<T, Args extends any[] = any[]> {
 
     const dependsOn = (resolver: (scope: ScopeHandle) => unknown): R => {
       unresolvedDeps.push({ resolver, isRevalidates: false });
-      (instance as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+      (instance as unknown as Record<symbol, unknown>)[
+        Symbol.for('vest:unresolvedDeps')
+      ] = unresolvedDeps;
       return instance as unknown as R;
     };
     const revalidates = (resolver: (scope: ScopeHandle) => unknown): R => {
       unresolvedDeps.push({ resolver, isRevalidates: true });
-      (instance as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+      (instance as unknown as Record<symbol, unknown>)[
+        Symbol.for('vest:unresolvedDeps')
+      ] = unresolvedDeps;
       return instance as unknown as R;
     };
     const describe = (): DescribeResult => {
-      const raw = ((instance as unknown as Record<symbol, unknown>)[Symbol.for('vest:resolvedRelationships')] as unknown[]) || [];
+      const raw =
+        ((instance as unknown as Record<symbol, unknown>)[
+          Symbol.for('vest:resolvedRelationships')
+        ] as unknown[]) || [];
       const resolved = (raw as Array<Record<string, unknown>>).map(rel => {
-        const { __isRootSource, __isRootTarget, ...clean } = rel as Record<string, unknown> & {
+        const { __isRootSource, __isRootTarget, ...clean } = rel as Record<
+          string,
+          unknown
+        > & {
           __isRootSource?: unknown;
           __isRootTarget?: unknown;
         };
         return clean;
       });
       const depMap = new Map<string, { target: unknown; sources: unknown[] }>();
-      for (const rel of resolved as Array<{ target: unknown; source: unknown }>) {
+      for (const rel of resolved as Array<{
+        target: unknown;
+        source: unknown;
+      }>) {
         const key = JSON.stringify(rel.target);
-        if (!depMap.has(key)) depMap.set(key, { target: rel.target, sources: [] });
+        if (!depMap.has(key))
+          depMap.set(key, { target: rel.target, sources: [] });
         depMap.get(key)!.sources.push(rel.source);
       }
-      return { dependencies: Array.from(depMap.values()), relationships: resolved } as DescribeResult;
+      return {
+        dependencies: Array.from(depMap.values()),
+        relationships: resolved,
+      } as DescribeResult;
     };
 
     (instance as unknown as Record<string, unknown>).dependsOn = dependsOn;
     (instance as unknown as Record<string, unknown>).revalidates = revalidates;
     (instance as unknown as Record<string, unknown>).describe = describe;
-    (instance as unknown as Record<symbol, unknown>)[Symbol.for('vest:unresolvedDeps')] = unresolvedDeps;
+    (instance as unknown as Record<symbol, unknown>)[
+      Symbol.for('vest:unresolvedDeps')
+    ] = unresolvedDeps;
 
     return instance as unknown as R;
   }

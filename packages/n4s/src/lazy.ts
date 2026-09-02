@@ -81,12 +81,9 @@ function validateRootPathExists(
   }
 }
 
-
-
-function wrapOptional(
-  rawOptional: (inner: any) => RuleInstance<any, [any]>,
-) {
-  return (inner: any) => { // eslint-disable-line complexity
+function wrapOptional(rawOptional: (inner: any) => RuleInstance<any, [any]>) {
+  return (inner: any) => {
+    // eslint-disable-line complexity
     const innerResolved = inner?.[RESOLVED];
     const innerUnresolved = inner?.[UNRESOLVED];
     // Use adapted rule to get lazy RuleInstance that preserves chain behavior
@@ -108,8 +105,6 @@ function wrapOptional(
   };
 }
 
-
-
 // Explicitly adapt only the schema modifiers that act as wrappers — now relationship-aware
 const rawOptionalBase = adaptDynamicRules<
   RuleInstance<any, [any]>,
@@ -119,7 +114,8 @@ const optionalWrapper = wrapOptional(rawOptionalBase.optional);
 
 // For partial/pick/omit we need relationship-aware versions that also resolve
 function createPartialWrapper() {
-  return (schema: any) => { // eslint-disable-line complexity
+  return (schema: any) => {
+    // eslint-disable-line complexity
     let relationships: any[] = [];
     try {
       relationships = resolveInlineDeps(schema, [], schema);
@@ -147,7 +143,10 @@ function createPartialWrapper() {
       if (e?.name === 'EnforceSchemaError') throw e;
       throw e;
     }
-    const base = adaptDynamicRules<RuleInstance<any, [any]>, Pick<typeof schemaRules, 'partial'>>({
+    const base = adaptDynamicRules<
+      RuleInstance<any, [any]>,
+      Pick<typeof schemaRules, 'partial'>
+    >({
       partial: schemaRules.partial,
     } as any) as any;
     const rule = base.partial(schema);
@@ -159,19 +158,29 @@ function createPartialWrapper() {
 
 function createPickWrapper() {
   // eslint-disable-next-line complexity -- pick wrapper closes over schema graph
-  return (schema: Record<PropertyKey, unknown>, keys: PropertyKey | PropertyKey[]) => {
+  return (
+    schema: Record<PropertyKey, unknown>,
+    keys: PropertyKey | PropertyKey[],
+  ) => {
     let relationships: InternalRelationship[] = [];
     try {
-      const all = resolveInlineDeps(schema as Record<string, RuleInstance<unknown, unknown[]>>, [], schema as Record<string, unknown>);
+      const all = resolveInlineDeps(
+        schema as Record<string, RuleInstance<unknown, unknown[]>>,
+        [],
+        schema as Record<string, unknown>,
+      );
       const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
       const collected: InternalRelationship[] = [];
       // eslint-disable-next-line complexity -- filter checks both endpoints
       const directKept = all.filter(rel => {
-        if ((rel as any).__isRootSource || (rel as any).__isRootTarget) return true;
+        if ((rel as any).__isRootSource || (rel as any).__isRootTarget)
+          return true;
         const targetFirst = rel.target[0];
         const sourceFirst = rel.source[0];
-        const tKey = targetFirst?.type === 'property' ? String(targetFirst.key) : null;
-        const sKey = sourceFirst?.type === 'property' ? String(sourceFirst.key) : null;
+        const tKey =
+          targetFirst?.type === 'property' ? String(targetFirst.key) : null;
+        const sKey =
+          sourceFirst?.type === 'property' ? String(sourceFirst.key) : null;
         const targetKept = tKey ? keysSet.has(tKey) : true;
         const sourceKept = sKey ? keysSet.has(sKey) : true;
         return targetKept && sourceKept;
@@ -179,15 +188,23 @@ function createPickWrapper() {
       collected.push(...directKept);
       for (const key of Object.keys(schema)) {
         if (!keysSet.has(key as string)) continue;
-        const fieldRule = (schema as Record<string, unknown>)[key] as unknown as Record<symbol, unknown>;
-        const nested = (fieldRule?.[RESOLVED] as InternalRelationship[] | undefined) || [];
+        const fieldRule = (schema as Record<string, unknown>)[
+          key
+        ] as unknown as Record<symbol, unknown>;
+        const nested =
+          (fieldRule?.[RESOLVED] as InternalRelationship[] | undefined) || [];
         if (nested.length > 0) {
           const prefix = [{ type: 'property', key } as const];
           collected.push(...rebaseRelationships(nested, prefix));
         }
-        const item = fieldRule?.[ITEM_SCHEMA] as RuleInstance<unknown, unknown[]> | undefined;
+        const item = fieldRule?.[ITEM_SCHEMA] as
+          | RuleInstance<unknown, unknown[]>
+          | undefined;
         if (item) {
-          const itemRels = (item as unknown as Record<symbol, unknown>)[RESOLVED] as InternalRelationship[] | undefined || [];
+          const itemRels =
+            ((item as unknown as Record<symbol, unknown>)[RESOLVED] as
+              | InternalRelationship[]
+              | undefined) || [];
           if (itemRels.length > 0) {
             const binding = `${String(key)}.$item`;
             const prefix = [
@@ -198,13 +215,20 @@ function createPickWrapper() {
           }
         }
       }
-      // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are kept,
-      // but preserve all rooted (deferred) relationships regardless of pick.
+      // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are kept.
+      // For rooted (deferred) relationships, still filter by intentional pick/omit — a -> child.leaf
+      // must be dropped when its source `a` is not picked, but its existence is still deferred
+      // until suite finalization.
       // eslint-disable-next-line complexity -- filter checks both endpoints
       relationships = collected.filter(rel => {
-        if ((rel as any).__isRootSource || (rel as any).__isRootTarget) return true;
-        const sTop = rel.source[0]?.type === 'property' ? String((rel.source[0] as any).key) : null;
-        const tTop = rel.target[0]?.type === 'property' ? String((rel.target[0] as any).key) : null;
+        const sTop =
+          rel.source[0]?.type === 'property'
+            ? String((rel.source[0] as any).key)
+            : null;
+        const tTop =
+          rel.target[0]?.type === 'property'
+            ? String((rel.target[0] as any).key)
+            : null;
         const sKept = sTop ? keysSet.has(sTop) : true;
         const tKept = tTop ? keysSet.has(tTop) : true;
         return sKept && tKept;
@@ -213,7 +237,10 @@ function createPickWrapper() {
       if (e?.name === 'EnforceSchemaError') throw e;
       throw e;
     }
-    const base = adaptDynamicRules<RuleInstance<any, [any]>, Pick<typeof schemaRules, 'pick'>>({
+    const base = adaptDynamicRules<
+      RuleInstance<any, [any]>,
+      Pick<typeof schemaRules, 'pick'>
+    >({
       pick: schemaRules.pick,
     } as any) as any;
     const rule = base.pick(schema, keys);
@@ -221,7 +248,8 @@ function createPickWrapper() {
     // For pick, __schema is filtered shape
     const filtered: any = {};
     const set = new Set(Array.isArray(keys) ? keys : [keys]);
-    for (const k of Object.keys(schema)) if (set.has(k)) filtered[k] = schema[k];
+    for (const k of Object.keys(schema))
+      if (set.has(k)) filtered[k] = schema[k];
     rule.__schema = filtered;
     return rule;
   };
@@ -229,19 +257,29 @@ function createPickWrapper() {
 
 function createOmitWrapper() {
   // eslint-disable-next-line complexity -- omit wrapper closes over schema graph
-  return (schema: Record<PropertyKey, unknown>, keys: PropertyKey | PropertyKey[]) => {
+  return (
+    schema: Record<PropertyKey, unknown>,
+    keys: PropertyKey | PropertyKey[],
+  ) => {
     let relationships: InternalRelationship[] = [];
     try {
-      const all = resolveInlineDeps(schema as Record<string, RuleInstance<unknown, unknown[]>>, [], schema as Record<string, unknown>);
+      const all = resolveInlineDeps(
+        schema as Record<string, RuleInstance<unknown, unknown[]>>,
+        [],
+        schema as Record<string, unknown>,
+      );
       const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
       const collected: InternalRelationship[] = [];
       // eslint-disable-next-line complexity -- filter checks both endpoints
       const directKept = all.filter(rel => {
-        if ((rel as any).__isRootSource || (rel as any).__isRootTarget) return true;
+        if ((rel as any).__isRootSource || (rel as any).__isRootTarget)
+          return true;
         const targetFirst = rel.target[0];
         const sourceFirst = rel.source[0];
-        const tKey = targetFirst?.type === 'property' ? String(targetFirst.key) : null;
-        const sKey = sourceFirst?.type === 'property' ? String(sourceFirst.key) : null;
+        const tKey =
+          targetFirst?.type === 'property' ? String(targetFirst.key) : null;
+        const sKey =
+          sourceFirst?.type === 'property' ? String(sourceFirst.key) : null;
         const targetKept = tKey ? !keysSet.has(tKey) : true;
         const sourceKept = sKey ? !keysSet.has(sKey) : true;
         return targetKept && sourceKept;
@@ -249,15 +287,23 @@ function createOmitWrapper() {
       collected.push(...directKept);
       for (const key of Object.keys(schema)) {
         if (keysSet.has(key as string)) continue;
-        const fieldRule = (schema as Record<string, RuleInstance<unknown, unknown[]>>)[key as string] as unknown as Record<symbol, unknown>;
-        const nested = (fieldRule?.[RESOLVED] as InternalRelationship[] | undefined) || [];
+        const fieldRule = (
+          schema as Record<string, RuleInstance<unknown, unknown[]>>
+        )[key as string] as unknown as Record<symbol, unknown>;
+        const nested =
+          (fieldRule?.[RESOLVED] as InternalRelationship[] | undefined) || [];
         if (nested.length > 0) {
           const prefix = [{ type: 'property', key } as const];
           collected.push(...rebaseRelationships(nested, prefix));
         }
-        const item = fieldRule?.[ITEM_SCHEMA] as RuleInstance<unknown, unknown[]> | undefined;
+        const item = fieldRule?.[ITEM_SCHEMA] as
+          | RuleInstance<unknown, unknown[]>
+          | undefined;
         if (item) {
-          const itemRels = (item as unknown as Record<symbol, unknown>)[RESOLVED] as InternalRelationship[] | undefined || [];
+          const itemRels =
+            ((item as unknown as Record<symbol, unknown>)[RESOLVED] as
+              | InternalRelationship[]
+              | undefined) || [];
           if (itemRels.length > 0) {
             const binding = `${String(key)}.$item`;
             const prefix = [
@@ -268,13 +314,18 @@ function createOmitWrapper() {
           }
         }
       }
-      // Filter fully rebased set: keep only non-root relationships where both endpoints' top-level keys are not omitted,
-      // but preserve all rooted (deferred) relationships regardless of omit.
+      // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are not omitted.
+      // For rooted (deferred) relationships, still filter by intentional omit.
       // eslint-disable-next-line complexity -- filter checks both endpoints
       relationships = collected.filter(rel => {
-        if ((rel as any).__isRootSource || (rel as any).__isRootTarget) return true;
-        const sTop = rel.source[0]?.type === 'property' ? String((rel.source[0] as any).key) : null;
-        const tTop = rel.target[0]?.type === 'property' ? String((rel.target[0] as any).key) : null;
+        const sTop =
+          rel.source[0]?.type === 'property'
+            ? String((rel.source[0] as any).key)
+            : null;
+        const tTop =
+          rel.target[0]?.type === 'property'
+            ? String((rel.target[0] as any).key)
+            : null;
         const sKept = sTop ? !keysSet.has(sTop) : true;
         const tKept = tTop ? !keysSet.has(tTop) : true;
         return sKept && tKept;
@@ -283,14 +334,20 @@ function createOmitWrapper() {
       if ((e as Error)?.name === 'EnforceSchemaError') throw e;
       throw e;
     }
-    const base = adaptDynamicRules<RuleInstance<unknown, [unknown]>, Pick<typeof schemaRules, 'omit'>>({
+    const base = adaptDynamicRules<
+      RuleInstance<unknown, [unknown]>,
+      Pick<typeof schemaRules, 'omit'>
+    >({
       omit: schemaRules.omit,
-    } as unknown as Pick<typeof schemaRules, 'omit'>) as unknown as { omit: (s: unknown, k: unknown) => RuleInstance<unknown, unknown[]> };
+    } as unknown as Pick<typeof schemaRules, 'omit'>) as unknown as {
+      omit: (s: unknown, k: unknown) => RuleInstance<unknown, unknown[]>;
+    };
     const rule = base.omit(schema as unknown, keys as unknown);
     (rule as unknown as Record<symbol, unknown>)[RESOLVED] = relationships;
     const filtered: Record<string, unknown> = {};
     const set = new Set(Array.isArray(keys) ? keys : [keys]);
-    for (const k of Object.keys(schema as object)) if (!set.has(k)) filtered[k] = (schema as Record<string, unknown>)[k];
+    for (const k of Object.keys(schema as object))
+      if (!set.has(k)) filtered[k] = (schema as Record<string, unknown>)[k];
     (rule as unknown as { __schema: unknown }).__schema = filtered;
     return rule;
   };
@@ -398,8 +455,6 @@ const schemaAttacher =
     // to support valid nesting like company.taxId -> $.root.accountType where inner
     // shape does not yet contain the provider. Validation at suite creation will
     // surface dangling top-level roots.
-    // eslint-disable-next-line no-console
-    console.log('DEBUG relationships', JSON.stringify(relationships), 'keys', Object.keys(schema));
     for (const rel of relationships) {
       if ((rel as any).__isRootSource || (rel as any).__isRootTarget) {
         continue;

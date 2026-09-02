@@ -89,6 +89,37 @@ describe('date', () => {
       expect(() => enforce(Date.now()).isDate()).toThrow();
     });
 
+    describe('Regression: timezone-sensitive date validation (#1152)', () => {
+      it('Should pass for YYYY-MM-DD dates at month boundaries', () => {
+        expect(() => enforce('2024-01-31').isDate()).not.toThrow();
+        expect(() => enforce('2024-02-29').isDate()).not.toThrow();
+        expect(() => enforce('2024-03-31').isDate()).not.toThrow();
+        expect(() => enforce('2024-05-31').isDate()).not.toThrow();
+        expect(() => enforce('2024-07-31').isDate()).not.toThrow();
+        expect(() => enforce('2024-08-31').isDate()).not.toThrow();
+        expect(() => enforce('2024-10-31').isDate()).not.toThrow();
+        expect(() => enforce('2024-12-31').isDate()).not.toThrow();
+      });
+
+      it('Should pass for various date formats without options', () => {
+        expect(() => enforce('2024-01-15').isDate()).not.toThrow();
+        expect(() => enforce('2024/01/15').isDate()).not.toThrow();
+      });
+
+      it('Should fail for invalid dates at boundaries', () => {
+        expect(() => enforce('2024-02-30').isDate()).toThrow();
+        expect(() => enforce('2024-04-31').isDate()).toThrow();
+        expect(() => enforce('2024-06-31').isDate()).toThrow();
+        expect(() => enforce('2024-09-31').isDate()).toThrow();
+        expect(() => enforce('2024-11-31').isDate()).toThrow();
+      });
+
+      it('Should pass for Date objects', () => {
+        expect(() => enforce(new Date('2024-01-15')).isDate()).not.toThrow();
+        expect(() => enforce(new Date(2024, 0, 15)).isDate()).not.toThrow();
+      });
+    });
+
     describe('With options', () => {
       describe('format', () => {
         // Valid formats:

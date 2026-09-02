@@ -3,7 +3,7 @@
  * Ensures suite with schema infers data shape and that describe() is available
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars, vitest/valid-expect, vitest/no-commented-out-tests */
 import { describe, it, expect, expectTypeOf } from 'vitest';
 
 import { create, test, enforce } from '../vest';
@@ -112,7 +112,9 @@ function typeChecks() {
   // describe should be on schema - describe() output
   const d = schema.describe();
   expectTypeOf(d).toEqualTypeOf<ReturnType<typeof schema.describe>>();
-  expectTypeOf(d.dependencies).toEqualTypeOf<Array<{ target: unknown; sources: unknown[] }>>();
+  expectTypeOf(d.dependencies).toEqualTypeOf<
+    Array<{ target: unknown; sources: unknown[] }>
+  >();
   expectTypeOf(d.relationships).toEqualTypeOf<unknown[]>();
   expectTypeOf(d.dependencies).toBeArray();
   expectTypeOf(d.relationships).toBeArray();

@@ -55,7 +55,6 @@ type TCustomLazyRules = {
   >;
 };
 
-// eslint-disable-next-line complexity
 function validateRootPathExists(
   path: any,
   rootShape: Record<string, any>,
@@ -113,11 +112,7 @@ function collectSchemaRelationships(
         [];
       if (itemRels.length > 0) {
         relationships.push(
-          ...rebaseRelationshipsForArray(
-            itemRels,
-            key,
-            `${String(key)}.$item`,
-          ),
+          ...rebaseRelationshipsForArray(itemRels, key, `${String(key)}.$item`),
         );
       }
     }
@@ -127,7 +122,6 @@ function collectSchemaRelationships(
 
 function wrapOptional(rawOptional: (inner: any) => RuleInstance<any, [any]>) {
   return (inner: any) => {
-    // eslint-disable-line complexity
     const innerResolved = inner?.[RESOLVED_RELATIONSHIPS];
     const innerUnresolved = inner?.[UNRESOLVED_DEPS];
     // Use adapted rule to get lazy RuleInstance that preserves chain behavior
@@ -174,7 +168,6 @@ function createPartialWrapper() {
 }
 
 function createPickWrapper() {
-  // eslint-disable-next-line complexity -- pick wrapper closes over schema graph
   return (
     schema: Record<PropertyKey, unknown>,
     keys: PropertyKey | PropertyKey[],
@@ -186,7 +179,7 @@ function createPickWrapper() {
     );
     // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are kept.
     // For rooted relationships, ignore the rooted endpoint as above.
-    // eslint-disable-next-line complexity -- filter checks both endpoints
+
     relationships = relationships.filter(rel => {
       const isRootSource = (rel as any).__isRootSource === true;
       const isRootTarget = (rel as any).__isRootTarget === true;
@@ -236,7 +229,6 @@ function createPickWrapper() {
 }
 
 function createOmitWrapper() {
-  // eslint-disable-next-line complexity -- omit wrapper closes over schema graph
   return (
     schema: Record<PropertyKey, unknown>,
     keys: PropertyKey | PropertyKey[],
@@ -248,7 +240,7 @@ function createOmitWrapper() {
     );
     // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are not omitted.
     // For rooted, filter only by local endpoint as above.
-    // eslint-disable-next-line complexity -- filter checks both endpoints
+
     relationships = relationships.filter(rel => {
       const isRootSource = (rel as any).__isRootSource === true;
       const isRootTarget = (rel as any).__isRootTarget === true;
@@ -329,9 +321,7 @@ const recordEvaluators = adaptDynamicRules<
  * to introspect the schema keys. Treat `__schema` as internal metadata.
  */
 const schemaAttacher =
-  (ruleFn: (schema: any) => RuleInstance<any, [any]>) =>
-  // eslint-disable-next-line complexity
-  (schema: any) => {
+  (ruleFn: (schema: any) => RuleInstance<any, [any]>) => (schema: any) => {
     const relationships = collectSchemaRelationships(schema);
 
     /** @deferred v2 — effect:'revalidate' deferred, only 'invalidate' supported in V1 */
@@ -385,7 +375,7 @@ const schemaAttacher =
 // Build the final schema rules object with special handling for arrays and base evaluators
 const schemaRulesWithArrayChaining = {
   ...schemaModifiers,
-  // eslint-disable-next-line complexity
+
   isArrayOf: <T>(...rules: any[]): ArrayRuleInstance<T> => {
     const rule = addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
       const result = ctx.run({ value }, () =>
@@ -396,17 +386,14 @@ const schemaRulesWithArrayChaining = {
     // Store item schema for relationship rebasing if single schema arg
     if (rules.length === 1 && rules[0] && typeof rules[0] === 'object') {
       const itemSchema = rules[0] as any;
-      if (
-        itemSchema.__schema ||
-        itemSchema[RESOLVED_RELATIONSHIPS]
-      ) {
+      if (itemSchema.__schema || itemSchema[RESOLVED_RELATIONSHIPS]) {
         (rule as any)[ITEM_SCHEMA] = itemSchema;
       }
     }
     return rule;
   },
   lazy: lazyRule,
-  // eslint-disable-next-line complexity
+
   list: <T>(...rules: any[]): ArrayRuleInstance<T> => {
     const rule = addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
       const result = ctx.run({ value }, () =>
@@ -416,10 +403,7 @@ const schemaRulesWithArrayChaining = {
     });
     if (rules.length === 1 && rules[0] && typeof rules[0] === 'object') {
       const itemSchema = rules[0] as any;
-      if (
-        itemSchema.__schema ||
-        itemSchema[RESOLVED_RELATIONSHIPS]
-      ) {
+      if (itemSchema.__schema || itemSchema[RESOLVED_RELATIONSHIPS]) {
         (rule as any)[ITEM_SCHEMA] = itemSchema;
       }
     }

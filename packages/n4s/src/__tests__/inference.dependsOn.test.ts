@@ -3,7 +3,7 @@
  * Verifies that $ is inferrable without explicit annotation
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars, vitest/valid-expect, vitest/no-commented-out-tests */
 import { describe, it, expect, expectTypeOf } from 'vitest';
 
 import { enforce } from '../n4s';

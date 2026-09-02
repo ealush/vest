@@ -13,7 +13,6 @@ export function rebaseRelationships(
   prefix: SchemaPath,
 ): InternalRelationship[] {
   return relationships.map(rel => {
-    // eslint-disable-line complexity
     const isRootSource = rel.__isRootSource === true;
     const isRootTarget = rel.__isRootTarget === true;
     const source = isRootSource ? rel.source : rebasePath(rel.source, prefix);

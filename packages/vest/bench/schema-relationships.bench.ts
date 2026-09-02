@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // @ts-nocheck
 import { bench, describe } from 'vitest';
 import {

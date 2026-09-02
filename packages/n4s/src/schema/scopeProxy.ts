@@ -55,7 +55,6 @@ export function createScopeProxy(scopePath: SchemaPath): Scope {
   }) as Scope;
 }
 
-// eslint-disable-next-line complexity
 function createDependencyRef(path: SchemaPath, isRoot: boolean): DependencyRef {
   const base: DependencyRef = {
     [DEPENDENCY_REF]: true,

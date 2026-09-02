@@ -96,7 +96,6 @@ function createSuite<
   });
 }
 
-// eslint-disable-next-line complexity -- suite finalization walks deferred roots
 function validateDeferredRoots(schema: any): void {
   try {
     // Use raw internal relationships to preserve __isRootSource/Target flags
@@ -126,7 +125,7 @@ function validateDeferredRoots(schema: any): void {
       if (!isRootSource && !isRootTarget) continue;
       // For root source, check full path exists in final schema (not just top-level)
       // to catch missing descendant like $.root.account.missing
-      // eslint-disable-next-line complexity -- full path walk
+
       const checkPath = (path: any[], fieldForMsg: string): void => {
         let current: any = (schema as any).__schema || {};
         path.forEach((seg: any, i: number) => {

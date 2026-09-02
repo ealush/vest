@@ -19,8 +19,8 @@ export function isDependencyRef(value: unknown): value is DependencyRef {
   );
 }
 
-export type Scope = Record<PropertyKey, unknown> & {
-  readonly root: Record<PropertyKey, unknown>;
+export type Scope = Record<string, Scope> & {
+  readonly root: Scope;
 };
 
 /**

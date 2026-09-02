@@ -19,9 +19,10 @@ export function isDependencyRef(value: unknown): value is DependencyRef {
   );
 }
 
-export type Scope = Record<string, Scope> & {
+export interface Scope {
   readonly root: Scope;
-};
+  [key: string]: Scope;
+}
 
 /**
  * Creates the `$` scope proxy for a given scope.
@@ -52,7 +53,7 @@ export function createScopeProxy(scopePath: SchemaPath): Scope {
       const path: SchemaPath = [...scopePath, propertySegment(prop as string)];
       return createDependencyRef(path, false);
     },
-  }) as Scope;
+  }) as unknown as Scope;
 }
 
 function createDependencyRef(path: SchemaPath, isRoot: boolean): DependencyRef {

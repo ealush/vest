@@ -12,6 +12,7 @@ import type { Scope } from './scopeProxy';
 // Symbols for storing unresolved deps on RuleInstance — must use Symbol.for to match chainBuilder
 export const UNRESOLVED_DEPS = Symbol.for('vest:unresolvedDeps');
 export const RESOLVED_RELATIONSHIPS = Symbol.for('vest:resolvedRelationships');
+export const ITEM_SCHEMA = Symbol.for('vest:itemSchema');
 
 export type UnresolvedDep = {
   resolver: (scope: Scope) => unknown;

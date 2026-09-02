@@ -372,6 +372,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     });
     const d3Suite = create((data: any) => {
       optional('password');
+      optional('confirmPassword');
       test('password', () => {
         enforce(data.password).isString();
       });

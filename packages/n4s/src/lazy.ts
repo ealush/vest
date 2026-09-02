@@ -55,10 +55,6 @@ type TCustomLazyRules = {
   >;
 };
 
-const RESOLVED = Symbol.for('vest:resolvedRelationships');
-const UNRESOLVED = Symbol.for('vest:unresolvedDeps');
-const ITEM_SCHEMA = Symbol.for('vest:itemSchema');
-
 // eslint-disable-next-line complexity
 function validateRootPathExists(
   path: any,
@@ -90,18 +86,57 @@ function validateRootPathExists(
   }
 }
 
+function collectSchemaRelationships(
+  schema: Record<string, any>,
+  keyFilter?: (key: string) => boolean,
+): InternalRelationship[] {
+  const relationships: InternalRelationship[] = resolveInlineDeps(
+    schema as Record<string, RuleInstance<unknown, unknown[]>>,
+    [],
+    schema as Record<string, unknown>,
+  ) as unknown as InternalRelationship[];
+  for (const key of Object.keys(schema)) {
+    if (keyFilter && !keyFilter(key)) continue;
+    const fieldRule: any = (schema as Record<string, any>)[key];
+    const nested =
+      (fieldRule?.[RESOLVED_RELATIONSHIPS] as
+        | InternalRelationship[]
+        | undefined) || [];
+    if (nested.length > 0) {
+      const prefix = [{ type: 'property', key } as const];
+      relationships.push(...rebaseRelationships(nested, prefix));
+    }
+    const item = fieldRule?.[ITEM_SCHEMA] as any;
+    if (item) {
+      const itemRels =
+        (item[RESOLVED_RELATIONSHIPS] as InternalRelationship[] | undefined) ||
+        [];
+      if (itemRels.length > 0) {
+        relationships.push(
+          ...rebaseRelationshipsForArray(
+            itemRels,
+            key,
+            `${String(key)}.$item`,
+          ),
+        );
+      }
+    }
+  }
+  return relationships;
+}
+
 function wrapOptional(rawOptional: (inner: any) => RuleInstance<any, [any]>) {
   return (inner: any) => {
     // eslint-disable-line complexity
-    const innerResolved = inner?.[RESOLVED];
-    const innerUnresolved = inner?.[UNRESOLVED];
+    const innerResolved = inner?.[RESOLVED_RELATIONSHIPS];
+    const innerUnresolved = inner?.[UNRESOLVED_DEPS];
     // Use adapted rule to get lazy RuleInstance that preserves chain behavior
     const rule = rawOptional(inner);
     if (innerResolved?.length) {
-      (rule as any)[RESOLVED] = [...innerResolved];
+      (rule as any)[RESOLVED_RELATIONSHIPS] = [...innerResolved];
     }
     if (innerUnresolved?.length) {
-      (rule as any)[UNRESOLVED] = [...innerUnresolved];
+      (rule as any)[UNRESOLVED_DEPS] = [...innerUnresolved];
     }
     // Also copy __schema and ITEM_SCHEMA if present
     if (inner?.__schema && !(rule as any).__schema) {
@@ -124,35 +159,7 @@ const optionalWrapper = wrapOptional(rawOptionalBase.optional);
 // For partial/pick/omit we need relationship-aware versions that also resolve
 function createPartialWrapper() {
   return (schema: any) => {
-    // eslint-disable-line complexity
-    let relationships: any[] = [];
-    try {
-      relationships = resolveInlineDeps(schema, [], schema);
-      for (const key of Object.keys(schema)) {
-        const fieldRule = schema[key];
-        const nested = fieldRule?.[RESOLVED] || [];
-        if (nested.length > 0) {
-          const prefix = [{ type: 'property', key } as const];
-          relationships.push(...rebaseRelationships(nested, prefix));
-        }
-        const item = fieldRule?.[ITEM_SCHEMA];
-        if (item) {
-          const itemRels = item[RESOLVED] || [];
-          if (itemRels.length > 0) {
-            relationships.push(
-              ...rebaseRelationshipsForArray(
-                itemRels,
-                key,
-                `${String(key)}.$item`,
-              ),
-            );
-          }
-        }
-      }
-    } catch (e: any) {
-      if (e?.name === 'EnforceSchemaError') throw e;
-      throw e;
-    }
+    const relationships = collectSchemaRelationships(schema);
     const base = adaptDynamicRules<
       RuleInstance<any, [any]>,
       Pick<typeof schemaRules, 'partial'>
@@ -160,7 +167,7 @@ function createPartialWrapper() {
       partial: schemaRules.partial,
     } as any) as any;
     const rule = base.partial(schema);
-    (rule as any)[RESOLVED] = relationships;
+    (rule as any)[RESOLVED_RELATIONSHIPS] = relationships;
     rule.__schema = schema;
     return rule;
   };
@@ -172,113 +179,44 @@ function createPickWrapper() {
     schema: Record<PropertyKey, unknown>,
     keys: PropertyKey | PropertyKey[],
   ) => {
-    let relationships: InternalRelationship[] = [];
-    try {
-      const all = resolveInlineDeps(
-        schema as Record<string, RuleInstance<unknown, unknown[]>>,
-        [],
-        schema as Record<string, unknown>,
-      );
-      const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
-      const collected: InternalRelationship[] = [];
-      // eslint-disable-next-line complexity -- filter checks both endpoints
-      const directKept = all.filter(rel => {
-        const isRootSource = (rel as any).__isRootSource === true;
-        const isRootTarget = (rel as any).__isRootTarget === true;
-        // For rooted relationships, ignore the rooted endpoint and require the local endpoint in keysSet
-        if (isRootSource && !isRootTarget) {
-          const tKey =
-            rel.target[0]?.type === 'property'
-              ? String((rel.target[0] as any).key)
-              : null;
-          return tKey ? keysSet.has(tKey) : true;
-        }
-        if (isRootTarget && !isRootSource) {
-          const sKey =
-            rel.source[0]?.type === 'property'
-              ? String((rel.source[0] as any).key)
-              : null;
-          return sKey ? keysSet.has(sKey) : true;
-        }
-        if (isRootSource && isRootTarget) return true;
-        const targetFirst = rel.target[0];
-        const sourceFirst = rel.source[0];
-        const tKey =
-          targetFirst?.type === 'property' ? String(targetFirst.key) : null;
-        const sKey =
-          sourceFirst?.type === 'property' ? String(sourceFirst.key) : null;
-        const targetKept = tKey ? keysSet.has(tKey) : true;
-        const sourceKept = sKey ? keysSet.has(sKey) : true;
-        return targetKept && sourceKept;
-      });
-      collected.push(...directKept);
-      for (const key of Object.keys(schema)) {
-        if (!keysSet.has(key as string)) continue;
-        const fieldRule = (schema as Record<string, unknown>)[
-          key
-        ] as unknown as Record<symbol, unknown>;
-        const nested =
-          (fieldRule?.[RESOLVED] as InternalRelationship[] | undefined) || [];
-        if (nested.length > 0) {
-          const prefix = [{ type: 'property', key } as const];
-          collected.push(...rebaseRelationships(nested, prefix));
-        }
-        const item = fieldRule?.[ITEM_SCHEMA] as
-          | RuleInstance<unknown, unknown[]>
-          | undefined;
-        if (item) {
-          const itemRels =
-            ((item as unknown as Record<symbol, unknown>)[RESOLVED] as
-              | InternalRelationship[]
-              | undefined) || [];
-          if (itemRels.length > 0) {
-            collected.push(
-              ...rebaseRelationshipsForArray(
-                itemRels,
-                key,
-                `${String(key)}.$item`,
-              ),
-            );
-          }
-        }
-      }
-      // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are kept.
-      // For rooted relationships, ignore the rooted endpoint as above.
-      // eslint-disable-next-line complexity -- filter checks both endpoints
-      relationships = collected.filter(rel => {
-        const isRootSource = (rel as any).__isRootSource === true;
-        const isRootTarget = (rel as any).__isRootTarget === true;
-        if (isRootSource && !isRootTarget) {
-          const tTop =
-            rel.target[0]?.type === 'property'
-              ? String((rel.target[0] as any).key)
-              : null;
-          return tTop ? keysSet.has(tTop) : true;
-        }
-        if (isRootTarget && !isRootSource) {
-          const sTop =
-            rel.source[0]?.type === 'property'
-              ? String((rel.source[0] as any).key)
-              : null;
-          return sTop ? keysSet.has(sTop) : true;
-        }
-        if (isRootSource && isRootTarget) return true;
-        const sTop =
-          rel.source[0]?.type === 'property'
-            ? String((rel.source[0] as any).key)
-            : null;
+    const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
+    let relationships = collectSchemaRelationships(
+      schema as Record<string, any>,
+      key => keysSet.has(key as string),
+    );
+    // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are kept.
+    // For rooted relationships, ignore the rooted endpoint as above.
+    // eslint-disable-next-line complexity -- filter checks both endpoints
+    relationships = relationships.filter(rel => {
+      const isRootSource = (rel as any).__isRootSource === true;
+      const isRootTarget = (rel as any).__isRootTarget === true;
+      if (isRootSource && !isRootTarget) {
         const tTop =
           rel.target[0]?.type === 'property'
             ? String((rel.target[0] as any).key)
             : null;
-        const sKept = sTop ? keysSet.has(sTop) : true;
-        const tKept = tTop ? keysSet.has(tTop) : true;
-        return sKept && tKept;
-      });
-    } catch (e: any) {
-      if (e?.name === 'EnforceSchemaError') throw e;
-      throw e;
-    }
+        return tTop ? keysSet.has(tTop) : true;
+      }
+      if (isRootTarget && !isRootSource) {
+        const sTop =
+          rel.source[0]?.type === 'property'
+            ? String((rel.source[0] as any).key)
+            : null;
+        return sTop ? keysSet.has(sTop) : true;
+      }
+      if (isRootSource && isRootTarget) return true;
+      const sTop =
+        rel.source[0]?.type === 'property'
+          ? String((rel.source[0] as any).key)
+          : null;
+      const tTop =
+        rel.target[0]?.type === 'property'
+          ? String((rel.target[0] as any).key)
+          : null;
+      const sKept = sTop ? keysSet.has(sTop) : true;
+      const tKept = tTop ? keysSet.has(tTop) : true;
+      return sKept && tKept;
+    });
     const base = adaptDynamicRules<
       RuleInstance<any, [any]>,
       Pick<typeof schemaRules, 'pick'>
@@ -286,7 +224,7 @@ function createPickWrapper() {
       pick: schemaRules.pick,
     } as any) as any;
     const rule = base.pick(schema, keys);
-    (rule as any)[RESOLVED] = relationships;
+    (rule as any)[RESOLVED_RELATIONSHIPS] = relationships;
     // For pick, __schema is filtered shape
     const filtered: any = {};
     const set = new Set(Array.isArray(keys) ? keys : [keys]);
@@ -303,112 +241,44 @@ function createOmitWrapper() {
     schema: Record<PropertyKey, unknown>,
     keys: PropertyKey | PropertyKey[],
   ) => {
-    let relationships: InternalRelationship[] = [];
-    try {
-      const all = resolveInlineDeps(
-        schema as Record<string, RuleInstance<unknown, unknown[]>>,
-        [],
-        schema as Record<string, unknown>,
-      );
-      const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
-      const collected: InternalRelationship[] = [];
-      // eslint-disable-next-line complexity -- filter checks both endpoints
-      const directKept = all.filter(rel => {
-        const isRootSource = (rel as any).__isRootSource === true;
-        const isRootTarget = (rel as any).__isRootTarget === true;
-        if (isRootSource && !isRootTarget) {
-          const tKey =
-            rel.target[0]?.type === 'property'
-              ? String((rel.target[0] as any).key)
-              : null;
-          return tKey ? !keysSet.has(tKey) : true;
-        }
-        if (isRootTarget && !isRootSource) {
-          const sKey =
-            rel.source[0]?.type === 'property'
-              ? String((rel.source[0] as any).key)
-              : null;
-          return sKey ? !keysSet.has(sKey) : true;
-        }
-        if (isRootSource && isRootTarget) return true;
-        const targetFirst = rel.target[0];
-        const sourceFirst = rel.source[0];
-        const tKey =
-          targetFirst?.type === 'property' ? String(targetFirst.key) : null;
-        const sKey =
-          sourceFirst?.type === 'property' ? String(sourceFirst.key) : null;
-        const targetKept = tKey ? !keysSet.has(tKey) : true;
-        const sourceKept = sKey ? !keysSet.has(sKey) : true;
-        return targetKept && sourceKept;
-      });
-      collected.push(...directKept);
-      for (const key of Object.keys(schema)) {
-        if (keysSet.has(key as string)) continue;
-        const fieldRule = (
-          schema as Record<string, RuleInstance<unknown, unknown[]>>
-        )[key as string] as unknown as Record<symbol, unknown>;
-        const nested =
-          (fieldRule?.[RESOLVED] as InternalRelationship[] | undefined) || [];
-        if (nested.length > 0) {
-          const prefix = [{ type: 'property', key } as const];
-          collected.push(...rebaseRelationships(nested, prefix));
-        }
-        const item = fieldRule?.[ITEM_SCHEMA] as
-          | RuleInstance<unknown, unknown[]>
-          | undefined;
-        if (item) {
-          const itemRels =
-            ((item as unknown as Record<symbol, unknown>)[RESOLVED] as
-              | InternalRelationship[]
-              | undefined) || [];
-          if (itemRels.length > 0) {
-            collected.push(
-              ...rebaseRelationshipsForArray(
-                itemRels,
-                key,
-                `${String(key)}.$item`,
-              ),
-            );
-          }
-        }
-      }
-      // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are not omitted.
-      // For rooted, filter only by local endpoint as above.
-      // eslint-disable-next-line complexity -- filter checks both endpoints
-      relationships = collected.filter(rel => {
-        const isRootSource = (rel as any).__isRootSource === true;
-        const isRootTarget = (rel as any).__isRootTarget === true;
-        if (isRootSource && !isRootTarget) {
-          const tTop =
-            rel.target[0]?.type === 'property'
-              ? String((rel.target[0] as any).key)
-              : null;
-          return tTop ? !keysSet.has(tTop) : true;
-        }
-        if (isRootTarget && !isRootSource) {
-          const sTop =
-            rel.source[0]?.type === 'property'
-              ? String((rel.source[0] as any).key)
-              : null;
-          return sTop ? !keysSet.has(sTop) : true;
-        }
-        if (isRootSource && isRootTarget) return true;
-        const sTop =
-          rel.source[0]?.type === 'property'
-            ? String((rel.source[0] as any).key)
-            : null;
+    const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
+    let relationships = collectSchemaRelationships(
+      schema as Record<string, any>,
+      key => !keysSet.has(key as string),
+    );
+    // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are not omitted.
+    // For rooted, filter only by local endpoint as above.
+    // eslint-disable-next-line complexity -- filter checks both endpoints
+    relationships = relationships.filter(rel => {
+      const isRootSource = (rel as any).__isRootSource === true;
+      const isRootTarget = (rel as any).__isRootTarget === true;
+      if (isRootSource && !isRootTarget) {
         const tTop =
           rel.target[0]?.type === 'property'
             ? String((rel.target[0] as any).key)
             : null;
-        const sKept = sTop ? !keysSet.has(sTop) : true;
-        const tKept = tTop ? !keysSet.has(tTop) : true;
-        return sKept && tKept;
-      });
-    } catch (e: unknown) {
-      if ((e as Error)?.name === 'EnforceSchemaError') throw e;
-      throw e;
-    }
+        return tTop ? !keysSet.has(tTop) : true;
+      }
+      if (isRootTarget && !isRootSource) {
+        const sTop =
+          rel.source[0]?.type === 'property'
+            ? String((rel.source[0] as any).key)
+            : null;
+        return sTop ? !keysSet.has(sTop) : true;
+      }
+      if (isRootSource && isRootTarget) return true;
+      const sTop =
+        rel.source[0]?.type === 'property'
+          ? String((rel.source[0] as any).key)
+          : null;
+      const tTop =
+        rel.target[0]?.type === 'property'
+          ? String((rel.target[0] as any).key)
+          : null;
+      const sKept = sTop ? !keysSet.has(sTop) : true;
+      const tKept = tTop ? !keysSet.has(tTop) : true;
+      return sKept && tKept;
+    });
     const base = adaptDynamicRules<
       RuleInstance<unknown, [unknown]>,
       Pick<typeof schemaRules, 'omit'>
@@ -418,7 +288,8 @@ function createOmitWrapper() {
       omit: (s: unknown, k: unknown) => RuleInstance<unknown, unknown[]>;
     };
     const rule = base.omit(schema as unknown, keys as unknown);
-    (rule as unknown as Record<symbol, unknown>)[RESOLVED] = relationships;
+    (rule as unknown as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS] =
+      relationships;
     const filtered: Record<string, unknown> = {};
     const set = new Set(Array.isArray(keys) ? keys : [keys]);
     for (const k of Object.keys(schema as object))
@@ -461,47 +332,7 @@ const schemaAttacher =
   (ruleFn: (schema: any) => RuleInstance<any, [any]>) =>
   // eslint-disable-next-line complexity
   (schema: any) => {
-    // Collect relationships from shape fields before creating rule
-    // so that validation errors (unknown field) are thrown at composition time
-    let relationships: any[] = [];
-    try {
-      // Resolve direct field dependencies
-      relationships = resolveInlineDeps(schema, [], schema);
-
-      // Collect and rebase nested schema relationships
-      for (const key of Object.keys(schema)) {
-        const fieldRule = schema[key];
-        if (!fieldRule) continue;
-        // Check if it's a nested schema (has __schema and resolved relationships)
-        const nestedRels =
-          (fieldRule as any)[Symbol.for('vest:resolvedRelationships')] || [];
-        if (nestedRels.length > 0) {
-          // This is a nested schema — rebase its relationships
-          const prefix = [{ type: 'property', key } as const];
-          const rebased = rebaseRelationships(nestedRels, prefix);
-          relationships.push(...rebased);
-        }
-        // Check if it's an array with item schema (has __itemSchema)
-        const itemSchema = (fieldRule as any)[Symbol.for('vest:itemSchema')];
-        if (itemSchema) {
-          const itemRels =
-            (itemSchema as any)[Symbol.for('vest:resolvedRelationships')] || [];
-          if (itemRels.length > 0) {
-            relationships.push(
-              ...rebaseRelationshipsForArray(
-                itemRels,
-                key,
-                `${String(key)}.$item`,
-              ),
-            );
-          }
-        }
-      }
-    } catch (e) {
-      // Re-throw EnforceSchemaError
-      if ((e as any)?.name === 'EnforceSchemaError') throw e;
-      throw e;
-    }
+    const relationships = collectSchemaRelationships(schema);
 
     /** @deferred v2 — effect:'revalidate' deferred, only 'invalidate' supported in V1 */
     for (const rel of relationships) {
@@ -547,7 +378,7 @@ const schemaAttacher =
 
     const rule = ruleFn(schema);
     rule.__schema = schema;
-    (rule as any)[Symbol.for('vest:resolvedRelationships')] = relationships;
+    (rule as any)[RESOLVED_RELATIONSHIPS] = relationships;
     return rule;
   };
 
@@ -567,9 +398,9 @@ const schemaRulesWithArrayChaining = {
       const itemSchema = rules[0] as any;
       if (
         itemSchema.__schema ||
-        itemSchema[Symbol.for('vest:resolvedRelationships')]
+        itemSchema[RESOLVED_RELATIONSHIPS]
       ) {
-        (rule as any)[Symbol.for('vest:itemSchema')] = itemSchema;
+        (rule as any)[ITEM_SCHEMA] = itemSchema;
       }
     }
     return rule;
@@ -587,9 +418,9 @@ const schemaRulesWithArrayChaining = {
       const itemSchema = rules[0] as any;
       if (
         itemSchema.__schema ||
-        itemSchema[Symbol.for('vest:resolvedRelationships')]
+        itemSchema[RESOLVED_RELATIONSHIPS]
       ) {
-        (rule as any)[Symbol.for('vest:itemSchema')] = itemSchema;
+        (rule as any)[ITEM_SCHEMA] = itemSchema;
       }
     }
     return rule;

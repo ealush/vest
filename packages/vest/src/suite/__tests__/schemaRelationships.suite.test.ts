@@ -123,15 +123,16 @@ describe('Schema Relationships — vest suite V1 boundary', () => {
       state: enforce.isString().dependsOn($ => $.country),
     });
 
+    let schema: ReturnType<typeof enforce.shape>;
     const suite = create(
       data => {
         test('billingAddress.state', () => {
           enforce(data.billingAddress.state).isNotBlank();
         });
       },
-      enforce.shape({
+      (schema = enforce.shape({
         billingAddress: addressSchema,
-      }),
+      })),
     );
 
     const res = suite.run({
@@ -139,9 +140,7 @@ describe('Schema Relationships — vest suite V1 boundary', () => {
     });
 
     // Schema graph exists
-    expect(
-      enforce.shape({ billingAddress: addressSchema }).describe().dependencies,
-    ).toHaveLength(1);
+    expect(schema.describe().dependencies).toHaveLength(1);
     expect(res.hasErrors('billingAddress.state')).toBe(true);
   });
 });

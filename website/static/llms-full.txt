@@ -9500,9 +9500,9 @@ A field may depend on more than one value. Return an array:
 
 ```ts
 const schema = enforce.shape({
-  startDate: enforce.isString(),
-  endDate: enforce.isString(),
-  timezone: enforce.isString(),
+  quantity: enforce.isNumber(),
+  unitPrice: enforce.isNumber(),
+  currency: enforce.isString(),
   total: enforce
     .isNumber()
     .dependsOn($ => [
@@ -9637,7 +9637,7 @@ Dependencies answer a different question:
 
 > A field changed. Which validation results may now be stale?
 
-A future interaction API can use the relationship graph:
+Use the available interaction API which consumes the relationship graph:
 
 ```ts
 suite.changed('password').run(data);

@@ -61,7 +61,7 @@ function validateRootPathExists(
     const seg = path[i];
     if (seg.type !== 'property') continue;
     const key = String(seg.key);
-    if (!(key in current)) {
+    if (!Object.prototype.hasOwnProperty.call(current, key)) {
       // Reuse EnforceSchemaError with Did you mean
       const { EnforceSchemaError } = require('./errors/EnforceSchemaError');
       const keys = Object.keys(current);
@@ -174,8 +174,10 @@ function createPickWrapper() {
     try {
       const all = resolveInlineDeps(schema as Record<string, RuleInstance<unknown, unknown[]>>, [], schema as Record<string, unknown>);
       const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
+      // Collect all (direct + rebased) then filter fully to avoid dangling after pick
+      const collected: InternalRelationship[] = [];
       // eslint-disable-next-line complexity -- filter checks both endpoints
-      relationships = all.filter(rel => {
+      const directKept = all.filter(rel => {
         const targetFirst = rel.target[0];
         const sourceFirst = rel.source[0];
         const tKey = targetFirst?.type === 'property' ? String(targetFirst.key) : null;
@@ -184,13 +186,14 @@ function createPickWrapper() {
         const sourceKept = sKey ? keysSet.has(sKey) : true;
         return targetKept && sourceKept;
       });
+      collected.push(...directKept);
       for (const key of Object.keys(schema)) {
         if (!keysSet.has(key as string)) continue;
         const fieldRule = (schema as Record<string, unknown>)[key] as unknown as Record<symbol, unknown>;
         const nested = (fieldRule?.[RESOLVED] as InternalRelationship[] | undefined) || [];
         if (nested.length > 0) {
           const prefix = [{ type: 'property', key } as const];
-          relationships.push(...rebaseRelationships(nested, prefix));
+          collected.push(...rebaseRelationships(nested, prefix));
         }
         const item = fieldRule?.[ITEM_SCHEMA] as RuleInstance<unknown, unknown[]> | undefined;
         if (item) {
@@ -201,10 +204,19 @@ function createPickWrapper() {
               { type: 'property', key } as const,
               { type: 'item', binding } as const,
             ];
-            relationships.push(...rebaseRelationships(itemRels, prefix));
+            collected.push(...rebaseRelationships(itemRels, prefix));
           }
         }
       }
+      // Filter fully rebased set: pick keeps only relationships where both endpoints' top-level keys are kept
+      // eslint-disable-next-line complexity -- filter checks both endpoints
+      relationships = collected.filter(rel => {
+        const sTop = rel.source[0]?.type === 'property' ? String((rel.source[0] as any).key) : null;
+        const tTop = rel.target[0]?.type === 'property' ? String((rel.target[0] as any).key) : null;
+        const sKept = sTop ? keysSet.has(sTop) : true;
+        const tKept = tTop ? keysSet.has(tTop) : true;
+        return sKept && tKept;
+      });
     } catch (e: any) {
       if (e?.name === 'EnforceSchemaError') throw e;
       throw e;
@@ -230,8 +242,9 @@ function createOmitWrapper() {
     try {
       const all = resolveInlineDeps(schema as Record<string, RuleInstance<unknown, unknown[]>>, [], schema as Record<string, unknown>);
       const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
+      const collected: InternalRelationship[] = [];
       // eslint-disable-next-line complexity -- filter checks both endpoints
-      relationships = all.filter(rel => {
+      const directKept = all.filter(rel => {
         const targetFirst = rel.target[0];
         const sourceFirst = rel.source[0];
         const tKey = targetFirst?.type === 'property' ? String(targetFirst.key) : null;
@@ -240,13 +253,14 @@ function createOmitWrapper() {
         const sourceKept = sKey ? !keysSet.has(sKey) : true;
         return targetKept && sourceKept;
       });
+      collected.push(...directKept);
       for (const key of Object.keys(schema)) {
         if (keysSet.has(key as string)) continue;
         const fieldRule = (schema as Record<string, RuleInstance<unknown, unknown[]>>)[key as string] as unknown as Record<symbol, unknown>;
         const nested = (fieldRule?.[RESOLVED] as InternalRelationship[] | undefined) || [];
         if (nested.length > 0) {
           const prefix = [{ type: 'property', key } as const];
-          relationships.push(...rebaseRelationships(nested, prefix));
+          collected.push(...rebaseRelationships(nested, prefix));
         }
         const item = fieldRule?.[ITEM_SCHEMA] as RuleInstance<unknown, unknown[]> | undefined;
         if (item) {
@@ -257,10 +271,19 @@ function createOmitWrapper() {
               { type: 'property', key } as const,
               { type: 'item', binding } as const,
             ];
-            relationships.push(...rebaseRelationships(itemRels, prefix));
+            collected.push(...rebaseRelationships(itemRels, prefix));
           }
         }
       }
+      // Filter fully rebased set: omit keeps only relationships where both endpoints' top-level keys are NOT omitted
+      // eslint-disable-next-line complexity -- filter checks both endpoints
+      relationships = collected.filter(rel => {
+        const sTop = rel.source[0]?.type === 'property' ? String((rel.source[0] as any).key) : null;
+        const tTop = rel.target[0]?.type === 'property' ? String((rel.target[0] as any).key) : null;
+        const sKept = sTop ? !keysSet.has(sTop) : true;
+        const tKept = tTop ? !keysSet.has(tTop) : true;
+        return sKept && tKept;
+      });
     } catch (e: unknown) {
       if ((e as Error)?.name === 'EnforceSchemaError') throw e;
       throw e;
@@ -362,33 +385,21 @@ const schemaAttacher =
       }
     }
 
-    // Validate rooted paths — defer any root that is not found in current schema.
-    // Those are intended for an outer mount (e.g., company.taxId -> $.root.accountType
-    // where accountType is not in company). Top-level missing will be validated at outer
-    // if that outer exists; standalone top-level missing will be caught because the
-    // root key truly does not exist anywhere — but we defer here and rely on outer.
-    // To still throw for standalone top-level missing, we check if the relationship
-    // was created via direct resolveInlineDeps (source root not found in current) and
-    // the current schema is not being used as a nested value elsewhere — we cannot know,
-    // so we defer all root-missing and let outer handle. For standalone top-level case
-    // where shape is never nested, the missing will remain undetected if we defer.
-    // Instead, we validate root paths only when they ARE found to be missing AND the
-    // current schema is the one that ultimately will be top-level. Heuristic: defer
-    // only when the target field exists in current schema and source root key does NOT.
-    // Now validate remaining (non-deferred) root relationships
+    // Validate rooted paths — defer nested targets (intermediate composition)
+    // Root dependencies from nested shapes (e.g., inner leaf -> $.root.global) have
+    // targets like [inner, leaf] (length>1) or sources like [inner, leaf] for revalidates.
+    // At intermediate shape creation (middle = shape({ inner })), global is not in middle's
+    // top-level, but will be provided by outer shape({ global, middle }). Validating
+    // immediately would incorrectly throw. Defer all rooted relationships where either
+    // endpoint is nested (length>1); only validate direct top-level root deps immediately
+    // (e.g., shape({ a, b: $.root.missing }) where both endpoints length===1 and missing).
+    // Deferred nested roots are carried via rebase and validated at the outermost that
+    // provides the key; if never provided, the suite will surface the stale dependency
+    // (or describe will show it) rather than throwing at shape creation.
     for (const rel of relationships) {
-      if ((rel as any).__isRootSource) {
-        const sourceKey = String((rel.source[0] as any)?.key ?? '');
-        const hasSourceInCurrent = sourceKey in schema;
-        const targetKeyStr = String(
-          (rel.target[rel.target.length - 1] as any)?.key ?? '',
-        );
-        const hasTargetInCurrent = targetKeyStr in schema;
-        if (!hasSourceInCurrent && hasTargetInCurrent) continue;
-      }
-      if ((rel as any).__isRootTarget) {
-        const targetKey = String((rel.target[0] as any)?.key ?? '');
-        if (!(targetKey in schema)) continue;
+      if ((rel as any).__isRootSource || (rel as any).__isRootTarget) {
+        const isNested = rel.target.length > 1 || rel.source.length > 1;
+        if (isNested) continue;
       }
       const targetKey = String(
         (rel.target[rel.target.length - 1] as any)?.key ?? 'unknown',

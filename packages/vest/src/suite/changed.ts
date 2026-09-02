@@ -219,40 +219,40 @@ export function getAffectedFields(
 
 /**
  * Expands an array-item target path to all concrete indices present in data.
+ * Recursively expands every nested $item segment.
  * Example: target [travelers, $item, visa] with data {travelers: [{}, {}, {}]}
  * -> ['travelers.0.visa', 'travelers.1.visa', 'travelers.2.visa']
+ * Nested: [groups, $item, members, $item, email] -> all group/member combos.
  */
-// eslint-disable-next-line complexity
 function expandArrayTargets(
   targetPath: SchemaPath,
   data: any,
 ): string[] {
   const results: string[] = [];
-  // Find first item segment
-  const itemIdx = targetPath.findIndex(s => s.type === 'item');
-  if (itemIdx === -1) {
-    return [pathToFieldName(targetPath)];
-  }
-  // Get prefix before item
-  const prefix = targetPath.slice(0, itemIdx);
-  const suffix = targetPath.slice(itemIdx + 1);
-  // Resolve prefix in data to get array
-  let current: any = data;
-  for (const seg of prefix) {
+  // eslint-disable-next-line complexity -- recursive DFS for nested $item expansion
+  function dfs(
+    pathIdx: number,
+    dataNode: any,
+    built: SchemaPath,
+  ): void {
+    if (pathIdx >= targetPath.length) {
+      results.push(pathToFieldName(built as SchemaPath));
+      return;
+    }
+    const seg = targetPath[pathIdx];
     if (seg.type === 'property') {
-      current = current?.[seg.key];
+      dfs(pathIdx + 1, dataNode?.[(seg as any).key], [...built, seg] as SchemaPath);
+    } else {
+      // item segment — dataNode should be the array at this position
+      if (!Array.isArray(dataNode)) {
+        dfs(pathIdx + 1, undefined, [...built, seg] as SchemaPath);
+        return;
+      }
+      for (let i = 0; i < dataNode.length; i++) {
+        dfs(pathIdx + 1, dataNode[i], [...built, { type: 'item', binding: String(i) }] as SchemaPath);
+      }
     }
   }
-  if (!Array.isArray(current)) {
-    return [pathToFieldName(targetPath)];
-  }
-  for (let i = 0; i < current.length; i++) {
-    const concretePath: SchemaPath = [
-      ...prefix,
-      { type: 'item', binding: String(i) },
-      ...suffix,
-    ];
-    results.push(pathToFieldName(concretePath));
-  }
-  return results;
+  dfs(0, data, [] as unknown as SchemaPath);
+  return results.length ? results : [pathToFieldName(targetPath)];
 }

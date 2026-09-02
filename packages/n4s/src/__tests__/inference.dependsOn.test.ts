@@ -39,7 +39,9 @@ function typeChecks() {
   });
 
   // Array item - $ is still Scope, not array-specific
+  // Item must declare its own dependency source
   const item = enforce.shape({
+    country: enforce.isString(),
     passport: enforce.isString().dependsOn($ => $.country),
   });
   const withArray = enforce.shape({

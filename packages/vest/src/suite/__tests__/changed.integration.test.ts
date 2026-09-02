@@ -258,7 +258,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       });
       test('passwordStrengthMessage', () => {
         log.record('passwordStrengthMessage');
-        enforce(data.password.length).longerThan(5);
+        enforce(data.password).longerThan(5);
       });
     }, schema);
     await suite.run({

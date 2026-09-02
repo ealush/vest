@@ -241,6 +241,9 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   // Pre-create dedicated array suites for C10/C12 run baselines (reused, not recreated per iteration)
   const arr3Run = makeArraySuite(3);
   const arr100Run = makeArraySuite(100);
+  // Pre-create changed fixtures to make run vs changed costs symmetric (no one-sided O(n) alloc)
+  const arr100ChangedData = { travelers: travelersData(100) };
+  arr100ChangedData.travelers[50] = { country: 'CA', passportNumber: 'P50' };
 
   bench(
     'C10 array(3) run() [6/6 fields] 3×country+passport',
@@ -275,10 +278,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   bench(
     'C13 array(100) changed(travelers.50.country) [2/200 fields] ratio gate >10×',
     () => {
-      // Use the pre-warmed arr100 suite; toggle one element to trigger same-item
-      const next = { travelers: travelersData(100) };
-      next.travelers[50] = { country: 'CA', passportNumber: 'P50' };
-      arr100.suite.changed('travelers.50.country').run(next);
+      arr100.suite.changed('travelers.50.country').run(arr100ChangedData);
     },
     { time: 1000, warmupTime: 500 },
   );

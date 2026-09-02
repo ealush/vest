@@ -1,7 +1,7 @@
 import { enforce } from 'n4s';
 import { describe, it, expect } from 'vitest';
 
-import { create, test, group, skipWhen, omitWhen } from '../../vest';
+import { create, test, group, skipWhen, omitWhen, optional, warn } from '../../vest';
 import { each } from '../../isolates/each';
 
 function createLog() {

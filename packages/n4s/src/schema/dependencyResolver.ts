@@ -90,9 +90,14 @@ export function resolveInlineDeps(
 
       const refs = normalizeResolverResult(result);
       if (refs.length === 0 && result !== undefined) {
-        // If resolver returned something that's not a DependencyRef, it might be a mistake
-        // But we silently ignore non-DependencyRef returns except for error cases
-        continue;
+        throw new EnforceSchemaError(
+          `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver must return a dependency ref (e.g., $ => $.other) or array of refs, got ${String(result)}`,
+        );
+      }
+      if (Array.isArray(result) && refs.length !== (result as unknown[]).length) {
+        throw new EnforceSchemaError(
+          `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver array contains non-dependency values`,
+        );
       }
 
       for (const ref of refs) {
@@ -268,7 +273,10 @@ function validateSourceExists(
   if (!keyToCheck || keyToCheck.type !== 'property') return;
 
   const checkShape = (parentShape ?? shapeToCheck) as Record<PropertyKey, unknown>;
-  const exists = (keyToCheck.key as string) in checkShape;
+  const exists = Object.prototype.hasOwnProperty.call(
+    checkShape,
+    keyToCheck.key as string,
+  );
   if (!exists) {
     const suggestion = findClosestKey(
       String(keyToCheck.key),

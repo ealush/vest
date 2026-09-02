@@ -42,9 +42,6 @@ function typeChecks() {
   suite.changed('password').run({ password: 'a', confirmPassword: 'a', profile: { age: 1, displayName: 'x' } });
   suite.changed('profile.displayName').run({ password: 'a', confirmPassword: 'a', profile: { age: 1, displayName: 'x' } });
 
-  // @ts-expect-error - unknown field not in schema should still be allowed as string, but we test inference
-  // suite.changed('unknownField')
-
   // describe should be on schema
   const d = schema.describe();
   const deps: typeof d.dependencies = d.dependencies;

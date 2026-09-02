@@ -1,6 +1,6 @@
 # Benchmark Design — Schema Relationships (`dependsOn` / `revalidates` + `suite.changed()`)
 
-> **Status:** Design only. No `.bench.ts` files written yet.
+> **Status:** Implemented — `packages/vest/bench/schema-relationships.bench.ts` and `packages/vest/bench/granular/schema-relationships-changed.bench.ts` (49 rows) shipped with RFC rev2 V1.
 > **Author:** Benchmark Designer (workflow child parallel-4)
 > **Date:** 2026-09-02
 > **Scope:** Proposal for `packages/vest/bench/` (primary) + optional `packages/n4s/bench/` leaf
@@ -28,7 +28,7 @@ All benchmarks live in **`packages/vest/bench/`** (17 files + `granular/` subfol
 | npm script | `packages/vest/package.json → "bench": "vitest bench --run --config ./vitest.config.ts"` and root `package.json → "bench": "npx tsx vx/scripts/benchmark-reporter.ts --update"` |
 | CI | `.github/workflows/benchmark.yml` — PR-triggered interlaced run: builds `latest` baseline vs PR, runs `npx tsx vx/scripts/benchmark-reporter.ts --interlace .benchmark-baseline`, posts diff table to `benchmark-results.md` (current file: 74 lines, 60+ rows) |
 | Parser | `benchmark-reporter.ts:parseOutput` regex `· <name> <hz> … <p99> ±<rme>% <samples>` — extracts `hz` (ops/sec), `p99` (ms), `rme` (margin of error) |
-| Diff logic | `calculateDiffs` — suppresses diff if `|Δ%| < max(5, rme%)` |
+| Diff logic | `calculateDiffs` — suppresses diff if `\|Δ%\| < max(5, rme%)` |
 
 No `benchmark.js`, no `vitest bench --reporter=json` customisation, no separate `bench.config.ts`. Adding one is out of scope — reuse existing harness.
 
@@ -141,7 +141,7 @@ const travelers = (n: number) => Array.from({ length: n }, (_, i) => ({ country:
 | Metric | Source | Unit | Why |
 |---|---|---|---|
 | **ops/sec (Hz)** | `tinybench` `hz` — parsed by `resultRegex` group 2 | higher=better | Main comparison vs baseline; PR diff table uses this for `Diff (Abs)` / `Diff (%)` |
-| **rme (relative margin of error)** | `±X%` group 4 | lower=better | Gate: if `|Δ%| < max(5, rme)` diff is masked to 0 — so keep `rme` low or accept 5% noise floor |
+| **rme (relative margin of error)** | `±X%` group 4 | lower=better | Gate: if `\|Δ%\| < max(5, rme)` diff is masked to 0 — so keep `rme` low or accept 5% noise floor |
 | **p99 (ms)** | column 3 → `p99` | lower=better | Tail latency; important for 1000-field stress |
 | **samples** | trailing number in bench line | — | Diagnostics only; reporter drops it |
 

@@ -413,7 +413,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
       },
       enforce.shape({
         a: enforce.isString(),
-        b: enforce.isString().dependsOn($ => $.a),
+        b: enforce.optional(enforce.isString().dependsOn($ => $.a)),
       }),
     );
     d4Suite.run({ a: 'x', b: 'y' });
@@ -530,7 +530,6 @@ describe('Integration matrix — changed() meets Vest features', () => {
           enforce(data.a).isString();
         });
         test('b', () => {
-          void enforce(data.b).isString().dependsOn; // just placeholder, schema drives graph
           enforce(data.b).isString();
         });
       },
@@ -829,6 +828,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
 
     volSuiteRun.run(volData);
     volSuiteChanged.run(volData);
+    const volChangedData = { ...volData, field_0: 'changed' } as typeof volData;
 
     bench(
       'D13 volatility run() full 101 fields [baseline]',
@@ -840,7 +840,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     bench(
       'D13 volatility changed(field_0) [2/101 fields] — ratio gate',
       () => {
-        volSuiteChanged.changed('field_0').run({ ...volData, field_0: 'changed' });
+        volSuiteChanged.changed('field_0').run(volChangedData);
       },
       { time: 250 },
     );

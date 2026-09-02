@@ -12,8 +12,6 @@ import {
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
 
-import { EnforceSchemaError } from 'n4s/src/errors/EnforceSchemaError';
-
 import { Suite, SuiteCallbackWithSchema } from './SuiteTypes';
 import {
   useBindSuiteLifecycle,
@@ -135,9 +133,11 @@ function validateDeferredRoots(schema: any): void {
           if (seg.type !== 'property') return;
           const key = String(seg.key);
           if (!Object.prototype.hasOwnProperty.call(current, key)) {
-            throw new EnforceSchemaError(
+            const err = new Error(
               `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${key}"`,
             );
+            err.name = 'EnforceSchemaError';
+            throw err;
           }
           const rule: any = current[key];
           if (i < path.length - 1) {

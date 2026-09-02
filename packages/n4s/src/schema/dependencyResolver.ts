@@ -211,7 +211,11 @@ function validateSourceExists(
       const next = (current as Record<PropertyKey, unknown>)[
         seg.key as PropertyKey
       ];
-      if (next && typeof next === 'object' && '__schema' in (next as object)) {
+      if (
+        next &&
+        typeof next === 'object' &&
+        Object.prototype.hasOwnProperty.call(next as object, '__schema')
+      ) {
         current = (
           next as unknown as { __schema: Record<PropertyKey, unknown> }
         ).__schema;
@@ -258,9 +262,15 @@ function validateSourceExists(
     const isShapeLike =
       rule &&
       typeof rule === 'object' &&
-      ('__schema' in rule ||
-        Symbol.for('vest:resolvedRelationships') in rule ||
-        Symbol.for('vest:itemSchema') in rule);
+      (Object.prototype.hasOwnProperty.call(rule, '__schema') ||
+        Object.prototype.hasOwnProperty.call(
+          rule,
+          Symbol.for('vest:resolvedRelationships'),
+        ) ||
+        Object.prototype.hasOwnProperty.call(
+          rule,
+          Symbol.for('vest:itemSchema'),
+        ));
     if (!isShapeLike) {
       // This segment is scalar but has a descendant — invalid
       const descendant = String(

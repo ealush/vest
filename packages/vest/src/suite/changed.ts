@@ -292,9 +292,11 @@ export function getAffectedFields(
   schema: unknown,
   data?: unknown,
 ): string[] {
-  const changedArray = Array.isArray(changedFields)
-    ? changedFields
-    : [changedFields];
+  // Non-string entries (e.g. a runtime boolean) never reach field-name
+  // parsing, which would throw on them — filtered gracefully instead.
+  const changedArray = (
+    Array.isArray(changedFields) ? changedFields : [changedFields]
+  ).filter((field): field is string => typeof field === 'string');
   if (changedArray.length === 0) return [];
 
   const relationships: SchemaRelationship[] =

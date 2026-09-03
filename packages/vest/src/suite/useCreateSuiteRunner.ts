@@ -97,7 +97,11 @@ export function useCreateSuiteRunner<
       const mergedOnly: string[] = (() => {
         const baseOnly = modifiers.only;
         if (!baseOnly) return affected;
-        const baseList = asArray(baseOnly);
+        // Non-string entries (e.g. a runtime boolean) never reach field-name
+        // normalization, which would throw on them — same guard as skip-all.
+        const baseList = asArray(baseOnly).filter(
+          entry => typeof entry === 'string',
+        );
         return [...new Set([...baseList, ...affected])];
       })();
       // mergedOnly carries dynamic dotted names (e.g. 'profile.state')
@@ -544,12 +548,127 @@ function runFlatSchema(
   ) {
     return result;
   }
-  return filterSchemaResultsToAffected(
-    result,
+  const skip = buildSkipFilter(modifiers.skip);
+  const memberResults = collectFlatMemberSupplement(
+    schema,
     changedAffected,
+    result,
     data,
-    buildSkipFilter(modifiers.skip),
+    skip,
   );
+  const merged = mergeSupplementalResults(result, memberResults);
+  return filterSchemaResultsToAffected(merged, changedAffected, data, skip);
+}
+
+/**
+ * Per-member execution for flat (top-level-only) changed() runs. The main
+ * run validates the full schema, which reports only its first failure — an
+ * affected member invalid behind an earlier failure would stay silent
+ * (W2). n4s containers iterate schema keys in Object.keys order (ownKeys)
+ * and short-circuit at the first failure, so members strictly after the
+ * single reported failure's top key never executed: run exactly those
+ * standalone and merge (W3 honors the merged only+affected set the same
+ * way). Any other main outcome — pass, root failure, extra-key failure,
+ * several failures — implies full member execution (or filter-kept roots),
+ * so it supplements nothing: a member the main run reached is never
+ * re-run, keeping stateful validators exactly-once.
+ */
+function collectFlatMemberSupplement(
+  schema: IntrospectableSchema,
+  affected: string[],
+  main: SchemaRunResult[],
+  data: unknown,
+  skip: string[] | true | null,
+): SchemaRunResult[] {
+  if (skip === true) return [];
+  const topSchema = schema.__schema;
+  if (topSchema === undefined) return [];
+  const afterKey = shadowedAfterKey(main, topSchema);
+  if (afterKey === null) return [];
+  return runShadowedMembers(topSchema, afterKey, { affected, skip, data });
+}
+
+type ShadowedRun = {
+  readonly affected: string[];
+  readonly skip: string[] | null;
+  readonly data: unknown;
+};
+
+function runShadowedMembers(
+  topSchema: Record<string, IntrospectableSchema>,
+  afterKey: string,
+  run: ShadowedRun,
+): SchemaRunResult[] {
+  const skipSet = skipSetOf(run.skip);
+  const affectedSet = new Set(run.affected);
+  const out: SchemaRunResult[] = [];
+  let pastFailure = false;
+  for (const key of Object.keys(topSchema)) {
+    if (key === afterKey) {
+      pastFailure = true;
+    } else if (shouldRunShadowed(pastFailure, affectedSet, skipSet, key)) {
+      appendFlatMember(topSchema[key], key, run.data, out);
+    }
+  }
+  return out;
+}
+
+function shouldRunShadowed(
+  pastFailure: boolean,
+  affectedSet: Set<string>,
+  skipSet: Set<string>,
+  key: string,
+): boolean {
+  return pastFailure && affectedSet.has(key) && !skipSet.has(key);
+}
+
+/**
+ * The top-level key a single-failure main run failed at, when that failure
+ * proves later members never executed: exactly one failure, pathed under a
+ * declared member. Anything else (pass, root failure, extra-key failure,
+ * several failures) implies full member execution or filter-kept roots.
+ */
+function shadowedAfterKey(
+  main: readonly SchemaRunResult[],
+  topSchema: Record<string, IntrospectableSchema>,
+): string | null {
+  const failures = main.filter(result => !result.pass);
+  if (failures.length !== 1) return null;
+  return memberTopKey(failures, topSchema);
+}
+
+function memberTopKey(
+  failures: SchemaRunResult[],
+  topSchema: Record<string, IntrospectableSchema>,
+): string | null {
+  const [failure] = failures as [SchemaRunResult];
+  const [top] = failure?.path ?? [];
+  if (typeof top !== 'string' || !hasOwnProperty(topSchema, top)) return null;
+  return top;
+}
+
+function appendFlatMember(
+  rule: IntrospectableSchema,
+  key: string,
+  data: unknown,
+  out: SchemaRunResult[],
+): void {
+  const child = childValue(data, key);
+  // Absent members mirror the nested supplement's undefined-skip: presence
+  // failures already surface through the main run when unshadowed.
+  if (child === undefined) return;
+  let outcome: SchemaRunResult[];
+  try {
+    outcome = runExecutableSchema(rule, child);
+  } catch (error) {
+    // A member with external dependencies cannot run standalone (orphaned
+    // source): skip it — the main run's verdict stands, as before.
+    if (isBoundaryError(error)) return;
+    throw error;
+  }
+  for (const result of prefixFailureResults(outcome, [key])) {
+    out.push(result);
+  }
 }
 
 /**

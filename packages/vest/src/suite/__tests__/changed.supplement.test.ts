@@ -10,6 +10,7 @@ declare global {
       countFallbackState: (value: unknown) => boolean;
       hasFallbackFlag: (value: { flag?: unknown }) => boolean;
       countKeyedValue: (value: unknown) => boolean;
+      countFlatMember: (value: unknown) => boolean;
     }
   }
 }
@@ -105,6 +106,67 @@ describe('changed() supplement exactly-once execution', () => {
     expect(changed.hasErrors()).toBe(false);
     expect(calls.filter(value => value === 1)).toHaveLength(1);
     expect(calls).toHaveLength(2);
+  });
+
+  it('flat changed() surfaces an affected member hidden by first-failure order', async () => {
+    // W2: the flat path filtered a first-failure-only full run with no
+    // per-member supplement, so changed('b') stayed clean though 'b' is
+    // invalid — the full run only ever reported 'a'.
+    const schema = enforce.shape({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString().longerThan(5),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'y' };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('a')).toBe(true);
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(true);
+    expect(changed.hasErrors('a')).toBe(false);
+  });
+
+  it('only()+changed() merge honors the affected member too', async () => {
+    // W3: the merged base-only + affected set filters reporting, but the
+    // affected failure never made it into the merged results at all.
+    const schema = enforce.shape({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString().longerThan(5),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'y' };
+
+    const changed = await suite.focus({ only: 'a' }).changed('b').run(data);
+    expect(changed.hasErrors('a')).toBe(true);
+    expect(changed.hasErrors('b')).toBe(true);
+  });
+
+  it('flat supplement runs each shadowed member through one execution unit', async () => {
+    // Members the main run reached (up to and including the failure) run
+    // there; members after it run once in the supplement — never both. One
+    // unit is parse-then-run: a failing member fires twice inside it (the
+    // engine's own duality, identical in full runs), a passing member once.
+    const calls: unknown[] = [];
+    enforce.extend({
+      countFlatMember: (value: unknown): boolean => {
+        calls.push(value);
+        return typeof value === 'string' && value.length > 5;
+      },
+    });
+    const schema = enforce.shape({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString().countFlatMember(),
+      c: enforce.isString().countFlatMember(),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'y', c: 'ok-ok-ok' };
+
+    const changed = await suite.changed(['b', 'c']).run(data);
+    expect(changed.hasErrors('b')).toBe(true);
+    expect(changed.hasErrors('c')).toBe(false);
+    expect(calls.filter(value => value === 'y')).toHaveLength(2);
+    expect(calls.filter(value => value === 'ok-ok-ok')).toHaveLength(1);
   });
 
   it('full-fallback path executes each member validator at most once', async () => {

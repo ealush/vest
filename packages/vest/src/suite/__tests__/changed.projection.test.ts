@@ -370,6 +370,34 @@ describe('changed() source-retaining projection', () => {
     expect(
       live(filterSchemaResultsToAffected([failure([])], ['a'], data, ['a'])),
     ).toBe(true);
+
+    // Bracket-spelled skips do not suppress dotted synthesis (runtime
+    // parity): the runtime matches skip entries against test names exactly,
+    // so skip('items[0]') leaves a synthesized 'items.0' failure in
+    // place — exactly what the full run reports, where nested skips are
+    // no-ops in omit().
+    expect(
+      live(
+        filterSchemaResultsToAffected(
+          [failure(['items', '0'])],
+          ['items.0'],
+          data,
+          ['items[0]'],
+        ),
+      ),
+    ).toBe(true);
+
+    // The exact dotted spelling still drops.
+    expect(
+      live(
+        filterSchemaResultsToAffected(
+          [failure(['items', '0'])],
+          ['items.0'],
+          data,
+          ['items.0'],
+        ),
+      ),
+    ).toBe(false);
   });
 
   it('skip() of a parent does not suppress nested synthesis', async () => {

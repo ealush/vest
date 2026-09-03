@@ -24,6 +24,7 @@ import {
   hasOwnProperty,
   isArray,
   isFunction,
+  isNullish,
   isObject,
   withResolvers,
 } from 'vest-utils';
@@ -1501,9 +1502,11 @@ function safeRunItem(
 }
 
 /**
- * Re-bases supplement results to their member path, keeping failures only.
- * Passing entries carry no signal (the main run owns parsed data and pass
- * state), so they are dropped to keep the merged set meaningful.
+ * Re-bases supplement results to their member path. Failures carry the
+ * verdict signal; passing entries are kept for their coerced `type` so the
+ * merger can fold excluded-member coercions into the fragment's parsed
+ * output (F5). Passing entries never become standalone results — the merger
+ * folds their types into the main parsed value and drops them.
  */
 function prefixFailureResults(
   results: SchemaRunResult[],
@@ -1511,9 +1514,7 @@ function prefixFailureResults(
 ): SchemaRunResult[] {
   const out: SchemaRunResult[] = [];
   for (const result of results) {
-    if (!result.pass) {
-      out.push({ ...result, path: [...path, ...(result.path ?? [])] });
-    }
+    out.push({ ...result, path: [...path, ...(result.path ?? [])] });
   }
   return out;
 }
@@ -1522,23 +1523,162 @@ function prefixFailureResults(
  * Merges per-member supplement failures into the main run results,
  * skipping entries that duplicate a main-run failure. Keys stay
  * structured (path segments, never re-joined) so dotted record keys
- * cannot collide with nested paths during deduplication.
+ * cannot collide with nested paths during deduplication. Passing
+ * supplement entries are not appended: their coerced types are folded
+ * into the main parsed value instead (F5), so excluded members keep
+ * full-run coercion parity on passing runs.
  */
 export function mergeSupplementalResults(
   main: SchemaRunResult[],
   extra: SchemaRunResult[],
 ): SchemaRunResult[] {
   if (extra.length === 0) return main;
-  const seen = new Set(main.map(resultKey));
-  const out = [...main];
+  const base = withSupplementCoercions(main, extra);
+  const seen = new Set(base.map(resultKey));
+  const out = [...base];
+  appendUniqueFailures(out, seen, extra);
+  return out;
+}
+
+function appendUniqueFailures(
+  out: SchemaRunResult[],
+  seen: Set<string>,
+  extra: SchemaRunResult[],
+): void {
   for (const result of extra) {
+    if (result.pass) {
+      continue;
+    }
     const key = resultKey(result);
     if (!seen.has(key)) {
       seen.add(key);
       out.push(result);
     }
   }
+}
+
+type CoercionPatch = {
+  readonly path: readonly string[];
+  readonly value: unknown;
+};
+
+/**
+ * Folds passing supplement member types (coerced values) into the main
+ * parsed value. The fragment's pass-through output is a raw shallow copy,
+ * so without this the excluded members would read uncoerced. Returns the
+ * input untouched when no passing member carries a type.
+ */
+function withSupplementCoercions(
+  main: SchemaRunResult[],
+  extra: SchemaRunResult[],
+): SchemaRunResult[] {
+  const patches = coercionPatchesOf(extra);
+  if (patches.length === 0) return main;
+  const [first, ...rest] = main;
+  if (isNullish(first)) return main;
+  return [
+    { ...first, type: applyCoercionPatches(first.type, patches) },
+    ...rest,
+  ];
+}
+
+function coercionPatchesOf(extra: SchemaRunResult[]): CoercionPatch[] {
+  const patches: CoercionPatch[] = [];
+  for (const result of extra) {
+    if (isCoercionPatch(result)) {
+      patches.push({ path: result.path, value: result.type });
+    }
+  }
+  return patches;
+}
+
+/**
+ * A passing member result placed at a concrete path, carrying its own
+ * coerced type. Failing runs ignore parsed output (raw input fallback),
+ * so only placement and type ownership matter here.
+ */
+function isCoercionPatch(
+  result: SchemaRunResult,
+): result is SchemaRunResult & { path: readonly string[] } {
+  return (
+    result.pass &&
+    hasOwnProperty(result, 'type') &&
+    !isNullish(result.path) &&
+    result.path.length > 0
+  );
+}
+
+function applyCoercionPatches(
+  base: unknown,
+  patches: CoercionPatch[],
+): unknown {
+  let out = base;
+  for (const patch of patches) {
+    out = setPathValue(out, patch.path, patch.value);
+  }
   return out;
+}
+
+function setPathValue(
+  base: unknown,
+  path: readonly string[],
+  value: unknown,
+): unknown {
+  const [head, ...tail] = path;
+  if (isNullish(head)) return value;
+  if (tail.length === 0) return setChildValue(base, head, value);
+  return setChildValue(
+    base,
+    head,
+    setPathValue(readChildValue(base, head), tail, value),
+  );
+}
+
+function setChildValue(base: unknown, head: string, value: unknown): unknown {
+  if (isArray(base)) {
+    return isArrayIndex(head) ? setArrayChild(base, head, value) : base;
+  }
+  return setRecordChild(base, head, value);
+}
+
+function setArrayChild(
+  base: unknown[],
+  head: string,
+  value: unknown,
+): unknown[] {
+  const out = [...base];
+  out[Number(head)] = value;
+  return out;
+}
+
+function setRecordChild(
+  base: unknown,
+  head: string,
+  value: unknown,
+): Record<string, unknown> {
+  if (isObject(base)) {
+    const record: Record<string, unknown> = base;
+    return { ...record, [head]: value };
+  }
+  return { [head]: value };
+}
+
+function readChildValue(base: unknown, head: string): unknown {
+  if (isArray(base) && isArrayIndex(head)) {
+    return base[Number(head)];
+  }
+  if (!isObject(base)) {
+    return undefined;
+  }
+  const record: Record<string, unknown> = base;
+  if (!hasOwnProperty(record, head)) {
+    return undefined;
+  }
+  return record[head];
+}
+
+function isArrayIndex(head: string): boolean {
+  return /^\d+$/.test(head);
 }
 
 function resultKey(result: SchemaRunResult): string {
@@ -1956,7 +2096,11 @@ function passThroughResult(
 }
 
 function skipSetOf(skip: string[] | null): Set<string> {
-  return new Set((skip ?? []).map(normalizeFieldName));
+  // Raw entries only: the runtime matches skip() against user-test names
+  // exactly (no normalization), so normalizing here would drop synthesized
+  // failures the full run still reports (nested skips are no-ops in
+  // omit()). Canonicalization stays on the affected-matching side only.
+  return new Set(skip ?? []);
 }
 
 function keepSchemaResult(
@@ -1970,9 +2114,9 @@ function keepSchemaResult(
 /**
  * Skip matching mirrors the runtime exactly: suite `skip()` applies to
  * user tests by exact field name, so synthesized failures drop only on
- * exact match. Pathless failures are never skipped (they read as global).
- * Both sides are bracket-normalized first ('items[0]' and 'items.0' denote
- * the same field), so spellings cannot disagree about what was skipped.
+ * exact raw match — `skip('items[0]')` does not suppress a dotted
+ * 'items.0' synthesis, exactly as it would not skip a test named
+ * 'items.0'. Pathless failures are never skipped (they read as global).
  */
 function isSkippedName(result: SchemaRunResult, skipSet: Set<string>): boolean {
   if (result.pass || skipSet.size === 0) {

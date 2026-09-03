@@ -1,6 +1,12 @@
 import { StringObject, assign, invariant, mapFirst } from 'vest-utils';
 
 import { ctx } from './enforceContext';
+import {
+  ITEM_CONTAINER,
+  ITEM_SCHEMA,
+  RESOLVED_RELATIONSHIPS,
+  UNRESOLVED_DEPS,
+} from './schema/dependencyResolver';
 import { RuleInstance } from './utils/RuleInstance';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 
@@ -59,6 +65,15 @@ export function compose<T = any>(
     },
   );
 
+  // A single composite keeps its identity through composition: forward the
+  // schema slots so mounting the composed rule as a shape field preserves
+  // its dependency graph, item schema, and container kind. Multiple
+  // composites are intentionally left unmerged — their graphs would need
+  // union semantics that compose() does not define.
+  if (composites.length === 1 && composites[0]) {
+    forwardSchemaSlots(composites[0], composedFn as ComposeResult<T>);
+  }
+
   return composedFn as ComposeResult<T>;
 
   function run(value: T): RuleRunReturn<T> {
@@ -81,5 +96,25 @@ export function compose<T = any>(
 
       return result;
     });
+  }
+}
+
+/**
+ * Forwards the schema slots from a single composite onto the composed
+ * rule. Relationship lists are copied so later mounts cannot alias the
+ * source's arrays; plain slots carry over by reference.
+ */
+function forwardSchemaSlots<T>(
+  source: RuleInstance<any, [any]>,
+  target: ComposeResult<T>,
+): void {
+  const from = source as unknown as Record<PropertyKey, unknown>;
+  const to = target as unknown as Record<PropertyKey, unknown>;
+  for (const slot of [UNRESOLVED_DEPS, RESOLVED_RELATIONSHIPS]) {
+    const entries = from[slot];
+    if (Array.isArray(entries)) to[slot] = [...entries];
+  }
+  for (const slot of ['__schema', ITEM_SCHEMA, ITEM_CONTAINER]) {
+    if (from[slot] !== undefined) to[slot] = from[slot];
   }
 }

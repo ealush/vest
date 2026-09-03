@@ -401,12 +401,15 @@ describe('changed() source-retaining projection', () => {
     expect(seen).toContain('dictionary.1.country');
   });
 
-  it('numeric-keyed records project through record(), not arrays', () => {
-    // Suffixes alone cannot tell numeric record keys from indices — the
-    // container-kind marker must route the rebuild to record(). An
-    // isArrayOf rebuild would reject record data outright.
+  it('records keep the full rule under projection (key-rule parity)', () => {
+    // Narrowing through record(value) would drop a two-arg record's key
+    // rule (n4s exposes only the value rule in the item slot), so the
+    // projection keeps the whole record rule. Suffixes alone cannot tell
+    // numeric record keys from indices — the container-kind marker routes
+    // here instead of the array rebuild, which would reject record data.
     const schema = enforce.shape({
       dictionary: enforce.record(
+        enforce.isString().longerThan(3),
         enforce.shape({
           country: enforce.isString(),
           state: enforce.isString().dependsOn($ => $.country),
@@ -425,8 +428,15 @@ describe('changed() source-retaining projection', () => {
     type DictData = Parameters<typeof schema.parse>[0];
     const parse = (projected as unknown as ExecutableFragment<DictData>).parse;
     expect(() =>
-      parse({ dictionary: { '1': { country: 'CA', state: 'abc' } } }),
+      parse({ dictionary: { abcd: { country: 'CA', state: 'abc' } } }),
     ).not.toThrow();
+    // Key validation matches the full run exactly — nothing was dropped.
+    expect(() =>
+      parse({ dictionary: { '1': { country: 'CA', state: 'abc' } } }),
+    ).toThrow();
+    expect(() =>
+      schema.parse({ dictionary: { '1': { country: 'CA', state: 'abc' } } }),
+    ).toThrow();
   });
 
   it('supplement skips members when data contradicts the container kind', async () => {

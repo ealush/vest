@@ -408,13 +408,18 @@ function validateSourceExists(
         return;
       }
     } else if (seg.type === 'item') {
-      if (
-        current &&
-        (current as unknown as Record<PropertyKey, unknown>).__itemSchema
-      ) {
+      // Descend into the item shape so leaf checks run against the member
+      // shape. (No writer ever produced the legacy `__itemSchema` string
+      // slot — the graph lives in the ITEM_SCHEMA symbol slot.)
+      const itemSchema = (current as unknown as Record<symbol, unknown>)[
+        ITEM_SCHEMA
+      ];
+      if (itemSchema && typeof itemSchema === 'object') {
         current = (
-          current as unknown as { __itemSchema: Record<PropertyKey, unknown> }
-        ).__itemSchema as Record<PropertyKey, unknown>;
+          Array.isArray(itemSchema)
+            ? mergedItemShape(itemSchema)
+            : ((itemSchema as { __schema?: unknown }).__schema ?? {})
+        ) as Record<PropertyKey, unknown>;
       }
     }
   }
@@ -446,14 +451,8 @@ function validateSourceExists(
       rule &&
       typeof rule === 'object' &&
       (Object.prototype.hasOwnProperty.call(rule, '__schema') ||
-        Object.prototype.hasOwnProperty.call(
-          rule,
-          Symbol.for('vest:resolvedRelationships'),
-        ) ||
-        Object.prototype.hasOwnProperty.call(
-          rule,
-          Symbol.for('vest:itemSchema'),
-        ));
+        Object.prototype.hasOwnProperty.call(rule, RESOLVED_RELATIONSHIPS) ||
+        Object.prototype.hasOwnProperty.call(rule, ITEM_SCHEMA));
     if (!isShapeLike) {
       // This segment is scalar but has a descendant — invalid
       const descendant = String(
@@ -472,13 +471,9 @@ function validateSourceExists(
       walkShape = (
         rule as unknown as { __schema: Record<PropertyKey, unknown> }
       ).__schema;
-    } else if (
-      (rule as unknown as Record<symbol, unknown>)[
-        Symbol.for('vest:itemSchema')
-      ]
-    ) {
+    } else if ((rule as unknown as Record<symbol, unknown>)[ITEM_SCHEMA]) {
       const itemSchema = (rule as unknown as Record<symbol, unknown>)[
-        Symbol.for('vest:itemSchema')
+        ITEM_SCHEMA
       ];
       walkShape = Array.isArray(itemSchema)
         ? mergedItemShape(itemSchema)
@@ -533,13 +528,9 @@ function validateSourceExists(
         parentShape = (
           rule as unknown as { __schema: Record<PropertyKey, unknown> }
         ).__schema;
-      else if (
-        (rule as unknown as Record<symbol, unknown>)[
-          Symbol.for('vest:itemSchema')
-        ]
-      ) {
+      else if ((rule as unknown as Record<symbol, unknown>)[ITEM_SCHEMA]) {
         const itemSchema = (rule as unknown as Record<symbol, unknown>)[
-          Symbol.for('vest:itemSchema')
+          ITEM_SCHEMA
         ];
         parentShape = Array.isArray(itemSchema)
           ? mergedItemShape(itemSchema)

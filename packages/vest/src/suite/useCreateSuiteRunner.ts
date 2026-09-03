@@ -97,7 +97,9 @@ export function useCreateSuiteRunner<
         // Explicit zero-field focus (e.g. changed([])): run no tests.
         // `only: []` alone is a runtime no-op (no focus isolate is created),
         // so skip-all carries the "run nothing" intent for suite tests. The
-        // schema side resolves to an empty pick via buildArrayProp.
+        // schema side resolves to an empty pick via buildArrayProp. Note this
+        // branch only fires when no base `only` exists either: an explicit
+        // only('a') combined with changed([]) intentionally still runs 'a'.
         withAffected.skip = true;
       }
       delete withAffected.__changed;
@@ -424,10 +426,14 @@ function runFlatSchema(
   const result = runExecutableSchema(applySchemaFocus(schema, modifiers), data);
   // Narrowing applies to n4s schemas only: custom standard-schema results
   // keep full-run parity (no affected/skip vocabulary exists for them).
+  // Root-container n4s schemas (array/record/tuple roots without __schema)
+  // cannot take pick/omit focus or projection, but their full-run failures
+  // still filter by affected path — returning them unfiltered would report
+  // failures changed() never asked about.
   if (
     changedAffected == null ||
     changedAffected.length === 0 ||
-    !isN4sSchema(schema)
+    !isN4sVendorSchema(schema)
   ) {
     return result;
   }
@@ -500,7 +506,9 @@ function isBoundaryError(error: unknown): boolean {
  * Detects when a changed() affected set cannot be projected with a top-level
  * enforce.pick: any dotted/bracketed path (e.g. 'profile.state') would match
  * no top-level key. Returns the affected list when a full-schema run with
- * failure filtering is needed, null otherwise.
+ * failure filtering is needed, null otherwise. Non-shape n4s roots also
+ * return null (projection needs __schema); runFlatSchema filters those runs
+ * by affected path instead of projecting them.
  */
 function getNestedChangedAffected(
   schema: IntrospectableSchema,
@@ -519,6 +527,13 @@ function isNestedFieldName(field: unknown): boolean {
 
 type AffectedSeg = string | number;
 
+/**
+ * Bracket-to-dot parsing with numeric coercion. Keep in sync with
+ * parseFieldName in changed.ts (same normalization, Number vs item-segment
+ * output): the two parsers must agree on what 'travelers[1].country'
+ * means, including the shared limitation that literal dotted record keys
+ * are unrepresentable on both sides.
+ */
 function parseAffectedPath(field: string): AffectedSeg[] {
   return field
     .replace(/\[/g, '.')
@@ -1023,11 +1038,17 @@ function appendSingleMember(
     basePath: [...selection.sink.basePath, String(head)],
     out: selection.sink.out,
   };
-  for (const result of prefixFailureResults(
-    safeRunItem(projected, child),
-    sink.basePath,
-  )) {
-    sink.out.push(result);
+  // A container-typed member rule run against contradicting data would
+  // invent a member failure the full run attributes to the container
+  // itself; skip the direct run there (the recursive supplement below
+  // self-guards through tryAppendMembers the same way).
+  if (kindValueMatches(projected, child)) {
+    for (const result of prefixFailureResults(
+      safeRunItem(projected, child),
+      sink.basePath,
+    )) {
+      sink.out.push(result);
+    }
   }
   appendSupplementalFailures(projected, child, {
     suffixes: itemSuffixes,
@@ -1349,25 +1370,22 @@ type OptionalCombinator = (inner: IntrospectableSchema) => IntrospectableSchema;
 
 const optionalRule = enforce.optional as OptionalCombinator;
 
-type RecordCombinator = (value: IntrospectableSchema) => IntrospectableSchema;
-
-const recordOfRule = enforce.record as RecordCombinator;
-
 function projectArrayRule(
   rule: IntrospectableSchema,
   itemSchema: IntrospectableSchema,
   suffixes: AffectedSeg[][],
 ): IntrospectableSchema | null {
+  // Records keep the full rule: narrowing through record() would drop a
+  // two-arg record's key rule (n4s exposes only the value rule in the item
+  // slot), breaking parity with the full run. String member heads would
+  // also trip hasWholeItemSelection below, so the kind check comes first
+  // and states the parity reason directly. Member failures still surface
+  // via the per-member supplement.
+  if (containerKindOf(rule) === 'record') return rule;
   if (hasWholeItemSelection(suffixes)) return rule;
   const itemSuffixes = suffixes.map(suffix => suffix.slice(1));
   const projectedItem = projectRule(itemSchema, itemSuffixes);
   if (!projectedItem || projectedItem === itemSchema) return rule;
-  // Records narrow through `record()`, arrays through `isArrayOf()`:
-  // rebuilding through the wrong combinator changes validation semantics
-  // (notably for records with numeric keys, whose suffixes look indexed).
-  if (containerKindOf(rule) === 'record') {
-    return preserveOptionality(rule, recordOfRule(projectedItem));
-  }
   return preserveOptionality(rule, arrayOfRule(projectedItem));
 }
 
@@ -1443,6 +1461,8 @@ function keepSchemaResult(
  * Skip matching mirrors the runtime exactly: suite `skip()` applies to
  * user tests by exact field name, so synthesized failures drop only on
  * exact match. Pathless failures are never skipped (they read as global).
+ * Both sides are bracket-normalized first ('items[0]' and 'items.0' denote
+ * the same field), so spellings cannot disagree about what was skipped.
  */
 function isSkippedName(result: SchemaRunResult, skipSet: Set<string>): boolean {
   if (result.pass || skipSet.size === 0) {
@@ -1494,14 +1514,30 @@ function isEitherPrefix(first: string, second: string): boolean {
 
 const N4S_VENDOR = 'n4s';
 
+/**
+ * Any n4s-produced rule (shape-rooted or a root container): failure paths
+ * from these runs speak the affected-path vocabulary, so post-filtering by
+ * affected/skip applies. Custom standard-schema results do not.
+ */
+function isN4sVendorSchema(schema: any): boolean {
+  return schema?.['~standard']?.vendor === N4S_VENDOR;
+}
+
+/**
+ * Shape-rooted n4s schemas only. pick/omit focus and fragment projection
+ * both traverse __schema top-level keys, so root containers (array/record
+ * roots) run unfocused and filter afterward instead.
+ */
 function isN4sSchema(schema: any): boolean {
-  return schema?.['~standard']?.vendor === N4S_VENDOR && !!schema?.__schema;
+  return isN4sVendorSchema(schema) && !!schema?.__schema;
 }
 
 function applySchemaFocus(
   schema: any,
   modifiers: { only?: unknown; skip?: unknown },
 ): any {
+  // Root-container n4s schemas run unfocused here (pick/omit need __schema
+  // keys); runFlatSchema still narrows their failures by affected path.
   if (!isN4sSchema(schema)) {
     return schema;
   }

@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforce } from '../../../n4s';
+import { compose, enforce } from '../../../n4s';
 import { EnforceSchemaError } from '../../../errors/EnforceSchemaError';
+import { RESOLVED_RELATIONSHIPS } from '../../../schema/dependencyResolver';
 import type { SchemaRelationship } from '../../../schema/SchemaRelationship';
 
 type PathSegment = {
@@ -126,6 +127,116 @@ describe('item relationships', () => {
     expect(sourcesFor(schema.describe(), 'items.items.$item.kind')).toEqual([
       'items.items.$item.country',
     ]);
+  });
+
+  it('doubly nested isArrayOf describes the inner edge', () => {
+    // The item graph lives two ITEM_SCHEMA hops down; describe() must
+    // recurse instead of dropping it (each level appends an item segment).
+    const schema = enforce.shape({
+      m: enforce.isArrayOf(
+        enforce.isArrayOf(
+          enforce.shape({
+            country: enforce.isString(),
+            state: enforce.isString().dependsOn($ => $.country),
+          }),
+        ),
+      ),
+    });
+
+    expect(
+      sourcesFor(schema.describe(), 'm.m.$item.m.$item.$item.state'),
+    ).toEqual(['m.m.$item.m.$item.$item.country']);
+  });
+
+  it('multi-rule array with a nested container member keeps the edge', () => {
+    // Container members (no __schema of their own) must survive the
+    // member filter so recursion can reach the graph inside them.
+    const schema = enforce.shape({
+      m: enforce.isArrayOf(
+        enforce.isArrayOf(
+          enforce.shape({
+            country: enforce.isString(),
+            state: enforce.isString().dependsOn($ => $.country),
+          }),
+        ),
+        enforce.isString(),
+      ),
+    });
+
+    expect(
+      sourcesFor(schema.describe(), 'm.m.$item.m.$item.$item.state'),
+    ).toEqual(['m.m.$item.m.$item.$item.country']);
+  });
+
+  it('record of arrays describes the inner edge', () => {
+    const schema = enforce.shape({
+      d: enforce.record(
+        enforce.isArrayOf(
+          enforce.shape({
+            country: enforce.isString(),
+            state: enforce.isString().dependsOn($ => $.country),
+          }),
+        ),
+      ),
+    });
+
+    expect(
+      sourcesFor(schema.describe(), 'd.d.$item.d.$item.$item.state'),
+    ).toEqual(['d.d.$item.d.$item.$item.country']);
+  });
+
+  it('composed graph-carrying rule keeps its edge when mounted', () => {
+    // compose() of a single composite forwards the schema slots, so the
+    // composed rule describes exactly like the rule it wraps.
+    const inner = enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    });
+    const schema = enforce.shape({ name: compose(inner) });
+
+    expect(
+      schema
+        .describe()
+        .relationships.filter(rel => pathString(rel.target) === 'name.state'),
+    ).toHaveLength(1);
+  });
+
+  it('composed array rule keeps its item edge when mounted', () => {
+    const schema = enforce.shape({
+      m: compose(
+        enforce.isArrayOf(
+          enforce.shape({
+            country: enforce.isString(),
+            state: enforce.isString().dependsOn($ => $.country),
+          }),
+        ),
+      ),
+    });
+
+    expect(sourcesFor(schema.describe(), 'm.m.$item.state')).toEqual([
+      'm.m.$item.country',
+    ]);
+  });
+
+  it('non-invalidate effects throw the deferred-to-v2 error at composition', () => {
+    // No public API produces a 'revalidate' effect in V1 — every resolver
+    // emits 'invalidate'. The planted slot below pins the composition-time
+    // V1 boundary so a future effect value cannot slip through silently.
+    const inner = enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    });
+    const slots = inner as unknown as Record<symbol, unknown>;
+    const rels = slots[RESOLVED_RELATIONSHIPS] as Array<
+      Record<string, unknown>
+    >;
+    slots[RESOLVED_RELATIONSHIPS] = [
+      ...rels,
+      { ...rels[0], effect: 'revalidate' },
+    ];
+    expect(() => enforce.shape({ m: enforce.isArrayOf(inner) })).toThrow(
+      /deferred to v2/,
+    );
   });
 });
 

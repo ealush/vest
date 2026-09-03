@@ -16,7 +16,7 @@ import * as schemaRules from './rules/schemaRules/schemaRules';
 import { lazy as lazyRule } from './rules/schemaRules/lazy';
 import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
 import { type RuleInstance } from './utils/RuleInstance';
-import { asArray } from 'vest-utils';
+import { asArray, isObject } from 'vest-utils';
 import { ctx } from './enforceContext';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 import {
@@ -27,10 +27,8 @@ import {
   resolveInlineDeps,
 } from './schema/dependencyResolver';
 import type { ItemContainerKind } from './schema/dependencyResolver';
-import {
-  rebaseRelationships,
-  rebaseRelationshipsForArray,
-} from './schema/rebase';
+import { rebaseRelationships } from './schema/rebase';
+import type { SchemaPath } from './schema/SchemaPath';
 import type { InternalRelationship } from './schema/SchemaRelationship';
 
 /**
@@ -78,16 +76,56 @@ function collectSchemaRelationships(
       const prefix = [{ type: 'property', key } as const];
       relationships.push(...rebaseRelationships(nested, prefix));
     }
-    for (const itemSchema of normalizeItemSchemas(fieldRule?.[ITEM_SCHEMA])) {
-      const itemRels =
-        ((itemSchema as unknown as Record<symbol, unknown>)[
-          RESOLVED_RELATIONSHIPS
-        ] as InternalRelationship[] | undefined) || [];
-      if (itemRels.length > 0) {
-        relationships.push(
-          ...rebaseRelationshipsForArray(itemRels, key, `${String(key)}.$item`),
-        );
-      }
+    relationships.push(
+      ...collectItemRelationships(
+        fieldRule?.[ITEM_SCHEMA],
+        [{ type: 'property', key } as const],
+        `${String(key)}.$item`,
+        new WeakSet(),
+      ),
+    );
+  }
+  return relationships;
+}
+
+/**
+ * Collects item-graph edges through arbitrarily nested containers. Each
+ * level appends an `item` segment to the accumulated prefix, so an edge
+ * inside `isArrayOf(isArrayOf(inner))` surfaces under
+ * `m.$item.$item.*` instead of vanishing. The seen-set is per top-level
+ * field: the same member rule object may be mounted under several fields,
+ * and each mount rebases under its own key.
+ */
+function collectItemRelationships(
+  item: unknown,
+  prefix: SchemaPath,
+  binding: string,
+  seen: WeakSet<object>,
+): InternalRelationship[] {
+  const relationships: InternalRelationship[] = [];
+  for (const entry of normalizeItemSchemas(item)) {
+    if (seen.has(entry)) continue;
+    seen.add(entry);
+    const segment = { type: 'item', binding } as const;
+    const slots = entry as unknown as Record<symbol, unknown>;
+    const itemRels =
+      (slots[RESOLVED_RELATIONSHIPS] as InternalRelationship[] | undefined) ||
+      [];
+    if (itemRels.length > 0) {
+      relationships.push(
+        ...rebaseRelationships(itemRels, [...prefix, segment]),
+      );
+    }
+    const nested = slots[ITEM_SCHEMA];
+    if (nested !== undefined) {
+      relationships.push(
+        ...collectItemRelationships(
+          nested,
+          [...prefix, segment],
+          `${binding}.$item`,
+          seen,
+        ),
+      );
     }
   }
   return relationships;
@@ -109,7 +147,9 @@ function normalizeItemSchemas(item: unknown): Record<PropertyKey, unknown>[] {
 
 /**
  * Whether a rule carries an item relationship graph: either a shape-like
- * rule (has __schema) or a rule with resolved relationships.
+ * rule (has __schema), a rule with resolved relationships, or a container
+ * whose own item slot holds the graph one hop further down (nested
+ * arrays/records/tuples — collectItemRelationships recurses into these).
  */
 function isItemSchemaLike(rule: unknown): rule is Record<PropertyKey, unknown> {
   if (!rule || typeof rule !== 'object') return false;
@@ -118,7 +158,8 @@ function isItemSchemaLike(rule: unknown): rule is Record<PropertyKey, unknown> {
   } & Record<symbol, unknown>;
   return (
     candidate.__schema !== undefined ||
-    candidate[RESOLVED_RELATIONSHIPS] !== undefined
+    candidate[RESOLVED_RELATIONSHIPS] !== undefined ||
+    candidate[ITEM_SCHEMA] !== undefined
   );
 }
 
@@ -144,7 +185,7 @@ function createRecordWrapper(): (
     // without resolved relationships simply contribute no edges.
     // (Lazy RuleInstances are always objects — chain proxies — so the
     // object gate cannot silently drop a real member rule.)
-    if (valueRule !== null && typeof valueRule === 'object') {
+    if (isObject(valueRule)) {
       const slots = rule as unknown as Record<symbol, unknown>;
       slots[ITEM_SCHEMA] = valueRule;
       slots[ITEM_CONTAINER] = 'record' as ItemContainerKind;
@@ -159,21 +200,22 @@ function wrapOptional(rawOptional: (inner: any) => RuleInstance<any, [any]>) {
     const innerUnresolved = inner?.[UNRESOLVED_DEPS];
     // Use adapted rule to get lazy RuleInstance that preserves chain behavior
     const rule = rawOptional(inner);
+    const slots = rule as unknown as Record<PropertyKey, unknown>;
     if (innerResolved?.length) {
-      (rule as any)[RESOLVED_RELATIONSHIPS] = [...innerResolved];
+      slots[RESOLVED_RELATIONSHIPS] = [...innerResolved];
     }
     if (innerUnresolved?.length) {
-      (rule as any)[UNRESOLVED_DEPS] = [...innerUnresolved];
+      slots[UNRESOLVED_DEPS] = [...innerUnresolved];
     }
     // Also copy __schema and ITEM_SCHEMA if present
-    if (inner?.__schema && !(rule as any).__schema) {
-      (rule as any).__schema = inner.__schema;
+    if (inner?.__schema && !slots.__schema) {
+      slots.__schema = inner.__schema;
     }
-    if (inner?.[ITEM_SCHEMA] && !(rule as any)[ITEM_SCHEMA]) {
-      (rule as any)[ITEM_SCHEMA] = inner[ITEM_SCHEMA];
+    if (inner?.[ITEM_SCHEMA] && !slots[ITEM_SCHEMA]) {
+      slots[ITEM_SCHEMA] = inner[ITEM_SCHEMA];
     }
-    if (inner?.[ITEM_CONTAINER] && !(rule as any)[ITEM_CONTAINER]) {
-      (rule as any)[ITEM_CONTAINER] = inner[ITEM_CONTAINER];
+    if (inner?.[ITEM_CONTAINER] && !slots[ITEM_CONTAINER]) {
+      slots[ITEM_CONTAINER] = inner[ITEM_CONTAINER];
     }
     return rule;
   };
@@ -431,9 +473,10 @@ const schemaRulesWithArrayChaining = {
     // members without resolved relationships, so output is unchanged.
     // (Lazy RuleInstances are always objects — chain proxies — so the
     // object gate cannot silently drop a real member rule.)
-    if (rules.length === 1 && rules[0] && typeof rules[0] === 'object') {
-      (rule as any)[ITEM_SCHEMA] = rules[0];
-      (rule as any)[ITEM_CONTAINER] = 'array' as ItemContainerKind;
+    const slots = rule as unknown as Record<symbol, unknown>;
+    if (rules.length === 1 && isObject(rules[0])) {
+      slots[ITEM_SCHEMA] = rules[0];
+      slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
     } else if (rules.length > 1) {
       // Multi-rule arrays accept an element matching ANY member rule (union
       // semantics), so no single member owns the item graph. Store every
@@ -443,7 +486,8 @@ const schemaRulesWithArrayChaining = {
       // the invalidation-safe direction — and never a silent empty graph.
       const schemas = rules.filter(isItemSchemaLike);
       if (schemas.length > 0) {
-        (rule as any)[ITEM_SCHEMA] = schemas;
+        slots[ITEM_SCHEMA] = schemas;
+        slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
       }
     }
     return rule;
@@ -457,15 +501,17 @@ const schemaRulesWithArrayChaining = {
       );
       return RuleRunReturn.create(result, value);
     });
-    if (rules.length === 1 && rules[0] && typeof rules[0] === 'object') {
-      (rule as any)[ITEM_SCHEMA] = rules[0];
-      (rule as any)[ITEM_CONTAINER] = 'array' as ItemContainerKind;
+    const slots = rule as unknown as Record<symbol, unknown>;
+    if (rules.length === 1 && isObject(rules[0])) {
+      slots[ITEM_SCHEMA] = rules[0];
+      slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
     } else if (rules.length > 1) {
       // Same union semantics as isArrayOf above: keep every graph-carrying
       // member so describe() rebases the union instead of dropping the graph.
       const schemas = rules.filter(isItemSchemaLike);
       if (schemas.length > 0) {
-        (rule as any)[ITEM_SCHEMA] = schemas;
+        slots[ITEM_SCHEMA] = schemas;
+        slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
       }
     }
     return rule;
@@ -486,7 +532,10 @@ const schemaRulesWithArrayChaining = {
     // semantics as multi-rule arrays above — over-approximating, never empty).
     const schemas = rules.filter(isItemSchemaLike);
     if (schemas.length > 0) {
-      (rule as any)[ITEM_SCHEMA] = schemas;
+      // No ITEM_CONTAINER here: tuple members are positional, and vest
+      // readers discriminate list slots with Array.isArray without ever
+      // consulting the kind for them — so an absent kind cannot misroute.
+      (rule as unknown as Record<symbol, unknown>)[ITEM_SCHEMA] = schemas;
     }
     return rule;
   },

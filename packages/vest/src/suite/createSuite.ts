@@ -2,6 +2,7 @@
 import { CB, makeResult, Result } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 import { EnforceSchemaError } from '../../../n4s/src/errors/EnforceSchemaError';
+import { ITEM_SCHEMA } from '../../../n4s/src/schema/dependencyResolver';
 
 import { useCreateVestState } from '../core/Runtime';
 import { useInitVestBus } from '../core/VestBus/VestBus';
@@ -100,7 +101,7 @@ function createSuite<
 function validateDeferredRoots(schema: any): void {
   try {
     const RESOLVED = Symbol.for('vest:resolvedRelationships');
-    const ITEM = Symbol.for('vest:itemSchema');
+    const ITEM = ITEM_SCHEMA;
     const relationships: Array<Record<string, any>> = [];
     const seen = new WeakSet<object>();
     const collect = (node: any): void => {
@@ -168,8 +169,8 @@ function validateDeferredRoots(schema: any): void {
           const rule: any = current[key];
           if (i < path.length - 1) {
             if (rule?.__schema) current = rule.__schema;
-            else if (rule?.[Symbol.for('vest:itemSchema')]) {
-              const item: any = rule[Symbol.for('vest:itemSchema')];
+            else if (rule?.[ITEM_SCHEMA]) {
+              const item: any = rule[ITEM_SCHEMA];
               current = item?.__schema ?? {};
             } else current = {};
           }

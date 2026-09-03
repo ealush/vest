@@ -1,7 +1,16 @@
 import { enforce } from 'n4s';
 import { describe, it, expect } from 'vitest';
 
-import { create, test, group, skipWhen } from '../../vest';
+import {
+  create,
+  test,
+  group,
+  skipWhen,
+  omitWhen,
+  optional,
+  warn,
+  include,
+} from '../../vest';
 import { each } from '../../isolates/each';
 
 function createExecutionLog() {
@@ -794,6 +803,224 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(got2).toContain('a');
     expect(got2).toContain('b');
     expect(got2.filter(f => f === 'b')).toHaveLength(1);
+  });
+
+  // 20. revalidates is the source-oriented alias of dependsOn
+  it('20. revalidates — changed(source) runs the revalidated target, not vice versa', async () => {
+    const schema = enforce.shape({
+      password: enforce.isString().revalidates($ => $.confirmPassword),
+      confirmPassword: enforce.isString(),
+    });
+    const log = createExecutionLog();
+    const suite = create((data: any) => {
+      test('password', () => {
+        log.record('password');
+        enforce(data.password).isNotBlank();
+      });
+      test('confirmPassword', () => {
+        log.record('confirmPassword');
+        enforce(data.confirmPassword).equals(data.password);
+      });
+    }, schema);
+    await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
+    log.reset();
+    await suite
+      .changed('password')
+      .run({ password: 'xyz', confirmPassword: 'xyz' });
+    expect(log.get()).toEqual(['password', 'confirmPassword']);
+    log.reset();
+    await suite
+      .changed('confirmPassword')
+      .run({ password: 'xyz', confirmPassword: 'wxyz' });
+    expect(log.get()).toEqual(['confirmPassword']);
+  });
+
+  // 21. only() merges into the changed() affected set
+  it('21. only() merges with changed() — base-only plus affected all run', async () => {
+    const schema = enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.a),
+      c: enforce.isString(),
+    });
+    const log = createExecutionLog();
+    const suite = create((data: any) => {
+      test('a', () => {
+        log.record('a');
+        enforce(data.a).isNotBlank();
+      });
+      test('b', () => {
+        log.record('b');
+        enforce(data.b).isNotBlank();
+      });
+      test('c', () => {
+        log.record('c');
+        enforce(data.c).isNotBlank();
+      });
+    }, schema);
+    await suite.run({ a: 'x', b: 'y', c: 'z' });
+    log.reset();
+    await suite.only('c').changed('a').run({ a: 'x', b: 'y', c: 'z' });
+    expect(log.get().sort()).toEqual(['a', 'b', 'c']);
+  });
+
+  // 22. AbortSignal overload throws the documented V1 error
+  it('22. suite.changed(field, { signal }) throws deferred-to-v2 in V1', () => {
+    const schema = enforce.shape({
+      a: enforce.isString(),
+    });
+    const suite = create((_data: any) => {}, schema);
+    const controller = new AbortController();
+    expect(() => suite.changed('a', { signal: controller.signal })).toThrow(
+      'suite.changed({ signal: AbortSignal }) deferred to v2',
+    );
+  });
+
+  // 23. omitWhen removes the dependent test but the edge still exists
+  it('23. omitWhen — dependent edge recorded but omitted test never runs', async () => {
+    const schema = enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    });
+    const log = createExecutionLog();
+    const suite = create((data: any) => {
+      test('country', () => {
+        log.record('country');
+        enforce(data.country).isNotBlank();
+      });
+      omitWhen(true, () => {
+        test('state', () => {
+          log.record('state');
+          enforce(data.state).isNotBlank();
+        });
+      });
+    }, schema);
+    const result = await suite
+      .changed('country')
+      .run({ country: 'US', state: '' });
+    expect(log.get()).toEqual(['country']);
+    expect(result.hasErrors('country')).toBe(false);
+  });
+
+  // 24. optional() fields keep their dependency edges under changed()
+  it('24. optional() — dependent edge fires alongside the optional marker', async () => {
+    const schema = enforce.shape({
+      country: enforce.isString(),
+      nick: enforce.isString().dependsOn($ => $.country),
+    });
+    const log = createExecutionLog();
+    const suite = create((data: any) => {
+      optional('nick');
+      test('country', () => {
+        log.record('country');
+        enforce(data.country).isNotBlank();
+      });
+      test('nick', () => {
+        log.record('nick');
+        enforce(data.nick).isNotBlank();
+      });
+    }, schema);
+    await suite.run({ country: 'US', nick: 'bob' });
+    log.reset();
+    await suite.changed('country').run({ country: 'CA', nick: 'bob' });
+    expect(log.get()).toEqual(['country', 'nick']);
+  });
+
+  // 25. warn dependents are included as normal tests
+  it('25. warn — dependent warn test runs on source change', async () => {
+    const schema = enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    });
+    const log = createExecutionLog();
+    const suite = create((data: any) => {
+      test('country', () => {
+        log.record('country');
+        enforce(data.country).isNotBlank();
+      });
+      test('state', () => {
+        log.record('state');
+        warn();
+        enforce(data.state).isNotBlank();
+      });
+    }, schema);
+    await suite.run({ country: 'US', state: 'CA' });
+    log.reset();
+    await suite.changed('country').run({ country: 'US', state: 'CA' });
+    expect(log.get()).toEqual(['country', 'state']);
+  });
+
+  // 26. group dependents respect rebasing under changed()
+  it('26. group — dependent inside a group runs on source change', async () => {
+    const schema = enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    });
+    const log = createExecutionLog();
+    const suite = create((data: any) => {
+      test('country', () => {
+        log.record('country');
+        enforce(data.country).isNotBlank();
+      });
+      group('address', () => {
+        test('state', () => {
+          log.record('state');
+          enforce(data.state).isNotBlank();
+        });
+      });
+    }, schema);
+    await suite.run({ country: 'US', state: 'CA' });
+    log.reset();
+    await suite.changed('country').run({ country: 'US', state: 'CA' });
+    expect(log.get()).toEqual(['country', 'state']);
+  });
+
+  // 27. include().when() does not disturb changed() invalidation
+  it('27. include().when() — conditional inclusion coexists with changed()', async () => {
+    const schema = enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    });
+    const log = createExecutionLog();
+    const suite = create((data: any) => {
+      test('country', () => {
+        log.record('country');
+        enforce(data.country).isNotBlank();
+      });
+      test('state', () => {
+        log.record('state');
+        enforce(data.state).isNotBlank();
+      });
+      include('state').when('country');
+    }, schema);
+    await suite.run({ country: 'US', state: 'CA' });
+    log.reset();
+    await suite.changed('country').run({ country: 'US', state: 'CA' });
+    expect(log.get()).toEqual(['country', 'state']);
+  });
+
+  // 28. root-container suite schemas filter failures by affected path
+  it('28. root array schema — changed() reports only affected failures', async () => {
+    const schema = enforce.isArrayOf(
+      enforce.shape({
+        country: enforce.isString().longerThan(5),
+        state: enforce.isString().longerThan(5),
+      }),
+    );
+    const suite = create((_data: any) => {}, schema);
+    const data = [
+      { country: 'abcdef', state: 'abcdef' },
+      { country: 'abcdef', state: 'yy' },
+    ];
+    const affected = await suite.changed('1.state').run(data);
+    // @ts-expect-error - integration probe: array-element paths ('1.state')
+    // are runtime failure names the type-level field vocabulary cannot name.
+    expect(affected.hasErrors('1.state')).toBe(true);
+    // @ts-expect-error - integration probe: see above.
+    expect(affected.hasErrors('0.state')).toBe(false);
+    // The same failure outside the affected set is filtered out.
+    const unaffected = await suite.changed('0.state').run(data);
+    // @ts-expect-error - integration probe: see above.
+    expect(unaffected.hasErrors('1.state')).toBe(false);
   });
 
   /** @deferred v2 — suite.changed with AbortSignal */

@@ -1,4 +1,4 @@
-/* eslint-disable complexity -- schema relationship rebasing */
+/* eslint-disable complexity, max-lines-per-function, max-statements, sort-keys -- schema relationship rebasing */
 import { FirstParam } from './eager/typeUtils';
 import { adaptDynamicRules } from './lazy/ruleAdapter';
 import { typeRules } from './lazy/typeRules';

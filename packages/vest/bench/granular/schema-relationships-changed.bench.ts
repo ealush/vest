@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable sort-keys -- bench fixture order intentionally groups password deps */
 import { bench, describe } from 'vitest';
 import { create, test, enforce, group, skipWhen } from '../../src/vest';
 import { each } from '../../src/isolates/each';

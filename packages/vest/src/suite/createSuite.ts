@@ -1,4 +1,4 @@
-/* eslint-disable complexity -- suite finalization */
+/* eslint-disable complexity, max-lines-per-function, max-statements -- suite finalization */
 import { CB, makeResult, Result } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 

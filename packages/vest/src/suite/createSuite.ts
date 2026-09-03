@@ -98,18 +98,54 @@ function createSuite<
 
 function validateDeferredRoots(schema: any): void {
   try {
-    // Use raw internal relationships to preserve __isRootSource/Target flags
-    // (describe() strips them). Fall back to describe() for non-shape schemas.
     const RESOLVED = Symbol.for('vest:resolvedRelationships');
-    const rawRels = (schema as any)[RESOLVED] as
-      | Array<Record<string, any>>
-      | undefined;
-    const relationships: Array<Record<string, any>> =
-      rawRels && Array.isArray(rawRels) ? rawRels : [];
+    const ITEM = Symbol.for('vest:itemSchema');
+    const relationships: Array<Record<string, any>> = [];
+    const seen = new WeakSet<object>();
+    const collect = (node: any): void => {
+      if (!node || typeof node !== 'object' || seen.has(node)) return;
+      seen.add(node);
+      const rels = (node as any)[RESOLVED] as
+        | Array<Record<string, any>>
+        | undefined;
+      if (Array.isArray(rels) && rels.length) relationships.push(...rels);
+      const inner = (node as any).__schema;
+      if (inner && typeof inner === 'object') {
+        if (Array.isArray(inner)) {
+          for (const v of inner) collect(v);
+        } else {
+          for (const v of Object.values(inner as Record<string, unknown>))
+            collect(v as any);
+          collect(inner);
+        }
+      }
+      const item = (node as any)[ITEM];
+      if (item) collect(item);
+      // Plain shape object (no __schema/RESOLVED wrapper)
+      if (
+        !(node as any).__schema &&
+        !(node as any)[RESOLVED] &&
+        !(node as any)[ITEM]
+      ) {
+        // Check if this looks like a plain shape record
+        const vals = Object.values(node as Record<string, unknown>);
+        if (
+          vals.length &&
+          vals.some(v => v && typeof v === 'object' && (v as any).__schema)
+        ) {
+          for (const v of vals) collect(v as any);
+        } else if (
+          vals.length &&
+          vals.some(v => v && typeof v === 'object' && (v as any)[RESOLVED])
+        ) {
+          for (const v of vals) collect(v as any);
+        }
+      }
+    };
+    collect(schema);
+    // Also collect from schema.__schema directly if schema is a RuleInstance wrapping a plain shape
+    if ((schema as any).__schema) collect((schema as any).__schema);
     if (!relationships.length) return;
-    // topKeys kept for fallback when __schema missing
-    const _topKeys = new Set(Object.keys((schema as any).__schema || {}));
-    void _topKeys;
     // Also consider top-level keys from describe dependencies target
     for (const rel of relationships) {
       const isRootSource = (rel as any).__isRootSource === true;

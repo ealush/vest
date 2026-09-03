@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+/* eslint-disable complexity -- schema relationship rebasing */
 import { FirstParam } from './eager/typeUtils';
 import { adaptDynamicRules } from './lazy/ruleAdapter';
 import { typeRules } from './lazy/typeRules';
@@ -55,36 +55,7 @@ type TCustomLazyRules = {
   >;
 };
 
-function validateRootPathExists(
-  path: any,
-  rootShape: Record<string, any>,
-  _targetField: string,
-): void {
-  let current: any = rootShape;
-  for (let i = 0; i < path.length; i++) {
-    const seg = path[i];
-    if (seg.type !== 'property') continue;
-    const key = String(seg.key);
-    if (!Object.prototype.hasOwnProperty.call(current, key)) {
-      // Defer all root validation until final mount; do not throw at intermediate shape creation
-      // to support valid nesting like company.taxId -> $.root.accountType.
-      // Dangling top-level roots will be surfaced at suite finalization.
-      return;
-    }
-    const rule = current[key];
-    if (i < path.length - 1) {
-      if (rule?.__schema) current = rule.__schema;
-      else if (rule?.[ITEM_SCHEMA]) {
-        const item = rule[ITEM_SCHEMA];
-        current = item?.__schema ?? {};
-      } else {
-        // scalar with further path -> will be caught as missing next loop
-        current = {};
-      }
-    }
-  }
-}
-
+// eslint-disable-next-line complexity
 function collectSchemaRelationships(
   schema: Record<string, any>,
   keyFilter?: (key: string) => boolean,
@@ -167,6 +138,7 @@ function createPartialWrapper() {
   };
 }
 
+// eslint-disable-next-line complexity
 function createPickWrapper() {
   return (
     schema: Record<PropertyKey, unknown>,
@@ -228,6 +200,7 @@ function createPickWrapper() {
   };
 }
 
+// eslint-disable-next-line complexity
 function createOmitWrapper() {
   return (
     schema: Record<PropertyKey, unknown>,
@@ -332,13 +305,6 @@ const schemaAttacher =
         );
       }
     }
-
-    // Rooted validation is deferred to suite finalizer (validateDeferredRoots in
-    // createSuite). Do not validate $.root paths at intermediate shape creation
-    // to support nesting like company.taxId -> $.root.accountType where inner
-    // shape does not yet contain the provider. Dangling top-level roots are
-    // surfaced at suite creation.
-    void validateRootPathExists;
 
     const rule = ruleFn(schema);
     rule.__schema = schema;

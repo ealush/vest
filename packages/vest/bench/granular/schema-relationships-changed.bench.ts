@@ -423,7 +423,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   bench(
     'C18 async changed(organizationId) reruns username [pending] [2/2 fields]',
     () => {
-      asyncSuiteChanged
+      return asyncSuiteChanged
         .changed('organizationId')
         .run({ organizationId: 'B', username: 'free' });
     },

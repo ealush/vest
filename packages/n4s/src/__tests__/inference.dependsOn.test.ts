@@ -24,8 +24,8 @@ export function typeChecks() {
       expectTypeOf($.root).toMatchTypeOf<unknown>();
       return $.password;
     }),
-    // $ => $.password should be valid, $ => $.missing should be valid (any key allowed via index signature)
-    // but the type of $ should be Scope, not any
+    // $ => $.password should be valid, $ => $.missing should be valid (an arbitrary key is allowed via index signature)
+    // but the type of $ should be Scope, not an untyped fallback
   });
 
   // inferred data shape - schema1

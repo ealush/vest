@@ -19,6 +19,79 @@ export const UNRESOLVED_DEPS = Symbol.for('vest:unresolvedDeps');
 export const RESOLVED_RELATIONSHIPS = Symbol.for('vest:resolvedRelationships');
 export const ITEM_SCHEMA = Symbol.for('vest:itemSchema');
 /**
+ * Describes how a rule was built, so dependency-aware consumers (e.g.
+ * suite.changed() fragment projection) can prove a rebuild preserves
+ * behavior. The chain predicate list itself is closure-private; this is
+ * the only observable trace of it.
+ */
+export type ChainInfo = {
+  /** Predicates in this rule's own chain at last sync. */
+  readonly length: number;
+  /** Whether a custom message was set (affects failure text). */
+  readonly hasMessage: boolean;
+};
+export const CHAIN_INFO = Symbol.for('vest:chainInfo');
+/**
+ * Frozen at combinator-construction time: the chain state a rebuild must
+ * reproduce. Delegating wrappers (optional) snapshot the inner rule's
+ * state; fresh-validation combinators snapshot their own.
+ */
+export const CHAIN_BASELINE = Symbol.for('vest:chainBaseline');
+/**
+ * Frozen construction-time chain state a rebuild must reproduce. For
+ * delegating wrappers (optional) `inner` captures the wrapped rule so
+ * drift checks recurse: mutating the wrapped rule after wrapping breaks
+ * rebuild parity exactly like chaining the wrapper itself.
+ */
+export type ChainBaseline = {
+  /** Chain length at snapshot time. */
+  readonly length: number;
+  /** Whether a custom message was set at snapshot time. */
+  readonly hasMessage: boolean;
+  /** The wrapped rule for delegating wrappers; absent otherwise. */
+  readonly inner?: unknown;
+};
+
+function slotOf(rule: unknown, slot: symbol): unknown {
+  if (rule === null) return undefined;
+  const kind = typeof rule;
+  if (kind !== 'object' && kind !== 'function') return undefined;
+  return (rule as Record<symbol, unknown>)[slot];
+}
+
+/** Whether the rule carries a construction-time chain baseline. */
+export function hasChainBaseline(rule: unknown): boolean {
+  return slotOf(rule, CHAIN_BASELINE) !== undefined;
+}
+
+/**
+ * Whether the rule's chain still matches its construction-time baseline.
+ * A mismatch means predicates (or a custom message) were added after the
+ * combinator built the rule, so rebuilding through the bare combinator
+ * would silently drop validators. Recurses into delegating wrappers via
+ * the captured inner rule. Missing slots mean unknown provenance — never
+ * a match, so consumers retain the original rule (full-run parity).
+ */
+export function chainBaselineMatches(rule: unknown): boolean {
+  const baseline = slotOf(rule, CHAIN_BASELINE) as ChainBaseline | undefined;
+  const current = slotOf(rule, CHAIN_INFO) as ChainInfo | undefined;
+  if (baseline === undefined || current === undefined) return false;
+  if (!sameChainState(current, baseline)) return false;
+  if (baseline.inner === undefined) return true;
+  return chainBaselineMatches(baseline.inner);
+}
+
+function sameChainState(current: ChainInfo, baseline: ChainBaseline): boolean {
+  return (
+    current.length === baseline.length &&
+    current.hasMessage === baseline.hasMessage
+  );
+}
+/** Marks containers that skip missing keys (partial), unlike loose. */
+export const PARTIAL_LIKE = Symbol.for('vest:partialLike');
+/** Marks nullish-passing optional() wrappers. */
+export const OPTIONAL_RULE = Symbol.for('vest:optionalRule');
+/**
  * Marks which container flavor owns an ITEM_SCHEMA slot: single-rule
  * arrays/lists narrow with `isArrayOf`, records narrow with `record`.
  * Suffixes alone cannot tell them apart (numeric record keys look like

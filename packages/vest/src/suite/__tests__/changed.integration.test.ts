@@ -39,20 +39,23 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
-      test('password', () => {
-        log.record('password');
-        enforce(data.password).longerThanOrEquals(8);
-      });
-      test('confirmPassword', () => {
-        log.record('confirmPassword');
-        enforce(data.confirmPassword).equals(data.password);
-      });
-      test('email', () => {
-        log.record('email');
-        enforce(data.email).isNotBlank();
-      });
-    }, schema);
+    const suite = create(
+      (data: { password: string; confirmPassword: string; email?: string }) => {
+        test('password', () => {
+          log.record('password');
+          enforce(data.password).longerThanOrEquals(8);
+        });
+        test('confirmPassword', () => {
+          log.record('confirmPassword');
+          enforce(data.confirmPassword).equals(data.password);
+        });
+        test('email', () => {
+          log.record('email');
+          enforce(data.email).isNotBlank();
+        });
+      },
+      schema,
+    );
 
     await suite.run({
       // @ts-expect-error - integration probe: data carries non-schema field 'email'
@@ -79,7 +82,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('password', () => {
         log.record('password');
         enforce(data.password).isNotBlank();
@@ -104,7 +107,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('email', 'Email required', () => {
         enforce(data.email).isNotBlank();
       });
@@ -137,7 +140,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       }),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('profile.country', () => {
         log.record('profile.country');
         enforce(data.profile.country).isNotBlank();
@@ -168,7 +171,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       shipping: addressSchema,
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       group('billing', () => {
         test('billing.country', () => {
           log.record('billing.country');
@@ -213,8 +216,8 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       travelers: enforce.isArrayOf(travelerSchema),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
-      each(data.travelers, (traveler: any, index: number) => {
+    const suite = create(data => {
+      each(data.travelers, (traveler, index) => {
         test(`travelers.${index}.country`, () => {
           log.record(`travelers.${index}.country`);
           enforce(traveler.country).isNotBlank();
@@ -258,7 +261,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       passwordStrengthMessage: enforce.isString().dependsOn($ => $.password),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('password', () => {
         log.record('password');
         enforce(data.password).isNotBlank();
@@ -298,7 +301,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       c: enforce.isString().dependsOn($ => $.b),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('a', () => {
         log.record('a');
         enforce(data.a).isNotBlank();
@@ -326,7 +329,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('password', () => {
         log.record('password');
         enforce(data.password).isNotBlank();
@@ -356,7 +359,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       state: enforce.isString().dependsOn($ => $.country),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('country', () => {
         log.record('country');
         enforce(data.country).isNotBlank();
@@ -383,7 +386,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       username: enforce.isString().dependsOn($ => $.organizationId),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('organizationId', () => {
         log.record('organizationId');
         enforce(data.organizationId).isNotBlank();
@@ -408,7 +411,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       organizationId: enforce.isString(),
       username: enforce.isString().dependsOn($ => $.organizationId),
     });
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('username', async () => {
         // Different delays: A takes longer than B, so B should win even if A resolves later
         const delay = data.organizationId === 'A' ? 30 : 10;
@@ -443,7 +446,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
         state: enforce.isString().dependsOn($ => $.country),
       }),
     });
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('email', 'Email required', () => {
         enforce(data.email).isNotBlank();
       });
@@ -528,10 +531,10 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     const schema = enforce.shape({
       a: enforce.isString(),
       b: enforce.isString(),
-      c: enforce.isString().dependsOn(($: any) => [$.a, $.b]),
+      c: enforce.isString().dependsOn($ => [$.a, $.b]),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('a', () => {
         log.record('a');
         enforce(data.a).isNotBlank();
@@ -576,8 +579,8 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       travelers: enforce.isArrayOf(itemSchema),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
-      each(data.travelers, (traveler: any, i: number) => {
+    const suite = create(data => {
+      each(data.travelers, (traveler, i) => {
         test(`travelers.${i}.country`, () => {
           log.record(`travelers.${i}.country`);
           enforce(traveler.country).isNotBlank();
@@ -631,9 +634,9 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       orders: enforce.isArrayOf(order),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
-      each(data.orders, (orderData: any, oi: number) => {
-        each(orderData.items, (it: any, ii: number) => {
+    const suite = create(data => {
+      each(data.orders, (orderData, oi) => {
+        each(orderData.items, (it, ii) => {
           test(`orders.${oi}.items.${ii}.name`, () => {
             log.record(`orders.${oi}.items.${ii}.name`);
             enforce(it.name).isNotBlank();
@@ -669,12 +672,15 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(log.get()).not.toContain('orders.1.items.0.discount');
 
     // Verify describe depth 4 has two item bindings
-    const dep = (schema as any).describe().dependencies[0];
-    const itemCount = dep.target.filter((s: any) => s.type === 'item').length;
+    const dep = schema.describe().dependencies[0];
+    const itemCount = dep.target.filter(s => s.type === 'item').length;
     expect(itemCount).toBe(2);
   });
 
   it('17. 3-level transitive a.b.c -> a.b.d (deep nested sibling)', async () => {
+    type DataWithOther = {
+      a: { b: { c: string; d: string; other?: string } };
+    };
     const inner = enforce.shape({
       c: enforce.isString(),
       d: enforce.isString().dependsOn($ => $.c),
@@ -686,7 +692,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       a: middle,
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create((data: DataWithOther) => {
       test('a.b.c', () => {
         log.record('a.b.c');
         enforce(data.a.b.c).isNotBlank();
@@ -723,7 +729,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       }),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('accountType', () => {
         log.record('accountType');
         enforce(data.accountType).isNotBlank();
@@ -768,7 +774,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       b: enforce.isString().dependsOn($ => $.a),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create((data: { a: string; b: string; c?: string }) => {
       test('a', () => {
         log.record('a');
         enforce(data.a).isNotBlank();
@@ -812,7 +818,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       confirmPassword: enforce.isString(),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('password', () => {
         log.record('password');
         enforce(data.password).isNotBlank();
@@ -843,7 +849,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       c: enforce.isString(),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('a', () => {
         log.record('a');
         enforce(data.a).isNotBlank();
@@ -868,7 +874,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     const schema = enforce.shape({
       a: enforce.isString(),
     });
-    const suite = create((_data: any) => {}, schema);
+    const suite = create(() => {}, schema);
     const controller = new AbortController();
     expect(() => suite.changed('a', { signal: controller.signal })).toThrow(
       'suite.changed({ signal: AbortSignal }) deferred to v2',
@@ -882,7 +888,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       state: enforce.isString().dependsOn($ => $.country),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('country', () => {
         log.record('country');
         enforce(data.country).isNotBlank();
@@ -908,7 +914,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       nick: enforce.isString().dependsOn($ => $.country),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       optional('nick');
       test('country', () => {
         log.record('country');
@@ -932,7 +938,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       state: enforce.isString().dependsOn($ => $.country),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('country', () => {
         log.record('country');
         enforce(data.country).isNotBlank();
@@ -956,7 +962,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       state: enforce.isString().dependsOn($ => $.country),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('country', () => {
         log.record('country');
         enforce(data.country).isNotBlank();
@@ -981,7 +987,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       state: enforce.isString().dependsOn($ => $.country),
     });
     const log = createExecutionLog();
-    const suite = create((data: any) => {
+    const suite = create(data => {
       test('country', () => {
         log.record('country');
         enforce(data.country).isNotBlank();
@@ -1006,7 +1012,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
         state: enforce.isString().longerThan(5),
       }),
     );
-    const suite = create((_data: any) => {}, schema);
+    const suite = create(() => {}, schema);
     const data = [
       { country: 'abcdef', state: 'abcdef' },
       { country: 'abcdef', state: 'yy' },

@@ -11,6 +11,15 @@ import {
 } from '../useCreateSuiteRunner';
 import type { SchemaRunResult } from '../useCreateSuiteRunner';
 
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      hasAllowedFlag: (value: { flag?: unknown }) => boolean;
+      countCountry: (value: unknown) => boolean;
+    }
+  }
+}
+
 /**
  * Executable view of a projected fragment. The generic schema type cannot
  * name its own data type, so each test pins it from its own schema instead
@@ -97,7 +106,7 @@ describe('changed() source-retaining projection', () => {
 
   it('record string keys: changed(recordKey.field) invalidates dependents', async () => {
     // 'x' is a string (type-valid) but too short (rule-invalid), so the
-    // fixture violates the rule without any type escape hatches.
+    // fixture violates the rule without type escape hatches.
     const schema = enforce.shape({
       dictionary: enforce.record(
         enforce.shape({
@@ -268,6 +277,29 @@ describe('changed() source-retaining projection', () => {
       .changed('nick')
       .run(data);
     expect(skipped.hasErrors('nick')).toBe(false);
+  });
+
+  it('boolean skip(true) with changed() drops all synthesized failures', async () => {
+    // Boolean skip-all is a legal modifier (SuiteTypes) and must mirror the
+    // runtime, which skips every test: asArray(true) is [true] and must
+    // never reach field-name normalization (TypeError: field.replace).
+    const schema = enforce.shape({
+      profile: enforce.shape({
+        state: enforce.isString().longerThan(5),
+      }),
+    });
+    const suite = create(data => {
+      test('profile.state', () => {
+        enforce(data.profile.state).isString();
+      });
+    }, schema);
+
+    const data = { profile: { state: 'x' } };
+    const skipped = await suite
+      .focus({ skip: true })
+      .changed('profile.state')
+      .run(data);
+    expect(skipped.hasErrors('profile.state')).toBe(false);
   });
 
   it('failure filtering: exact skips, parent keeps, coercion equality', () => {
@@ -475,7 +507,7 @@ describe('changed() source-retaining projection', () => {
         ),
       ),
     });
-    const suite = create((_data: any) => {}, schema);
+    const suite = create(() => {}, schema);
     const data = { matrix: [[{ v: 'xx' }], 'oops'] };
     // @ts-expect-error — reason: intentionally mistyped member ('oops'
     // is not an array) to pin supplement attribution for contradicting
@@ -564,5 +596,138 @@ describe('changed() source-retaining projection', () => {
     expect(seen).toContain('profile.country');
     expect(changed.hasErrors('profile.country')).toBe(false);
     expect(changed.hasErrors('profile.state')).toBe(false);
+  });
+
+  it('P1-1: changed() keeps container validators chained after the combinator', async () => {
+    // A validator chained onto the container itself (not a member) must
+    // survive projection: dropping it makes changed() pass a run that the
+    // full suite fails. The baseline bail-out retains the whole subtree.
+    enforce.extend({
+      hasAllowedFlag: (value: { flag?: unknown }): boolean =>
+        value.flag === true,
+    });
+    const schema = enforce
+      .loose({
+        profile: enforce.shape({ country: enforce.isString() }),
+        flag: enforce.isBoolean(),
+      })
+      .hasAllowedFlag();
+    const suite = create((): void => {}, schema);
+    const bad: { profile: { country: string }; flag: boolean } = {
+      profile: { country: 'US' },
+      flag: false,
+    };
+    expect(suite.runStatic(bad).hasErrors()).toBe(true);
+    const changed = await suite.changed('profile.country').run(bad);
+    expect(changed.hasErrors()).toBe(true);
+  });
+
+  it('P1-2: changed() narrows an all-optional shape instead of retaining it', async () => {
+    // Every member is optional, so the container accepts {} — but it is an
+    // ordinary loose() shape, not partial(). Retaining the whole subtree
+    // lets the unrelated earlier failure (nickname) shadow the affected
+    // dependent failure (state) after post-filtering.
+    const schema = enforce.loose({
+      profile: enforce.shape({
+        nickname: enforce.optional(enforce.isString().shorterThan(3)),
+        state: enforce.optional(enforce.isString().dependsOn($ => $.country)),
+        country: enforce.optional(enforce.isString()),
+      }),
+    });
+    const suite = create((): void => {}, schema);
+    const data: {
+      profile: { nickname: string; state: string | number; country: string };
+    } = {
+      profile: { nickname: 'toolongname', state: 42, country: 'US' },
+    };
+    // @ts-expect-error - probe: state is deliberately rule-invalid (number) to pin the shadowed affected failure
+    const changed = await suite.changed('profile.state').run(data);
+    expect(changed.hasErrors('profile.state')).toBe(true);
+    expect(changed.hasErrors('profile.nickname')).toBe(false);
+  });
+
+  it('P1-3a: changed() surfaces an affected tuple member hidden by first-failure', async () => {
+    // Tuples report only the first failing position: member 0 fails, so the
+    // full run never reaches member 1. The positional supplement must still
+    // surface the affected member 1 failure with exact attribution.
+    const schema = enforce.shape({
+      point: enforce.tuple(
+        enforce.isString().shorterThan(2),
+        enforce.isNumber(),
+      ),
+    });
+    const suite = create((): void => {}, schema);
+    const data: { point: [string, number | string] } = {
+      point: ['toolong', 'x'],
+    };
+    // @ts-expect-error - probe: members deliberately rule-invalid to pin order-dependent hiding
+    const full = await suite.run(data);
+    expect(full.hasErrors('point.0')).toBe(true);
+    expect(full.hasErrors('point.1')).toBe(false);
+    // @ts-expect-error - probe: members deliberately rule-invalid to pin order-dependent hiding
+    const changed = await suite.changed('point.1').run(data);
+    expect(changed.hasErrors('point.1')).toBe(true);
+    expect(changed.hasErrors('point.0')).toBe(false);
+  });
+
+  it('P1-3b: changed() surfaces an affected union element hidden by first-failure', async () => {
+    // Union elements must match some member: element 0 matches neither, so
+    // the full run reports only element 0. The supplement resolves
+    // whole-member matching per affected index and reproduces the generic
+    // element failure for element 1.
+    const memberA = enforce.shape({
+      kind: enforce.isString(),
+      a: enforce.isString(),
+    });
+    const memberB = enforce.shape({
+      kind: enforce.isString(),
+      b: enforce.isString(),
+    });
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(memberA, memberB),
+    });
+    const suite = create((): void => {}, schema);
+    const data: { rows: Array<{ kind: string }> } = {
+      rows: [{ kind: 'x' }, { kind: 'y' }],
+    };
+    // @ts-expect-error - probe: elements deliberately match no member to pin order-dependent hiding
+    const full = await suite.run(data);
+    expect(full.hasErrors('rows.0')).toBe(true);
+    expect(full.hasErrors('rows.1')).toBe(false);
+    // @ts-expect-error - probe: elements deliberately match no member to pin order-dependent hiding
+    const changed = await suite.changed('rows.1.kind').run(data);
+    expect(changed.hasErrors('rows.1')).toBe(true);
+    expect(changed.hasErrors('rows.0')).toBe(false);
+  });
+
+  it('P1-4: focused array validation runs affected members exactly once', async () => {
+    // Selective execution: the unaffected rows.0 validator must not run,
+    // and the affected rows.1 validator must run exactly once (main run or
+    // supplement — never both). A counter matcher observes every call.
+    const seen: unknown[] = [];
+    enforce.extend({
+      countCountry: (value: unknown): boolean => {
+        seen.push(value);
+        return typeof value === 'string';
+      },
+    });
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.shape({
+          country: enforce.isString().countCountry(),
+          state: enforce.isString(),
+        }),
+      ),
+    });
+    const suite = create((): void => {}, schema);
+    const data = {
+      rows: [
+        { country: 'US', state: 'CA' },
+        { country: 'CA', state: 'NY' },
+      ],
+    };
+    const changed = await suite.changed('rows.1.country').run(data);
+    expect(changed.hasErrors()).toBe(false);
+    expect(seen).toEqual(['CA']);
   });
 });

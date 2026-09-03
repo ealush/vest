@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* eslint-disable sort-keys -- bench fixture order intentionally groups password deps */
 import { bench, describe } from 'vitest';
 import { create, test, enforce, group, skipWhen } from '../../src/vest';
@@ -21,7 +20,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   // ── Flat suite (C1–C5) ─────────────────────────────────────
   const flatSchema = enforce.shape({
     password: enforce.isString(),
-    confirmPassword: enforce.isString().dependsOn(($: any) => $.password),
+    confirmPassword: enforce.isString().dependsOn($ => $.password),
     email: enforce.isString(),
   });
 
@@ -32,7 +31,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   };
 
   const makeFlatSuite = () =>
-    create((data: any) => {
+    create(data => {
       test('password', () => {
         enforce(data.password).isString();
       });
@@ -105,7 +104,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   const nestedSchema = enforce.shape({
     profile: enforce.shape({
       country: enforce.isString(),
-      state: enforce.isString().dependsOn(($: any) => $.country),
+      state: enforce.isString().dependsOn($ => $.country),
     }),
     email: enforce.isString(),
   });
@@ -116,7 +115,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   };
 
   const makeNestedSuite = () =>
-    create((data: any) => {
+    create(data => {
       test('profile.country', () => {
         enforce(data.profile.country).isString();
       });
@@ -154,7 +153,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   // ── Reusable suite (C8–C9) ─────────────────────────────────
   const reuseAddress = enforce.shape({
     country: enforce.isString(),
-    state: enforce.isString().dependsOn(($: any) => $.country),
+    state: enforce.isString().dependsOn($ => $.country),
   });
   const reuseSchema = enforce.shape({
     billing: reuseAddress,
@@ -167,7 +166,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   };
 
   const makeReuseSuite = () =>
-    create((data: any) => {
+    create(data => {
       group('billing' as TGroupName, () => {
         test('billing.country' as TFieldName, () => {
           enforce(data.billing.country).isString();
@@ -213,7 +212,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   // ── Array suites (C10–C13) ─────────────────────────────────
   const travelerSchema = enforce.shape({
     country: enforce.isString(),
-    passportNumber: enforce.isString().dependsOn(($: any) => $.country),
+    passportNumber: enforce.isString().dependsOn($ => $.country),
   });
   const arraySchema = enforce.shape({
     travelers: enforce.isArrayOf(travelerSchema),
@@ -221,8 +220,8 @@ describe('changed() vs only() vs run() — minimality proof', () => {
 
   const makeArraySuite = (n: number) => {
     const data = { travelers: travelersData(n) };
-    const suite = create((d: any) => {
-      each(d.travelers, (t: any, i: number) => {
+    const suite = create(d => {
+      each(d.travelers, (t, i) => {
         test(`travelers.${i}.country` as TFieldName, () => {
           enforce(t.country).isString();
         });
@@ -286,8 +285,8 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   // ── Fan-out (C14–C15) ──────────────────────────────────────
   const fanoutSchema = enforce.shape({
     password: enforce.isString(),
-    confirmPassword: enforce.isString().dependsOn(($: any) => $.password),
-    hint: enforce.isString().dependsOn(($: any) => $.password),
+    confirmPassword: enforce.isString().dependsOn($ => $.password),
+    hint: enforce.isString().dependsOn($ => $.password),
     email: enforce.isString(),
   });
 
@@ -299,7 +298,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   };
 
   const makeFanoutSuite = () =>
-    create((data: any) => {
+    create(data => {
       test('password', () => {
         enforce(data.password).isString();
       });
@@ -340,14 +339,14 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   // ── Chain non-transitive (C16) ─────────────────────────────
   const chainSchema = enforce.shape({
     a: enforce.isString(),
-    b: enforce.isString().dependsOn(($: any) => $.a),
-    c: enforce.isString().dependsOn(($: any) => $.b),
+    b: enforce.isString().dependsOn($ => $.a),
+    c: enforce.isString().dependsOn($ => $.b),
   });
 
   const chainData = { a: '1', b: '2', c: '3' };
 
   const makeChainSuite = () =>
-    create((data: any) => {
+    create(data => {
       test('a', () => {
         enforce(data.a).isString();
       });
@@ -375,11 +374,11 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   // ── skipWhen (C17) ─────────────────────────────────────────
   const skipWhenSchema = enforce.shape({
     country: enforce.isString(),
-    state: enforce.isString().dependsOn(($: any) => $.country),
+    state: enforce.isString().dependsOn($ => $.country),
   });
 
   const makeSkipWhenSuite = () =>
-    create((data: any) => {
+    create(data => {
       test('country', () => {
         enforce(data.country).isString();
       });
@@ -404,11 +403,11 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   // ── Async dependent (C18) ──────────────────────────────────
   const asyncSchema = enforce.shape({
     organizationId: enforce.isString(),
-    username: enforce.isString().dependsOn(($: any) => $.organizationId),
+    username: enforce.isString().dependsOn($ => $.organizationId),
   });
 
   const makeAsyncSuite = () =>
-    create((data: any) => {
+    create(data => {
       test('organizationId', () => {
         enforce(data.organizationId).isString();
       });
@@ -424,7 +423,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   bench(
     'C18 async changed(organizationId) reruns username [pending] [2/2 fields]',
     () => {
-      return asyncSuiteChanged
+      asyncSuiteChanged
         .changed('organizationId')
         .run({ organizationId: 'B', username: 'free' });
     },

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// @ts-nocheck
 import { bench, describe } from 'vitest';
 import {
   create,
@@ -15,6 +13,7 @@ import {
   each,
 } from '../src/vest';
 import { SuiteSerializer } from '../src/exports/SuiteSerializer';
+import type { InferSchemaData } from '../src/suiteResult/SuiteResultTypes';
 import { TFieldName, TGroupName } from '../src/suiteResult/SuiteResultTypes';
 
 // ──────────────────────────────────────────────────────────────
@@ -25,6 +24,8 @@ const travelersData = (n: number) =>
     country: 'US',
     passportNumber: `P${i}`,
   }));
+
+type StringRule = ReturnType<typeof enforce.isString>;
 
 // ──────────────────────────────────────────────────────────────
 // Group A — Schema creation with relationships (12 benches)
@@ -127,7 +128,7 @@ describe('Schema creation — with vs without relationships', () => {
           country: enforce.isString(),
           taxId: enforce
             .isString()
-            .dependsOn($ => [$.country, ($ as any).root.accountType]),
+            .dependsOn($ => [$.country, $.root.accountType]),
         }),
       });
     },
@@ -175,13 +176,11 @@ describe('Schema creation — with vs without relationships', () => {
   bench(
     'A12 create large 100-field chain [100 fields, 10 edges]',
     () => {
-      const fields: Record<string, any> = {};
+      const fields: Record<string, StringRule> = {};
       for (let i = 0; i < 100; i++) {
         if (i % 10 === 0 && i > 0) {
           const prevKey = `field_${i - 10}`;
-          fields[`field_${i}`] = enforce
-            .isString()
-            .dependsOn(($: any) => $[prevKey]);
+          fields[`field_${i}`] = enforce.isString().dependsOn($ => $[prevKey]);
         } else {
           fields[`field_${i}`] = enforce.isString();
         }
@@ -198,7 +197,7 @@ describe('Schema creation — with vs without relationships', () => {
 describe('describe() — metadata read', () => {
   const flatWith = enforce.shape({
     password: enforce.isString(),
-    confirmPassword: enforce.isString().dependsOn(($: any) => $.password),
+    confirmPassword: enforce.isString().dependsOn($ => $.password),
   });
   const flatNoRel = enforce.shape({
     a: enforce.isString(),
@@ -225,7 +224,7 @@ describe('describe() — metadata read', () => {
   bench(
     'B1 describe flat no rel',
     () => {
-      (flatNoRel as any).describe();
+      flatNoRel.describe();
     },
     { time: 150 },
   );
@@ -233,7 +232,7 @@ describe('describe() — metadata read', () => {
   bench(
     'B2 describe flat with one edge',
     () => {
-      (flatWith as any).describe();
+      flatWith.describe();
     },
     { time: 150 },
   );
@@ -241,7 +240,7 @@ describe('describe() — metadata read', () => {
   bench(
     'B3 describe nested reusable 2× [checkout billing+shipping]',
     () => {
-      (checkoutReuse as any).describe();
+      checkoutReuse.describe();
     },
     { time: 150 },
   );
@@ -249,7 +248,7 @@ describe('describe() — metadata read', () => {
   bench(
     'B4 describe array same-item [booking travelers]',
     () => {
-      (bookingForB as any).describe();
+      bookingForB.describe();
     },
     { time: 150 },
   );
@@ -257,7 +256,7 @@ describe('describe() — metadata read', () => {
   bench(
     'B5 describe JSON round-trip [flat with edge]',
     () => {
-      JSON.parse(JSON.stringify((flatWith as any).describe()));
+      JSON.parse(JSON.stringify(flatWith.describe()));
     },
     { time: 150 },
   );
@@ -265,9 +264,9 @@ describe('describe() — metadata read', () => {
   bench(
     'B6 describe repeated ×3 [idempotency / cache]',
     () => {
-      (flatWith as any).describe();
-      (flatWith as any).describe();
-      (flatWith as any).describe();
+      flatWith.describe();
+      flatWith.describe();
+      flatWith.describe();
     },
     { time: 150 },
   );
@@ -278,16 +277,6 @@ describe('describe() — metadata read', () => {
 // ──────────────────────────────────────────────────────────────
 
 // Shared fixtures for D
-const dAddressSchema = enforce.shape({
-  country: enforce.isString(),
-  state: enforce.isString().dependsOn($ => $.country),
-});
-
-const dTravelerSchema = enforce.shape({
-  country: enforce.isString(),
-  passportNumber: enforce.isString().dependsOn($ => $.country),
-});
-
 const dSkipWhenSchema = enforce.shape({
   country: enforce.isString(),
   state: enforce.isString().dependsOn($ => $.country),
@@ -303,23 +292,10 @@ const dOptionalSchema = enforce.shape({
   confirmPassword: enforce.isString().dependsOn($ => $.password),
 });
 
-const dChainSchema = enforce.shape({
-  a: enforce.isString(),
-  b: enforce.isString().dependsOn($ => $.a),
-  c: enforce.isString().dependsOn($ => $.b),
-});
-
-const dFanoutSchema = enforce.shape({
-  password: enforce.isString(),
-  confirmPassword: enforce.isString().dependsOn($ => $.password),
-  hint: enforce.isString().dependsOn($ => $.password),
-  email: enforce.isString(),
-});
-
 describe('Integration matrix — changed() meets Vest features', () => {
   // D1 skipWhen
   {
-    const d1Suite = create((data: any) => {
+    const d1Suite = create(data => {
       test('country', () => {
         enforce(data.country).isString();
       });
@@ -341,23 +317,36 @@ describe('Integration matrix — changed() meets Vest features', () => {
 
   // D2 omitWhen
   {
-    const d2Suite = create((data: any) => {
+    type D2Data = {
+      country: string;
+      nickname: string;
+      omitNickname?: boolean;
+    };
+    const d2Suite = create((data: D2Data) => {
       test('country', () => {
         enforce(data.country).isString();
       });
-      omitWhen(data.omitNickname, () => {
+      omitWhen(data.omitNickname ?? false, () => {
         test('nickname', () => {
           enforce(data.nickname).isString();
         });
       });
     }, dOmitWhenSchema);
-    d2Suite.run({ country: 'US', nickname: 'x', omitNickname: false });
+    const d2Initial: D2Data = {
+      country: 'US',
+      nickname: 'x',
+      omitNickname: false,
+    };
+    d2Suite.run(d2Initial);
+    const d2Changed: D2Data = {
+      country: 'CA',
+      nickname: 'x',
+      omitNickname: true,
+    };
     bench(
       'D2 omitWhen changed(country) with omit guard [omitted branch]',
       () => {
-        d2Suite
-          .changed('country')
-          .run({ country: 'CA', nickname: 'x', omitNickname: true });
+        d2Suite.changed('country').run(d2Changed);
       },
       { time: 250 },
     );
@@ -370,7 +359,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
-    const d3Suite = create((data: any) => {
+    const d3Suite = create(data => {
       optional('password');
       optional('confirmPassword');
       test('password', () => {
@@ -401,7 +390,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
   {
     // Use a shape where n4s optional field has dependsOn; suite passes through
     const d4Suite = create(
-      (data: any) => {
+      data => {
         test('a', () => {
           enforce(data.a).isString();
         });
@@ -426,7 +415,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
 
   // D5 warn + optional intersection
   {
-    const d5Suite = create((data: any) => {
+    const d5Suite = create(data => {
       optional('confirmPassword');
       test('password', () => {
         enforce(data.password).isString();
@@ -457,9 +446,9 @@ describe('Integration matrix — changed() meets Vest features', () => {
     const d6Schema = enforce.shape({
       travelers: enforce.isArrayOf(d6Traveler),
     });
-    const d6Suite = create((data: any) => {
+    const d6Suite = create(data => {
       group('travelers' as TGroupName, () => {
-        each(data.travelers, (t: any, i: number) => {
+        each(data.travelers, (t, i) => {
           test(`travelers.${i}.country` as TFieldName, () => {
             enforce(t.country).isString();
           });
@@ -470,11 +459,18 @@ describe('Integration matrix — changed() meets Vest features', () => {
       });
     }, d6Schema);
     const d6Data = { travelers: travelersData(5) };
-    d6Suite.run(d6Data);
+    // The bench intentionally runs schema-discordant data (travelers carry
+    // `passportNumber`, the schema declares `passport`, so the passport tests
+    // fail at runtime). The precise cast keeps that behavior while satisfying
+    // the schema-typed run signature.
+    type D6Input = InferSchemaData<typeof d6Schema>;
+    d6Suite.run(d6Data as unknown as D6Input);
     bench(
       'D6 group+each changed(travelers.1.country) [5 travelers, 10 tests]',
       () => {
-        d6Suite.changed('travelers.1.country').run(d6Data);
+        d6Suite
+          .changed('travelers.1.country')
+          .run(d6Data as unknown as D6Input);
       },
       { time: 250 },
     );
@@ -490,8 +486,8 @@ describe('Integration matrix — changed() meets Vest features', () => {
         }),
       ),
     });
-    const d7Suite = create((data: any) => {
-      each(data.items, (item: any, index: number) => {
+    const d7Suite = create(data => {
+      each(data.items, (item, index) => {
         group(`item_${index}` as TGroupName, () => {
           test(`items.${index}.label` as TFieldName, () => {
             enforce(item.label).isString();
@@ -521,7 +517,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
   // D8 mode ALL vs ONE under changed
   {
     const d8SuiteAll = create(
-      (data: any) => {
+      data => {
         mode(Modes.ALL);
         test('a', () => {
           enforce(data.a).isString();
@@ -537,7 +533,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     );
     d8SuiteAll.run({ a: 'x', b: 'y' });
     const d8SuiteOne = create(
-      (data: any) => {
+      data => {
         mode(Modes.ONE);
         test('a', () => {
           enforce(data.a).isString();
@@ -575,7 +571,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
       username: enforce.isString().dependsOn($ => $.organizationId),
       email: enforce.isString(),
     });
-    const d9Suite = create((data: any) => {
+    const d9Suite = create(data => {
       test('organizationId', () => {
         enforce(data.organizationId).isString();
       });
@@ -592,7 +588,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     bench(
       'D9 async waterfall changed(organizationId) [2 async dependents]',
       () => {
-        return d9Suite
+        d9Suite
           .changed('organizationId')
           .run({ organizationId: 'B', username: 'free', email: 'a@b.com' });
       },
@@ -603,7 +599,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
   // D10 serialize large after changed — retain + serialize cost
   {
     const d10Count = 100;
-    const d10Fields: Record<string, any> = {};
+    const d10Fields: Record<string, StringRule> = {};
     for (let i = 0; i < d10Count; i++)
       d10Fields[`field_${i}`] = enforce.isString();
     // one dependency to give changed() something to do
@@ -613,7 +609,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     for (let i = 0; i < d10Count; i++) d10Data[`field_${i}`] = `v${i}`;
     d10Data['dependent'] = 'x';
 
-    const d10Suite = create((data: any) => {
+    const d10Suite = create((data: Record<string, string>) => {
       for (let i = 0; i < d10Count; i++) {
         test(`field_${i}` as TFieldName, () => {
           enforce(data[`field_${i}`]).isString();
@@ -649,7 +645,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
         state: enforce.isString().dependsOn($ => $.country),
       }),
     });
-    const regSuite = create((data: any) => {
+    const regSuite = create(data => {
       test('email', () => {
         enforce(data.email).isNotBlank();
       });
@@ -745,7 +741,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
       shipping: checkoutAddress,
       travelers: enforce.isArrayOf(checkoutTraveler),
     });
-    const checkoutSuite = create((data: any) => {
+    const checkoutSuite = create(data => {
       group('billing' as TGroupName, () => {
         test('billing.country' as TFieldName, () => {
           enforce(data.billing.country).isString();
@@ -762,7 +758,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
           enforce(data.shipping.state).isString();
         });
       });
-      each(data.travelers, (t: any, i: number) => {
+      each(data.travelers, (t, i) => {
         test(`travelers.${i}.country` as TFieldName, () => {
           enforce(t.country).isString();
         });
@@ -794,7 +790,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
 
   // D13 volatility stress: 100 fields only 1 changed
   {
-    const volFields: Record<string, any> = {};
+    const volFields: Record<string, StringRule> = {};
     for (let i = 0; i < 100; i++) volFields[`field_${i}`] = enforce.isString();
     volFields['consumer'] = enforce.isString().dependsOn($ => $.field_0);
     const volSchema = enforce.shape(volFields);
@@ -802,7 +798,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     for (let i = 0; i < 100; i++) volData[`field_${i}`] = `v${i}`;
     volData['consumer'] = 'x';
 
-    const volSuiteRun = create((data: any) => {
+    const volSuiteRun = create((data: Record<string, string>) => {
       for (let i = 0; i < 100; i++) {
         test(`field_${i}` as TFieldName, () => {
           enforce(data[`field_${i}`]).isString();
@@ -813,7 +809,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
       });
     }, volSchema);
 
-    const volSuiteChanged = create((data: any) => {
+    const volSuiteChanged = create((data: Record<string, string>) => {
       for (let i = 0; i < 100; i++) {
         test(`field_${i}` as TFieldName, () => {
           enforce(data[`field_${i}`]).isString();
@@ -826,7 +822,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
 
     volSuiteRun.run(volData);
     volSuiteChanged.run(volData);
-    const volChangedData = { ...volData, field_0: 'changed' } as typeof volData;
+    const volChangedData = { ...volData, field_0: 'changed' };
 
     bench(
       'D13 volatility run() full 101 fields [baseline]',

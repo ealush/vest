@@ -16,17 +16,20 @@ import * as schemaRules from './rules/schemaRules/schemaRules';
 import { lazy as lazyRule } from './rules/schemaRules/lazy';
 import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
 import { type RuleInstance } from './utils/RuleInstance';
-import { asArray, isObject } from 'vest-utils';
+import { asArray, isNullish, isObject } from 'vest-utils';
 import { ctx } from './enforceContext';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 import {
   ITEM_CONTAINER,
   ITEM_SCHEMA,
+  OPTIONAL_RULE,
+  PARTIAL_LIKE,
   RESOLVED_RELATIONSHIPS,
   UNRESOLVED_DEPS,
   resolveInlineDeps,
 } from './schema/dependencyResolver';
 import type { ItemContainerKind } from './schema/dependencyResolver';
+import { snapshotChainBaseline } from './rules/chainBuilder/chainBuilder';
 import { rebaseRelationships } from './schema/rebase';
 import type { SchemaPath } from './schema/SchemaPath';
 import type { InternalRelationship } from './schema/SchemaRelationship';
@@ -57,19 +60,20 @@ type TCustomLazyRules = {
 };
 
 function collectSchemaRelationships(
-  schema: Record<string, any>,
+  schema: Record<string, unknown>,
   keyFilter?: (key: string) => boolean,
 ): InternalRelationship[] {
   const relationships: InternalRelationship[] = resolveInlineDeps(
     schema as Record<string, RuleInstance<unknown, unknown[]>>,
     [],
-    schema as Record<string, unknown>,
+    schema,
   ) as unknown as InternalRelationship[];
   for (const key of Object.keys(schema)) {
     if (keyFilter && !keyFilter(key)) continue;
-    const fieldRule: any = (schema as Record<string, any>)[key];
+    const fieldRule: unknown = schema[key];
+    const fieldSlots = isNullish(fieldRule) ? null : slotsOf(fieldRule);
     const nested =
-      (fieldRule?.[RESOLVED_RELATIONSHIPS] as
+      (fieldSlots?.[RESOLVED_RELATIONSHIPS] as
         | InternalRelationship[]
         | undefined) || [];
     if (nested.length > 0) {
@@ -78,7 +82,7 @@ function collectSchemaRelationships(
     }
     relationships.push(
       ...collectItemRelationships(
-        fieldRule?.[ITEM_SCHEMA],
+        fieldSlots?.[ITEM_SCHEMA],
         [{ type: 'property', key } as const],
         `${String(key)}.$item`,
         new WeakSet(),
@@ -176,24 +180,6 @@ function normalizeItemSchemas(item: unknown): Record<PropertyKey, unknown>[] {
 }
 
 /**
- * Whether a rule carries an item relationship graph: either a shape-like
- * rule (has __schema), a rule with resolved relationships, or a container
- * whose own item slot holds the graph one hop further down (nested
- * arrays/records/tuples — collectItemRelationships recurses into these).
- */
-function isItemSchemaLike(rule: unknown): rule is Record<PropertyKey, unknown> {
-  if (!rule || typeof rule !== 'object') return false;
-  const candidate = rule as unknown as {
-    __schema?: unknown;
-  } & Record<symbol, unknown>;
-  return (
-    candidate.__schema !== undefined ||
-    candidate[RESOLVED_RELATIONSHIPS] !== undefined ||
-    candidate[ITEM_SCHEMA] !== undefined
-  );
-}
-
-/**
  * Relationship-aware record wrapper: attaches the value rule (record(value)
  * or record(key, value)) as the item schema, mirroring the single-object
  * ITEM_SCHEMA pattern, so describe() rebases the value shape's item graph.
@@ -216,36 +202,62 @@ function createRecordWrapper(): (
     // (Lazy RuleInstances are always objects — chain proxies — so the
     // object gate cannot silently drop a real member rule.)
     if (isObject(valueRule)) {
-      const slots = rule as unknown as Record<symbol, unknown>;
+      const slots = slotsOf(rule);
       slots[ITEM_SCHEMA] = valueRule;
       slots[ITEM_CONTAINER] = 'record' as ItemContainerKind;
     }
+    // Fresh-validation combinator: freeze the chain state a rebuild must
+    // reproduce (P1-1 bail-out compares this against the live chain).
+    snapshotChainBaseline(rule);
     return rule;
   };
 }
 
-function wrapOptional(rawOptional: (inner: any) => RuleInstance<any, [any]>) {
-  return (inner: any) => {
-    const innerResolved = inner?.[RESOLVED_RELATIONSHIPS];
-    const innerUnresolved = inner?.[UNRESOLVED_DEPS];
+/**
+ * Untyped view of a rule's relationship/marker slots. Rules are created
+ * through chains and proxies, so slot access goes through this record view
+ * instead of the public RuleInstance type.
+ */
+type SlotStore = Record<PropertyKey, unknown>;
+
+function slotsOf(rule: unknown): SlotStore {
+  return rule as unknown as SlotStore;
+}
+
+function wrapOptional(
+  rawOptional: (inner: unknown) => RuleInstance<unknown, unknown[]>,
+): (inner: unknown) => RuleInstance<unknown, unknown[]> {
+  return inner => {
+    const innerSlots: SlotStore = isNullish(inner) ? {} : slotsOf(inner);
+    const innerResolved = innerSlots[RESOLVED_RELATIONSHIPS];
+    const innerUnresolved = innerSlots[UNRESOLVED_DEPS];
     // Use adapted rule to get lazy RuleInstance that preserves chain behavior
     const rule = rawOptional(inner);
-    const slots = rule as unknown as Record<PropertyKey, unknown>;
-    if (innerResolved?.length) {
+    const slots = slotsOf(rule);
+    if (Array.isArray(innerResolved) && innerResolved.length > 0) {
       slots[RESOLVED_RELATIONSHIPS] = [...innerResolved];
     }
-    if (innerUnresolved?.length) {
+    if (Array.isArray(innerUnresolved) && innerUnresolved.length > 0) {
       slots[UNRESOLVED_DEPS] = [...innerUnresolved];
     }
     // Also copy __schema and ITEM_SCHEMA if present
-    if (inner?.__schema && !slots.__schema) {
-      slots.__schema = inner.__schema;
+    if (innerSlots.__schema && !slots.__schema) {
+      slots.__schema = innerSlots.__schema;
     }
-    if (inner?.[ITEM_SCHEMA] && !slots[ITEM_SCHEMA]) {
-      slots[ITEM_SCHEMA] = inner[ITEM_SCHEMA];
+    if (innerSlots[ITEM_SCHEMA] && !slots[ITEM_SCHEMA]) {
+      slots[ITEM_SCHEMA] = innerSlots[ITEM_SCHEMA];
     }
-    if (inner?.[ITEM_CONTAINER] && !slots[ITEM_CONTAINER]) {
-      slots[ITEM_CONTAINER] = inner[ITEM_CONTAINER];
+    if (innerSlots[ITEM_CONTAINER] && !slots[ITEM_CONTAINER]) {
+      slots[ITEM_CONTAINER] = innerSlots[ITEM_CONTAINER];
+    }
+    // The wrapper validates through the inner rule, so the rebuild
+    // baseline is the inner rule's current chain state — not the fresh
+    // single-predicate wrapper chain. Partial-likeness also survives:
+    // narrowing inside a partial would gain requiredness either way.
+    snapshotChainBaseline(rule, inner);
+    slots[OPTIONAL_RULE] = true;
+    if (innerSlots[PARTIAL_LIKE] === true) {
+      slots[PARTIAL_LIKE] = true;
     }
     return rule;
   };
@@ -253,24 +265,38 @@ function wrapOptional(rawOptional: (inner: any) => RuleInstance<any, [any]>) {
 
 // Explicitly adapt only the schema modifiers that act as wrappers — now relationship-aware
 const rawOptionalBase = adaptDynamicRules<
-  RuleInstance<any, [any]>,
+  RuleInstance<unknown, [unknown]>,
   Pick<typeof schemaRules, 'optional'>
->({ optional: schemaRules.optional } as any) as any;
+>({
+  optional: schemaRules.optional,
+} as unknown as Pick<typeof schemaRules, 'optional'>) as unknown as {
+  optional: (inner: unknown) => RuleInstance<unknown, unknown[]>;
+};
 const optionalWrapper = wrapOptional(rawOptionalBase.optional);
 
 // For partial/pick/omit we need relationship-aware versions that also resolve
-function createPartialWrapper() {
-  return (schema: any) => {
+function createPartialWrapper(): (
+  schema: Record<string, unknown>,
+) => RuleInstance<unknown, unknown[]> {
+  return schema => {
     const relationships = collectSchemaRelationships(schema);
     const base = adaptDynamicRules<
-      RuleInstance<any, [any]>,
+      RuleInstance<unknown, [unknown]>,
       Pick<typeof schemaRules, 'partial'>
     >({
       partial: schemaRules.partial,
-    } as any) as any;
+    } as unknown as Pick<typeof schemaRules, 'partial'>) as unknown as {
+      partial: (inner: unknown) => RuleInstance<unknown, unknown[]>;
+    };
     const rule = base.partial(schema);
-    (rule as any)[RESOLVED_RELATIONSHIPS] = relationships;
-    rule.__schema = schema;
+    const slots = slotsOf(rule);
+    slots[RESOLVED_RELATIONSHIPS] = relationships;
+    slots.__schema = schema;
+    // partial() skips missing keys by construction — record it so the
+    // runner never has to probe for it (P1-2). Freeze the chain baseline
+    // for rebuild parity (P1-1).
+    slots[PARTIAL_LIKE] = true;
+    snapshotChainBaseline(rule);
     return rule;
   };
 }
@@ -303,49 +329,50 @@ function rootedEndpointsKept(
   return true;
 }
 
-function createPickWrapper() {
+function createPickWrapper(): (
+  schema: Record<PropertyKey, unknown>,
+  keys: PropertyKey | PropertyKey[],
+) => RuleInstance<unknown, unknown[]> {
   return (
     schema: Record<PropertyKey, unknown>,
     keys: PropertyKey | PropertyKey[],
-  ) => {
+  ): RuleInstance<unknown, unknown[]> => {
     const keysSet = new Set(asArray(keys));
     let relationships = collectSchemaRelationships(
-      schema as Record<string, any>,
-      key => keysSet.has(key as string),
+      schema as unknown as Record<string, unknown>,
+      (key: string): boolean => keysSet.has(key),
     );
     // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are kept.
     // For rooted relationships, ignore the rooted endpoint as above.
 
-    relationships = relationships.filter(rel => {
-      const isRootSource = (rel as any).__isRootSource === true;
-      const isRootTarget = (rel as any).__isRootTarget === true;
-      if (isRootSource && !isRootTarget) {
-        const tTop =
-          rel.target[0]?.type === 'property'
-            ? String((rel.target[0] as any).key)
-            : null;
-        return tTop ? keysSet.has(tTop) : true;
-      }
-      if (isRootTarget && !isRootSource) {
+    relationships = relationships.filter(
+      (rel: InternalRelationship): boolean => {
+        const isRootSource = rel.__isRootSource === true;
+        const isRootTarget = rel.__isRootTarget === true;
+        if (isRootSource && !isRootTarget) {
+          const tTop =
+            rel.target[0]?.type === 'property'
+              ? String(rel.target[0].key)
+              : null;
+          return tTop ? keysSet.has(tTop) : true;
+        }
+        if (isRootTarget && !isRootSource) {
+          const sTop =
+            rel.source[0]?.type === 'property'
+              ? String(rel.source[0].key)
+              : null;
+          return sTop ? keysSet.has(sTop) : true;
+        }
+        if (isRootSource && isRootTarget) return true;
         const sTop =
-          rel.source[0]?.type === 'property'
-            ? String((rel.source[0] as any).key)
-            : null;
-        return sTop ? keysSet.has(sTop) : true;
-      }
-      if (isRootSource && isRootTarget) return true;
-      const sTop =
-        rel.source[0]?.type === 'property'
-          ? String((rel.source[0] as any).key)
-          : null;
-      const tTop =
-        rel.target[0]?.type === 'property'
-          ? String((rel.target[0] as any).key)
-          : null;
-      const sKept = sTop ? keysSet.has(sTop) : true;
-      const tKept = tTop ? keysSet.has(tTop) : true;
-      return sKept && tKept;
-    });
+          rel.source[0]?.type === 'property' ? String(rel.source[0].key) : null;
+        const tTop =
+          rel.target[0]?.type === 'property' ? String(rel.target[0].key) : null;
+        const sKept = sTop ? keysSet.has(sTop) : true;
+        const tKept = tTop ? keysSet.has(tTop) : true;
+        return sKept && tKept;
+      },
+    );
     // A projection only carries edges fully resolvable within itself: drop
     // rooted edges whose provider was picked away. Dependent expansion
     // already ran on the full graph, and the run-time rooted boundary would
@@ -354,66 +381,70 @@ function createPickWrapper() {
       rootedEndpointsKept(rel, top => keysSet.has(top)),
     );
     const base = adaptDynamicRules<
-      RuleInstance<any, [any]>,
+      RuleInstance<unknown, [unknown]>,
       Pick<typeof schemaRules, 'pick'>
     >({
       pick: schemaRules.pick,
-    } as any) as any;
+    } as unknown as Pick<typeof schemaRules, 'pick'>) as unknown as {
+      pick: (s: unknown, k: unknown) => RuleInstance<unknown, unknown[]>;
+    };
     const rule = base.pick(schema, keys);
-    (rule as any)[RESOLVED_RELATIONSHIPS] = relationships;
+    slotsOf(rule)[RESOLVED_RELATIONSHIPS] = relationships;
     // For pick, __schema is filtered shape
-    const filtered: any = {};
+    const filtered: Record<string, unknown> = {};
     const set = new Set(asArray(keys));
     for (const k of Object.keys(schema))
       if (set.has(k)) filtered[k] = schema[k];
-    rule.__schema = filtered;
+    slotsOf(rule).__schema = filtered;
+    snapshotChainBaseline(rule);
     return rule;
   };
 }
 
-function createOmitWrapper() {
+function createOmitWrapper(): (
+  schema: Record<PropertyKey, unknown>,
+  keys: PropertyKey | PropertyKey[],
+) => RuleInstance<unknown, unknown[]> {
   return (
     schema: Record<PropertyKey, unknown>,
     keys: PropertyKey | PropertyKey[],
-  ) => {
+  ): RuleInstance<unknown, unknown[]> => {
     const keysSet = new Set(asArray(keys));
     let relationships = collectSchemaRelationships(
-      schema as Record<string, any>,
-      key => !keysSet.has(key as string),
+      schema as unknown as Record<string, unknown>,
+      (key: string): boolean => !keysSet.has(key),
     );
     // Filter fully rebased set: keep only relationships where both endpoints' top-level keys are not omitted.
     // For rooted, filter only by local endpoint as above.
 
-    relationships = relationships.filter(rel => {
-      const isRootSource = (rel as any).__isRootSource === true;
-      const isRootTarget = (rel as any).__isRootTarget === true;
-      if (isRootSource && !isRootTarget) {
-        const tTop =
-          rel.target[0]?.type === 'property'
-            ? String((rel.target[0] as any).key)
-            : null;
-        return tTop ? !keysSet.has(tTop) : true;
-      }
-      if (isRootTarget && !isRootSource) {
+    relationships = relationships.filter(
+      (rel: InternalRelationship): boolean => {
+        const isRootSource = rel.__isRootSource === true;
+        const isRootTarget = rel.__isRootTarget === true;
+        if (isRootSource && !isRootTarget) {
+          const tTop =
+            rel.target[0]?.type === 'property'
+              ? String(rel.target[0].key)
+              : null;
+          return tTop ? !keysSet.has(tTop) : true;
+        }
+        if (isRootTarget && !isRootSource) {
+          const sTop =
+            rel.source[0]?.type === 'property'
+              ? String(rel.source[0].key)
+              : null;
+          return sTop ? !keysSet.has(sTop) : true;
+        }
+        if (isRootSource && isRootTarget) return true;
         const sTop =
-          rel.source[0]?.type === 'property'
-            ? String((rel.source[0] as any).key)
-            : null;
-        return sTop ? !keysSet.has(sTop) : true;
-      }
-      if (isRootSource && isRootTarget) return true;
-      const sTop =
-        rel.source[0]?.type === 'property'
-          ? String((rel.source[0] as any).key)
-          : null;
-      const tTop =
-        rel.target[0]?.type === 'property'
-          ? String((rel.target[0] as any).key)
-          : null;
-      const sKept = sTop ? !keysSet.has(sTop) : true;
-      const tKept = tTop ? !keysSet.has(tTop) : true;
-      return sKept && tKept;
-    });
+          rel.source[0]?.type === 'property' ? String(rel.source[0].key) : null;
+        const tTop =
+          rel.target[0]?.type === 'property' ? String(rel.target[0].key) : null;
+        const sKept = sTop ? !keysSet.has(sTop) : true;
+        const tKept = tTop ? !keysSet.has(tTop) : true;
+        return sKept && tKept;
+      },
+    );
     // Same projection rule as pick: drop rooted edges whose provider was
     // omitted so focused runs stay self-contained.
     relationships = relationships.filter(rel =>
@@ -435,6 +466,7 @@ function createOmitWrapper() {
     for (const k of Object.keys(schema as object))
       if (!set.has(k)) filtered[k] = (schema as Record<string, unknown>)[k];
     (rule as unknown as { __schema: unknown }).__schema = filtered;
+    snapshotChainBaseline(rule);
     return rule;
   };
 }
@@ -444,7 +476,7 @@ const schemaModifiers = {
   partial: createPartialWrapper(),
   pick: createPickWrapper(),
   omit: createOmitWrapper(),
-} as any;
+};
 
 // Explicitly adapt the base schema evaluators that need __schema exposure
 const schemaEvaluators = adaptDynamicRules<
@@ -474,16 +506,17 @@ const schemaAttacher =
 
     /** @deferred v2 — effect:'revalidate' deferred, only 'invalidate' supported in V1 */
     for (const rel of relationships) {
-      if ((rel as any).effect !== 'invalidate') {
+      if (rel.effect !== 'invalidate') {
         throw new Error(
-          `effect:'${(rel as any).effect}' deferred to v2 — only 'invalidate' supported in V1`,
+          `effect:'${rel.effect}' deferred to v2 — only 'invalidate' supported in V1`,
         );
       }
     }
 
     const rule = ruleFn(schema);
     rule.__schema = schema;
-    (rule as any)[RESOLVED_RELATIONSHIPS] = relationships;
+    slotsOf(rule)[RESOLVED_RELATIONSHIPS] = relationships;
+    snapshotChainBaseline(rule);
     return rule;
   };
 
@@ -491,13 +524,16 @@ const schemaAttacher =
 const schemaRulesWithArrayChaining = {
   ...schemaModifiers,
 
-  isArrayOf: <T>(...rules: any[]): ArrayRuleInstance<T> => {
-    const rule = addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
-      const result = ctx.run({ value }, () =>
-        schemaRules.isArrayOf(value, ...rules),
-      );
-      return RuleRunReturn.create(result, value);
-    });
+  isArrayOf: <T>(...rules: unknown[]): ArrayRuleInstance<T> => {
+    const rule = addToChain<ArrayRuleInstance<T>>(
+      arrayRules,
+      (value: unknown): RuleRunReturn<unknown> => {
+        const result = ctx.run({ value }, () =>
+          schemaRules.isArrayOf(value as unknown[], ...rules),
+        );
+        return RuleRunReturn.create(result, value);
+      },
+    );
     // Store the single member rule (graph-carrying or primitive) so
     // per-member execution can reach it; describe() rebasing skips
     // members without resolved relationships, so output is unchanged.
@@ -510,63 +546,77 @@ const schemaRulesWithArrayChaining = {
     } else if (rules.length > 1) {
       // Multi-rule arrays accept an element matching ANY member rule (union
       // semantics), so no single member owns the item graph. Store every
-      // graph-carrying member: describe() rebases the union of their edges
-      // under the same $item binding. This over-approximates (an edge fires
-      // for indices whose element matched a different member), but that is
-      // the invalidation-safe direction — and never a silent empty graph.
-      const schemas = rules.filter(isItemSchemaLike);
+      // object member — graph-carrying or primitive — so per-member
+      // execution (e.g. suite.changed() projection) can reach primitive
+      // members too. describe() output is unchanged: members without
+      // resolved relationships simply contribute no edges. This
+      // over-approximates (an edge fires for indices whose element matched
+      // a different member), but that is the invalidation-safe direction —
+      // and never a silent empty graph.
+      const schemas = rules.filter(isObject);
       if (schemas.length > 0) {
         slots[ITEM_SCHEMA] = schemas;
         slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
       }
     }
+    snapshotChainBaseline(rule);
     return rule;
   },
   lazy: lazyRule,
 
-  list: <T>(...rules: any[]): ArrayRuleInstance<T> => {
-    const rule = addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
-      const result = ctx.run({ value }, () =>
-        schemaRules.isArrayOf(value, ...rules),
-      );
-      return RuleRunReturn.create(result, value);
-    });
+  list: <T>(...rules: unknown[]): ArrayRuleInstance<T> => {
+    const rule = addToChain<ArrayRuleInstance<T>>(
+      arrayRules,
+      (value: unknown): RuleRunReturn<unknown> => {
+        const result = ctx.run({ value }, () =>
+          schemaRules.isArrayOf(value as unknown[], ...rules),
+        );
+        return RuleRunReturn.create(result, value);
+      },
+    );
     const slots = rule as unknown as Record<symbol, unknown>;
     if (rules.length === 1 && isObject(rules[0])) {
       slots[ITEM_SCHEMA] = rules[0];
       slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
     } else if (rules.length > 1) {
-      // Same union semantics as isArrayOf above: keep every graph-carrying
-      // member so describe() rebases the union instead of dropping the graph.
-      const schemas = rules.filter(isItemSchemaLike);
+      // Same union semantics as isArrayOf above: keep every object member
+      // (graph-carrying or primitive) so per-member execution reaches
+      // primitive members too; describe() output is unchanged.
+      const schemas = rules.filter(isObject);
       if (schemas.length > 0) {
         slots[ITEM_SCHEMA] = schemas;
         slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
       }
     }
+    snapshotChainBaseline(rule);
     return rule;
   },
   loose: schemaAttacher(schemaEvaluators.loose),
   record: createRecordWrapper(),
   shape: schemaAttacher(schemaEvaluators.shape),
-  tuple: (...rules: any[]) => {
-    const rule = addToChain(arrayRules, (value: any) => {
-      const result = ctx.run({ value }, () =>
-        schemaRules.tuple(value, ...rules),
-      );
-      return RuleRunReturn.create(result, value);
-    });
+  tuple: (...rules: unknown[]): RuleInstance<unknown, unknown[]> => {
+    const rule = addToChain(
+      arrayRules,
+      (value: unknown): RuleRunReturn<unknown> => {
+        const result = ctx.run({ value }, () =>
+          schemaRules.tuple(value, ...rules),
+        );
+        return RuleRunReturn.create(result, value);
+      },
+    );
     // Tuple elements are positional, but relationships inside an element are
-    // still same-item edges. Collect every graph-carrying element so
-    // describe() rebases the union under the $item binding (same union
-    // semantics as multi-rule arrays above — over-approximating, never empty).
-    const schemas = rules.filter(isItemSchemaLike);
+    // still same-item edges. Collect every object element — graph-carrying
+    // or primitive — so per-member execution reaches primitive positions
+    // too; describe() output is unchanged (members without resolved
+    // relationships contribute no edges).
+    const schemas = rules.filter(isObject);
     if (schemas.length > 0) {
       // No ITEM_CONTAINER here: tuple members are positional, and vest
       // readers discriminate list slots with Array.isArray without ever
       // consulting the kind for them — so an absent kind cannot misroute.
       (rule as unknown as Record<symbol, unknown>)[ITEM_SCHEMA] = schemas;
     }
+    snapshotChainBaseline(rule);
     return rule;
   },
 };

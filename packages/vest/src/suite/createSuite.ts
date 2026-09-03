@@ -1,8 +1,17 @@
 /* eslint-disable complexity, max-lines-per-function, max-statements -- suite finalization */
-import { CB, makeResult, Result } from 'vest-utils';
+import {
+  CB,
+  hasOwnProperty,
+  isNullish,
+  isObject,
+  makeResult,
+  Result,
+} from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 import { EnforceSchemaError } from '../../../n4s/src/errors/EnforceSchemaError';
 import { ITEM_SCHEMA } from '../../../n4s/src/schema/dependencyResolver';
+import type { SchemaPath } from '../../../n4s/src/schema/SchemaPath';
+import type { InternalRelationship } from '../../../n4s/src/schema/SchemaRelationship';
 
 import { useCreateVestState } from '../core/Runtime';
 import { useInitVestBus } from '../core/VestBus/VestBus';
@@ -98,101 +107,132 @@ function createSuite<
   });
 }
 
-function validateDeferredRoots(schema: any): void {
+function slotsOf(value: unknown): Record<PropertyKey, unknown> {
+  return value as unknown as Record<PropertyKey, unknown>;
+}
+
+function nestedShapeOf(rule: unknown): Record<PropertyKey, unknown> {
+  const child: unknown = isObject(rule) ? slotsOf(rule).__schema : undefined;
+  if (isObject(child)) return slotsOf(child);
+  const item: unknown = isObject(rule) ? slotsOf(rule)[ITEM_SCHEMA] : undefined;
+  const itemChild: unknown = isObject(item)
+    ? slotsOf(item).__schema
+    : undefined;
+  if (isObject(itemChild)) return slotsOf(itemChild);
+  return {};
+}
+
+function lastPropertyKeyOf(path: SchemaPath): string {
+  const last: SchemaPath[number] | undefined = path[path.length - 1];
+  if (last !== undefined && last.type === 'property') return String(last.key);
+  return 'unknown';
+}
+
+function validateDeferredRoots(schema: unknown): void {
   try {
     const RESOLVED = Symbol.for('vest:resolvedRelationships');
     const ITEM = ITEM_SCHEMA;
-    const relationships: Array<Record<string, any>> = [];
+    const relationships: InternalRelationship[] = [];
     const seen = new WeakSet<object>();
-    const collect = (node: any): void => {
+    const collect = (node: unknown): void => {
       if (!node || typeof node !== 'object' || seen.has(node)) return;
       seen.add(node);
-      const rels = (node as any)[RESOLVED] as
-        | Array<Record<string, any>>
+      const rels = slotsOf(node)[RESOLVED] as
+        | InternalRelationship[]
         | undefined;
       if (Array.isArray(rels) && rels.length) relationships.push(...rels);
-      const inner = (node as any).__schema;
-      if (inner && typeof inner === 'object') {
+      const inner: unknown = slotsOf(node).__schema;
+      if (!isNullish(inner) && typeof inner === 'object') {
         if (Array.isArray(inner)) {
-          for (const v of inner) collect(v);
+          for (const v of inner as unknown[]) collect(v);
         } else {
-          for (const v of Object.values(inner as Record<string, unknown>))
-            collect(v as any);
+          for (const v of Object.values(slotsOf(inner))) collect(v);
           collect(inner);
         }
       }
-      const item = (node as any)[ITEM];
+      const item: unknown = slotsOf(node)[ITEM];
       if (item) collect(item);
       // Plain shape object (no __schema/RESOLVED wrapper)
       if (
-        !(node as any).__schema &&
-        !(node as any)[RESOLVED] &&
-        !(node as any)[ITEM]
+        !slotsOf(node).__schema &&
+        !slotsOf(node)[RESOLVED] &&
+        !slotsOf(node)[ITEM]
       ) {
         // Check if this looks like a plain shape record
-        const vals = Object.values(node as Record<string, unknown>);
+        const vals = Object.values(slotsOf(node));
         if (
           vals.length &&
-          vals.some(v => v && typeof v === 'object' && (v as any).__schema)
+          vals.some(
+            (v: unknown): boolean =>
+              !isNullish(v) &&
+              typeof v === 'object' &&
+              slotsOf(v).__schema !== undefined,
+          )
         ) {
-          for (const v of vals) collect(v as any);
+          for (const v of vals) collect(v);
         } else if (
           vals.length &&
-          vals.some(v => v && typeof v === 'object' && (v as any)[RESOLVED])
+          vals.some(
+            (v: unknown): boolean =>
+              !isNullish(v) &&
+              typeof v === 'object' &&
+              slotsOf(v)[RESOLVED] !== undefined,
+          )
         ) {
-          for (const v of vals) collect(v as any);
+          for (const v of vals) collect(v);
         }
       }
     };
     collect(schema);
     // Also collect from schema.__schema directly if schema is a RuleInstance wrapping a plain shape
-    if ((schema as any).__schema) collect((schema as any).__schema);
+    const schemaInner: unknown = slotsOf(schema).__schema;
+    if (schemaInner) collect(schemaInner);
     if (!relationships.length) return;
     // Also consider top-level keys from describe dependencies target
     for (const rel of relationships) {
-      const isRootSource = (rel as any).__isRootSource === true;
-      const isRootTarget = (rel as any).__isRootTarget === true;
+      const isRootSource = rel.__isRootSource === true;
+      const isRootTarget = rel.__isRootTarget === true;
       if (!isRootSource && !isRootTarget) continue;
       // For root source, check full path exists in final schema (not just top-level)
       // to catch missing descendant like $.root.account.missing
 
-      const checkPath = (path: any[], fieldForMsg: string): void => {
-        let current: any = (schema as any).__schema || {};
-        path.forEach((seg: any, i: number) => {
+      const checkPath = (path: SchemaPath, fieldForMsg: string): void => {
+        const rootShape: unknown = slotsOf(schema).__schema;
+        let current: Record<PropertyKey, unknown> = isObject(rootShape)
+          ? slotsOf(rootShape)
+          : {};
+        path.forEach((seg: SchemaPath[number], i: number): void => {
           if (seg.type !== 'property') return;
           const key = String(seg.key);
-          if (!Object.prototype.hasOwnProperty.call(current, key)) {
+          if (!hasOwnProperty(current, key)) {
             throw new EnforceSchemaError(
               `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${key}"`,
             );
           }
-          const rule: any = current[key];
+          const rule: unknown = current[key];
           if (i < path.length - 1) {
-            if (rule?.__schema) current = rule.__schema;
-            else if (rule?.[ITEM_SCHEMA]) {
-              const item: any = rule[ITEM_SCHEMA];
-              current = item?.__schema ?? {};
-            } else current = {};
+            current = nestedShapeOf(rule);
           }
         });
       };
       const targetField =
         Array.isArray(rel.target) && rel.target.length
-          ? String((rel.target[rel.target.length - 1] as any)?.key ?? 'unknown')
+          ? lastPropertyKeyOf(rel.target)
           : 'unknown';
       const sourceField =
         Array.isArray(rel.source) && rel.source.length
-          ? String((rel.source[rel.source.length - 1] as any)?.key ?? 'unknown')
+          ? lastPropertyKeyOf(rel.source)
           : 'unknown';
       if (isRootSource) {
-        checkPath(rel.source as any[], targetField);
+        checkPath(rel.source, targetField);
       }
       if (isRootTarget) {
-        checkPath(rel.target as any[], sourceField);
+        checkPath(rel.target, sourceField);
       }
     }
   } catch (e) {
-    if ((e as any)?.name === 'EnforceSchemaError') throw e;
+    if (isObject(e) && (e as { name?: unknown }).name === 'EnforceSchemaError')
+      throw e;
     // Non-enforce errors (e.g., describe not available) are ignored
   }
 }

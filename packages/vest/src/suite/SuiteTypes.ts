@@ -143,7 +143,10 @@ export type SuiteModifiers<
 > = {
   only?: FieldExclusion<F>;
   onlyGroup?: G | G[];
-  skip?: FieldExclusion<F>;
+  // boolean is legal: skip(true) skips everything (used by changed([]) to
+  // carry zero-field focus to the runtime; the schema side resolves it via
+  // an empty pick before boolean skip can reach name matching).
+  skip?: FieldExclusion<F> | boolean;
   skipGroup?: G | G[];
   /** @internal — deferred changed() expansion */
   __changed?: string[];

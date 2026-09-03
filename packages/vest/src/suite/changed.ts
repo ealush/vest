@@ -5,9 +5,13 @@ import type {
   SchemaRelationship,
 } from 'n4s';
 import { isPropertySegment } from 'n4s';
-import { isArray, isObject } from 'vest-utils';
+import { isArray, isNullish, isObject } from 'vest-utils';
 
 const RESOLVED_RELATIONSHIPS = Symbol.for('vest:resolvedRelationships');
+
+function slotsOf(value: unknown): Record<PropertyKey, unknown> {
+  return value as unknown as Record<PropertyKey, unknown>;
+}
 
 /** @deferred v2 — suite.changed AbortSignal support deferred */
 export type ChangedOptions = {
@@ -33,7 +37,7 @@ export function parseFieldName(field: string): SchemaPath {
   const segs: SchemaPath[number][] = [];
   for (const part of parts) {
     // Numeric segment after an array property is considered an item
-    // We treat any numeric string as item; property named '123' would be
+    // We treat every numeric string as item; property named '123' would be
     // ambiguous but rare and acceptable for changed() matching.
     if (/^\d+$/.test(part)) {
       segs.push({ type: 'item', binding: part });
@@ -75,7 +79,7 @@ export function pathToFieldName(path: SchemaPath): string {
 /**
  * Checks if a concrete field path matches a pattern path where item bindings are wildcards.
  * Pattern may have item with binding like 'travelers.$item', concrete has item with '1'.
- * We treat any item segment in pattern as wildcard matching any item segment in concrete.
+ * We treat every item segment in pattern as wildcard matching every item segment in concrete.
  */
 // eslint-disable-next-line complexity
 function pathMatchesPattern(
@@ -96,7 +100,7 @@ function pathMatchesPattern(
       // item segment: pattern binding is wildcard (e.g., 'travelers.$item'), concrete binding is index
       // Consider match if both are items, regardless of binding value
       // For stricter, we could check that pattern binding's prefix matches concrete's array name,
-      // but for now any item matches any item at same position
+      // but for now every item matches every item at same position
       continue;
     }
   }
@@ -162,7 +166,7 @@ function topLevelKeyOf(path: SchemaPath): string | null {
 /**
  * Resolves a relationship target's item segments to concrete indices taken
  * from the concrete changed source at the same positions (same-item).
- * Returns null when any target item has no corresponding concrete index —
+ * Returns null when some target item has no corresponding concrete index —
  * callers then expand from run data or fall back to the top-level key
  * instead of emitting internal '$item' bindings.
  *
@@ -262,7 +266,7 @@ function addUnresolvedArrayTarget(
   data: unknown,
   affectedSet: Set<string>,
 ): void {
-  if (data === undefined || data === null) {
+  if (isNullish(data)) {
     addTopLevelFallback(target, affectedSet);
     return;
   }
@@ -285,8 +289,8 @@ function addTopLevelFallback(
 // eslint-disable-next-line complexity
 export function getAffectedFields(
   changedFields: string | string[],
-  schema: any,
-  data?: any,
+  schema: unknown,
+  data?: unknown,
 ): string[] {
   const changedArray = Array.isArray(changedFields)
     ? changedFields
@@ -294,7 +298,9 @@ export function getAffectedFields(
   if (changedArray.length === 0) return [];
 
   const relationships: SchemaRelationship[] =
-    (schema as any)?.[RESOLVED_RELATIONSHIPS] || [];
+    (slotsOf(schema)?.[RESOLVED_RELATIONSHIPS] as
+      | SchemaRelationship[]
+      | undefined) || [];
 
   if (relationships.length === 0) {
     // No graph, just return changed fields themselves (like only)
@@ -350,18 +356,31 @@ function collectRelationshipTargets(
  * -> ['travelers.0.visa', 'travelers.1.visa', 'travelers.2.visa']
  * Nested: [groups, $item, members, $item, email] -> all group/member combos.
  */
-function expandArrayTargets(targetPath: SchemaPath, data: any): string[] {
+function expandArrayTargets(targetPath: SchemaPath, data: unknown): string[] {
   const results: string[] = [];
-  // eslint-disable-next-line complexity -- recursive DFS for nested $item expansion
-  function dfs(pathIdx: number, dataNode: any, built: SchemaPath): void {
+  function dfs(pathIdx: number, dataNode: unknown, built: SchemaPath): void {
     if (pathIdx >= targetPath.length) {
       results.push(pathToFieldName(built as SchemaPath));
       return;
     }
     const seg = targetPath[pathIdx];
     if (isPropertySegment(seg)) {
-      dfs(pathIdx + 1, dataNode?.[seg.key], [...built, seg] as SchemaPath);
-    } else if (isArray(dataNode)) {
+      const child: unknown = isObject(dataNode)
+        ? slotsOf(dataNode)[seg.key]
+        : undefined;
+      dfs(pathIdx + 1, child, [...built, seg] as SchemaPath);
+    } else {
+      dfsItemSegment(pathIdx, dataNode, built);
+    }
+    // Without backing data the index cannot be concretized: skip the
+    // branch instead of leaking internal '$item' bindings.
+  }
+  function dfsItemSegment(
+    pathIdx: number,
+    dataNode: unknown,
+    built: SchemaPath,
+  ): void {
+    if (isArray(dataNode)) {
       // item segment over an array — expand every index.
       for (let i = 0; i < dataNode.length; i++) {
         dfs(pathIdx + 1, dataNode[i], [
@@ -379,8 +398,6 @@ function expandArrayTargets(targetPath: SchemaPath, data: any): string[] {
         ] as SchemaPath);
       }
     }
-    // Without backing data the index cannot be concretized: skip the
-    // branch instead of leaking internal '$item' bindings.
   }
   dfs(0, data, [] as unknown as SchemaPath);
   if (results.length) return results;

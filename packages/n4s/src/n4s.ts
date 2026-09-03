@@ -75,6 +75,20 @@ export { FIELD } from './schema/scopeProxy';
  */
 export { ITEM_SCHEMA, ITEM_CONTAINER } from './schema/dependencyResolver';
 export type { ItemContainerKind } from './schema/dependencyResolver';
+export {
+  CHAIN_INFO,
+  CHAIN_BASELINE,
+  PARTIAL_LIKE,
+  OPTIONAL_RULE,
+} from './schema/dependencyResolver';
+export type { ChainInfo } from './schema/dependencyResolver';
+export type { ChainBaseline } from './schema/dependencyResolver';
+export {
+  chainBaselineMatches,
+  hasChainBaseline,
+} from './schema/dependencyResolver';
+export type { ScopeHandle } from './utils/RuleInstance';
+export type { SchemaMemberRule } from './rules/schemaRules/schemaRulesLazyTypes';
 
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;

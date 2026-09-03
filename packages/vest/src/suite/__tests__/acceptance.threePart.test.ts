@@ -1,5 +1,7 @@
 import { enforce } from 'n4s';
+import type { ScopeHandle } from 'n4s';
 import { describe, it, expect } from 'vitest';
+import { invariant, isArray } from 'vest-utils';
 
 import {
   create,
@@ -12,26 +14,32 @@ import {
 } from '../../vest';
 import { each } from '../../isolates/each';
 
-function createLog() {
+type SuiteLog = {
+  record: (field: string) => void;
+  reset: () => void;
+  get: () => string[];
+};
+
+function createLog(): SuiteLog {
   const fields: string[] = [];
   return {
-    record(f: string) {
+    record(f: string): void {
       fields.push(f);
     },
-    reset() {
+    reset(): void {
       fields.length = 0;
     },
-    get() {
+    get(): string[] {
       return [...fields];
     },
   };
 }
 
 // 1. Sanity / control tests
-describe('Acceptance — Sanity', () => {
-  it('runs an ordinary suite without relationships', async () => {
-    const suite = create((data: any) => {
-      test('password', 'Too short', () => {
+describe('Acceptance — Sanity', (): void => {
+  it('runs an ordinary suite without relationships', async (): Promise<void> => {
+    const suite = create((data: { password: string }): void => {
+      test('password', 'Too short', (): void => {
         enforce(data.password).longerThanOrEquals(8);
       });
     });
@@ -39,12 +47,16 @@ describe('Acceptance — Sanity', () => {
     expect(result.getErrors('password')).toEqual(['Too short']);
   });
 
-  it('attaching a schema does not change full-run behavior', async () => {
-    const cb = (data: any) => {
-      test('password', 'Too short', () => {
+  it('attaching a schema does not change full-run behavior', async (): Promise<void> => {
+    const cb = (data: {
+      password: string;
+      email?: string;
+      confirmPassword?: string;
+    }): void => {
+      test('password', 'Too short', (): void => {
         enforce(data.password).longerThanOrEquals(8);
       });
-      test('email', 'Required', () => {
+      test('email', 'Required', (): void => {
         enforce(data.email).isNotBlank();
       });
     };
@@ -68,7 +80,7 @@ describe('Acceptance — Sanity', () => {
     expect(r3.getErrors('password')).toEqual(r4.getErrors('password'));
   });
 
-  it('a schema with dependencies behaves identically under run()', async () => {
+  it('a schema with dependencies behaves identically under run()', async (): Promise<void> => {
     const schemaWith = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
@@ -79,13 +91,16 @@ describe('Acceptance — Sanity', () => {
     });
     const logWith = createLog();
     const logWithout = createLog();
-    const createSuite = (schema: any, log: any) =>
-      create((data: any) => {
-        test('password', () => {
+    const createSuite = (
+      schema: typeof schemaWith | typeof schemaWithout,
+      log: SuiteLog,
+    ) =>
+      create((data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
           log.record('password');
           enforce(data.password).isNotBlank();
         });
-        test('confirmPassword', () => {
+        test('confirmPassword', (): void => {
           log.record('confirmPassword');
           enforce(data.confirmPassword).equals(data.password);
         });
@@ -103,23 +118,26 @@ describe('Acceptance — Sanity', () => {
 });
 
 // 2. Direct proof that the feature succeeds (before/after controls)
-describe('Acceptance — Feature success (before/after)', () => {
-  it('without relationship, changed() does not know about sibling (problem)', async () => {
+describe('Acceptance — Feature success (before/after)', (): void => {
+  it('without relationship, changed() does not know about sibling (problem)', async (): Promise<void> => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString(),
     });
     const log = createLog();
-    const suite = create((data: any) => {
-      test('password', () => {
-        log.record('password');
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        log.record('confirmPassword');
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
+    const suite = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
+          log.record('password');
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          log.record('confirmPassword');
+          enforce(data.confirmPassword).equals(data.password);
+        });
+      },
+      schema,
+    );
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     log.reset();
     const result = await suite
@@ -129,22 +147,25 @@ describe('Acceptance — Feature success (before/after)', () => {
     expect(result.hasErrors('confirmPassword')).toBe(false); // stale
   });
 
-  it('with relationship, changed() does know about sibling (solution)', async () => {
+  it('with relationship, changed() does know about sibling (solution)', async (): Promise<void> => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
     const log = createLog();
-    const suite = create((data: any) => {
-      test('password', () => {
-        log.record('password');
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        log.record('confirmPassword');
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
+    const suite = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
+          log.record('password');
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          log.record('confirmPassword');
+          enforce(data.confirmPassword).equals(data.password);
+        });
+      },
+      schema,
+    );
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     log.reset();
     const result = await suite
@@ -154,19 +175,22 @@ describe('Acceptance — Feature success (before/after)', () => {
     expect(result.hasErrors('confirmPassword')).toBe(true);
   });
 
-  it('fixing dependent clears result', async () => {
+  it('fixing dependent clears result', async (): Promise<void> => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
-    const suite = create((data: any) => {
-      test('password', () => {
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
+    const suite = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          enforce(data.confirmPassword).equals(data.password);
+        });
+      },
+      schema,
+    );
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     let result = await suite
       .changed('password')
@@ -178,7 +202,7 @@ describe('Acceptance — Feature success (before/after)', () => {
     expect(result.hasErrors('confirmPassword')).toBe(false);
   });
 
-  it('nested dependency success before/after', async () => {
+  it('nested dependency success before/after', async (): Promise<void> => {
     const schemaWithout = enforce.shape({
       profile: enforce.shape({
         country: enforce.isString(),
@@ -191,12 +215,12 @@ describe('Acceptance — Feature success (before/after)', () => {
         state: enforce.isString().dependsOn($ => $.country),
       }),
     });
-    const makeSuite = (schema: any) =>
-      create((data: any) => {
-        test('profile.country', () => {
+    const makeSuite = (schema: typeof schemaWithout | typeof schemaWith) =>
+      create((data: { profile: { country: string; state: string } }): void => {
+        test('profile.country', (): void => {
           enforce(data.profile.country).isNotBlank();
         });
-        test('profile.state', () => {
+        test('profile.state', (): void => {
           if (data.profile.country === 'US')
             enforce(data.profile.state).isNotBlank();
         });
@@ -218,7 +242,7 @@ describe('Acceptance — Feature success (before/after)', () => {
     expect(rWithHasError).toBe(true);
   });
 
-  it('async success — without relationship stale, with relationship correct', async () => {
+  it('async success — without relationship stale, with relationship correct', async (): Promise<void> => {
     const schemaWithout = enforce.shape({
       organizationId: enforce.isString(),
       username: enforce.isString(),
@@ -227,9 +251,9 @@ describe('Acceptance — Feature success (before/after)', () => {
       organizationId: enforce.isString(),
       username: enforce.isString().dependsOn($ => $.organizationId),
     });
-    const makeSuite = (schema: any) =>
-      create((data: any) => {
-        test('username', async () => {
+    const makeSuite = (schema: typeof schemaWithout | typeof schemaWith) =>
+      create((data: { organizationId: string; username: string }): void => {
+        test('username', async (): Promise<void> => {
           await Promise.resolve(
             data.username !== 'taken' || data.organizationId === 'A',
           );
@@ -255,20 +279,23 @@ describe('Acceptance — Feature success (before/after)', () => {
 });
 
 // 3. No-regression
-describe('Acceptance — No regression', () => {
-  it('run() unchanged', async () => {
+describe('Acceptance — No regression', (): void => {
+  it('run() unchanged', async (): Promise<void> => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
-    const suite = create((data: any) => {
-      test('password', () => {
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
+    const suite = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          enforce(data.confirmPassword).equals(data.password);
+        });
+      },
+      schema,
+    );
     const result = await suite.run({
       password: 'abcdefgh',
       confirmPassword: 'xyz',
@@ -276,37 +303,48 @@ describe('Acceptance — No regression', () => {
     expect(result.hasErrors('confirmPassword')).toBe(true);
     // Should run complete suite, not just changed
     const log = createLog();
-    const suite2 = create((data: any) => {
-      test('a', () => {
-        log.record('a');
-        enforce(data.a).isNotBlank();
-      });
-      test('b', () => {
-        log.record('b');
-        enforce(data.b).isNotBlank();
-      });
-    }, schema);
+    const suite2 = create(
+      (data: {
+        password: string;
+        confirmPassword: string;
+        a?: string;
+        b?: string;
+      }): void => {
+        test('a', (): void => {
+          log.record('a');
+          enforce(data.a).isNotBlank();
+        });
+        test('b', (): void => {
+          log.record('b');
+          enforce(data.b).isNotBlank();
+        });
+      },
+      schema,
+    );
     // @ts-expect-error - acceptance probe: data outside the attached schema
     await suite2.run({ a: '1', b: '2' });
     expect(log.get()).toEqual(['a', 'b']);
   });
 
-  it('only() unchanged — only exact, changed is dependency-aware', async () => {
+  it('only() unchanged — only exact, changed is dependency-aware', async (): Promise<void> => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
     const log = createLog();
-    const suite = create((data: any) => {
-      test('password', () => {
-        log.record('password');
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        log.record('confirmPassword');
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
+    const suite = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
+          log.record('password');
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          log.record('confirmPassword');
+          enforce(data.confirmPassword).equals(data.password);
+        });
+      },
+      schema,
+    );
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     log.reset();
     await suite
@@ -320,16 +358,16 @@ describe('Acceptance — No regression', () => {
     expect(log.get()).toEqual(['password', 'confirmPassword']);
   });
 
-  it('focus() unchanged', async () => {
+  it('focus() unchanged', async (): Promise<void> => {
     const schema = enforce.shape({
       a: enforce.isString(),
       b: enforce.isString().dependsOn($ => $.a),
     });
-    const suite = create((data: any) => {
-      test('a', () => {
+    const suite = create((data: { a: string; b: string }): void => {
+      test('a', (): void => {
         enforce(data.a).isNotBlank();
       });
-      test('b', () => {
+      test('b', (): void => {
         enforce(data.b).isNotBlank();
       });
     }, schema);
@@ -342,19 +380,19 @@ describe('Acceptance — No regression', () => {
     expect(resultFull.hasErrors('b')).toBe(true);
   });
 
-  it('include() unchanged', async () => {
+  it('include() unchanged', async (): Promise<void> => {
     const schema = enforce.shape({
       a: enforce.isString(),
       b: enforce.isString().dependsOn($ => $.a),
     });
-    const suite = create((data: any) => {
-      test('a', () => {
+    const suite = create((data: { a: string; b: string; c?: string }): void => {
+      test('a', (): void => {
         enforce(data.a).isNotBlank();
       });
-      test('b', () => {
+      test('b', (): void => {
         enforce(data.b).isNotBlank();
       });
-      test('c', () => {
+      test('c', (): void => {
         enforce(data.c).isNotBlank();
       });
     }, schema);
@@ -369,13 +407,13 @@ describe('Acceptance — No regression', () => {
     expect(_r2.hasErrors('a')).toBe(true);
   });
 
-  it('skipWhen() unchanged — canonical sequence', async () => {
-    const suite = create((data: any) => {
-      test('a', () => {
+  it('skipWhen() unchanged — canonical sequence', async (): Promise<void> => {
+    const suite = create((data: { a: string; b: string }): void => {
+      test('a', (): void => {
         enforce(data.a).isNotBlank();
       });
-      skipWhen(data.b !== 'run', () => {
-        test('b', () => {
+      skipWhen(data.b !== 'run', (): void => {
+        test('b', (): void => {
           enforce(data.b).isNotBlank();
         });
       });
@@ -387,29 +425,32 @@ describe('Acceptance — No regression', () => {
       x: enforce.isString(),
       y: enforce.isString().dependsOn($ => $.x),
     });
-    const suiteWithSchema = create((data: any) => {
-      test('a', () => {
-        enforce(data.a).isNotBlank();
-      });
-      skipWhen(data.b !== 'run', () => {
-        test('b', () => {
-          enforce(data.b).isNotBlank();
+    const suiteWithSchema = create(
+      (data: { x: string; y: string; a?: string; b?: string }): void => {
+        test('a', (): void => {
+          enforce(data.a).isNotBlank();
         });
-      });
-    }, schema);
+        skipWhen(data.b !== 'run', (): void => {
+          test('b', (): void => {
+            enforce(data.b).isNotBlank();
+          });
+        });
+      },
+      schema,
+    );
     // @ts-expect-error - acceptance probe: data outside the attached schema
     const r3 = await suiteWithSchema.run({ a: '1', b: '' });
     // @ts-expect-error - acceptance probe: 'b' is a tested field outside the schema
     expect(r3.hasErrors('b')).toBe(false);
   });
 
-  it('omitWhen() unchanged', async () => {
-    const suite = create((data: any) => {
-      test('a', () => {
+  it('omitWhen() unchanged', async (): Promise<void> => {
+    const suite = create((data: { a: string; b: string }): void => {
+      test('a', (): void => {
         enforce(data.a).isNotBlank();
       });
-      omitWhen(data.b === 'omit', () => {
-        test('b', () => {
+      omitWhen(data.b === 'omit', (): void => {
+        test('b', (): void => {
           enforce(data.b).isNotBlank();
         });
       });
@@ -422,10 +463,10 @@ describe('Acceptance — No regression', () => {
     expect(_r2.hasErrors('b')).toBe(false);
   });
 
-  it.skip('optional() unchanged — TODO', async () => {
-    const suite = create((data: any) => {
+  it.skip('optional() unchanged — TODO', async (): Promise<void> => {
+    const suite = create((data: { a: string }): void => {
       optional('a');
-      test('a', () => {
+      test('a', (): void => {
         enforce(data.a).isNotBlank();
       });
     });
@@ -433,13 +474,13 @@ describe('Acceptance — No regression', () => {
     expect(r1.isValid()).toBe(true); // optional empty is valid
   });
 
-  it.skip('warn() unchanged — TODO', async () => {
-    const suite = create((data: any) => {
-      test('a', () => {
+  it.skip('warn() unchanged — TODO', async (): Promise<void> => {
+    const suite = create((data: { a: string; b: string }): void => {
+      test('a', (): void => {
         enforce(data.a).isNotBlank();
       });
       warn();
-      test('b', () => {
+      test('b', (): void => {
         enforce(data.b).isNotBlank();
       });
     });
@@ -449,15 +490,15 @@ describe('Acceptance — No regression', () => {
     expect(r1.hasErrors('b')).toBe(false);
   });
 
-  it('group() unchanged', async () => {
-    const suite = create((data: any) => {
-      group('g1', () => {
-        test('a', () => {
+  it('group() unchanged', async (): Promise<void> => {
+    const suite = create((data: { a: string; b: string }): void => {
+      group('g1', (): void => {
+        test('a', (): void => {
           enforce(data.a).isNotBlank();
         });
       });
-      group('g2', () => {
-        test('b', () => {
+      group('g2', (): void => {
+        test('b', (): void => {
           enforce(data.b).isNotBlank();
         });
       });
@@ -469,18 +510,21 @@ describe('Acceptance — No regression', () => {
       x: enforce.isString(),
       y: enforce.isString().dependsOn($ => $.x),
     });
-    const suiteWithSchema = create((data: any) => {
-      group('g1', () => {
-        test('a', () => {
-          enforce(data.a).isNotBlank();
+    const suiteWithSchema = create(
+      (data: { x: string; y: string; a?: string; b?: string }): void => {
+        group('g1', (): void => {
+          test('a', (): void => {
+            enforce(data.a).isNotBlank();
+          });
         });
-      });
-      group('g2', () => {
-        test('b', () => {
-          enforce(data.b).isNotBlank();
+        group('g2', (): void => {
+          test('b', (): void => {
+            enforce(data.b).isNotBlank();
+          });
         });
-      });
-    }, schema);
+      },
+      schema,
+    );
     // @ts-expect-error - acceptance probe: data outside the attached schema
     const _r2 = await suiteWithSchema.run({ a: '', b: '' });
     // @ts-expect-error - acceptance probe: 'a' is a tested field outside the schema
@@ -489,10 +533,10 @@ describe('Acceptance — No regression', () => {
     expect(_r2.hasErrors('b')).toBe(true);
   });
 
-  it('each() unchanged — no relationships', async () => {
-    const suite = create((data: any) => {
-      each(data.items, (item: any, index: number) => {
-        test(`items.${index}`, () => {
+  it('each() unchanged — no relationships', async (): Promise<void> => {
+    const suite = create((data: { items: string[] }): void => {
+      each(data.items, (item: string, index: number): void => {
+        test(`items.${index}`, (): void => {
           enforce(item).isNotBlank();
         });
       });
@@ -503,13 +547,17 @@ describe('Acceptance — No regression', () => {
       x: enforce.isString(),
       y: enforce.isString().dependsOn($ => $.x),
     });
-    const suiteWithSchema = create((data: any) => {
-      each(data.items, (item: any, index: number) => {
-        test(`items.${index}`, () => {
-          enforce(item).isNotBlank();
+    const suiteWithSchema = create(
+      (data: { x: string; y: string; items?: string[] }): void => {
+        invariant(isArray(data.items), 'Expected items to be an array');
+        each(data.items, (item: string, index: number): void => {
+          test(`items.${index}`, (): void => {
+            enforce(item).isNotBlank();
+          });
         });
-      });
-    }, schema);
+      },
+      schema,
+    );
     // @ts-expect-error - acceptance probe: data outside the attached schema
     const _r2 = await suiteWithSchema.run({ items: ['a', '', 'c'] });
     // @ts-expect-error - acceptance probe: 'items' is a tested field outside the schema
@@ -518,8 +566,8 @@ describe('Acceptance — No regression', () => {
 });
 
 // 4. Prove unrelated fields are truly unaffected
-describe('Acceptance — Unrelated unaffected', () => {
-  it('changed() does not execute unrelated work and does not lose unrelated state', async () => {
+describe('Acceptance — Unrelated unaffected', (): void => {
+  it('changed() does not execute unrelated work and does not lose unrelated state', async (): Promise<void> => {
     const schema = enforce.shape({
       email: enforce.isString(),
       password: enforce.isString(),
@@ -530,28 +578,36 @@ describe('Acceptance — Unrelated unaffected', () => {
       }),
     });
     const log = createLog();
-    const suite = create((data: any) => {
-      test('email', () => {
-        log.record('email');
-        enforce(data.email).isNotBlank();
-      });
-      test('password', () => {
-        log.record('password');
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        log.record('confirmPassword');
-        enforce(data.confirmPassword).equals(data.password);
-      });
-      test('profile.country', () => {
-        log.record('profile.country');
-        enforce(data.profile.country).isNotBlank();
-      });
-      test('profile.state', () => {
-        log.record('profile.state');
-        enforce(data.profile.state).isNotBlank();
-      });
-    }, schema);
+    const suite = create(
+      (data: {
+        email: string;
+        password: string;
+        confirmPassword: string;
+        profile: { country: string; state: string };
+      }): void => {
+        test('email', (): void => {
+          log.record('email');
+          enforce(data.email).isNotBlank();
+        });
+        test('password', (): void => {
+          log.record('password');
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          log.record('confirmPassword');
+          enforce(data.confirmPassword).equals(data.password);
+        });
+        test('profile.country', (): void => {
+          log.record('profile.country');
+          enforce(data.profile.country).isNotBlank();
+        });
+        test('profile.state', (): void => {
+          log.record('profile.state');
+          enforce(data.profile.state).isNotBlank();
+        });
+      },
+      schema,
+    );
     await suite.run({
       email: 'a@b.com',
       password: 'abcdefgh',
@@ -576,8 +632,8 @@ describe('Acceptance — Unrelated unaffected', () => {
 });
 
 // 5. Performance sanity
-describe('Acceptance — Performance sanity', () => {
-  it('changed() is minimal and deduplicated', async () => {
+describe('Acceptance — Performance sanity', (): void => {
+  it('changed() is minimal and deduplicated', async (): Promise<void> => {
     const schema = enforce.shape({
       a: enforce.isString(),
       b: enforce.isString().dependsOn($ => $.a),
@@ -586,33 +642,46 @@ describe('Acceptance — Performance sanity', () => {
       e: enforce.isString(),
     });
     const counts: Record<string, number> = { a: 0, b: 0, c: 0, d: 0, e: 0 };
-    const suite = create((data: any) => {
-      test('a', () => {
-        counts.a++;
-        enforce(data.a).isNotBlank();
-      });
-      test('b', () => {
-        counts.b++;
-        enforce(data.b).isNotBlank();
-      });
-      test('c', () => {
-        counts.c++;
-        enforce(data.c).isNotBlank();
-      });
-      test('d', () => {
-        counts.d++;
-        enforce(data.d).isNotBlank();
-      });
-      test('e', () => {
-        counts.e++;
-        enforce(data.e).isNotBlank();
-      });
-    }, schema);
+    const suite = create(
+      (data: {
+        a: string;
+        b: string;
+        c: string;
+        d: string;
+        e: string;
+      }): void => {
+        test('a', (): void => {
+          counts.a++;
+          enforce(data.a).isNotBlank();
+        });
+        test('b', (): void => {
+          counts.b++;
+          enforce(data.b).isNotBlank();
+        });
+        test('c', (): void => {
+          counts.c++;
+          enforce(data.c).isNotBlank();
+        });
+        test('d', (): void => {
+          counts.d++;
+          enforce(data.d).isNotBlank();
+        });
+        test('e', (): void => {
+          counts.e++;
+          enforce(data.e).isNotBlank();
+        });
+      },
+      schema,
+    );
     await suite.run({ a: '1', b: '2', c: '3', d: '4', e: '5' });
-    Object.keys(counts).forEach(k => (counts[k as keyof typeof counts] = 0));
+    Object.keys(counts).forEach((k: string): void => {
+      counts[k as keyof typeof counts] = 0;
+    });
     await suite.changed('a').run({ a: 'x', b: '2', c: '3', d: '4', e: '5' });
     expect(counts).toEqual({ a: 1, b: 1, c: 0, d: 0, e: 0 });
-    Object.keys(counts).forEach(k => (counts[k as keyof typeof counts] = 0));
+    Object.keys(counts).forEach((k: string): void => {
+      counts[k as keyof typeof counts] = 0;
+    });
     await suite
       .changed(['a', 'b'])
       .run({ a: 'x', b: 'y', c: '3', d: '4', e: '5' });
@@ -622,23 +691,26 @@ describe('Acceptance — Performance sanity', () => {
 });
 
 // 6. Repeated calls don't accumulate garbage
-describe('Acceptance — Stateful lifecycle', () => {
-  it('repeated changed() does not accumulate garbage', async () => {
+describe('Acceptance — Stateful lifecycle', (): void => {
+  it('repeated changed() does not accumulate garbage', async (): Promise<void> => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
     const log = createLog();
-    const suite = create((data: any) => {
-      test('password', () => {
-        log.record('password');
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        log.record('confirmPassword');
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
+    const suite = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
+          log.record('password');
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          log.record('confirmPassword');
+          enforce(data.confirmPassword).equals(data.password);
+        });
+      },
+      schema,
+    );
     await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     for (let i = 0; i < 4; i++) {
       log.reset();
@@ -653,7 +725,7 @@ describe('Acceptance — Stateful lifecycle', () => {
     expect(log.get()).toEqual(['password', 'confirmPassword']);
   });
 
-  it('schema reuse does not mutate reusable schema', async () => {
+  it('schema reuse does not mutate reusable schema', async (): Promise<void> => {
     const addressSchema = enforce.shape({
       country: enforce.isString(),
       state: enforce.isString().dependsOn($ => $.country),
@@ -664,22 +736,28 @@ describe('Acceptance — Stateful lifecycle', () => {
     const schemaB = enforce.shape({
       shipping: addressSchema,
     });
-    const suiteA = create((data: any) => {
-      test('billing.country', () => {
-        enforce(data.billing.country).isNotBlank();
-      });
-      test('billing.state', () => {
-        enforce(data.billing.state).isNotBlank();
-      });
-    }, schemaA);
-    const suiteB = create((data: any) => {
-      test('shipping.country', () => {
-        enforce(data.shipping.country).isNotBlank();
-      });
-      test('shipping.state', () => {
-        enforce(data.shipping.state).isNotBlank();
-      });
-    }, schemaB);
+    const suiteA = create(
+      (data: { billing: { country: string; state: string } }): void => {
+        test('billing.country', (): void => {
+          enforce(data.billing.country).isNotBlank();
+        });
+        test('billing.state', (): void => {
+          enforce(data.billing.state).isNotBlank();
+        });
+      },
+      schemaA,
+    );
+    const suiteB = create(
+      (data: { shipping: { country: string; state: string } }): void => {
+        test('shipping.country', (): void => {
+          enforce(data.shipping.country).isNotBlank();
+        });
+        test('shipping.state', (): void => {
+          enforce(data.shipping.state).isNotBlank();
+        });
+      },
+      schemaB,
+    );
     await suiteA.run({ billing: { country: 'US', state: 'CA' } });
     await suiteB.run({ shipping: { country: 'US', state: 'NY' } });
     // Run A changed
@@ -688,16 +766,19 @@ describe('Acceptance — Stateful lifecycle', () => {
       .run({ billing: { country: 'CA', state: 'CA' } });
     // B should still be independent
     const logB = createLog();
-    const suiteB2 = create((data: any) => {
-      test('shipping.country', () => {
-        logB.record('shipping.country');
-        enforce(data.shipping.country).isNotBlank();
-      });
-      test('shipping.state', () => {
-        logB.record('shipping.state');
-        enforce(data.shipping.state).isNotBlank();
-      });
-    }, schemaB);
+    const suiteB2 = create(
+      (data: { shipping: { country: string; state: string } }): void => {
+        test('shipping.country', (): void => {
+          logB.record('shipping.country');
+          enforce(data.shipping.country).isNotBlank();
+        });
+        test('shipping.state', (): void => {
+          logB.record('shipping.state');
+          enforce(data.shipping.state).isNotBlank();
+        });
+      },
+      schemaB,
+    );
     await suiteB2.run({ shipping: { country: 'US', state: 'NY' } });
     logB.reset();
     await suiteB2
@@ -706,27 +787,33 @@ describe('Acceptance — Stateful lifecycle', () => {
     expect(logB.get()).toEqual(['shipping.country', 'shipping.state']);
   });
 
-  it('relationship metadata does not leak between suite instances', async () => {
+  it('relationship metadata does not leak between suite instances', async (): Promise<void> => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
-    const suiteA = create((data: any) => {
-      test('password', () => {
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
-    const suiteB = create((data: any) => {
-      test('password', () => {
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
+    const suiteA = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          enforce(data.confirmPassword).equals(data.password);
+        });
+      },
+      schema,
+    );
+    const suiteB = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          enforce(data.confirmPassword).equals(data.password);
+        });
+      },
+      schema,
+    );
     await suiteA.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     await suiteB.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
     await suiteA
@@ -738,41 +825,49 @@ describe('Acceptance — Stateful lifecycle', () => {
     expect(suiteB.get().hasErrors('confirmPassword')).toBe(false);
   });
 
-  it('invalid relationship fails before suite execution', async () => {
+  it('invalid relationship fails before suite execution', async (): Promise<void> => {
     let callbackInvoked = false;
-    expect(() => {
+    expect((): void => {
       enforce.shape({
         password: enforce.isString(),
-        confirmPassword: enforce.isString().dependsOn(($: any) => $.pasword),
+        confirmPassword: enforce
+          .isString()
+          .dependsOn(($: ScopeHandle): unknown => $.pasword),
       });
     }).toThrow(/unknown field.*pasword/i);
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString(),
     });
-    const suite = create((data: any) => {
-      callbackInvoked = true;
-      test('password', () => {
-        enforce(data.password).isNotBlank();
-      });
-    }, schema);
+    const suite = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        callbackInvoked = true;
+        test('password', (): void => {
+          enforce(data.password).isNotBlank();
+        });
+      },
+      schema,
+    );
     await suite.run({ password: '123', confirmPassword: '456' });
     expect(callbackInvoked).toBe(true);
   });
 
-  it('keeps cross-field validation correct across user interactions (docs-like)', async () => {
+  it('keeps cross-field validation correct across user interactions (docs-like)', async (): Promise<void> => {
     const schema = enforce.shape({
       password: enforce.isString(),
       confirmPassword: enforce.isString().dependsOn($ => $.password),
     });
-    const suite = create((data: any) => {
-      test('password', () => {
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
+    const suite = create(
+      (data: { password: string; confirmPassword: string }): void => {
+        test('password', (): void => {
+          enforce(data.password).isNotBlank();
+        });
+        test('confirmPassword', (): void => {
+          enforce(data.confirmPassword).equals(data.password);
+        });
+      },
+      schema,
+    );
     // Initial valid state.
     await suite.run({
       password: 'abcdefgh',

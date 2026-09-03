@@ -16,9 +16,12 @@ import type {
 import type { RuleInstance, ScopeHandle } from '../../utils/RuleInstance';
 import { cloneRelationship, groupDependencies } from '../../utils/RuleInstance';
 import {
+  CHAIN_BASELINE,
+  CHAIN_INFO,
   ITEM_SCHEMA,
   assertRuleRootedPathsValid,
 } from '../../schema/dependencyResolver';
+import type { ChainBaseline, ChainInfo } from '../../schema/dependencyResolver';
 
 import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
@@ -137,12 +140,27 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
 
   const add = (p: Predicate): T => {
     chain.push(p);
+    syncChainInfo();
     return proxy;
   };
 
   const prepend = (p: Predicate): T => {
     chain.unshift(p);
+    syncChainInfo();
     return proxy;
+  };
+
+  // Records the observable trace of chain depth. Combinators snapshot it
+  // as a baseline at construction; consumers bail when it moved.
+  const syncChainInfo = (): void => {
+    const slots = target as unknown as Record<symbol, unknown>;
+    const current = slots[CHAIN_INFO] as ChainInfo | undefined;
+    const next: ChainInfo = {
+      length: chain.length,
+      hasMessage: current?.hasMessage ?? false,
+    };
+    slots[CHAIN_INFO] = next;
+    (proxy as unknown as Record<symbol, unknown>)[CHAIN_INFO] = next;
   };
 
   const resolveMessage = (
@@ -215,6 +233,16 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   const message = (msg: Stringable): T => {
     if (msg) {
       lazyMessage = msg;
+      // A custom message changes failure text, so it dirties the chain
+      // trace exactly like an extra predicate would.
+      const slots = target as unknown as Record<symbol, unknown>;
+      const current = slots[CHAIN_INFO] as ChainInfo | undefined;
+      const next: ChainInfo = {
+        length: current?.length ?? chain.length,
+        hasMessage: true,
+      };
+      slots[CHAIN_INFO] = next;
+      (proxy as unknown as Record<symbol, unknown>)[CHAIN_INFO] = next;
     }
     return proxy;
   };
@@ -309,4 +337,35 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   proxyToTarget.set(proxy as unknown as object, target as object);
 
   return { add, proxy } as const;
+}
+
+/**
+ * Freezes the chain baseline a rebuild must reproduce. Fresh-validation
+ * combinators snapshot their own rule; delegating wrappers (optional)
+ * snapshot the inner rule they validate through and capture it, so drift
+ * checks recurse into post-wrap mutations of the wrapped rule.
+ */
+export function snapshotChainBaseline(target: unknown, source?: unknown): void {
+  const frozen = freezeChainInfo(source ?? target);
+  const baseline: ChainBaseline = isDelegatedWrap(source, target)
+    ? { ...frozen, inner: source }
+    : frozen;
+  (target as unknown as Record<symbol, unknown>)[CHAIN_BASELINE] = baseline;
+}
+
+function freezeChainInfo(rule: unknown): {
+  length: number;
+  hasMessage: boolean;
+} {
+  const current = (rule as unknown as Record<symbol, unknown>)[CHAIN_INFO] as
+    | ChainInfo
+    | undefined;
+  return {
+    length: current?.length ?? 0,
+    hasMessage: current?.hasMessage ?? false,
+  };
+}
+
+function isDelegatedWrap(source: unknown, target: unknown): boolean {
+  return source !== undefined && source !== target;
 }

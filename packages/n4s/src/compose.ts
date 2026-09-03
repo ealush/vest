@@ -105,7 +105,7 @@ export function compose<T = any>(
  * source's arrays; plain slots carry over by reference.
  */
 function forwardSchemaSlots<T>(
-  source: RuleInstance<any, [any]>,
+  source: RuleInstance<unknown, [unknown]>,
   target: ComposeResult<T>,
 ): void {
   const from = source as unknown as Record<PropertyKey, unknown>;

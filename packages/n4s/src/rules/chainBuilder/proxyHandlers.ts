@@ -1,7 +1,11 @@
 import { hasOwnProperty } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
-import { RuleInstance } from '../../utils/RuleInstance';
+import {
+  RuleInstance,
+  type DescribeResult,
+  type ScopeHandle,
+} from '../../utils/RuleInstance';
 import { CHAIN_PREPEND } from '../parsers/parserUtils';
 
 import type { Predicate } from './chainExecutor';
@@ -23,12 +27,12 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     '~standard': standard,
   }: {
     add: (p: Predicate) => T;
-    dependsOn: (resolver: any) => T;
-    describe: () => any;
+    dependsOn: (resolver: (scope: ScopeHandle) => unknown) => T;
+    describe: () => DescribeResult;
     message: (msg: any) => T;
     parse: T['parse'];
     prepend: (p: Predicate) => T;
-    revalidates: (resolver: any) => T;
+    revalidates: (resolver: (scope: ScopeHandle) => unknown) => T;
     run: T['run'];
     test: T['test'];
     validate: T['validate'];

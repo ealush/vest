@@ -1,10 +1,19 @@
-import { enforce, ITEM_CONTAINER, ITEM_SCHEMA } from 'n4s';
+import {
+  chainBaselineMatches,
+  enforce,
+  hasChainBaseline,
+  ITEM_CONTAINER,
+  ITEM_SCHEMA,
+  OPTIONAL_RULE,
+  PARTIAL_LIKE,
+} from 'n4s';
 import type {
   DescribeResult,
   ItemContainerKind,
   ItemSegment,
   PropertySegment,
   SchemaDependency,
+  SchemaMemberRule,
   SchemaPath,
 } from 'n4s';
 import {
@@ -37,6 +46,7 @@ import {
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { getAffectedFields, normalizeFieldName } from './changed';
+import type { FieldExclusion } from '../hooks/focused/focused';
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 
 export type SchemaRunResult = {
@@ -64,7 +74,7 @@ export function useCreateSuiteRunner<
 ) {
   // Defer changed() expansion: if __changed is present, compute affected
   // using the actual run data (enables root->array fan-out).
-  const hasChanged = !!(modifiers as any).__changed;
+  const changedFields = modifiers.__changed;
   // Note: we cannot compute affected here without data, so we do it inside runSuite below.
   const transformedModifiersBase = useTransformedModifiers<F, G>(modifiers);
 
@@ -78,18 +88,23 @@ export function useCreateSuiteRunner<
 
     const schemaInput = args[0];
     // If suite was created via changed(), expand affected fields using actual data
-    let transformedModifiers: any = transformedModifiersBase;
+    let transformedModifiers = transformedModifiersBase;
     let changedAffected: string[] | null = null;
-    if (hasChanged) {
-      const rawChanged = (modifiers as any).__changed as string[];
-      const affected = getAffectedFields(rawChanged, schema, schemaInput);
-      const mergedOnly: any = (() => {
-        const baseOnly = (modifiers as any).only;
+    if (changedFields) {
+      const affected = getAffectedFields(changedFields, schema, schemaInput);
+      const mergedOnly: string[] = (() => {
+        const baseOnly = modifiers.only;
         if (!baseOnly) return affected;
-        const baseArr = Array.isArray(baseOnly) ? baseOnly : [baseOnly];
-        return [...new Set([...(baseArr as string[]), ...affected])];
+        const baseList = asArray(baseOnly);
+        return [...new Set([...baseList, ...affected])];
       })();
-      const withAffected: any = { ...modifiers, only: mergedOnly };
+      // mergedOnly carries dynamic dotted names (e.g. 'profile.state')
+      // that escape the suite's static field vocabulary F by design —
+      // changed() affected paths are runtime data, like hasErrors() names.
+      const withAffected: SuiteModifiers<F, G> = {
+        ...modifiers,
+        only: mergedOnly as FieldExclusion<F>,
+      };
       // Filter schema failures against the full focus set (base `only` +
       // affected), not just the affected fields, so combined only+changed
       // keeps base-only failures too.
@@ -130,7 +145,7 @@ export function useCreateSuiteRunner<
       {
         suiteParams: callbackArgs,
         schema,
-        modifiers: transformedModifiers as any,
+        modifiers: transformedModifiers,
       },
       () => {
         useEmit('SUITE_RUN_STARTED');
@@ -242,7 +257,7 @@ function useRunSuiteCallback<
   return () => {
     // Focused modifiers are applied before user callback so every test in this run
     // observes the same focus context.
-    only(modifiers.only);
+    only(withSchemaFailureFocus(modifiers.only, schemaRunResult));
     skip(modifiers.skip);
     (suiteCallback as CB)(...args);
 
@@ -307,6 +322,82 @@ function snapshotGroup<F extends TFieldName, G extends TGroupName>(
 ): Partial<SuiteModifiers<F, G>> {
   const value = modifiers[key];
   return value.size > 0 ? { [key]: Object.freeze([...value]) } : {};
+}
+
+/**
+ * Widens execution focus to cover already-narrowed schema failures reported
+ * above the affected leaves (e.g. a union element failure at 'rows.1' for
+ * changed('rows.1.kind')). The post-filter keeps failures parent-either-way,
+ * but suite focus matches test names exactly, so a coarser attribution would
+ * be emitted and then excluded — reported nowhere. Only strict parents of
+ * focused names are added: leaf failures already match exactly, and child
+ * failures keep their existing behavior, so user-test execution is otherwise
+ * unchanged.
+ */
+function withSchemaFailureFocus<F extends TFieldName>(
+  only: FieldExclusion<F>,
+  schemaRunResult: readonly SchemaRunResult[] | undefined,
+): FieldExclusion<F> {
+  if (schemaRunResult === undefined) {
+    return only;
+  }
+  const base = focusBaseNames(only);
+  if (base === null) {
+    return only;
+  }
+  const additions = parentFocusAdditions<F>(base.map(String), schemaRunResult);
+  if (additions.length === 0) {
+    return only;
+  }
+  return [...base, ...additions];
+}
+
+function focusBaseNames<F extends TFieldName>(
+  only: FieldExclusion<F>,
+): F[] | null {
+  if (only === undefined || only === null) return null;
+  const base = asArray(only);
+  return base.length === 0 ? null : base;
+}
+
+/**
+ * Failure paths that are strict parents of a focused name. A coarser schema
+ * attribution (e.g. 'rows.1' for changed('rows.1.kind')) would otherwise be
+ * emitted and then excluded by exact focus matching — reported nowhere.
+ */
+function parentFocusAdditions<F extends TFieldName>(
+  baseNames: string[],
+  schemaRunResult: readonly SchemaRunResult[],
+): F[] {
+  const seen = new Set<string>(baseNames);
+  const additions: F[] = [];
+  for (const result of schemaRunResult) {
+    const failureName = schemaFailureName(result);
+    if (failureName === '' || seen.has(failureName)) {
+      continue;
+    }
+    if (isParentOfFocusedName(baseNames, failureName)) {
+      seen.add(failureName);
+      additions.push(failureName as unknown as F);
+    }
+  }
+  return additions;
+}
+
+function schemaFailureName(result: SchemaRunResult): string {
+  if (result.pass) {
+    return '';
+  }
+  return (result.path ?? []).map(String).join('.');
+}
+
+function isParentOfFocusedName(
+  baseNames: readonly string[],
+  failureName: string,
+): boolean {
+  return baseNames.some((baseName: string): boolean =>
+    baseName.startsWith(`${failureName}.`),
+  );
 }
 
 /**
@@ -400,14 +491,21 @@ function runSchemaWithParse(
   const expanded = expandAffectedWithSources(schema, nestedAffected);
   const projectedSchema = buildProjectedSchema(schema, expanded);
   const result = runProjectedOrFull(projectedSchema, schema, modifiers, data);
-  const merged = mergeSupplementalResults(
-    result,
-    collectArraySupplement(schema, expanded, data),
-  );
+  const supplement = collectArraySupplement(schema, expanded, data, result);
   // `only` is already merged into the affected set by the caller; `skip`
   // must additionally narrow synthesized failures (the projected run does
   // not take focused modifiers, unlike `applySchemaFocus`).
-  const skip = buildArrayProp(modifiers.skip);
+  const skip = buildSkipFilter(modifiers.skip);
+  if (supplement.gap) {
+    // A member that cannot run standalone (orphaned root edge) would be
+    // silently omitted — run everything with post-filtering instead.
+    const full = runExecutableSchema(
+      changedFallbackSchema(schema, modifiers),
+      data,
+    );
+    return filterSchemaResultsToAffected(full, nestedAffected, data, skip);
+  }
+  const merged = mergeSupplementalResults(result, supplement.results);
   return filterSchemaResultsToAffected(merged, nestedAffected, data, skip);
 }
 
@@ -423,7 +521,14 @@ function runFlatSchema(
   data: unknown,
   changedAffected?: string[] | null,
 ): SchemaRunResult[] {
-  const result = runExecutableSchema(applySchemaFocus(schema, modifiers), data);
+  // Top-level changed() runs carry dotted-blind `only` focus like the
+  // nested path: a pick() would drop container validators chained after
+  // construction, so they take the parity-guarded fallback schema instead.
+  // Plain only()/skip() runs keep the legacy focus behavior identical.
+  const focused = changedAffected
+    ? changedFallbackSchema(schema, modifiers)
+    : applySchemaFocus(schema, modifiers);
+  const result = runExecutableSchema(focused, data);
   // Narrowing applies to n4s schemas only: custom standard-schema results
   // keep full-run parity (no affected/skip vocabulary exists for them).
   // Root-container n4s schemas (array/record/tuple roots without __schema)
@@ -441,7 +546,7 @@ function runFlatSchema(
     result,
     changedAffected,
     data,
-    buildArrayProp(modifiers.skip),
+    buildSkipFilter(modifiers.skip),
   );
 }
 
@@ -457,14 +562,49 @@ function runProjectedOrFull(
   data: unknown,
 ): SchemaRunResult[] {
   if (!projectedSchema) {
-    return runExecutableSchema(applySchemaFocus(schema, modifiers), data);
+    return runExecutableSchema(changedFallbackSchema(schema, modifiers), data);
   }
   try {
     return runExecutableSchema(projectedSchema, data);
   } catch (error) {
     if (!isBoundaryError(error)) throw error;
-    return runExecutableSchema(applySchemaFocus(schema, modifiers), data);
+    return runExecutableSchema(changedFallbackSchema(schema, modifiers), data);
   }
+}
+
+/**
+ * Schema for the changed() fallback path. The caller post-filters to the
+ * affected set, so `only` focus (which carries dotted affected paths that
+ * top-level pick() cannot express) must NOT narrow execution — a pick
+ * would silently drop subtrees and container validators. Only top-level
+ * `skip` focus applies, and only when rebuilding preserves behavior:
+ * a partial-like top would gain requiredness and a moved chain would lose
+ * container validators, so those run unfocused (post-filter narrows).
+ */
+function changedFallbackSchema(
+  schema: IntrospectableSchema,
+  modifiers: { only?: unknown; skip?: unknown },
+): IntrospectableSchema {
+  if (!isN4sSchema(schema)) return schema;
+  if (isPartialLikeContainer(schema) || !chainBaselineMatches(schema)) {
+    return schema;
+  }
+  return omitSkippedTopKeys(schema, modifiers.skip);
+}
+
+function omitSkippedTopKeys(
+  schema: IntrospectableSchema,
+  skipProp: unknown,
+): IntrospectableSchema {
+  const skip = buildArrayProp(skipProp);
+  if (!skip || schema.__schema === undefined) return schema;
+  // The interop view cannot name rule members; the values are the schema's
+  // own member rules, so they satisfy the member constraint by construction.
+  const members = schema.__schema as unknown as Record<
+    string,
+    SchemaMemberRule
+  >;
+  return preserveOptionality(schema, enforce.omit(members, skip));
 }
 
 /**
@@ -504,7 +644,7 @@ function isBoundaryError(error: unknown): boolean {
 
 /**
  * Detects when a changed() affected set cannot be projected with a top-level
- * enforce.pick: any dotted/bracketed path (e.g. 'profile.state') would match
+ * enforce.pick: a dotted/bracketed path (e.g. 'profile.state') would match
  * no top-level key. Returns the affected list when a full-schema run with
  * failure filtering is needed, null otherwise. Non-shape n4s roots also
  * return null (projection needs __schema); runFlatSchema filters those runs
@@ -547,7 +687,7 @@ function parseAffectedPath(field: string): AffectedSeg[] {
  * Structural view of a schema rule for projection introspection.
  * Symbol-keyed slots (ITEM_SCHEMA and friends) cross the package boundary
  * and cannot be named in public types, so they are read through SymbolSlots
- * at the single interop point below instead of leaking `any`.
+ * at the single interop point below instead of leaking dynamic types.
  */
 type IntrospectableSchema = {
   readonly __schema?: Record<string, IntrospectableSchema>;
@@ -575,6 +715,16 @@ const partialLikeCache = new WeakMap<object, boolean>();
  */
 function isPartialLikeContainer(rule: IntrospectableSchema): boolean {
   if (typeof rule !== 'object' || rule === null) return false;
+  // Construction-time knowledge wins: partial() marks itself, so an
+  // all-optional shape is never mistaken for partial-like (P1-2). Rules
+  // with a baseline were built by known combinators — an absent marker
+  // means required semantics. Only exotic rules fall to the probe.
+  if (symbolSlotOf(rule, PARTIAL_LIKE) === true) return true;
+  if (hasChainBaseline(rule)) return false;
+  return probePartialLikeCached(rule);
+}
+
+function probePartialLikeCached(rule: IntrospectableSchema): boolean {
   const cached = partialLikeCache.get(rule);
   if (cached !== undefined) return cached;
   const partialLike = probeEmptyAcceptance(rule);
@@ -595,7 +745,7 @@ function probeEmptyAcceptance(rule: IntrospectableSchema): boolean {
 
 type SymbolSlots = Record<symbol, unknown>;
 
-function symbolSlotOf(rule: IntrospectableSchema, slot: symbol): unknown {
+function symbolSlotOf(rule: unknown, slot: symbol): unknown {
   return (rule as unknown as SymbolSlots)[slot];
 }
 
@@ -639,7 +789,7 @@ type MatchableDependency = {
  * compose (local siblings, $.root providers). Without this, projecting to
  * the affected targets alone orphans their sources and the fragment throws
  * "depends on unknown field" at composition. Fixpoint so chains of retained
- * targets keep their own sources too. Never throws: on any introspection
+ * targets keep their own sources too. Never throws during introspection
  * failure the affected set passes through unchanged.
  */
 export function expandAffectedWithSources(
@@ -706,7 +856,7 @@ function addConcretizedSource(
 
 /**
  * Matches an affected path against a dependency target. Item segments ('*')
- * match any single segment; a match in either direction (equal, or either
+ * match a single segment; a match in either direction (equal, or either
  * side a parent path of the other) retains the sources, since validating a
  * parent runs its children and validating a child needs its parent scope.
  */
@@ -823,28 +973,43 @@ function getSchemaDependencies(
 }
 
 /**
- * Per-member supplement for projection. Container rules (`isArrayOf`,
- * `record`) validate every member with one rule and report only the first
- * failing member, so a union projection can report an unaffected member
- * whose failure the post-filter then drops — hiding the real affected
- * failure (order-dependent). Running the projected member rule against
- * each affected index/key, descending through nested shapes, and merging
- * the failures keeps every affected member visible. The main run stays
- * authoritative for parsed data; these results only add failures.
+ * Per-member supplement for projection. Index-selected containers leave the
+ * main fragment (which cannot express per-index selection), so the
+ * supplement is their only execution: single-rule members run narrowed,
+ * tuple members run positionally, union members resolve whole-member
+ * matching with the full run's generic element failure. Containers report
+ * only their first failure, so an unaffected member's failure can hide the
+ * affected one after post-filtering (order-dependent, P1-3) — running each
+ * affected member keeps every affected failure visible. Members the main
+ * run already reported are not executed again (exactly-once, P1-4). The
+ * main run stays authoritative for parsed data; these results only add
+ * failures. A member that cannot run standalone (orphaned root edge) sets
+ * the gap flag so the caller falls back to the full run instead of
+ * silently omitting it.
  */
+type ArraySupplement = {
+  results: SchemaRunResult[];
+  gap: boolean;
+};
+
 function collectArraySupplement(
   schema: IntrospectableSchema,
   expanded: string[],
   data: unknown,
-): SchemaRunResult[] {
+  main: readonly SchemaRunResult[],
+): ArraySupplement {
+  const gap = { found: false };
   try {
-    return collectArraySupplementInner(schema, expanded, data);
+    return {
+      results: collectArraySupplementInner(schema, expanded, data, main, gap),
+      gap: gap.found,
+    };
   } catch (error) {
     // Best-effort augmentation only: a member fragment that cannot even
     // project (e.g. an orphaned rooted edge at composition) must not break
-    // the run — the main run and its fallback still cover it. Anything that
-    // is not a schema boundary failure stays loud.
-    if (isBoundaryError(error)) return [];
+    // the run — report the gap so the caller falls back to the full run.
+    // Anything that is not a schema boundary failure stays loud.
+    if (isBoundaryError(error)) return { results: [], gap: true };
     throw error;
   }
 }
@@ -853,6 +1018,8 @@ function collectArraySupplementInner(
   schema: IntrospectableSchema,
   expanded: string[],
   data: unknown,
+  main: readonly SchemaRunResult[],
+  gap: { found: boolean },
 ): SchemaRunResult[] {
   const topSchema = schema.__schema;
   if (topSchema === undefined) return [];
@@ -863,7 +1030,8 @@ function collectArraySupplementInner(
     if (rests === undefined) continue;
     appendSupplementalFailures(topSchema[top], childValue(data, top), {
       suffixes: rests,
-      sink: { basePath: [top], out },
+      sink: { basePath: [top], out, gap },
+      main,
     });
   }
   return out;
@@ -879,11 +1047,15 @@ function childValue(data: unknown, top: string): unknown {
 type IndexRunSink = {
   readonly basePath: string[];
   out: SchemaRunResult[];
+  /** Boundary gaps hit while running members standalone (→ full fallback). */
+  readonly gap: { found: boolean };
 };
 
 type IndexSelection = {
   readonly suffixes: AffectedSeg[][];
   readonly sink: IndexRunSink;
+  /** Main-run failures: covered members must not execute again (P1-4). */
+  readonly main: readonly SchemaRunResult[];
 };
 
 function appendSupplementalFailures(
@@ -902,9 +1074,31 @@ function tryAppendMembers(
   value: unknown,
   selection: IndexSelection,
 ): boolean {
-  const item = singleItemSchema(rule);
-  if (item === null) return false;
-  if (!kindValueMatches(rule, value)) return false;
+  const dispatch = memberDispatch(rule);
+  if (dispatch === null) return false;
+  if (dispatch.kind === 'tuple') {
+    return appendTupleMembers(rule, dispatch.members, value, selection);
+  }
+  if (dispatch.kind === 'union') {
+    return appendUnionMembers(rule, dispatch.members, value, selection);
+  }
+  return appendSingleDispatch(rule, dispatch.item, value, selection);
+}
+
+function appendSingleDispatch(
+  rule: IntrospectableSchema,
+  item: IntrospectableSchema,
+  value: unknown,
+  selection: IndexSelection,
+): boolean {
+  if (!kindValueMatches(rule, value)) {
+    // Schema/data container contradiction: the full run reports the
+    // container's own failure here, not member failures. Reproduce it
+    // exactly with a standalone container run (merge dedupes when the main
+    // run already reported it).
+    appendContainerFailure(rule, value, selection);
+    return true;
+  }
   if (isArray(value)) {
     return appendEachIndex(item, value, selection);
   }
@@ -912,6 +1106,41 @@ function tryAppendMembers(
     return appendEachKey(item, value, selection);
   }
   return false;
+}
+
+/**
+ * Reproduces a container-level failure exactly (length contracts,
+ * non-array data): runs the container rule itself and attributes failures
+ * to the container path, mirroring the full run.
+ */
+function appendContainerFailure(
+  rule: IntrospectableSchema,
+  value: unknown,
+  selection: IndexSelection,
+): void {
+  for (const result of prefixFailureResults(
+    safeRunItem(rule, value, selection.sink),
+    selection.sink.basePath,
+  )) {
+    selection.sink.out.push(result);
+  }
+}
+
+/**
+ * Whether the main run already reports a failure at or under the member
+ * path. Covered members must not execute again: rerunning stateful
+ * validators would change results (P1-4). The main outcome is authoritative.
+ */
+function isCoveredByMain(
+  main: readonly SchemaRunResult[],
+  memberPath: string[],
+): boolean {
+  return main.some(result => {
+    if (result.pass) return false;
+    const path = result.path ?? [];
+    if (path.length < memberPath.length) return false;
+    return memberPath.every((seg, i) => String(path[i]) === seg);
+  });
 }
 
 function isRecordValue(value: unknown): value is Record<string, unknown> {
@@ -959,19 +1188,160 @@ function appendShapeDescendants(
       sink: {
         basePath: [...selection.sink.basePath, key],
         out: selection.sink.out,
+        gap: selection.sink.gap,
       },
+      main: selection.main,
     });
   }
 }
 
-function singleItemSchema(
+type MemberDispatch =
+  | { kind: 'single'; item: IntrospectableSchema }
+  | { kind: 'tuple'; members: IntrospectableSchema[] }
+  | { kind: 'union'; members: IntrospectableSchema[] };
+
+/**
+ * Classifies a rule's item slot for per-member execution. Tuples carry a
+ * positional member list under a kindless slot; unions carry their member
+ * list under kind 'array'; records and single-rule arrays carry one member.
+ */
+function memberDispatch(rule: IntrospectableSchema): MemberDispatch | null {
+  const slot = symbolSlotOf(rule, ITEM_SCHEMA);
+  if (isArray(slot)) {
+    const members = asMemberRules(slot);
+    if (members.length === 0) return null;
+    if (containerKindOf(rule) === 'array') {
+      return { kind: 'union', members };
+    }
+    return { kind: 'tuple', members };
+  }
+  if (!isObject(slot)) return null;
+  return { kind: 'single', item: slot as unknown as IntrospectableSchema };
+}
+
+function asMemberRules(slot: readonly unknown[]): IntrospectableSchema[] {
+  const members: IntrospectableSchema[] = [];
+  for (const entry of slot) {
+    if (isObject(entry)) {
+      members.push(entry as unknown as IntrospectableSchema);
+    }
+  }
+  return members;
+}
+
+/**
+ * Tuple members run positionally: member i validates element i with the
+ * same index-prefixed attribution the full run produces, so an affected
+ * member's failure surfaces even when an earlier member failed first
+ * (P1-3). Length mismatches reproduce the full run's container-level
+ * failure instead — positions are meaningless without a valid length.
+ */
+function appendTupleMembers(
   rule: IntrospectableSchema,
-): IntrospectableSchema | null {
-  const item = symbolSlotOf(rule, ITEM_SCHEMA);
-  // Tuples and multi-rule arrays carry a list of element schemas, which a
-  // single item run cannot express — the main run covers those.
-  if (!isObject(item) || isArray(item)) return null;
-  return item as IntrospectableSchema;
+  members: IntrospectableSchema[],
+  value: unknown,
+  selection: IndexSelection,
+): boolean {
+  if (!isArray(value)) {
+    appendContainerFailure(rule, value, selection);
+    return true;
+  }
+  if (!tupleLengthOk(members, value)) {
+    appendContainerFailure(rule, value, selection);
+    return true;
+  }
+  return appendTupleIndices(rule, members, value, selection);
+}
+
+function appendTupleIndices(
+  rule: IntrospectableSchema,
+  members: IntrospectableSchema[],
+  value: readonly unknown[],
+  selection: IndexSelection,
+): boolean {
+  const indices = indexHeads(selection.suffixes);
+  for (const index of indices) {
+    if (index >= value.length) continue;
+    const member = members[index];
+    if (member === undefined) {
+      // Unknown flavor (a union read as positional): reproduce the
+      // container's own verdict exactly instead of inventing attribution.
+      appendContainerFailure(rule, value, selection);
+      break;
+    }
+    appendSingleIndex(member, value, index, selection);
+  }
+  return indices.length > 0;
+}
+
+/**
+ * The tuple length contract holds exactly when no required position is
+ * missing: every position past the value end must be optional-marked.
+ * Markers (not behavioral probes) decide — introspection executes nothing.
+ */
+function tupleLengthOk(
+  members: readonly IntrospectableSchema[],
+  value: readonly unknown[],
+): boolean {
+  if (value.length > members.length) return false;
+  for (let i = value.length; i < members.length; i += 1) {
+    if (symbolSlotOf(members[i], OPTIONAL_RULE) !== true) return false;
+  }
+  return true;
+}
+
+/**
+ * Union members resolve whole-member matching: narrowing a member for the
+ * verdict would admit elements the full run rejects. An element matching
+ * no member reproduces the full run's generic element failure (P1-3).
+ */
+function appendUnionMembers(
+  rule: IntrospectableSchema,
+  members: IntrospectableSchema[],
+  value: unknown,
+  selection: IndexSelection,
+): boolean {
+  if (!isArray(value)) {
+    appendContainerFailure(rule, value, selection);
+    return true;
+  }
+  const indices = indexHeads(selection.suffixes);
+  for (const index of indices) {
+    appendUnionElement(members, value, index, selection);
+  }
+  return indices.length > 0;
+}
+
+function appendUnionElement(
+  members: IntrospectableSchema[],
+  value: readonly unknown[],
+  index: number,
+  selection: IndexSelection,
+): void {
+  const child = value[index];
+  if (child === undefined) return;
+  const memberPath = [...selection.sink.basePath, String(index)];
+  if (isCoveredByMain(selection.main, memberPath)) return;
+  // Union membership is whole-member by semantics: narrowing a member for
+  // the verdict would admit elements the full run rejects. An element
+  // matching no member reproduces the full run's generic element failure.
+  if (unionElementRejected(members, child, selection.sink)) {
+    selection.sink.out.push({ pass: false, type: child, path: memberPath });
+  }
+}
+
+function unionElementRejected(
+  members: IntrospectableSchema[],
+  child: unknown,
+  sink: IndexRunSink,
+): boolean {
+  for (const member of members) {
+    const results = safeRunItem(member, child, sink);
+    if (results.every(result => result.pass)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function indexHeads(suffixes: AffectedSeg[][]): number[] {
@@ -994,7 +1364,7 @@ function keyHeads(suffixes: AffectedSeg[][]): string[] {
 /**
  * Record keys are strings at runtime, but affected paths coerce numeric
  * segments to numbers (`parseAffectedPath`). Accept both spellings so
- * numeric record keys ('0', '1') dispatch to their member like any key.
+ * numeric record keys ('0', '1') dispatch to their member like other keys.
  */
 function addKeyHead(head: AffectedSeg, keys: Set<string>): void {
   if (typeof head === 'string') {
@@ -1031,13 +1401,43 @@ function appendSingleMember(
   head: string | number,
 ): void {
   if (child === undefined) return;
+  const memberPath = [...selection.sink.basePath, String(head)];
+  // Exactly-once: the main run's outcome for this member is authoritative —
+  // rerunning it would double-execute stateful validators (P1-4).
+  if (isCoveredByMain(selection.main, memberPath)) return;
   const itemSuffixes = suffixesForMember(selection.suffixes, head);
   const narrowed = projectRule(item, itemSuffixes);
-  const projected: IntrospectableSchema = narrowed ?? item;
   const sink: IndexRunSink = {
-    basePath: [...selection.sink.basePath, String(head)],
+    basePath: memberPath,
     out: selection.sink.out,
+    gap: selection.sink.gap,
   };
+  if (narrowed === FRAGMENT_EXCLUDED) {
+    // Nested index-selected container: descend into its own members instead
+    // of running it whole (same selective-execution rule, one level down).
+    tryAppendMembers(item, child, {
+      suffixes: itemSuffixes,
+      sink,
+      main: selection.main,
+    });
+    return;
+  }
+  runProjectedMember(
+    narrowed ?? item,
+    child,
+    itemSuffixes,
+    sink,
+    selection.main,
+  );
+}
+
+function runProjectedMember(
+  projected: IntrospectableSchema,
+  child: unknown,
+  itemSuffixes: AffectedSeg[][],
+  sink: IndexRunSink,
+  main: readonly SchemaRunResult[],
+): void {
   // No container-kind guard here: the member rule runs against the same
   // element the full run would reach (isArrayOf prefixes the member index
   // onto inner failures, so attribution already matches), and shadowed
@@ -1045,7 +1445,7 @@ function appendSingleMember(
   // for. Contradicting container-vs-data dispatch is guarded one level up
   // in tryAppendMembers instead.
   for (const result of prefixFailureResults(
-    safeRunItem(projected, child),
+    safeRunItem(projected, child, sink),
     sink.basePath,
   )) {
     sink.out.push(result);
@@ -1053,6 +1453,7 @@ function appendSingleMember(
   appendSupplementalFailures(projected, child, {
     suffixes: itemSuffixes,
     sink,
+    main,
   });
 }
 
@@ -1083,14 +1484,18 @@ function headMatches(suffixHead: AffectedSeg, head: string | number): boolean {
 function safeRunItem(
   rule: IntrospectableSchema,
   value: unknown,
+  sink: IndexRunSink,
 ): SchemaRunResult[] {
   try {
     return runExecutableSchema(rule, value);
   } catch (error) {
-    // A standalone item run can orphan a $.root edge that only composes in
-    // the full schema; skip the supplement then (the main run still covers
-    // the index, and the full-run fallback covers composition gaps).
-    if (isBoundaryError(error)) return [];
+    // A standalone member run can orphan a $.root edge that only composes
+    // in the full schema. Record the gap so the caller falls back to the
+    // full run instead of silently omitting the affected member.
+    if (isBoundaryError(error)) {
+      sink.gap.found = true;
+      return [];
+    }
     throw error;
   }
 }
@@ -1146,9 +1551,12 @@ function resultKey(result: SchemaRunResult): string {
  * Builds a schema limited to the affected subtrees so unrelated validators
  * never execute during a nested changed() run. Top-level keys outside the
  * affected set are dropped; nested shape containers are rebuilt with only
- * the affected child keys; array items are narrowed by the union of affected
- * suffixes across indices. Returns null when nothing is projectable, in
- * which case the caller falls back to the full schema run with post-filter.
+ * the affected child keys; index-selected array/tuple/union containers
+ * leave the fragment for the per-member supplement (which executes each
+ * affected member exactly once), and a pass-through fragment is returned
+ * when every affected subtree runs there. Returns null when nothing is
+ * projectable, in which case the caller falls back to the full schema run
+ * with post-filter.
  */
 export function buildProjectedSchema(
   schema: IntrospectableSchema,
@@ -1167,13 +1575,56 @@ function buildProjectedSchemaInner(
   schema: IntrospectableSchema,
   affected: string[],
 ): IntrospectableSchema | null {
-  const topSchema = schema?.__schema;
-  if (!topSchema || typeof topSchema !== 'object') return null;
+  const topSchema = introspectableTopSchema(schema);
+  if (topSchema === null) return null;
 
   const byTop = groupAffectedByTopKey(topSchema, affected);
   if (byTop.size === 0) return null;
 
-  return looseProjectedTop(projectTopSchema(topSchema, byTop));
+  const { projectedTop, excluded } = projectTopSchema(topSchema, byTop);
+  if (Object.keys(projectedTop).length > 0) {
+    const projected = looseProjectedTop(projectedTop);
+    if (!projected) return null;
+    return preserveOptionality(schema, projected);
+  }
+  return passThroughFragment(schema, excluded);
+}
+
+/**
+ * The introspectable top-level shape, or null when the top container cannot
+ * be rebuilt: a partial-like top would gain requiredness and a moved chain
+ * would lose container validators — the caller falls back to the full run
+ * with post-filtering instead (P1-1/P1-2 parity).
+ */
+function introspectableTopSchema(
+  schema: IntrospectableSchema,
+): Record<string, IntrospectableSchema> | null {
+  const topSchema = schema?.__schema;
+  if (!topSchema || typeof topSchema !== 'object') return null;
+  if (!topContainerRebuildable(schema)) return null;
+  return topSchema;
+}
+
+function topContainerRebuildable(schema: IntrospectableSchema): boolean {
+  return !isPartialLikeContainer(schema) && chainBaselineMatches(schema);
+}
+
+/**
+ * Pass-through fragment for when every affected subtree runs in the
+ * supplement: executes nothing but parses data through, so the main run
+ * stays authoritative for parsed data without executing unaffected
+ * validators (P1-4).
+ */
+function passThroughFragment(
+  schema: IntrospectableSchema,
+  excluded: number,
+): IntrospectableSchema | null {
+  if (excluded === 0) return null;
+  try {
+    return preserveOptionality(schema, looseRule({}));
+  } catch {
+    return null;
+  }
 }
 
 function looseProjectedTop(
@@ -1214,34 +1665,63 @@ function appendTopGroup(
   byTop.set(top, list);
 }
 
+/**
+ * projectRule outcome for containers the per-member supplement executes
+ * instead of the fragment (arrays/tuples/unions with index selections):
+ * executing them in the main run would run unaffected members and run
+ * affected members twice (P1-4). Callers drop the key; the supplement
+ * covers exactly the selected members.
+ */
+const FRAGMENT_EXCLUDED: unique symbol = Symbol('vest:fragmentExcluded');
+
 function projectTopSchema(
   topSchema: Record<string, IntrospectableSchema>,
   byTop: Map<string, AffectedSeg[][]>,
-): Record<string, IntrospectableSchema> {
+): {
+  projectedTop: Record<string, IntrospectableSchema>;
+  excluded: number;
+} {
   const projectedTop: Record<string, IntrospectableSchema> = {};
+  let excluded = 0;
   for (const top of Object.keys(topSchema)) {
-    const rests = byTop.get(top);
-    // Unrelated top-level subtree: excluded so it cannot hide failures.
-    if (!rests) continue;
-    if (rests.some(rest => rest.length === 0)) {
-      // Exact-selected (e.g. parent changed path itself): keep whole subtree.
-      projectedTop[top] = topSchema[top];
-      continue;
+    const outcome = projectTopKey(topSchema[top], byTop.get(top));
+    if (outcome === FRAGMENT_EXCLUDED) {
+      excluded += 1;
+    } else if (outcome !== undefined) {
+      projectedTop[top] = outcome;
     }
-    projectedTop[top] = projectRule(topSchema[top], rests) ?? topSchema[top];
   }
-  return projectedTop;
+  return { projectedTop, excluded };
+}
+
+/**
+ * One top-level key's fragment fate: undefined drops an unrelated key,
+ * the rule keeps an exact-selected or un-narrowed subtree, and
+ * FRAGMENT_EXCLUDED leaves supplement-covered containers out.
+ */
+function projectTopKey(
+  rule: IntrospectableSchema,
+  rests: AffectedSeg[][] | undefined,
+): IntrospectableSchema | undefined | typeof FRAGMENT_EXCLUDED {
+  // Unrelated top-level subtree: dropped so it cannot hide failures.
+  if (rests === undefined) return undefined;
+  // Exact-selected (e.g. parent changed path itself): keep whole subtree.
+  if (rests.some(rest => rest.length === 0)) return rule;
+  const projected = projectRule(rule, rests);
+  return projected ?? rule;
 }
 
 /**
  * Narrows a nested rule to the given child suffixes. Returns the original
  * rule when nothing can (or needs to) be narrowed, null only when the shape
  * is not introspectable — both tell the caller to keep the original rule.
+ * Returns FRAGMENT_EXCLUDED for containers the supplement executes instead
+ * of the fragment — callers drop the key.
  */
 function projectRule(
   rule: IntrospectableSchema,
   suffixes: AffectedSeg[][],
-): IntrospectableSchema | null {
+): IntrospectableSchema | null | typeof FRAGMENT_EXCLUDED {
   const inner = rule?.__schema;
   if (inner && typeof inner === 'object') {
     return projectShapeRule(rule, inner, suffixes);
@@ -1252,13 +1732,32 @@ function projectRule(
 function projectItemRule(
   rule: IntrospectableSchema,
   suffixes: AffectedSeg[][],
-): IntrospectableSchema | null {
+): IntrospectableSchema | null | typeof FRAGMENT_EXCLUDED {
+  // A moved chain means container-level validators a rebuild would drop —
+  // retain the whole rule (full-run parity).
+  if (!chainBaselineMatches(rule)) return rule;
   const itemSchema = symbolSlotOf(rule, ITEM_SCHEMA);
-  // Tuple and multi-rule element lists cannot narrow to one rule — keep
-  // the original (same outcome as before, stated directly).
-  if (isArray(itemSchema)) return rule;
+  if (isArray(itemSchema)) {
+    // Tuple (positional members, kindless slot) and union (kind 'array')
+    // members run per-index in the supplement with exact attribution
+    // (P1-3). Index selections leave the fragment so unaffected members
+    // never execute and affected members execute exactly once (P1-4);
+    // anything else keeps the whole rule.
+    return indexSelectionsOnly(suffixes) ? FRAGMENT_EXCLUDED : rule;
+  }
   if (!isObject(itemSchema)) return null;
-  return projectArrayRule(rule, itemSchema, suffixes);
+  return projectArrayRule(rule, suffixes);
+}
+
+/**
+ * Whether every affected suffix selects specific members by index. Whole
+ * selections (empty suffix) and non-index heads keep the container whole.
+ */
+function indexSelectionsOnly(suffixes: AffectedSeg[][]): boolean {
+  return (
+    suffixes.length > 0 &&
+    suffixes.every(suffix => suffix.length > 0 && typeof suffix[0] === 'number')
+  );
 }
 
 function projectShapeRule(
@@ -1276,15 +1775,18 @@ function projectShapeRule(
 
 /**
  * Rebuilds a narrowed shape fragment. Rebuilding as loose() is only valid
- * for required-semantics containers: a partial-like container would gain
- * requiredness (false positives), so the original rule is retained instead
- * — full-run parity via post-filtering.
+ * for required-semantics containers with an unmoved chain: a partial-like
+ * container would gain requiredness (false positives), and a container
+ * with validators chained after construction would lose them (P1-1) — in
+ * both cases the original rule is retained instead, keeping full-run
+ * parity via post-filtering.
  */
 function rebuildShapeRule(
   rule: IntrospectableSchema,
   filtered: Record<string, IntrospectableSchema>,
 ): IntrospectableSchema | null {
   if (isPartialLikeContainer(rule)) return rule;
+  if (!chainBaselineMatches(rule)) return rule;
   try {
     return preserveOptionality(rule, looseRule(filtered));
   } catch {
@@ -1301,13 +1803,12 @@ function projectShapeChildren(
 ): Record<string, IntrospectableSchema> {
   const filtered: Record<string, IntrospectableSchema> = {};
   for (const key of Object.keys(inner)) {
-    const rests = byKey.get(key);
-    if (!rests) continue;
-    if (rests.some(rest => rest.length === 0)) {
-      filtered[key] = inner[key];
-      continue;
-    }
-    filtered[key] = projectRule(inner[key], rests) ?? inner[key];
+    const outcome = projectTopKey(inner[key], byKey.get(key));
+    // Supplement-covered containers leave the fragment (P1-4). An emptied
+    // shape still rebuilds as loose({}) below, keeping the key present so
+    // parsed data keeps its structure.
+    if (outcome === FRAGMENT_EXCLUDED) continue;
+    if (outcome !== undefined) filtered[key] = outcome;
   }
   return filtered;
 }
@@ -1349,26 +1850,19 @@ function appendChildGroup(
 }
 
 /**
- * Narrows an array rule by projecting its item schema along the union of
- * affected suffixes across indices (per-index selection is not expressible
- * via isArrayOf, which validates every item with one rule). Whole-item
- * selections keep the original rule.
+ * Decides an array rule's fragment fate. Per-index selections leave the
+ * fragment (FRAGMENT_EXCLUDED): isArrayOf validates every member with one
+ * rule, so keeping it would execute unaffected members, and the per-member
+ * supplement already executes each affected member exactly once (P1-4).
+ * Records always keep the full rule: narrowing through record() would drop
+ * a two-arg record's key rule (n4s exposes only the value rule in the item
+ * slot), breaking parity with the full run. Whole-item and non-index
+ * selections keep the container whole. Member failures still surface via
+ * the per-member supplement.
  */
-/**
- * Array combinator viewed structurally: it accepts introspectable rules and
- * returns an introspectable rule. The cast sits at this single interop
- * boundary because the exposed combinator signature names the library's own
- * rule type, which callers outside n4s cannot construct precisely.
- */
-type ArrayCombinator = (
-  ...rules: IntrospectableSchema[]
-) => IntrospectableSchema;
-
 type LooseCombinator = (
   schema: Record<string, IntrospectableSchema>,
 ) => IntrospectableSchema;
-
-const arrayOfRule = enforce.isArrayOf as ArrayCombinator;
 
 const looseRule = enforce.loose as LooseCombinator;
 
@@ -1378,30 +1872,11 @@ const optionalRule = enforce.optional as OptionalCombinator;
 
 function projectArrayRule(
   rule: IntrospectableSchema,
-  itemSchema: IntrospectableSchema,
   suffixes: AffectedSeg[][],
-): IntrospectableSchema | null {
-  // Records keep the full rule: narrowing through record() would drop a
-  // two-arg record's key rule (n4s exposes only the value rule in the item
-  // slot), breaking parity with the full run. String member heads would
-  // also trip hasWholeItemSelection below, so the kind check comes first
-  // and states the parity reason directly. Member failures still surface
-  // via the per-member supplement.
+): IntrospectableSchema | null | typeof FRAGMENT_EXCLUDED {
   if (containerKindOf(rule) === 'record') return rule;
-  if (hasWholeItemSelection(suffixes)) return rule;
-  const itemSuffixes = suffixes.map(suffix => suffix.slice(1));
-  const projectedItem = projectRule(itemSchema, itemSuffixes);
-  if (!projectedItem || projectedItem === itemSchema) return rule;
-  return preserveOptionality(rule, arrayOfRule(projectedItem));
-}
-
-function hasWholeItemSelection(suffixes: AffectedSeg[][]): boolean {
-  return suffixes.some(
-    suffix =>
-      suffix.length === 0 ||
-      typeof suffix[0] !== 'number' ||
-      suffix.slice(1).length === 0,
-  );
+  if (!indexSelectionsOnly(suffixes)) return rule;
+  return FRAGMENT_EXCLUDED;
 }
 
 /**
@@ -1417,6 +1892,14 @@ function preserveOptionality(
 }
 
 function isNullishPassing(rule: IntrospectableSchema): boolean {
+  // optional() marks itself: no behavioral probe (which would execute user
+  // validators with synthetic nullish values during introspection).
+  if (symbolSlotOf(rule, OPTIONAL_RULE) === true) return true;
+  if (hasChainBaseline(rule)) return false;
+  return probeNullishPassing(rule);
+}
+
+function probeNullishPassing(rule: IntrospectableSchema): boolean {
   const test = rule?.test;
   if (typeof test !== 'function') return false;
   try {
@@ -1438,16 +1921,37 @@ export function filterSchemaResultsToAffected(
   results: SchemaRunResult[],
   affected: string[],
   data: unknown,
-  skip: string[] | null = null,
+  skip: string[] | true | null = null,
 ): SchemaRunResult[] {
+  if (skip === true) {
+    // Boolean skip-all (skip(true)): every synthesized failure is skipped,
+    // mirroring the runtime which skips all tests — including the
+    // schema-failure tests. Same pass-through as the empty-kept path.
+    return passThroughResult(results, data);
+  }
   const affectedSet = new Set(affected.map(normalizeFieldName));
   const skipSet = skipSetOf(skip);
   const kept = results.filter(result =>
     keepSchemaResult(result, affectedSet, skipSet),
   );
+  return keptOrPassThrough(kept, results, data);
+}
+
+function keptOrPassThrough(
+  kept: SchemaRunResult[],
+  results: SchemaRunResult[],
+  data: unknown,
+): SchemaRunResult[] {
   if (kept.length > 0) {
     return kept;
   }
+  return passThroughResult(results, data);
+}
+
+function passThroughResult(
+  results: SchemaRunResult[],
+  data: unknown,
+): SchemaRunResult[] {
   return [{ pass: true, type: results[0]?.type ?? data }];
 }
 
@@ -1525,8 +2029,9 @@ const N4S_VENDOR = 'n4s';
  * from these runs speak the affected-path vocabulary, so post-filtering by
  * affected/skip applies. Custom standard-schema results do not.
  */
-function isN4sVendorSchema(schema: any): boolean {
-  return schema?.['~standard']?.vendor === N4S_VENDOR;
+function isN4sVendorSchema(schema: unknown): boolean {
+  if (!isObject(schema)) return false;
+  return schema['~standard']?.vendor === N4S_VENDOR;
 }
 
 /**
@@ -1558,7 +2063,22 @@ function buildArrayProp(prop: unknown): string[] | null {
   if (!prop) return null;
   // An explicitly empty array is a zero-field focus (e.g. changed([])):
   // keep it so the schema resolves to an empty pick instead of no focus.
-  return asArray(prop) as string[];
+  // Non-string entries never reach name matching: asArray(true) is [true]
+  // and normalizeFieldName would throw on it (boolean skip-all is a legal
+  // modifier, handled as match-all by buildSkipFilter instead).
+  return asArray(prop).filter(
+    (entry): entry is string => typeof entry === 'string',
+  );
+}
+
+/**
+ * Skip filter for synthesized failures. Boolean skip-all (skip(true))
+ * drops every failure, mirroring the runtime which skips all tests;
+ * name lists narrow by exact field name via buildArrayProp.
+ */
+function buildSkipFilter(skipProp: unknown): string[] | true | null {
+  if (skipProp === true) return true;
+  return buildArrayProp(skipProp);
 }
 
 function buildIntersectedSchemaInstance(

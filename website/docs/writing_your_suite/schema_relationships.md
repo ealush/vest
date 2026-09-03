@@ -268,6 +268,8 @@ as the affected set. This preserves `only()` semantics while giving frameworks a
 
 `schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs. `suite.changed()` additionally re-runs the projected rule per affected array index / record key, so an affected member failure hidden behind an earlier unaffected one is still surfaced.
 
+Selective execution holds for focused runs: members outside the affected set never execute, and each affected member executes exactly once — safe for stateful validators. Tuple members run positionally and union (`isArrayOf` with several members) elements resolve whole-member any-match, both with the same attribution a full run would report. Shapes whose fields are all `optional()` are still ordinary required-semantics containers (only `partial()` skips missing keys). Validators chained onto a container itself, or a `partial()` top-level schema, cannot be projected safely: those runs validate the full schema and narrow the failures to the affected paths instead, so results always match the full run.
+
 ## Dependencies Are Not Automatically Transitive
 
 ```text

@@ -171,6 +171,124 @@ describe('changed() source-retaining projection', () => {
     expect(seen).not.toContain('rows.0.country');
   });
 
+  it('record per-key: a shadowed affected key is still reported', async () => {
+    // Both keys are rule-invalid, but only b is affected. The union
+    // projection reports just the first failing key (a), which the
+    // post-filter drops — the per-key supplement must surface b.state.
+    const schema = enforce.shape({
+      dictionary: enforce.record(
+        enforce.shape({
+          country: enforce.isString(),
+          state: enforce
+            .isString()
+            .longerThan(5)
+            .dependsOn($ => $.country),
+        }),
+      ),
+    });
+    const seen: string[] = [];
+    const suite = create(data => {
+      test('dictionary.b.country', () => {
+        seen.push('dictionary.b.country');
+        enforce(data.dictionary.b.country).isString();
+      });
+    }, schema);
+
+    const data = {
+      dictionary: {
+        a: { country: 'US', state: 'x' },
+        b: { country: 'CA', state: 'x' },
+      },
+    };
+    const changed = await suite.changed('dictionary.b.country').run(data);
+    expect(changed.hasErrors('dictionary.b.state')).toBe(true);
+    expect(changed.hasErrors('dictionary.a.state')).toBe(false);
+    expect(seen).toContain('dictionary.b.country');
+  });
+
+  it('nested shape array: shadowed failures surface below shapes', async () => {
+    // Same shadowing as top-level arrays, but nested under a shape: the
+    // supplement must descend through group to reach rows.
+    const schema = enforce.shape({
+      group: enforce.shape({
+        rows: enforce.isArrayOf(
+          enforce.shape({
+            country: enforce.isString(),
+            state: enforce
+              .isString()
+              .longerThan(5)
+              .dependsOn($ => $.country),
+          }),
+        ),
+      }),
+    });
+    const seen: string[] = [];
+    const suite = create(data => {
+      test('group.rows.1.country', () => {
+        seen.push('group.rows.1.country');
+        enforce(data.group.rows[1].country).isString();
+      });
+    }, schema);
+
+    const data = {
+      group: {
+        rows: [
+          { country: 'US', state: 'x' },
+          { country: 'CA', state: 'x' },
+        ],
+      },
+    };
+    const changed = await suite.changed('group.rows.1.country').run(data);
+    expect(changed.hasErrors('group.rows.1.state')).toBe(true);
+    expect(changed.hasErrors('group.rows.0.state')).toBe(false);
+    expect(seen).toContain('group.rows.1.country');
+  });
+
+  it('skip() narrows synthesized schema failures', async () => {
+    const schema = enforce.shape({
+      profile: enforce.shape({
+        country: enforce.isString(),
+        state: enforce
+          .isString()
+          .longerThan(5)
+          .dependsOn($ => $.country),
+      }),
+    });
+    const suite = create(data => {
+      test('profile.country', () => {
+        enforce(data.profile.country).isString();
+      });
+      test('profile.state', () => {
+        enforce(data.profile.state).isString();
+      });
+    }, schema);
+
+    const data = { profile: { country: 'US', state: 'x' } };
+    const unskipped = await suite.changed('profile.country').run(data);
+    expect(unskipped.hasErrors('profile.state')).toBe(true);
+
+    // Skipping the subtree must suppress its synthesized failure — the
+    // projected path must honor skip() like the focused path does.
+    const skipped = await suite
+      .focus({ skip: 'profile' })
+      .changed('profile.country')
+      .run(data);
+    expect(skipped.hasErrors('profile.state')).toBe(false);
+    expect(skipped.hasErrors('profile.country')).toBe(false);
+  });
+
+  it('deferred rooted validation timing is observable', () => {
+    // Composition and describe() stay lenient for rooted paths so focused
+    // fragments keep composing; enforcement lands at execution.
+    const schema = enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.root.missing),
+    });
+    const described = schema.describe();
+    expect(described.dependencies).toHaveLength(1);
+    expect(() => schema.test({ a: 'x', b: 'y' })).toThrow();
+  });
+
   it('partial containers keep their semantics under projection', async () => {
     // Narrowing profile to {country, state} must not make the dropped key
     // or the missing state required: the container stays partial. A loose()

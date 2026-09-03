@@ -11,6 +11,7 @@ import {
   asArray,
   CB,
   freezeAssign,
+  hasOwnProperty,
   isArray,
   isFunction,
   isObject,
@@ -336,21 +337,34 @@ function runSchemaValidation<S extends TSchema = undefined>(
  * so the caller can fall back to schema.run.
  */
 function tryParseSchema(
-  executableSchema: any,
+  executableSchema: IntrospectableSchema,
   data: unknown,
 ): SchemaRunResult[] | null {
-  if (!isFunction(executableSchema.parse)) return null;
+  const parse = executableSchema.parse;
+  if (!isFunction(parse)) return null;
 
   try {
-    const parsedValue = executableSchema.parse(data);
-
-    return shouldRunAfterParse(executableSchema)
-      ? normalizeSchemaRunResult(executableSchema.run(parsedValue), parsedValue)
-      : [{ pass: true, type: parsedValue }];
+    const parsedValue = parse(data);
+    return runParsedValue(executableSchema, parsedValue);
   } catch (error) {
     if (isExpectedSchemaParseError(error)) return null;
     throw error;
   }
+}
+
+/**
+ * Runs a parsed value through the schema's run step when the schema opts
+ * into parse-then-run; otherwise the parsed value is the result.
+ */
+function runParsedValue(
+  executableSchema: IntrospectableSchema,
+  parsedValue: unknown,
+): SchemaRunResult[] {
+  const run = executableSchema.run;
+  if (shouldRunAfterParse(executableSchema) && isFunction(run)) {
+    return normalizeSchemaRunResult(run(parsedValue), parsedValue);
+  }
+  return [{ pass: true, type: parsedValue }];
 }
 
 /**
@@ -387,7 +401,11 @@ function runSchemaWithParse(
     result,
     collectArraySupplement(schema, expanded, data),
   );
-  return filterSchemaResultsToAffected(merged, nestedAffected, data);
+  // `only` is already merged into the affected set by the caller; `skip`
+  // must additionally narrow synthesized failures (the projected run does
+  // not take focused modifiers, unlike `applySchemaFocus`).
+  const skip = buildArrayProp(modifiers.skip);
+  return filterSchemaResultsToAffected(merged, nestedAffected, data, skip);
 }
 
 /**
@@ -417,7 +435,7 @@ function runProjectedOrFull(
  * unavailable or reports an expected validation failure.
  */
 function runExecutableSchema(
-  executableSchema: any,
+  executableSchema: IntrospectableSchema,
   data: unknown,
 ): SchemaRunResult[] {
   const parseResult = tryParseSchema(executableSchema, data);
@@ -489,12 +507,15 @@ type IntrospectableSchema = {
   readonly __schema?: Record<string, IntrospectableSchema>;
   readonly describe?: () => DescribeResult;
   /**
-   * Runtime validation entry point. Declared with method syntax (bivariant)
-   * on purpose: every rule tests unknown values at runtime, while each
-   * rule's declared input type is narrower. Used only for behavioral
-   * probing with probe-owned values — never to bypass argument checking.
+   * Runtime validation entry points. Declared with method syntax (bivariant)
+   * on purpose: every rule tests/runs/parses unknown values at runtime,
+   * while each rule's declared input type is narrower. Used for behavioral
+   * probing with probe-owned values and for executing projected fragments
+   * — never to bypass argument checking.
    */
   test?(value: unknown): boolean;
+  run?(...args: unknown[]): unknown;
+  parse?(...args: unknown[]): unknown;
 };
 
 const partialLikeCache = new WeakMap<object, boolean>();
@@ -631,16 +652,44 @@ function segmentsMatch(affected: string[], target: string[]): boolean {
 function concretizeSource(source: string[], affected: string[]): string | null {
   const out: string[] = [];
   for (let i = 0; i < source.length; i++) {
-    const seg = source[i] as string;
-    if (seg !== '*') {
-      out.push(seg);
-      continue;
-    }
-    const fill = affected[i];
-    if (fill === undefined) break;
-    out.push(fill);
+    if (!appendConcretizedSegment(source, affected, i, out)) break;
   }
   return out.length > 0 ? out.join('.') : null;
+}
+
+function appendConcretizedSegment(
+  source: string[],
+  affected: string[],
+  index: number,
+  out: string[],
+): boolean {
+  const seg = source[index];
+  if (seg !== '*') {
+    out.push(seg);
+    return true;
+  }
+  // Fill a wildcard only when the source's concrete prefix matches the
+  // affected path — otherwise an index from an unrelated array would leak
+  // across (e.g. rows.4 into config.*). Truncating keeps the whole branch.
+  if (!prefixesMatch(source, affected, index)) return false;
+  const fill = affected[index];
+  if (fill === undefined) return false;
+  out.push(fill);
+  return true;
+}
+
+function prefixesMatch(
+  source: string[],
+  affected: string[],
+  upto: number,
+): boolean {
+  for (let i = 0; i < upto; i++) {
+    const sourceSeg = source[i];
+    const affectedSeg = affected[i];
+    if (affectedSeg === undefined) return false;
+    if (sourceSeg !== '*' && sourceSeg !== affectedSeg) return false;
+  }
+  return true;
 }
 
 function toMatchableDeps(deps: SchemaDependency[]): MatchableDependency[] {
@@ -698,12 +747,13 @@ function getSchemaDependencies(
 }
 
 /**
- * Per-index supplement for array projection. `isArrayOf` validates every
- * item with one rule and reports only the first failing item, so a union
- * projection can report an unaffected index whose failure the post-filter
- * then drops — hiding the real affected failure (order-dependent). Running
- * the projected item rule against each affected index and merging the
- * results keeps every affected index visible. The main run stays
+ * Per-member supplement for projection. Container rules (`isArrayOf`,
+ * `record`) validate every member with one rule and report only the first
+ * failing member, so a union projection can report an unaffected member
+ * whose failure the post-filter then drops — hiding the real affected
+ * failure (order-dependent). Running the projected member rule against
+ * each affected index/key, descending through nested shapes, and merging
+ * the failures keeps every affected member visible. The main run stays
  * authoritative for parsed data; these results only add failures.
  */
 function collectArraySupplement(
@@ -718,7 +768,7 @@ function collectArraySupplement(
   for (const top of Object.keys(topSchema)) {
     const rests = byTop.get(top);
     if (rests === undefined) continue;
-    appendIndexFailures(topSchema[top], childValue(data, top), {
+    appendSupplementalFailures(topSchema[top], childValue(data, top), {
       suffixes: rests,
       sink: { basePath: [top], out },
     });
@@ -729,6 +779,7 @@ function collectArraySupplement(
 function childValue(data: unknown, top: string): unknown {
   if (!isObject(data)) return undefined;
   const record: Record<string, unknown> = data;
+  if (!hasOwnProperty(record, top)) return undefined;
   return record[top];
 }
 
@@ -742,15 +793,80 @@ type IndexSelection = {
   readonly sink: IndexRunSink;
 };
 
-function appendIndexFailures(
+function appendSupplementalFailures(
   rule: IntrospectableSchema,
   value: unknown,
   selection: IndexSelection,
 ): void {
+  if (tryAppendMembers(rule, value, selection)) return;
+  if (isArray(value) || !isObject(value)) return;
+  const record: Record<string, unknown> = value;
+  appendShapeDescendants(rule, record, selection);
+}
+
+function tryAppendMembers(
+  rule: IntrospectableSchema,
+  value: unknown,
+  selection: IndexSelection,
+): boolean {
   const item = singleItemSchema(rule);
-  if (item === null || !isArray(value)) return;
-  for (const index of affectedIndices(selection.suffixes)) {
-    appendSingleIndexFailures(item, value, index, selection);
+  if (item === null) return false;
+  if (isArray(value)) {
+    return appendEachIndex(item, value, selection);
+  }
+  if (isRecordValue(value)) {
+    return appendEachKey(item, value, selection);
+  }
+  return false;
+}
+
+function isRecordValue(value: unknown): value is Record<string, unknown> {
+  return isObject(value) && !isArray(value);
+}
+
+function appendEachIndex(
+  item: IntrospectableSchema,
+  value: readonly unknown[],
+  selection: IndexSelection,
+): boolean {
+  const indices = indexHeads(selection.suffixes);
+  for (const index of indices) {
+    appendSingleIndex(item, value, index, selection);
+  }
+  return indices.length > 0;
+}
+
+function appendEachKey(
+  item: IntrospectableSchema,
+  value: Record<string, unknown>,
+  selection: IndexSelection,
+): boolean {
+  const keys = keyHeads(selection.suffixes);
+  for (const key of keys) {
+    appendSingleKey(item, value, key, selection);
+  }
+  return keys.length > 0;
+}
+
+function appendShapeDescendants(
+  rule: IntrospectableSchema,
+  value: Record<string, unknown>,
+  selection: IndexSelection,
+): void {
+  const inner = rule.__schema;
+  if (inner === undefined) return;
+  const byKey = groupAffectedByChildKey(inner, selection.suffixes);
+  if (byKey === null) return;
+  for (const key of Object.keys(inner)) {
+    const rests = byKey.get(key);
+    if (rests === undefined) continue;
+    appendSupplementalFailures(inner[key], value[key], {
+      suffixes: rests,
+      sink: {
+        basePath: [...selection.sink.basePath, key],
+        out: selection.sink.out,
+      },
+    });
   }
 }
 
@@ -764,7 +880,7 @@ function singleItemSchema(
   return item as IntrospectableSchema;
 }
 
-function affectedIndices(suffixes: AffectedSeg[][]): number[] {
+function indexHeads(suffixes: AffectedSeg[][]): number[] {
   const indices = new Set<number>();
   for (const suffix of suffixes) {
     const head = suffix[0];
@@ -773,37 +889,66 @@ function affectedIndices(suffixes: AffectedSeg[][]): number[] {
   return [...indices];
 }
 
-function appendSingleIndexFailures(
+function keyHeads(suffixes: AffectedSeg[][]): string[] {
+  const keys = new Set<string>();
+  for (const suffix of suffixes) {
+    const head = suffix[0];
+    if (typeof head === 'string') keys.add(head);
+  }
+  return [...keys];
+}
+
+function appendSingleIndex(
   item: IntrospectableSchema,
   value: readonly unknown[],
   index: number,
   selection: IndexSelection,
 ): void {
-  const child: unknown = value[index];
+  appendSingleMember(item, value[index], selection, index);
+}
+
+function appendSingleKey(
+  item: IntrospectableSchema,
+  value: Record<string, unknown>,
+  key: string,
+  selection: IndexSelection,
+): void {
+  appendSingleMember(item, value[key], selection, key);
+}
+
+function appendSingleMember(
+  item: IntrospectableSchema,
+  child: unknown,
+  selection: IndexSelection,
+  head: string | number,
+): void {
   if (child === undefined) return;
-  const itemSuffixes = suffixesForIndex(selection.suffixes, index);
+  const itemSuffixes = suffixesForMember(selection.suffixes, head);
   const narrowed = projectRule(item, itemSuffixes);
   const projected: IntrospectableSchema = narrowed ?? item;
   const sink: IndexRunSink = {
-    basePath: [...selection.sink.basePath, String(index)],
+    basePath: [...selection.sink.basePath, String(head)],
     out: selection.sink.out,
   };
-  for (const result of prefixResults(
+  for (const result of prefixFailureResults(
     safeRunItem(projected, child),
     sink.basePath,
   )) {
     sink.out.push(result);
   }
-  appendIndexFailures(projected, child, { suffixes: itemSuffixes, sink });
+  appendSupplementalFailures(projected, child, {
+    suffixes: itemSuffixes,
+    sink,
+  });
 }
 
-function suffixesForIndex(
+function suffixesForMember(
   suffixes: AffectedSeg[][],
-  index: number,
+  head: string | number,
 ): AffectedSeg[][] {
   const out: AffectedSeg[][] = [];
   for (const suffix of suffixes) {
-    if (suffix[0] === index) out.push(suffix.slice(1));
+    if (suffix[0] === head) out.push(suffix.slice(1));
   }
   return out;
 }
@@ -823,14 +968,22 @@ function safeRunItem(
   }
 }
 
-function prefixResults(
+/**
+ * Re-bases supplement results to their member path, keeping failures only.
+ * Passing entries carry no signal (the main run owns parsed data and pass
+ * state), so they are dropped to keep the merged set meaningful.
+ */
+function prefixFailureResults(
   results: SchemaRunResult[],
   path: string[],
 ): SchemaRunResult[] {
-  return results.map(result => ({
-    ...result,
-    path: [...path, ...(result.path ?? [])],
-  }));
+  const out: SchemaRunResult[] = [];
+  for (const result of results) {
+    if (!result.pass) {
+      out.push({ ...result, path: [...path, ...(result.path ?? [])] });
+    }
+  }
+  return out;
 }
 
 function mergeSupplementalResults(
@@ -888,10 +1041,12 @@ function buildProjectedSchemaInner(
   return looseProjectedTop(projectTopSchema(topSchema, byTop));
 }
 
-function looseProjectedTop(projectedTop: Record<string, any>): any | null {
+function looseProjectedTop(
+  projectedTop: Record<string, IntrospectableSchema>,
+): IntrospectableSchema | null {
   if (Object.keys(projectedTop).length === 0) return null;
   try {
-    return enforce.loose(projectedTop);
+    return looseRule(projectedTop);
   } catch {
     // Unprojectable fragment (e.g. an orphaned dependsOn source at the top
     // level): fall back to the full schema run with post-filter.
@@ -900,7 +1055,7 @@ function looseProjectedTop(projectedTop: Record<string, any>): any | null {
 }
 
 function groupAffectedByTopKey(
-  topSchema: Record<string, any>,
+  topSchema: Record<string, IntrospectableSchema>,
   affected: string[],
 ): Map<string, AffectedSeg[][]> {
   const byTop = new Map<string, AffectedSeg[][]>();
@@ -912,23 +1067,23 @@ function groupAffectedByTopKey(
 
 function appendTopGroup(
   byTop: Map<string, AffectedSeg[][]>,
-  topSchema: Record<string, any>,
+  topSchema: Record<string, IntrospectableSchema>,
   segs: AffectedSeg[],
 ): void {
   if (segs.length === 0) return;
   const [top, ...rest] = segs as [AffectedSeg, ...AffectedSeg[]];
   if (typeof top !== 'string') return;
-  if (!Object.prototype.hasOwnProperty.call(topSchema, top)) return;
+  if (!hasOwnProperty(topSchema, top)) return;
   const list = byTop.get(top) ?? [];
   list.push(rest);
   byTop.set(top, list);
 }
 
 function projectTopSchema(
-  topSchema: Record<string, any>,
+  topSchema: Record<string, IntrospectableSchema>,
   byTop: Map<string, AffectedSeg[][]>,
-): Record<string, any> {
-  const projectedTop: Record<string, any> = {};
+): Record<string, IntrospectableSchema> {
+  const projectedTop: Record<string, IntrospectableSchema> = {};
   for (const top of Object.keys(topSchema)) {
     const rests = byTop.get(top);
     // Unrelated top-level subtree: excluded so it cannot hide failures.
@@ -959,9 +1114,15 @@ function projectRule(
   return projectItemRule(rule, suffixes);
 }
 
-function projectItemRule(rule: any, suffixes: AffectedSeg[][]): any | null {
-  const itemSchema = rule?.[ITEM_SCHEMA];
-  if (!itemSchema) return null;
+function projectItemRule(
+  rule: IntrospectableSchema,
+  suffixes: AffectedSeg[][],
+): IntrospectableSchema | null {
+  const itemSchema = symbolSlotOf(rule, ITEM_SCHEMA);
+  // Tuple and multi-rule element lists cannot narrow to one rule — keep
+  // the original (same outcome as before, stated directly).
+  if (isArray(itemSchema)) return rule;
+  if (!isObject(itemSchema)) return null;
   return projectArrayRule(rule, itemSchema, suffixes);
 }
 
@@ -1000,10 +1161,10 @@ function rebuildShapeRule(
 }
 
 function projectShapeChildren(
-  inner: Record<string, any>,
+  inner: Record<string, IntrospectableSchema>,
   byKey: Map<string, AffectedSeg[][]>,
-): Record<string, any> {
-  const filtered: Record<string, any> = {};
+): Record<string, IntrospectableSchema> {
+  const filtered: Record<string, IntrospectableSchema> = {};
   for (const key of Object.keys(inner)) {
     const rests = byKey.get(key);
     if (!rests) continue;
@@ -1017,8 +1178,8 @@ function projectShapeChildren(
 }
 
 function isUnchangedShape(
-  inner: Record<string, any>,
-  filtered: Record<string, any>,
+  inner: Record<string, IntrospectableSchema>,
+  filtered: Record<string, IntrospectableSchema>,
 ): boolean {
   const filteredKeys = Object.keys(filtered);
   return (
@@ -1028,7 +1189,7 @@ function isUnchangedShape(
 }
 
 function groupAffectedByChildKey(
-  inner: Record<string, any>,
+  inner: Record<string, IntrospectableSchema>,
   suffixes: AffectedSeg[][],
 ): Map<string, AffectedSeg[][]> | null {
   const byKey = new Map<string, AffectedSeg[][]>();
@@ -1040,12 +1201,12 @@ function groupAffectedByChildKey(
 
 function appendChildGroup(
   byKey: Map<string, AffectedSeg[][]>,
-  inner: Record<string, any>,
+  inner: Record<string, IntrospectableSchema>,
   suffix: AffectedSeg[],
 ): boolean {
   const [head, ...rest] = suffix as [AffectedSeg, ...AffectedSeg[]];
   if (typeof head !== 'string') return false;
-  if (!Object.prototype.hasOwnProperty.call(inner, head)) return true;
+  if (!hasOwnProperty(inner, head)) return true;
   const list = byKey.get(head) ?? [];
   list.push(rest);
   byKey.set(head, list);
@@ -1064,13 +1225,21 @@ function appendChildGroup(
  * boundary because the exposed combinator signature names the library's own
  * rule type, which callers outside n4s cannot construct precisely.
  */
-const arrayOfRule = enforce.isArrayOf as (
+type ArrayCombinator = (
   ...rules: IntrospectableSchema[]
 ) => IntrospectableSchema;
 
-const looseRule = enforce.loose as (
+type LooseCombinator = (
   schema: Record<string, IntrospectableSchema>,
 ) => IntrospectableSchema;
+
+const arrayOfRule = enforce.isArrayOf as ArrayCombinator;
+
+const looseRule = enforce.loose as LooseCombinator;
+
+type OptionalCombinator = (inner: IntrospectableSchema) => IntrospectableSchema;
+
+const optionalRule = enforce.optional as OptionalCombinator;
 
 function projectArrayRule(
   rule: IntrospectableSchema,
@@ -1097,17 +1266,19 @@ function hasWholeItemSelection(suffixes: AffectedSeg[][]): boolean {
  * Preserves optional-wrapped containers across projection: a rebuilt loose
  * rule would fail on nullish values that the original optional rule passes.
  */
-function preserveOptionality(original: any, rebuilt: any): any {
+function preserveOptionality(
+  original: IntrospectableSchema,
+  rebuilt: IntrospectableSchema,
+): IntrospectableSchema {
   if (!isNullishPassing(original)) return rebuilt;
-  return enforce.optional(rebuilt);
+  return optionalRule(rebuilt);
 }
 
-function isNullishPassing(rule: any): boolean {
+function isNullishPassing(rule: IntrospectableSchema): boolean {
+  const test = rule?.test;
+  if (typeof test !== 'function') return false;
   try {
-    return (
-      typeof rule?.test === 'function' &&
-      (rule.test(undefined) || rule.test(null))
-    );
+    return test(undefined) || test(null);
   } catch {
     // Probing must never break projection; use the rebuilt rule as-is.
     return false;
@@ -1125,15 +1296,64 @@ function filterSchemaResultsToAffected(
   results: SchemaRunResult[],
   affected: string[],
   data: unknown,
+  skip: string[] | null = null,
 ): SchemaRunResult[] {
   const affectedSet = new Set(affected.map(normalizeFieldName));
+  const skipSet = skipSetOf(skip);
   const kept = results.filter(result =>
-    isAffectedSchemaResult(result, affectedSet),
+    keepSchemaResult(result, affectedSet, skipSet),
   );
   if (kept.length > 0) {
     return kept;
   }
   return [{ pass: true, type: results[0]?.type ?? data }];
+}
+
+function skipSetOf(skip: string[] | null): Set<string> {
+  return new Set((skip ?? []).map(normalizeFieldName));
+}
+
+function keepSchemaResult(
+  result: SchemaRunResult,
+  affectedSet: Set<string>,
+  skipSet: Set<string>,
+): boolean {
+  return (
+    !isSkippedSchemaResult(result, skipSet) &&
+    isAffectedSchemaResult(result, affectedSet)
+  );
+}
+
+/**
+ * Whether a schema failure targets a skipped field (or its descendant).
+ * Suite `skip()` selection applies to user tests; synthesized schema tests
+ * must honor it too, or the projected path would over-execute skipped
+ * fields that the focused path (`applySchemaFocus`) omits.
+ */
+function isSkippedSchemaResult(
+  result: SchemaRunResult,
+  skipSet: Set<string>,
+): boolean {
+  if (result.pass || skipSet.size === 0) {
+    return false;
+  }
+  const failureName = (result.path ?? []).map(String).join('.');
+  if (!failureName) {
+    return false;
+  }
+  return isSkippedFailureName(failureName, skipSet);
+}
+
+function isSkippedFailureName(
+  failureName: string,
+  skipSet: Set<string>,
+): boolean {
+  for (const name of skipSet) {
+    if (failureName === name || failureName.startsWith(`${name}.`)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function isAffectedSchemaResult(

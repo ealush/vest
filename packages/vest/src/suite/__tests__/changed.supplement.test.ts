@@ -258,18 +258,16 @@ describe('changed() supplement exactly-once execution', () => {
       b: enforce.isString(),
     });
     const suite = create((): void => {}, schema);
-    // @ts-expect-error - acceptance probe: runtime data omits required key
-    // 'b', which the loose input type requires
-    const data: { a: string; b: string } = { a: 'x' };
+    const data = { a: 'x', b: 'present-for-type-inference' };
+    Reflect.deleteProperty(data, 'b');
 
     const full = await suite.run(data);
     expect(full.hasErrors('a')).toBe(true);
 
     // The failure is latent, not invented: unshadowed, the full run
     // reports the absent required member too.
-    // @ts-expect-error - acceptance probe: runtime data omits required key
-    // 'b', which the loose input type requires
-    const unshadowedData: { a: string; b: string } = { a: 'ok-ok-ok' };
+    const unshadowedData = { a: 'ok-ok-ok', b: 'present-for-type-inference' };
+    Reflect.deleteProperty(unshadowedData, 'b');
     const unshadowed = await suite.run(unshadowedData);
     expect(unshadowed.hasErrors('b')).toBe(true);
 
@@ -285,15 +283,13 @@ describe('changed() supplement exactly-once execution', () => {
       b: enforce.isString(),
     });
     const suite = create((): void => {}, schema);
-    // @ts-expect-error - acceptance probe: runtime data omits required key
-    // 'b', which the shape input type requires
-    const data: { a: string; b: string } = { a: 'x' };
+    const data = { a: 'x', b: 'present-for-type-inference' };
+    Reflect.deleteProperty(data, 'b');
 
     // The failure is latent, not invented: unshadowed, the full run
     // reports the absent required member too.
-    // @ts-expect-error - acceptance probe: runtime data omits required key
-    // 'b', which the shape input type requires
-    const unshadowedData: { a: string; b: string } = { a: 'ok-ok-ok' };
+    const unshadowedData = { a: 'ok-ok-ok', b: 'present-for-type-inference' };
+    Reflect.deleteProperty(unshadowedData, 'b');
     const unshadowed = await suite.run(unshadowedData);
     expect(unshadowed.hasErrors('b')).toBe(true);
 
@@ -337,6 +333,51 @@ describe('changed() supplement exactly-once execution', () => {
 
     const changed = await suite.changed('b').run({ a: 'x', b: undefined });
     expect(changed.hasErrors('b')).toBe(true);
+  });
+
+  it('flat supplement ignores non-enumerable members of partial tops', async () => {
+    const schema = enforce.partial({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'present-for-type-inference' };
+    Object.defineProperty(data, 'b', {
+      enumerable: false,
+      value: undefined,
+    });
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('a')).toBe(true);
+    expect(full.hasErrors('b')).toBe(false);
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(false);
+  });
+
+  it('nested supplement ignores non-enumerable members of partial containers', async () => {
+    const schema = enforce.shape({
+      profile: enforce.partial({
+        a: enforce.isString().longerThan(5),
+        b: enforce.isString(),
+      }),
+    });
+    const suite = create((): void => {}, schema);
+    const data = {
+      profile: { a: 'x', b: 'present-for-type-inference' },
+    };
+    Object.defineProperty(data.profile, 'b', {
+      enumerable: false,
+      value: undefined,
+    });
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('profile.a')).toBe(true);
+    expect(full.hasErrors('profile.b')).toBe(false);
+
+    const changed = await suite.changed(['profile.a', 'profile.b']).run(data);
+    expect(changed.hasErrors('profile.a')).toBe(true);
+    expect(changed.hasErrors('profile.b')).toBe(false);
   });
 
   it('full-fallback path executes each member validator at most once', async () => {

@@ -696,11 +696,13 @@ function appendFlatMember(
 }
 
 /**
- * Presence (not value) decides absence: an explicit-undefined member is
- * evaluated by container iteration, while a genuinely missing key is not.
+ * Partial containers iterate own enumerable keys. Explicit undefined is
+ * therefore provided only when its property participates in that iteration.
  */
 function isPresentKey(data: unknown, key: string): boolean {
-  return isObject(data) && hasOwnProperty(data, key);
+  return (
+    isObject(data) && Object.prototype.propertyIsEnumerable.call(data, key)
+  );
 }
 
 function skipAbsentMember(run: FlatMemberRun): boolean {
@@ -1629,7 +1631,7 @@ function isAbsentPartialMember(
   value: Record<string, unknown>,
   key: string,
 ): boolean {
-  return context.absentValid && !hasOwnProperty(value, key);
+  return context.absentValid && !isPresentKey(value, key);
 }
 
 function memberPrecedesFailure(index: number, failedIndex: number): boolean {

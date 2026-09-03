@@ -171,7 +171,7 @@ describe('item relationships', () => {
 
   it('converging diamonds emit one edge, not 2^d copies', () => {
     // The same member reachable via several same-depth paths (here via
-    // both `a` and `b`) yields byte-identical edges; describe() keeps one.
+    // both members) yields byte-identical edges; describe() keeps one.
     const inner = enforce.shape({
       country: enforce.isString(),
       state: enforce.isString().dependsOn($ => $.country),

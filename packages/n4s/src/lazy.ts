@@ -111,7 +111,8 @@ function collectItemRelationships(
   // Dedupe identical edges at every level: converging diamonds (the same
   // member reachable via several same-depth paths) otherwise emit 2^d
   // copies of one logical edge. Identity is structural — same source,
-  // target, effect and flags — so merging changes nothing downstream.
+  // target, effect, metadata and flags — so merging changes nothing
+  // downstream.
   // (Traversal still visits shared subtrees repeatedly; composition-time
   // cost on developer-authored schemas only, no output explosion.)
   const emittedKeys = new Set<string>();

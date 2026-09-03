@@ -6,7 +6,9 @@ import { create, test } from '../../vest';
 import {
   buildProjectedSchema,
   expandAffectedWithSources,
+  filterSchemaResultsToAffected,
 } from '../useCreateSuiteRunner';
+import type { SchemaRunResult } from '../useCreateSuiteRunner';
 
 /**
  * Executable view of a projected fragment. The generic schema type cannot
@@ -244,7 +246,103 @@ describe('changed() source-retaining projection', () => {
     expect(seen).toContain('group.rows.1.country');
   });
 
-  it('skip() narrows synthesized schema failures', async () => {
+  it('skip() narrows synthesized schema failures by exact name', async () => {
+    // Suite tests use isString (pass on 'x'); only schema synthesis fails.
+    const schema = enforce.shape({
+      nick: enforce.isString().longerThan(5),
+    });
+    const suite = create(data => {
+      test('nick', () => {
+        enforce(data.nick).isString();
+      });
+    }, schema);
+
+    const data = { nick: 'x' };
+    const unskipped = await suite.changed('nick').run(data);
+    expect(unskipped.hasErrors('nick')).toBe(true);
+
+    // omit() honors the top-level skip and the post-filter agrees.
+    const skipped = await suite
+      .focus({ skip: 'nick' })
+      .changed('nick')
+      .run(data);
+    expect(skipped.hasErrors('nick')).toBe(false);
+  });
+
+  it('failure filtering: exact skips, parent keeps, coercion equality', () => {
+    // Nested skip names are unreachable through the typed focus API, so
+    // the post-filter contract is pinned directly: exact skips drop,
+    // parent skips do not (runtime parity), parent matching keeps in both
+    // directions, root failures stay, numeric coercions ('1' vs 1) compare
+    // equal, and dotted record keys keep the historical keep-behavior
+    // (dedupe collisions for them are handled by structured result keys).
+    const failure = (
+      path: readonly string[],
+      message = 'invalid',
+    ): SchemaRunResult => ({ pass: false, path, message });
+    const data = {};
+    const live = (results: SchemaRunResult[]): boolean =>
+      results.some(result => !result.pass);
+
+    // Exact skip drops (an empty keep-set falls back to a pass entry).
+    expect(
+      live(
+        filterSchemaResultsToAffected(
+          [failure(['profile', 'state'])],
+          ['profile'],
+          data,
+          ['profile.state'],
+        ),
+      ),
+    ).toBe(false);
+
+    // Parent skip does not suppress nested synthesis (runtime parity):
+    // the failure is affected, and only an exact skip drops it.
+    expect(
+      live(
+        filterSchemaResultsToAffected(
+          [failure(['profile', 'state'])],
+          ['profile.state'],
+          data,
+          ['profile'],
+        ),
+      ),
+    ).toBe(true);
+
+    // Numeric coercions compare equal on both sides.
+    expect(
+      live(
+        filterSchemaResultsToAffected(
+          [failure(['dictionary', '1', 'state'])],
+          ['dictionary.1.country', 'dictionary.1.state'],
+          data,
+          null,
+        ),
+      ),
+    ).toBe(true);
+
+    // Dotted record keys keep the historical keep-behavior.
+    expect(
+      live(
+        filterSchemaResultsToAffected(
+          [failure(['dictionary', 'a.b', 'state'])],
+          ['dictionary.a'],
+          data,
+          null,
+        ),
+      ),
+    ).toBe(true);
+
+    // Pathless failures read as global: kept, never skipped.
+    expect(
+      live(filterSchemaResultsToAffected([failure([])], ['a'], data, ['a'])),
+    ).toBe(true);
+  });
+
+  it('skip() of a parent does not suppress nested synthesis', async () => {
+    // Runtime skip() matches user tests by exact field name; synthesized
+    // schema tests mirror that — skipping 'profile' leaves a nested
+    // 'profile.state' failure in place, exactly as a user test there would.
     const schema = enforce.shape({
       profile: enforce.shape({
         country: enforce.isString(),
@@ -258,23 +356,75 @@ describe('changed() source-retaining projection', () => {
       test('profile.country', () => {
         enforce(data.profile.country).isString();
       });
-      test('profile.state', () => {
-        enforce(data.profile.state).isString();
-      });
     }, schema);
 
     const data = { profile: { country: 'US', state: 'x' } };
-    const unskipped = await suite.changed('profile.country').run(data);
-    expect(unskipped.hasErrors('profile.state')).toBe(true);
-
-    // Skipping the subtree must suppress its synthesized failure — the
-    // projected path must honor skip() like the focused path does.
     const skipped = await suite
       .focus({ skip: 'profile' })
       .changed('profile.country')
       .run(data);
-    expect(skipped.hasErrors('profile.state')).toBe(false);
-    expect(skipped.hasErrors('profile.country')).toBe(false);
+    expect(skipped.hasErrors('profile.state')).toBe(true);
+  });
+
+  it('record numeric keys: supplement dispatches stringified', async () => {
+    // Affected paths coerce numeric segments to numbers, but record keys
+    // stay strings at runtime — the supplement must match across that.
+    const schema = enforce.shape({
+      dictionary: enforce.record(
+        enforce.shape({
+          country: enforce.isString(),
+          state: enforce
+            .isString()
+            .longerThan(5)
+            .dependsOn($ => $.country),
+        }),
+      ),
+    });
+    const seen: string[] = [];
+    const suite = create(data => {
+      test('dictionary.1.country', () => {
+        seen.push('dictionary.1.country');
+        enforce(data.dictionary['1'].country).isString();
+      });
+    }, schema);
+
+    const data = {
+      dictionary: {
+        '0': { country: 'US', state: 'x' },
+        '1': { country: 'CA', state: 'x' },
+      },
+    };
+    const changed = await suite.changed('dictionary.1.country').run(data);
+    expect(changed.hasErrors('dictionary.1.state')).toBe(true);
+    expect(changed.hasErrors('dictionary.0.state')).toBe(false);
+    expect(seen).toContain('dictionary.1.country');
+  });
+
+  it('primitive containers: per-member failures without graphs', async () => {
+    // Arrays/records of primitives carry no dependency graph, but
+    // per-member attribution must still work — first-failure shadowing
+    // applies. Values stay type-valid ('xx' fails longerThan, not isString).
+    const schema = enforce.shape({
+      tags: enforce.isArrayOf(enforce.isString().longerThan(5)),
+      dictionary: enforce.record(enforce.isString().longerThan(5)),
+    });
+    const seen: string[] = [];
+    const suite = create(data => {
+      test('tags.1', () => {
+        seen.push('tags.1');
+        enforce(data.tags[1]).isString();
+      });
+    }, schema);
+
+    const data = { tags: ['xx', 'yy'], dictionary: { a: 'xx', b: 'yy' } };
+    const changedTags = await suite.changed('tags.1').run(data);
+    expect(changedTags.hasErrors('tags.1')).toBe(true);
+    expect(changedTags.hasErrors('tags.0')).toBe(false);
+    expect(seen).toContain('tags.1');
+
+    const changedRecord = await suite.changed('dictionary.b').run(data);
+    expect(changedRecord.hasErrors('dictionary.b')).toBe(true);
+    expect(changedRecord.hasErrors('dictionary.a')).toBe(false);
   });
 
   it('deferred rooted validation timing is observable', () => {

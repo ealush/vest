@@ -38,7 +38,7 @@ import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 import { getAffectedFields, normalizeFieldName } from './changed';
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 
-type SchemaRunResult = {
+export type SchemaRunResult = {
   readonly message?: string;
   readonly pass: boolean;
   readonly path?: readonly string[];
@@ -389,7 +389,7 @@ function runSchemaWithParse(
 ): SchemaRunResult[] {
   const nestedAffected = getNestedChangedAffected(schema, changedAffected);
   if (nestedAffected == null) {
-    return runExecutableSchema(applySchemaFocus(schema, modifiers), data);
+    return runFlatSchema(schema, modifiers, data, changedAffected);
   }
   // Retain dependency sources (local siblings, $.root providers) so the
   // projected fragment still composes to a valid graph. Failures stay
@@ -406,6 +406,30 @@ function runSchemaWithParse(
   // not take focused modifiers, unlike `applySchemaFocus`).
   const skip = buildArrayProp(modifiers.skip);
   return filterSchemaResultsToAffected(merged, nestedAffected, data, skip);
+}
+
+/**
+ * Runs the top-level-only path (unchanged `pick`/`omit` focus). `changed()`
+ * runs additionally narrow synthesized failures by `skip()` — nested skip
+ * names are no-ops in `omit()`, so the post-filter covers them. Plain runs
+ * and empty changes pass through untouched.
+ */
+function runFlatSchema(
+  schema: IntrospectableSchema,
+  modifiers: { only?: unknown; skip?: unknown },
+  data: unknown,
+  changedAffected?: string[] | null,
+): SchemaRunResult[] {
+  const result = runExecutableSchema(applySchemaFocus(schema, modifiers), data);
+  if (changedAffected == null || changedAffected.length === 0) {
+    return result;
+  }
+  return filterSchemaResultsToAffected(
+    result,
+    changedAffected,
+    data,
+    buildArrayProp(modifiers.skip),
+  );
 }
 
 /**
@@ -472,7 +496,7 @@ function isBoundaryError(error: unknown): boolean {
  * failure filtering is needed, null otherwise.
  */
 function getNestedChangedAffected(
-  schema: any,
+  schema: IntrospectableSchema,
   affected: string[] | null | undefined,
 ): string[] | null {
   if (!affected || !isN4sSchema(schema)) {
@@ -761,6 +785,23 @@ function collectArraySupplement(
   expanded: string[],
   data: unknown,
 ): SchemaRunResult[] {
+  try {
+    return collectArraySupplementInner(schema, expanded, data);
+  } catch (error) {
+    // Best-effort augmentation only: a member fragment that cannot even
+    // project (e.g. an orphaned rooted edge at composition) must not break
+    // the run — the main run and its fallback still cover it. Anything that
+    // is not a schema boundary failure stays loud.
+    if (isBoundaryError(error)) return [];
+    throw error;
+  }
+}
+
+function collectArraySupplementInner(
+  schema: IntrospectableSchema,
+  expanded: string[],
+  data: unknown,
+): SchemaRunResult[] {
   const topSchema = schema.__schema;
   if (topSchema === undefined) return [];
   const byTop = groupAffectedByTopKey(topSchema, expanded);
@@ -892,10 +933,24 @@ function indexHeads(suffixes: AffectedSeg[][]): number[] {
 function keyHeads(suffixes: AffectedSeg[][]): string[] {
   const keys = new Set<string>();
   for (const suffix of suffixes) {
-    const head = suffix[0];
-    if (typeof head === 'string') keys.add(head);
+    addKeyHead(suffix[0], keys);
   }
   return [...keys];
+}
+
+/**
+ * Record keys are strings at runtime, but affected paths coerce numeric
+ * segments to numbers (`parseAffectedPath`). Accept both spellings so
+ * numeric record keys ('0', '1') dispatch to their member like any key.
+ */
+function addKeyHead(head: AffectedSeg, keys: Set<string>): void {
+  if (typeof head === 'string') {
+    keys.add(head);
+    return;
+  }
+  if (typeof head === 'number') {
+    keys.add(String(head));
+  }
 }
 
 function appendSingleIndex(
@@ -948,9 +1003,22 @@ function suffixesForMember(
 ): AffectedSeg[][] {
   const out: AffectedSeg[][] = [];
   for (const suffix of suffixes) {
-    if (suffix[0] === head) out.push(suffix.slice(1));
+    if (headMatches(suffix[0], head)) out.push(suffix.slice(1));
   }
   return out;
+}
+
+/**
+ * Matches a suffix head against a member key across the numeric coercion:
+ * affected paths spell record key '1' as number 1, runtime data keeps '1'.
+ */
+function headMatches(suffixHead: AffectedSeg, head: string | number): boolean {
+  if (suffixHead === head) return true;
+  return (
+    typeof head === 'string' &&
+    typeof suffixHead === 'number' &&
+    String(suffixHead) === head
+  );
 }
 
 function safeRunItem(
@@ -1004,7 +1072,9 @@ function mergeSupplementalResults(
 }
 
 function resultKey(result: SchemaRunResult): string {
-  return `${result.pass}|${(result.path ?? []).join('.')}|${result.message ?? ''}`;
+  // Paths stay structured (never re-joined) so dotted record keys cannot
+  // collide with nested paths when deduplicating merged results.
+  return `${result.pass}|${JSON.stringify(result.path ?? [])}|${result.message ?? ''}`;
 }
 
 /**
@@ -1292,7 +1362,7 @@ function isNullishPassing(rule: IntrospectableSchema): boolean {
  * a parent path of the other (affected 'profile' keeps failures at
  * 'profile.state', and a failure at 'profile' is relevant to 'profile.state').
  */
-function filterSchemaResultsToAffected(
+export function filterSchemaResultsToAffected(
   results: SchemaRunResult[],
   affected: string[],
   data: unknown,
@@ -1318,22 +1388,15 @@ function keepSchemaResult(
   affectedSet: Set<string>,
   skipSet: Set<string>,
 ): boolean {
-  return (
-    !isSkippedSchemaResult(result, skipSet) &&
-    isAffectedSchemaResult(result, affectedSet)
-  );
+  return !isSkippedName(result, skipSet) && isAffectedName(result, affectedSet);
 }
 
 /**
- * Whether a schema failure targets a skipped field (or its descendant).
- * Suite `skip()` selection applies to user tests; synthesized schema tests
- * must honor it too, or the projected path would over-execute skipped
- * fields that the focused path (`applySchemaFocus`) omits.
+ * Skip matching mirrors the runtime exactly: suite `skip()` applies to
+ * user tests by exact field name, so synthesized failures drop only on
+ * exact match. Pathless failures are never skipped (they read as global).
  */
-function isSkippedSchemaResult(
-  result: SchemaRunResult,
-  skipSet: Set<string>,
-): boolean {
+function isSkippedName(result: SchemaRunResult, skipSet: Set<string>): boolean {
   if (result.pass || skipSet.size === 0) {
     return false;
   }
@@ -1341,22 +1404,17 @@ function isSkippedSchemaResult(
   if (!failureName) {
     return false;
   }
-  return isSkippedFailureName(failureName, skipSet);
+  return skipSet.has(failureName);
 }
 
-function isSkippedFailureName(
-  failureName: string,
-  skipSet: Set<string>,
-): boolean {
-  for (const name of skipSet) {
-    if (failureName === name || failureName.startsWith(`${name}.`)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function isAffectedSchemaResult(
+/**
+ * Affected matching keeps string semantics (exact or parent either way):
+ * both sides already speak dotted strings, so numeric coercions compare
+ * equal and dotted record keys keep the historical keep-behavior rather
+ * than going silently clean. Dedupe collisions for dotted keys are handled
+ * separately via structured result keys.
+ */
+function isAffectedName(
   result: SchemaRunResult,
   affectedSet: Set<string>,
 ): boolean {
@@ -1364,23 +1422,26 @@ function isAffectedSchemaResult(
     return true;
   }
   const failureName = (result.path ?? []).map(String).join('.');
-  return !failureName || isAffectedFailureName(failureName, affectedSet);
+  if (!failureName) {
+    return true;
+  }
+  return affectedSetHas(affectedSet, failureName);
 }
 
-function isAffectedFailureName(
-  failureName: string,
+function affectedSetHas(
   affectedSet: Set<string>,
+  failureName: string,
 ): boolean {
   for (const name of affectedSet) {
-    if (
-      failureName === name ||
-      failureName.startsWith(`${name}.`) ||
-      name.startsWith(`${failureName}.`)
-    ) {
+    if (name === failureName || isEitherPrefix(name, failureName)) {
       return true;
     }
   }
   return false;
+}
+
+function isEitherPrefix(first: string, second: string): boolean {
+  return first.startsWith(`${second}.`) || second.startsWith(`${first}.`);
 }
 
 const N4S_VENDOR = 'n4s';

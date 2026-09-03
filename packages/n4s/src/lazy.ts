@@ -136,7 +136,11 @@ function createRecordWrapper(): (
     ) => RuleInstance<unknown, unknown[]>;
     const rule = arg2 !== undefined ? recordRule(arg1, arg2) : recordRule(arg1);
     const valueRule = arg2 !== undefined ? arg2 : arg1;
-    if (isItemSchemaLike(valueRule)) {
+    // Store every object value rule — not just graph-carrying ones — so
+    // per-member execution (e.g. suite.changed() projection) can reach
+    // primitive members too. describe() output is unchanged: members
+    // without resolved relationships simply contribute no edges.
+    if (valueRule !== null && typeof valueRule === 'object') {
       (rule as unknown as Record<symbol, unknown>)[ITEM_SCHEMA] = valueRule;
     }
     return rule;
@@ -413,12 +417,11 @@ const schemaRulesWithArrayChaining = {
       );
       return RuleRunReturn.create(result, value);
     });
-    // Store item schema for relationship rebasing if single schema arg
+    // Store the single member rule (graph-carrying or primitive) so
+    // per-member execution can reach it; describe() rebasing skips
+    // members without resolved relationships, so output is unchanged.
     if (rules.length === 1 && rules[0] && typeof rules[0] === 'object') {
-      const itemSchema = rules[0] as any;
-      if (itemSchema.__schema || itemSchema[RESOLVED_RELATIONSHIPS]) {
-        (rule as any)[ITEM_SCHEMA] = itemSchema;
-      }
+      (rule as any)[ITEM_SCHEMA] = rules[0];
     } else if (rules.length > 1) {
       // Multi-rule arrays accept an element matching ANY member rule (union
       // semantics), so no single member owns the item graph. Store every
@@ -443,10 +446,7 @@ const schemaRulesWithArrayChaining = {
       return RuleRunReturn.create(result, value);
     });
     if (rules.length === 1 && rules[0] && typeof rules[0] === 'object') {
-      const itemSchema = rules[0] as any;
-      if (itemSchema.__schema || itemSchema[RESOLVED_RELATIONSHIPS]) {
-        (rule as any)[ITEM_SCHEMA] = itemSchema;
-      }
+      (rule as any)[ITEM_SCHEMA] = rules[0];
     } else if (rules.length > 1) {
       // Same union semantics as isArrayOf above: keep every graph-carrying
       // member so describe() rebases the union instead of dropping the graph.

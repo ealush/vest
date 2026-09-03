@@ -165,6 +165,25 @@ travelers[$item].passportCountry → travelers[$item].passportNumber
 
 The concrete index is bound at runtime. The binding is structural, not numeric.
 
+Records work the same way with dynamic keys: a dependency inside a record
+value stays scoped to the **same key** — no key syntax needed:
+
+```ts
+const schema = enforce.shape({
+  dictionary: enforce.record(
+    enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    }),
+  ),
+});
+```
+
+If `dictionary.home.country` changes, only `dictionary.home.state` is
+affected. Numeric record keys (`'0'`, `'1'`) are matched the same way;
+a key containing a dot cannot be addressed unambiguously with dotted
+`changed()` names — prefer non-dotted keys when using `suite.changed()`.
+
 ## Dependencies Across Nesting Levels
 
 Most relationships are local. For the unusual case that must reference outside its scope, use `$.root`:
@@ -247,7 +266,7 @@ as the affected set. This preserves `only()` semantics while giving frameworks a
 
 `include()` then becomes a lower-level escape hatch, not the primary way to express cross-field behavior.
 
-`schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs.
+`schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs. `suite.changed()` additionally re-runs the projected rule per affected array index / record key, so an affected member failure hidden behind an earlier unaffected one is still surfaced.
 
 ## Dependencies Are Not Automatically Transitive
 
@@ -379,15 +398,15 @@ Consumable by Vest, framework adapters, devtools, docs, and agents. Relationship
 
 Schema Relationships are **metadata + `suite.changed()` in V1**. `describe()` records the graph without running a suite; `suite.changed()` consumes it to select affected tests.
 
-| Feature                                     | Effect on `describe()`                                                                                                                  | Effect on suite `run()` / `suite.changed()` in V1                                                             |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `skipWhen` (retains)                        | records                                                                                                                                 | `run()` unchanged; `changed()` treats dependent as candidate but Vest skips if `skipWhen` hides it            |
-| `omitWhen` (removes)                        | records                                                                                                                                 | `run()` unchanged; `changed()` still records edge but omitted test never runs                                 |
-| `optional('field')`                         | records                                                                                                                                 | `run()` unchanged — edge exists even if optional field is absent; `changed()` includes it when source changes |
-| `include().when()`                          | **does not record** — `include` is a Vest suite modifier, not an n4s schema relationship; `schema.describe()` has no `include` metadata | `changed()` remains the interaction-aware operation                                                           |
-| `only` / `skip` / `onlyGroup` / `skipGroup` | records                                                                                                                                 | **not affected** — `only('password')` does not auto-include `confirmPassword`; `changed('password')` does     |
-| `group` / `each`                            | records (rebased)                                                                                                                       | `run()` unchanged; `changed()` respects rebasing and same-item scoping                                        |
-| `warn`                                      | records                                                                                                                                 | `run()` unchanged; `changed()` includes warn dependents as normal tests                                       |
+| Feature                                     | Effect on `describe()`                                                                                                                  | Effect on suite `run()` / `suite.changed()` in V1                                                                                   |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `skipWhen` (retains)                        | records                                                                                                                                 | `run()` unchanged; `changed()` treats dependent as candidate but Vest skips if `skipWhen` hides it                                  |
+| `omitWhen` (removes)                        | records                                                                                                                                 | `run()` unchanged; `changed()` still records edge but omitted test never runs                                                       |
+| `optional('field')`                         | records                                                                                                                                 | `run()` unchanged — edge exists even if optional field is absent; `changed()` includes it when source changes                       |
+| `include().when()`                          | **does not record** — `include` is a Vest suite modifier, not an n4s schema relationship; `schema.describe()` has no `include` metadata | `changed()` remains the interaction-aware operation                                                                                 |
+| `only` / `skip` / `onlyGroup` / `skipGroup` | records (expansion ignores focus: `only('password')` does not auto-include `confirmPassword`)                                           | `changed('password')` does include it; `only` merges into the affected set; synthesized failures honor `skip()` by exact field name |
+| `group` / `each`                            | records (rebased)                                                                                                                       | `run()` unchanged; `changed()` respects rebasing and same-item scoping                                                              |
+| `warn`                                      | records                                                                                                                                 | `run()` unchanged; `changed()` includes warn dependents as normal tests                                                             |
 
 V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set expansion (flat, nested, reusable, array same-item, and root→array fan-out via run-time `data`). Only the `signal` overload is deferred:
 

@@ -26,6 +26,7 @@ import {
   isFunction,
   isNullish,
   isObject,
+  isUnsafeKey,
   withResolvers,
 } from 'vest-utils';
 
@@ -1799,10 +1800,21 @@ function appendTopGroup(
   if (segs.length === 0) return;
   const [top, ...rest] = segs as [AffectedSeg, ...AffectedSeg[]];
   if (typeof top !== 'string') return;
-  if (!hasOwnProperty(topSchema, top)) return;
+  // Unknown keys stay grouped: the fragment retains them as extra-key
+  // sentinels so a strict shape() failure the full run reports is not lost.
+  // Unsafe unknown keys are still dropped: a sentinel cannot sit in a
+  // plain-object fragment (prototype setter instead of an own key).
+  if (isUnsafeUnknownKey(topSchema, top)) return;
   const list = byTop.get(top) ?? [];
   list.push(rest);
   byTop.set(top, list);
+}
+
+function isUnsafeUnknownKey(
+  topSchema: Record<string, IntrospectableSchema>,
+  key: string,
+): boolean {
+  return !hasOwnProperty(topSchema, key) && isUnsafeKey(key);
 }
 
 /**
@@ -1831,7 +1843,33 @@ function projectTopSchema(
       projectedTop[top] = outcome;
     }
   }
+  appendUnknownTopKeys(topSchema, byTop, projectedTop);
   return { projectedTop, excluded };
+}
+
+function appendUnknownTopKeys(
+  topSchema: Record<string, IntrospectableSchema>,
+  byTop: Map<string, AffectedSeg[][]>,
+  projectedTop: Record<string, IntrospectableSchema>,
+): void {
+  for (const top of byTop.keys()) {
+    if (!hasOwnProperty(topSchema, top)) {
+      projectedTop[top] = unknownExtraKeyRule();
+    }
+  }
+}
+
+/**
+ * Sentinel for an affected key the schema does not declare. It fails exactly
+ * when the key is present (mirroring a strict shape() extra-key failure,
+ * whose path is the key itself) and passes when the key is absent, so the
+ * post-filter — not the fragment — keeps deciding affectedness. Known
+ * blind spot: an explicitly undefined-valued extra key passes the sentinel
+ * while a strict shape() fails it — value-only rules cannot distinguish
+ * absent from undefined-valued.
+ */
+function unknownExtraKeyRule(): IntrospectableSchema {
+  return enforce.condition((value: unknown) => value === undefined);
 }
 
 /**
@@ -1950,7 +1988,20 @@ function projectShapeChildren(
     if (outcome === FRAGMENT_EXCLUDED) continue;
     if (outcome !== undefined) filtered[key] = outcome;
   }
+  appendUnknownChildKeys(inner, byKey, filtered);
   return filtered;
+}
+
+function appendUnknownChildKeys(
+  inner: Record<string, IntrospectableSchema>,
+  byKey: Map<string, AffectedSeg[][]>,
+  filtered: Record<string, IntrospectableSchema>,
+): void {
+  for (const key of byKey.keys()) {
+    if (!hasOwnProperty(inner, key)) {
+      filtered[key] = unknownExtraKeyRule();
+    }
+  }
 }
 
 function isUnchangedShape(
@@ -1982,7 +2033,10 @@ function appendChildGroup(
 ): boolean {
   const [head, ...rest] = suffix as [AffectedSeg, ...AffectedSeg[]];
   if (typeof head !== 'string') return false;
-  if (!hasOwnProperty(inner, head)) return true;
+  // Unknown keys stay grouped so nested fragments retain their extra-key
+  // sentinels. Unsafe ones keep the whole rule instead: a sentinel cannot
+  // sit in a plain-object fragment (prototype setter, not an own key).
+  if (!hasOwnProperty(inner, head) && isUnsafeKey(head)) return false;
   const list = byKey.get(head) ?? [];
   list.push(rest);
   byKey.set(head, list);

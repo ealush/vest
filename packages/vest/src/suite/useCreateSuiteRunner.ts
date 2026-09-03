@@ -1,5 +1,11 @@
-import { enforce } from 'n4s';
-import { ITEM_SCHEMA } from 'n4s/src/schema/dependencyResolver';
+import { enforce, ITEM_SCHEMA } from 'n4s';
+import type {
+  DescribeResult,
+  ItemSegment,
+  PropertySegment,
+  SchemaDependency,
+  SchemaPath,
+} from 'n4s';
 import {
   assign,
   asArray,
@@ -352,45 +358,93 @@ function tryParseSchema(
  * 1) try parse
  * 2) if parse succeeds, treat it as the authoritative validation output
  * 3) on expected parse validation failures, fallback to run(raw)
+ *
+ * changed() with nested affected paths cannot use enforce.pick (it selects
+ * top-level keys only, silently dropping nested validation). Run a projected
+ * schema limited to the affected subtrees instead: n4s shape/loose reports
+ * only its first failure, so running everything and filtering afterward is
+ * order-dependent — an unrelated earlier field would hide the affected
+ * dependency. Failures are still narrowed to the affected paths afterward.
+ * Top-level-only focus keeps the existing pick/omit behavior identical.
  */
 function runSchemaWithParse(
-  schema: any,
+  schema: IntrospectableSchema,
   data: unknown,
   modifiers: { only?: unknown; skip?: unknown },
   changedAffected?: string[] | null,
 ): SchemaRunResult[] {
-  // changed() with nested affected paths cannot use enforce.pick (it selects
-  // top-level keys only, silently dropping nested validation). Run a projected
-  // schema limited to the affected subtrees instead: n4s shape/loose reports
-  // only its first failure, so running everything and filtering afterward is
-  // order-dependent — an unrelated earlier field would hide the affected
-  // dependency. Failures are still narrowed to the affected paths afterward.
-  // Top-level-only focus keeps the existing pick/omit behavior identical.
   const nestedAffected = getNestedChangedAffected(schema, changedAffected);
-  const executableSchema = resolveExecutableSchema(
-    schema,
-    modifiers,
-    nestedAffected,
+  if (nestedAffected == null) {
+    return runExecutableSchema(applySchemaFocus(schema, modifiers), data);
+  }
+  // Retain dependency sources (local siblings, $.root providers) so the
+  // projected fragment still composes to a valid graph. Failures stay
+  // narrowed to the original affected paths afterward.
+  const expanded = expandAffectedWithSources(schema, nestedAffected);
+  const projectedSchema = buildProjectedSchema(schema, expanded);
+  const result = runProjectedOrFull(projectedSchema, schema, modifiers, data);
+  const merged = mergeSupplementalResults(
+    result,
+    collectArraySupplement(schema, expanded, data),
   );
+  return filterSchemaResultsToAffected(merged, nestedAffected, data);
+}
 
-  let result: SchemaRunResult[];
+/**
+ * Runs the projected fragment, falling back to the full schema run with
+ * post-filtering when the fragment cannot validate standalone (e.g. an
+ * exotic rooted edge the source expansion did not retain).
+ */
+function runProjectedOrFull(
+  projectedSchema: IntrospectableSchema | null,
+  schema: IntrospectableSchema,
+  modifiers: { only?: unknown; skip?: unknown },
+  data: unknown,
+): SchemaRunResult[] {
+  if (!projectedSchema) {
+    return runExecutableSchema(applySchemaFocus(schema, modifiers), data);
+  }
+  try {
+    return runExecutableSchema(projectedSchema, data);
+  } catch (error) {
+    if (!isBoundaryError(error)) throw error;
+    return runExecutableSchema(applySchemaFocus(schema, modifiers), data);
+  }
+}
+
+/**
+ * Runs a schema via parse-then-run, falling back to run(raw) when parse is
+ * unavailable or reports an expected validation failure.
+ */
+function runExecutableSchema(
+  executableSchema: any,
+  data: unknown,
+): SchemaRunResult[] {
   const parseResult = tryParseSchema(executableSchema, data);
   if (parseResult) {
-    result = parseResult;
-  } else if (isFunction(executableSchema.run)) {
-    result = normalizeSchemaRunResult(executableSchema.run(data), data);
-  } else {
-    result = [
-      {
-        pass: true,
-        type: data,
-      },
-    ];
+    return parseResult;
   }
+  if (isFunction(executableSchema.run)) {
+    return normalizeSchemaRunResult(executableSchema.run(data), data);
+  }
+  return [
+    {
+      pass: true,
+      type: data,
+    },
+  ];
+}
 
-  return nestedAffected
-    ? filterSchemaResultsToAffected(result, nestedAffected, data)
-    : result;
+/**
+ * Detects standalone-boundary rejections. Name-checked instead of
+ * instanceof: the error can originate from a second copy of the n4s classes
+ * when the executable schema was built through the packaged entry point.
+ */
+function isBoundaryError(error: unknown): boolean {
+  return (
+    isObject(error) &&
+    (error as { name?: unknown }).name === 'EnforceSchemaError'
+  );
 }
 
 /**
@@ -414,17 +468,6 @@ function isNestedFieldName(field: unknown): boolean {
   return typeof field === 'string' && /[.[]/.test(field);
 }
 
-function resolveExecutableSchema(
-  schema: any,
-  modifiers: { only?: unknown; skip?: unknown },
-  nestedAffected: string[] | null,
-): any {
-  if (!nestedAffected) {
-    return applySchemaFocus(schema, modifiers);
-  }
-  return buildProjectedSchema(schema, nestedAffected) ?? schema;
-}
-
 type AffectedSeg = string | number;
 
 function parseAffectedPath(field: string): AffectedSeg[] {
@@ -437,6 +480,381 @@ function parseAffectedPath(field: string): AffectedSeg[] {
 }
 
 /**
+ * Structural view of a schema rule for projection introspection.
+ * Symbol-keyed slots (ITEM_SCHEMA and friends) cross the package boundary
+ * and cannot be named in public types, so they are read through SymbolSlots
+ * at the single interop point below instead of leaking `any`.
+ */
+type IntrospectableSchema = {
+  readonly __schema?: Record<string, IntrospectableSchema>;
+  readonly describe?: () => DescribeResult;
+  /**
+   * Runtime validation entry point. Declared with method syntax (bivariant)
+   * on purpose: every rule tests unknown values at runtime, while each
+   * rule's declared input type is narrower. Used only for behavioral
+   * probing with probe-owned values — never to bypass argument checking.
+   */
+  test?(value: unknown): boolean;
+};
+
+const partialLikeCache = new WeakMap<object, boolean>();
+
+/**
+ * Whether a shape-like container accepts a missing-everything value, i.e.
+ * partial-style optionality. `__schema` carries only the key map — container
+ * kind (shape/loose vs partial) is invisible — so kind is probed
+ * behaviorally once per rule instance and cached. Unknown kinds retain the
+ * original rule (full-run parity) instead of risking a rebuild.
+ */
+function isPartialLikeContainer(rule: IntrospectableSchema): boolean {
+  if (typeof rule !== 'object' || rule === null) return false;
+  const cached = partialLikeCache.get(rule);
+  if (cached !== undefined) return cached;
+  const partialLike = probeEmptyAcceptance(rule);
+  partialLikeCache.set(rule, partialLike);
+  return partialLike;
+}
+
+function probeEmptyAcceptance(rule: IntrospectableSchema): boolean {
+  const test = rule.test;
+  if (test === undefined) return true;
+  try {
+    return test({}) === true;
+  } catch {
+    // A probe that throws reveals nothing — retain original semantics.
+    return true;
+  }
+}
+
+type SymbolSlots = Record<symbol, unknown>;
+
+function symbolSlotOf(rule: IntrospectableSchema, slot: symbol): unknown {
+  return (rule as unknown as SymbolSlots)[slot];
+}
+
+type MatchableDependency = {
+  readonly target: string[];
+  readonly sources: string[][];
+};
+
+/**
+ * Expands the affected set with the dependency sources its targets need to
+ * compose (local siblings, $.root providers). Without this, projecting to
+ * the affected targets alone orphans their sources and the fragment throws
+ * "depends on unknown field" at composition. Fixpoint so chains of retained
+ * targets keep their own sources too. Never throws: on any introspection
+ * failure the affected set passes through unchanged.
+ */
+export function expandAffectedWithSources(
+  schema: IntrospectableSchema,
+  affected: string[],
+): string[] {
+  const matchable = toMatchableDeps(getSchemaDependencies(schema));
+  if (matchable.length === 0) return affected;
+  const seen = new Set(affected);
+  let frontier = [...affected];
+  for (let round = 0; round < 10; round++) {
+    if (frontier.length === 0) break;
+    frontier = expandFrontier(frontier, matchable, seen);
+  }
+  return [...seen];
+}
+
+function expandFrontier(
+  frontier: string[],
+  deps: MatchableDependency[],
+  seen: Set<string>,
+): string[] {
+  const next: string[] = [];
+  for (const field of frontier) {
+    collectSourceFields(field, deps, seen, next);
+  }
+  return next;
+}
+
+function collectSourceFields(
+  field: string,
+  deps: MatchableDependency[],
+  seen: Set<string>,
+  out: string[],
+): void {
+  const parsed = parseAffectedPath(field).map(String);
+  for (const dep of deps) {
+    if (segmentsMatch(parsed, dep.target)) {
+      addDepSources(dep.sources, parsed, seen, out);
+    }
+  }
+}
+
+function addDepSources(
+  sources: string[][],
+  parsed: string[],
+  seen: Set<string>,
+  out: string[],
+): void {
+  for (const source of sources) {
+    addConcretizedSource(concretizeSource(source, parsed), seen, out);
+  }
+}
+
+function addConcretizedSource(
+  field: string | null,
+  seen: Set<string>,
+  out: string[],
+): void {
+  if (!field || seen.has(field)) return;
+  seen.add(field);
+  out.push(field);
+}
+
+/**
+ * Matches an affected path against a dependency target. Item segments ('*')
+ * match any single segment; a match in either direction (equal, or either
+ * side a parent path of the other) retains the sources, since validating a
+ * parent runs its children and validating a child needs its parent scope.
+ */
+function segmentsMatch(affected: string[], target: string[]): boolean {
+  const len = Math.min(affected.length, target.length);
+  for (let i = 0; i < len; i++) {
+    if (target[i] !== '*' && target[i] !== affected[i]) return false;
+  }
+  return true;
+}
+
+/**
+ * Concretizes a dependency source path against the affected path that pulled
+ * it in: item wildcards take the affected segment at the same position.
+ * When the affected path is shorter (e.g. a whole-array change retaining an
+ * item source), truncates to the longest concrete prefix so the whole branch
+ * is retained instead of guessing an index.
+ */
+function concretizeSource(source: string[], affected: string[]): string | null {
+  const out: string[] = [];
+  for (let i = 0; i < source.length; i++) {
+    const seg = source[i] as string;
+    if (seg !== '*') {
+      out.push(seg);
+      continue;
+    }
+    const fill = affected[i];
+    if (fill === undefined) break;
+    out.push(fill);
+  }
+  return out.length > 0 ? out.join('.') : null;
+}
+
+function toMatchableDeps(deps: SchemaDependency[]): MatchableDependency[] {
+  const out: MatchableDependency[] = [];
+  for (const dep of deps) {
+    const target = describeSegments(dep.target);
+    if (target) out.push({ target, sources: collectSourceSegments(dep) });
+  }
+  return out;
+}
+
+function collectSourceSegments(dep: SchemaDependency): string[][] {
+  const out: string[][] = [];
+  for (const source of dep.sources) {
+    const segs = describeSegments(source);
+    if (segs) out.push(segs);
+  }
+  return out;
+}
+
+function describeSegments(path: SchemaPath): string[] | null {
+  const out: string[] = [];
+  for (const seg of path) {
+    const str = describeSegment(seg);
+    if (str === null) return null;
+    out.push(str);
+  }
+  return out;
+}
+
+function describeSegment(seg: PropertySegment | ItemSegment): string | null {
+  if (seg.type === 'item') return '*';
+  return describePropertyKey(seg.key);
+}
+
+function describePropertyKey(key: PropertyKey): string | null {
+  if (typeof key === 'string' || typeof key === 'number') {
+    return String(key);
+  }
+  return null;
+}
+
+function getSchemaDependencies(
+  schema: IntrospectableSchema,
+): SchemaDependency[] {
+  try {
+    const describe = schema.describe;
+    if (describe === undefined) return [];
+    return describe().dependencies;
+  } catch {
+    // Introspection must never break a run: unprojectable schemas simply
+    // keep their affected set unexpanded (the full-run fallback covers them).
+    return [];
+  }
+}
+
+/**
+ * Per-index supplement for array projection. `isArrayOf` validates every
+ * item with one rule and reports only the first failing item, so a union
+ * projection can report an unaffected index whose failure the post-filter
+ * then drops — hiding the real affected failure (order-dependent). Running
+ * the projected item rule against each affected index and merging the
+ * results keeps every affected index visible. The main run stays
+ * authoritative for parsed data; these results only add failures.
+ */
+function collectArraySupplement(
+  schema: IntrospectableSchema,
+  expanded: string[],
+  data: unknown,
+): SchemaRunResult[] {
+  const topSchema = schema.__schema;
+  if (topSchema === undefined) return [];
+  const byTop = groupAffectedByTopKey(topSchema, expanded);
+  const out: SchemaRunResult[] = [];
+  for (const top of Object.keys(topSchema)) {
+    const rests = byTop.get(top);
+    if (rests === undefined) continue;
+    appendIndexFailures(topSchema[top], childValue(data, top), {
+      suffixes: rests,
+      sink: { basePath: [top], out },
+    });
+  }
+  return out;
+}
+
+function childValue(data: unknown, top: string): unknown {
+  if (!isObject(data)) return undefined;
+  const record: Record<string, unknown> = data;
+  return record[top];
+}
+
+type IndexRunSink = {
+  readonly basePath: string[];
+  out: SchemaRunResult[];
+};
+
+type IndexSelection = {
+  readonly suffixes: AffectedSeg[][];
+  readonly sink: IndexRunSink;
+};
+
+function appendIndexFailures(
+  rule: IntrospectableSchema,
+  value: unknown,
+  selection: IndexSelection,
+): void {
+  const item = singleItemSchema(rule);
+  if (item === null || !isArray(value)) return;
+  for (const index of affectedIndices(selection.suffixes)) {
+    appendSingleIndexFailures(item, value, index, selection);
+  }
+}
+
+function singleItemSchema(
+  rule: IntrospectableSchema,
+): IntrospectableSchema | null {
+  const item = symbolSlotOf(rule, ITEM_SCHEMA);
+  // Tuples and multi-rule arrays carry a list of element schemas, which a
+  // single item run cannot express — the main run covers those.
+  if (!isObject(item) || isArray(item)) return null;
+  return item as IntrospectableSchema;
+}
+
+function affectedIndices(suffixes: AffectedSeg[][]): number[] {
+  const indices = new Set<number>();
+  for (const suffix of suffixes) {
+    const head = suffix[0];
+    if (typeof head === 'number') indices.add(head);
+  }
+  return [...indices];
+}
+
+function appendSingleIndexFailures(
+  item: IntrospectableSchema,
+  value: readonly unknown[],
+  index: number,
+  selection: IndexSelection,
+): void {
+  const child: unknown = value[index];
+  if (child === undefined) return;
+  const itemSuffixes = suffixesForIndex(selection.suffixes, index);
+  const narrowed = projectRule(item, itemSuffixes);
+  const projected: IntrospectableSchema = narrowed ?? item;
+  const sink: IndexRunSink = {
+    basePath: [...selection.sink.basePath, String(index)],
+    out: selection.sink.out,
+  };
+  for (const result of prefixResults(
+    safeRunItem(projected, child),
+    sink.basePath,
+  )) {
+    sink.out.push(result);
+  }
+  appendIndexFailures(projected, child, { suffixes: itemSuffixes, sink });
+}
+
+function suffixesForIndex(
+  suffixes: AffectedSeg[][],
+  index: number,
+): AffectedSeg[][] {
+  const out: AffectedSeg[][] = [];
+  for (const suffix of suffixes) {
+    if (suffix[0] === index) out.push(suffix.slice(1));
+  }
+  return out;
+}
+
+function safeRunItem(
+  rule: IntrospectableSchema,
+  value: unknown,
+): SchemaRunResult[] {
+  try {
+    return runExecutableSchema(rule, value);
+  } catch (error) {
+    // A standalone item run can orphan a $.root edge that only composes in
+    // the full schema; skip the supplement then (the main run still covers
+    // the index, and the full-run fallback covers composition gaps).
+    if (isBoundaryError(error)) return [];
+    throw error;
+  }
+}
+
+function prefixResults(
+  results: SchemaRunResult[],
+  path: string[],
+): SchemaRunResult[] {
+  return results.map(result => ({
+    ...result,
+    path: [...path, ...(result.path ?? [])],
+  }));
+}
+
+function mergeSupplementalResults(
+  main: SchemaRunResult[],
+  extra: SchemaRunResult[],
+): SchemaRunResult[] {
+  if (extra.length === 0) return main;
+  const seen = new Set(main.map(resultKey));
+  const out = [...main];
+  for (const result of extra) {
+    const key = resultKey(result);
+    if (!seen.has(key)) {
+      seen.add(key);
+      out.push(result);
+    }
+  }
+  return out;
+}
+
+function resultKey(result: SchemaRunResult): string {
+  return `${result.pass}|${(result.path ?? []).join('.')}|${result.message ?? ''}`;
+}
+
+/**
  * Builds a schema limited to the affected subtrees so unrelated validators
  * never execute during a nested changed() run. Top-level keys outside the
  * affected set are dropped; nested shape containers are rebuilt with only
@@ -444,8 +862,24 @@ function parseAffectedPath(field: string): AffectedSeg[] {
  * suffixes across indices. Returns null when nothing is projectable, in
  * which case the caller falls back to the full schema run with post-filter.
  */
-function buildProjectedSchema(schema: any, affected: string[]): any | null {
-  const topSchema = schema?.__schema as Record<string, any> | undefined;
+export function buildProjectedSchema(
+  schema: IntrospectableSchema,
+  affected: string[],
+): IntrospectableSchema | null {
+  try {
+    return buildProjectedSchemaInner(schema, affected);
+  } catch {
+    // A fragment that cannot compose (e.g. a nested array rebuild orphaning
+    // a source) is unprojectable — the caller falls back to the full run.
+    return null;
+  }
+}
+
+function buildProjectedSchemaInner(
+  schema: IntrospectableSchema,
+  affected: string[],
+): IntrospectableSchema | null {
+  const topSchema = schema?.__schema;
   if (!topSchema || typeof topSchema !== 'object') return null;
 
   const byTop = groupAffectedByTopKey(topSchema, affected);
@@ -514,8 +948,11 @@ function projectTopSchema(
  * rule when nothing can (or needs to) be narrowed, null only when the shape
  * is not introspectable — both tell the caller to keep the original rule.
  */
-function projectRule(rule: any, suffixes: AffectedSeg[][]): any | null {
-  const inner = rule?.__schema as Record<string, any> | undefined;
+function projectRule(
+  rule: IntrospectableSchema,
+  suffixes: AffectedSeg[][],
+): IntrospectableSchema | null {
+  const inner = rule?.__schema;
   if (inner && typeof inner === 'object') {
     return projectShapeRule(rule, inner, suffixes);
   }
@@ -529,17 +966,31 @@ function projectItemRule(rule: any, suffixes: AffectedSeg[][]): any | null {
 }
 
 function projectShapeRule(
-  rule: any,
-  inner: Record<string, any>,
+  rule: IntrospectableSchema,
+  inner: Record<string, IntrospectableSchema>,
   suffixes: AffectedSeg[][],
-): any | null {
+): IntrospectableSchema | null {
   const byKey = groupAffectedByChildKey(inner, suffixes);
   if (!byKey || byKey.size === 0) return null;
 
   const filtered = projectShapeChildren(inner, byKey);
   if (isUnchangedShape(inner, filtered)) return rule;
+  return rebuildShapeRule(rule, filtered);
+}
+
+/**
+ * Rebuilds a narrowed shape fragment. Rebuilding as loose() is only valid
+ * for required-semantics containers: a partial-like container would gain
+ * requiredness (false positives), so the original rule is retained instead
+ * — full-run parity via post-filtering.
+ */
+function rebuildShapeRule(
+  rule: IntrospectableSchema,
+  filtered: Record<string, IntrospectableSchema>,
+): IntrospectableSchema | null {
+  if (isPartialLikeContainer(rule)) return rule;
   try {
-    return preserveOptionality(rule, enforce.loose(filtered));
+    return preserveOptionality(rule, looseRule(filtered));
   } catch {
     // A narrowed fragment can orphan a dependsOn source (e.g. taxId needs
     // its sibling country): rebuilding then throws. Keep the whole subtree —
@@ -607,16 +1058,30 @@ function appendChildGroup(
  * via isArrayOf, which validates every item with one rule). Whole-item
  * selections keep the original rule.
  */
+/**
+ * Array combinator viewed structurally: it accepts introspectable rules and
+ * returns an introspectable rule. The cast sits at this single interop
+ * boundary because the exposed combinator signature names the library's own
+ * rule type, which callers outside n4s cannot construct precisely.
+ */
+const arrayOfRule = enforce.isArrayOf as (
+  ...rules: IntrospectableSchema[]
+) => IntrospectableSchema;
+
+const looseRule = enforce.loose as (
+  schema: Record<string, IntrospectableSchema>,
+) => IntrospectableSchema;
+
 function projectArrayRule(
-  rule: any,
-  itemSchema: any,
+  rule: IntrospectableSchema,
+  itemSchema: IntrospectableSchema,
   suffixes: AffectedSeg[][],
-): any {
+): IntrospectableSchema | null {
   if (hasWholeItemSelection(suffixes)) return rule;
   const itemSuffixes = suffixes.map(suffix => suffix.slice(1));
   const projectedItem = projectRule(itemSchema, itemSuffixes);
   if (!projectedItem || projectedItem === itemSchema) return rule;
-  return preserveOptionality(rule, enforce.isArrayOf(projectedItem));
+  return preserveOptionality(rule, arrayOfRule(projectedItem));
 }
 
 function hasWholeItemSelection(suffixes: AffectedSeg[][]): boolean {
@@ -838,7 +1303,7 @@ function shouldRunAfterParse(schema: any): boolean {
   return schema?.['~standard']?.vendor !== N4S_VENDOR;
 }
 
-function shouldRunSchema(schema: unknown): boolean {
+function shouldRunSchema(schema: unknown): schema is IntrospectableSchema {
   return !!schema;
 }
 

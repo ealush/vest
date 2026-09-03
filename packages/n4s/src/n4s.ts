@@ -48,6 +48,7 @@ export type {
   PropertySegment,
   SchemaPath,
 } from './schema/SchemaPath';
+export { isItemSegment, isPropertySegment } from './schema/SchemaPath';
 export type {
   InternalRelationship,
   SchemaDependency,
@@ -65,6 +66,14 @@ export type { DescribeResult } from './utils/RuleInstance';
  * ```
  */
 export { FIELD } from './schema/scopeProxy';
+
+/**
+ * Slot key for a container rule's item schema (single-rule arrays, record
+ * values, tuple/multi-rule element lists). Exposed for suite-level
+ * integration (e.g. dependency-aware `suite.changed()` projection) that
+ * must read — never write — the slot.
+ */
+export { ITEM_SCHEMA } from './schema/dependencyResolver';
 
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;

@@ -76,6 +76,9 @@ function schemaChildNodes(record: Record<PropertyKey, unknown>): unknown[] {
 
 function itemChildNodes(record: Record<PropertyKey, unknown>): unknown[] {
   const item = record[Symbol.for('vest:itemSchema')];
+  // Tuples and multi-rule isArrayOf store their element schemas as an array;
+  // each element is a composition member, not an opaque object.
+  if (Array.isArray(item)) return item.filter(isObjectNode);
   return isObjectNode(item) ? [item] : [];
 }
 

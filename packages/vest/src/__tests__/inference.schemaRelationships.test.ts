@@ -5,6 +5,7 @@
 
 /* eslint-disable vitest/valid-expect, vitest/no-commented-out-tests */
 import { describe, it, expect, expectTypeOf } from 'vitest';
+import type { DescribeResult } from 'n4s';
 
 import { create, test, enforce } from '../vest';
 
@@ -35,10 +36,7 @@ function typeChecks() {
   }>();
 
   // describe() output shape
-  expectTypeOf(schema.describe).returns.toEqualTypeOf<{
-    dependencies: Array<{ target: unknown; sources: unknown[] }>;
-    relationships: unknown[];
-  }>();
+  expectTypeOf(schema.describe).returns.toEqualTypeOf<DescribeResult>();
 
   // Suite should infer data from schema
   const suite = create(data => {
@@ -112,10 +110,10 @@ function typeChecks() {
   // describe should be on schema - describe() output
   const d = schema.describe();
   expectTypeOf(d).toEqualTypeOf<ReturnType<typeof schema.describe>>();
-  expectTypeOf(d.dependencies).toEqualTypeOf<
-    Array<{ target: unknown; sources: unknown[] }>
+  expectTypeOf(d.dependencies).toEqualTypeOf<DescribeResult['dependencies']>();
+  expectTypeOf(d.relationships).toEqualTypeOf<
+    DescribeResult['relationships']
   >();
-  expectTypeOf(d.relationships).toEqualTypeOf<unknown[]>();
   expectTypeOf(d.dependencies).toBeArray();
   expectTypeOf(d.relationships).toBeArray();
   const deps: typeof d.dependencies = d.dependencies;

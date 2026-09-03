@@ -2,9 +2,10 @@ import type {
   SchemaPath,
   ItemSegment,
   PropertySegment,
-} from 'n4s/src/schema/SchemaPath';
-import { isPropertySegment } from 'n4s/src/schema/SchemaPath';
-import type { SchemaRelationship } from 'n4s/src/schema/SchemaRelationship';
+  SchemaRelationship,
+} from 'n4s';
+import { isPropertySegment } from 'n4s';
+import { isArray, isObject } from 'vest-utils';
 
 const RESOLVED_RELATIONSHIPS = Symbol.for('vest:resolvedRelationships');
 
@@ -85,6 +86,9 @@ function pathMatchesPattern(
   for (let i = 0; i < pattern.length; i++) {
     const p = pattern[i];
     const c = concrete[i];
+    // A pattern item covers both array indices and dynamic record keys, so
+    // it matches a concrete item as well as a concrete property (record key).
+    if (p.type === 'item') continue;
     if (p.type !== c.type) return false;
     if (isPropertySegment(p) && isPropertySegment(c)) {
       if (p.key !== c.key) return false;
@@ -118,7 +122,21 @@ function segmentsMatch(
   patternSeg: PropertySegment | ItemSegment | undefined,
   concreteSeg: PropertySegment | ItemSegment,
 ): boolean {
-  if (patternSeg === undefined || patternSeg.type !== concreteSeg.type) {
+  if (patternSeg === undefined) {
+    return false;
+  }
+  // Pattern items cover array indices and dynamic record keys alike.
+  if (patternSeg.type === 'item') {
+    return true;
+  }
+  return matchPropertySegments(patternSeg, concreteSeg);
+}
+
+function matchPropertySegments(
+  patternSeg: PropertySegment | ItemSegment,
+  concreteSeg: PropertySegment | ItemSegment,
+): boolean {
+  if (patternSeg.type !== concreteSeg.type) {
     return false;
   }
   if (patternSeg.type === 'property' && concreteSeg.type === 'property') {
@@ -185,14 +203,19 @@ function resolveTargetSegment(
 function resolveItemBinding(
   sourceSeg: PropertySegment | ItemSegment | undefined,
   concreteSeg: PropertySegment | ItemSegment | undefined,
-): ItemSegment | null {
+): (PropertySegment | ItemSegment) | null {
   if (sourceSeg === undefined || concreteSeg === undefined) return null;
-  if (sourceSeg.type !== 'item' || concreteSeg.type !== 'item') return null;
-  const resolved: ItemSegment = {
-    type: 'item',
-    binding: concreteSeg.binding,
-  };
-  return resolved;
+  if (sourceSeg.type !== 'item') return null;
+  // Array indices stay items; dynamic record keys resolve to the concrete
+  // property so targets read as 'dictionary.home.state', not '$item'.
+  if (concreteSeg.type === 'item') {
+    const resolved: ItemSegment = {
+      type: 'item',
+      binding: concreteSeg.binding,
+    };
+    return resolved;
+  }
+  return { ...concreteSeg };
 }
 
 /**
@@ -338,20 +361,26 @@ function expandArrayTargets(targetPath: SchemaPath, data: any): string[] {
     const seg = targetPath[pathIdx];
     if (isPropertySegment(seg)) {
       dfs(pathIdx + 1, dataNode?.[seg.key], [...built, seg] as SchemaPath);
-    } else {
-      // item segment — dataNode should be the array at this position.
-      // Without backing data the index cannot be concretized: skip the
-      // branch instead of leaking internal '$item' bindings.
-      if (!Array.isArray(dataNode)) {
-        return;
-      }
+    } else if (isArray(dataNode)) {
+      // item segment over an array — expand every index.
       for (let i = 0; i < dataNode.length; i++) {
         dfs(pathIdx + 1, dataNode[i], [
           ...built,
           { type: 'item', binding: String(i) },
         ] as SchemaPath);
       }
+    } else if (isObject(dataNode)) {
+      // item segment over a record — expand every dynamic key as a
+      // concrete property so affected names never leak '$item' bindings.
+      for (const key of Object.keys(dataNode)) {
+        dfs(pathIdx + 1, (dataNode as Record<string, unknown>)[key], [
+          ...built,
+          { type: 'property', key },
+        ] as SchemaPath);
+      }
     }
+    // Without backing data the index cannot be concretized: skip the
+    // branch instead of leaking internal '$item' bindings.
   }
   dfs(0, data, [] as unknown as SchemaPath);
   if (results.length) return results;

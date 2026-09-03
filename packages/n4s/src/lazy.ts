@@ -16,6 +16,7 @@ import * as schemaRules from './rules/schemaRules/schemaRules';
 import { lazy as lazyRule } from './rules/schemaRules/lazy';
 import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
 import { type RuleInstance } from './utils/RuleInstance';
+import { asArray } from 'vest-utils';
 import { ctx } from './enforceContext';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 import {
@@ -144,7 +145,7 @@ function createPickWrapper() {
     schema: Record<PropertyKey, unknown>,
     keys: PropertyKey | PropertyKey[],
   ) => {
-    const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
+    const keysSet = new Set(asArray(keys));
     let relationships = collectSchemaRelationships(
       schema as Record<string, any>,
       key => keysSet.has(key as string),
@@ -192,7 +193,7 @@ function createPickWrapper() {
     (rule as any)[RESOLVED_RELATIONSHIPS] = relationships;
     // For pick, __schema is filtered shape
     const filtered: any = {};
-    const set = new Set(Array.isArray(keys) ? keys : [keys]);
+    const set = new Set(asArray(keys));
     for (const k of Object.keys(schema))
       if (set.has(k)) filtered[k] = schema[k];
     rule.__schema = filtered;
@@ -206,7 +207,7 @@ function createOmitWrapper() {
     schema: Record<PropertyKey, unknown>,
     keys: PropertyKey | PropertyKey[],
   ) => {
-    const keysSet = new Set(Array.isArray(keys) ? keys : [keys]);
+    const keysSet = new Set(asArray(keys));
     let relationships = collectSchemaRelationships(
       schema as Record<string, any>,
       key => !keysSet.has(key as string),
@@ -256,7 +257,7 @@ function createOmitWrapper() {
     (rule as unknown as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS] =
       relationships;
     const filtered: Record<string, unknown> = {};
-    const set = new Set(Array.isArray(keys) ? keys : [keys]);
+    const set = new Set(asArray(keys));
     for (const k of Object.keys(schema as object))
       if (!set.has(k)) filtered[k] = (schema as Record<string, unknown>)[k];
     (rule as unknown as { __schema: unknown }).__schema = filtered;

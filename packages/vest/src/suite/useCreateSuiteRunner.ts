@@ -1381,7 +1381,7 @@ function appendRecordKeys(
   const keys = keyHeads(selection.suffixes);
   for (const key of keys) {
     if (mainVisitedRecordKey(value, key, selection)) continue;
-    appendRecordKey({ rule, item, value, key }, selection);
+    appendRecordKey({ item, key, rule, value }, selection);
   }
   return keys.length > 0;
 }

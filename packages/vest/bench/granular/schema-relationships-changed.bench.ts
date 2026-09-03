@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable sort-keys -- bench fixture order intentionally groups password deps */
 import { bench, describe } from 'vitest';
 import { create, test, enforce, group, skipWhen } from '../../src/vest';
 import { each } from '../../src/isolates/each';
@@ -423,7 +424,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   bench(
     'C18 async changed(organizationId) reruns username [pending] [2/2 fields]',
     () => {
-      asyncSuiteChanged
+      return asyncSuiteChanged
         .changed('organizationId')
         .run({ organizationId: 'B', username: 'free' });
     },

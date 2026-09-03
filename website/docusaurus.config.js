@@ -89,13 +89,10 @@ const config = {
       name: 'exclude-node-module',
       configureWebpack() {
         return {
-          module: {
-            rules: [
-              {
-                test: /node:module/,
-                exclude: /node:module/,
-              },
-            ],
+          resolve: {
+            fallback: {
+              'node:module': false,
+            },
           },
         };
       },

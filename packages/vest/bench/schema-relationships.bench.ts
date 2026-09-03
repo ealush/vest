@@ -592,7 +592,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     bench(
       'D9 async waterfall changed(organizationId) [2 async dependents]',
       () => {
-        d9Suite
+        return d9Suite
           .changed('organizationId')
           .run({ organizationId: 'B', username: 'free', email: 'a@b.com' });
       },

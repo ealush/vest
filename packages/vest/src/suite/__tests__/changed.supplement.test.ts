@@ -169,6 +169,34 @@ describe('changed() supplement exactly-once execution', () => {
     expect(calls.filter(value => value === 'ok-ok-ok')).toHaveLength(1);
   });
 
+  it('union supplement rejection mirrors the full-run failure exactly', async () => {
+    // W4: an all-rejected union element fails generically on both sides
+    // (n4s returns a message-less failure for multi-rule rejection). The
+    // supplement must not invent a message the full run does not report —
+    // identical keys dedupe correctly, differing messages would diverge.
+    // Contract-pinning (green before and after): guards future drift.
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.shape({
+          kind: enforce.isString(),
+          v: enforce.isNumber(),
+        }),
+        enforce.isString().longerThan(5),
+      ),
+    });
+    const suite = create((): void => {}, schema);
+    // Type-valid inputs: 'xx' is a string, but too short for the string
+    // member and not an object for the shape member — rejected by all.
+    const data = { rows: ['long-enough', 'xx'] };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('rows.1')).toBe(true);
+
+    const changed = await suite.changed('rows.1').run(data);
+    expect(changed.hasErrors('rows.1')).toBe(true);
+    expect(changed.getErrors()['rows.1']).toEqual(full.getErrors()['rows.1']);
+  });
+
   it('full-fallback path executes each member validator at most once', async () => {
     // F4: a validator chained after the top container moves the baseline,
     // so the projection falls back to a full-schema main run. The

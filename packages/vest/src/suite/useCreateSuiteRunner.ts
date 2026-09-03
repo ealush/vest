@@ -1113,6 +1113,12 @@ function prefixFailureResults(
   return out;
 }
 
+/**
+ * Merges per-member supplement failures into the main run results,
+ * skipping entries that duplicate a main-run failure. Keys stay
+ * structured (path segments, never re-joined) so dotted record keys
+ * cannot collide with nested paths during deduplication.
+ */
 export function mergeSupplementalResults(
   main: SchemaRunResult[],
   extra: SchemaRunResult[],

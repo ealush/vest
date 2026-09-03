@@ -169,6 +169,24 @@ describe('item relationships', () => {
     ).toEqual(['m.m.$item.m.$item.$item.country']);
   });
 
+  it('converging diamonds emit one edge, not 2^d copies', () => {
+    // The same member reachable via several same-depth paths (here via
+    // both `a` and `b`) yields byte-identical edges; describe() keeps one.
+    const inner = enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    });
+    const schema = enforce.shape({
+      m: enforce.isArrayOf(enforce.isArrayOf(inner), enforce.isArrayOf(inner)),
+    });
+
+    const described = schema.describe();
+    expect(described.relationships).toHaveLength(1);
+    expect(sourcesFor(described, 'm.m.$item.m.$item.$item.state')).toEqual([
+      'm.m.$item.m.$item.$item.country',
+    ]);
+  });
+
   it('multi-rule array with a nested container member keeps the edge', () => {
     // Container members (no __schema of their own) must survive the
     // member filter so recursion can reach the graph inside them.

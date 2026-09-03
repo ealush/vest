@@ -108,6 +108,22 @@ function collectItemRelationships(
   seen: WeakSet<object>,
 ): InternalRelationship[] {
   const relationships: InternalRelationship[] = [];
+  // Dedupe identical edges at every level: converging diamonds (the same
+  // member reachable via several same-depth paths) otherwise emit 2^d
+  // copies of one logical edge. Identity is structural — same source,
+  // target, effect and flags — so merging changes nothing downstream.
+  // (Traversal still visits shared subtrees repeatedly; composition-time
+  // cost on developer-authored schemas only, no output explosion.)
+  const emittedKeys = new Set<string>();
+  const pushUnique = (rels: InternalRelationship[]): void => {
+    for (const rel of rels) {
+      const key = JSON.stringify(rel);
+      if (!emittedKeys.has(key)) {
+        emittedKeys.add(key);
+        relationships.push(rel);
+      }
+    }
+  };
   for (const entry of normalizeItemSchemas(item)) {
     if (seen.has(entry)) continue;
     seen.add(entry);
@@ -118,14 +134,12 @@ function collectItemRelationships(
         (slots[RESOLVED_RELATIONSHIPS] as InternalRelationship[] | undefined) ||
         [];
       if (itemRels.length > 0) {
-        relationships.push(
-          ...rebaseRelationships(itemRels, [...prefix, segment]),
-        );
+        pushUnique(rebaseRelationships(itemRels, [...prefix, segment]));
       }
       const nested = slots[ITEM_SCHEMA];
       if (nested !== undefined) {
-        relationships.push(
-          ...collectItemRelationships(
+        pushUnique(
+          collectItemRelationships(
             nested,
             [...prefix, segment],
             `${binding}.$item`,

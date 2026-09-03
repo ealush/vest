@@ -1017,9 +1017,11 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(affected.hasErrors('1.state')).toBe(true);
     // @ts-expect-error - integration probe: see above.
     expect(affected.hasErrors('0.state')).toBe(false);
-    // The same failure outside the affected set is filtered out: without
-    // schema-level filtering the failure would still be emitted as a
-    // (focus-skipped) test, so the inventory — not just hasErrors — pins it.
+    // The same failure outside the affected set is filtered out. This
+    // locks the round-4 filter behavior as characterization: out-of-focus
+    // schema failures never reach the test inventory either way, so the
+    // assertion holds with and without schema-level filtering — it guards
+    // the observable contract, not the internal code path.
     const unaffected = await suite.changed('0.state').run(data);
     expect(Object.keys(unaffected.tests)).not.toContain('1.state');
   });

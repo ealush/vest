@@ -654,9 +654,9 @@ function appendFlatMember(
   out: SchemaRunResult[],
 ): void {
   const child = childValue(data, key);
-  // Absent members mirror the nested supplement's undefined-skip: presence
-  // failures already surface through the main run when unshadowed.
-  if (child === undefined) return;
+  // A declared shape member is validated even when absent: required rules
+  // fail on undefined while optional rules pass. This path is reached only
+  // when an earlier failure proved the member was never executed.
   let outcome: SchemaRunResult[];
   try {
     outcome = runExecutableSchema(rule, child);
@@ -1135,11 +1135,10 @@ type ArraySupplement = {
 };
 
 /**
- * Resolves the per-member supplement for a projected main run. A main run
- * that already executed the full schema (unprojectable top or an orphaned
- * fragment) leaves nothing to supplement: every failure per-member runs
- * could add is already present, so collecting them would only execute each
- * member a second time (F4).
+ * Resolves the per-member supplement for a projected or full main run.
+ * A full run can still stop at its first failing child, so selected members
+ * beyond that boundary need supplementation. Members at or before the
+ * boundary remain authoritative and are never executed again (F4).
  */
 function collectSupplementForMain(
   mainRun: ProjectedMainRun,
@@ -1147,20 +1146,24 @@ function collectSupplementForMain(
   expanded: string[],
   data: unknown,
 ): ArraySupplement {
-  if (mainRun.full) return { results: [], gap: false };
-  return collectArraySupplement(schema, expanded, data, mainRun.results);
+  return collectArraySupplement(schema, expanded, data, mainRun);
 }
 
 function collectArraySupplement(
   schema: IntrospectableSchema,
   expanded: string[],
   data: unknown,
-  main: readonly SchemaRunResult[],
+  mainRun: ProjectedMainRun,
 ): ArraySupplement {
   const gap = { found: false };
   try {
     return {
-      results: collectArraySupplementInner(schema, expanded, data, main, gap),
+      results: collectArraySupplementInner(schema, data, {
+        expanded,
+        fullMain: mainRun.full,
+        gap,
+        main: mainRun.results,
+      }),
       gap: gap.found,
     };
   } catch (error) {
@@ -1173,26 +1176,31 @@ function collectArraySupplement(
   }
 }
 
+type ArraySupplementContext = {
+  readonly expanded: string[];
+  readonly fullMain: boolean;
+  readonly gap: { found: boolean };
+  readonly main: readonly SchemaRunResult[];
+};
+
 function collectArraySupplementInner(
   schema: IntrospectableSchema,
-  expanded: string[],
   data: unknown,
-  main: readonly SchemaRunResult[],
-  gap: { found: boolean },
+  context: ArraySupplementContext,
 ): SchemaRunResult[] {
   const topSchema = schema.__schema;
-  if (topSchema === undefined) return [];
-  const byTop = groupAffectedByTopKey(topSchema, expanded);
+  if (topSchema === undefined || !isObject(data) || isArray(data)) return [];
   const out: SchemaRunResult[] = [];
-  for (const top of Object.keys(topSchema)) {
-    const rests = byTop.get(top);
-    if (rests === undefined) continue;
-    appendSupplementalFailures(topSchema[top], childValue(data, top), {
-      suffixes: rests,
-      sink: { basePath: [top], out, gap },
-      main,
-    });
-  }
+  appendShapeDescendants(schema, data, {
+    suffixes: context.expanded.map(parseAffectedPath),
+    sink: {
+      basePath: [],
+      fullMain: context.fullMain,
+      gap: context.gap,
+      out,
+    },
+    main: context.main,
+  });
   return out;
 }
 
@@ -1208,6 +1216,8 @@ type IndexRunSink = {
   out: SchemaRunResult[];
   /** Boundary gaps hit while running members standalone (→ full fallback). */
   readonly gap: { found: boolean };
+  /** Whether the authoritative main result came from the unprojected schema. */
+  readonly fullMain: boolean;
 };
 
 type IndexSelection = {
@@ -1235,6 +1245,9 @@ function tryAppendMembers(
 ): boolean {
   const dispatch = memberDispatch(rule);
   if (dispatch === null) return false;
+  // The container itself failed after either rejecting its input or running
+  // a chained predicate. Its main result is authoritative for this path.
+  if (mainFailedAtPath(selection.main, selection.sink.basePath)) return true;
   if (dispatch.kind === 'tuple') {
     return appendTupleMembers(rule, dispatch.members, value, selection);
   }
@@ -1353,6 +1366,7 @@ function appendEachIndex(
 ): boolean {
   const indices = indexHeads(selection.suffixes);
   for (const index of indices) {
+    if (mainVisitedArrayIndex(index, selection)) continue;
     appendSingleIndex(item, value, index, selection);
   }
   return indices.length > 0;
@@ -1366,6 +1380,7 @@ function appendRecordKeys(
 ): boolean {
   const keys = keyHeads(selection.suffixes);
   for (const key of keys) {
+    if (mainVisitedRecordKey(value, key, selection)) continue;
     appendRecordKey({ rule, item, value, key }, selection);
   }
   return keys.length > 0;
@@ -1423,8 +1438,8 @@ function runRecordKeyEntry(
   entry: RecordKeyRun,
   selection: IndexSelection,
 ): void {
+  if (!hasOwnProperty(entry.value, entry.key)) return;
   const child = entry.value[entry.key];
-  if (child === undefined) return;
   const memberPath = [...selection.sink.basePath, entry.key];
   // Exactly-once like the value flow: a main-run failure here is already
   // reported — rerunning would double-execute stateful validators.
@@ -1482,23 +1497,180 @@ function appendShapeDescendants(
   value: Record<string, unknown>,
   selection: IndexSelection,
 ): void {
-  const inner = rule.__schema;
-  if (inner === undefined) return;
-  const byKey = groupAffectedByChildKey(inner, selection.suffixes);
-  if (byKey === null) return;
-  for (const key of Object.keys(inner)) {
-    const rests = byKey.get(key);
-    if (rests === undefined) continue;
-    appendSupplementalFailures(inner[key], value[key], {
-      suffixes: rests,
-      sink: {
-        basePath: [...selection.sink.basePath, key],
-        out: selection.sink.out,
-        gap: selection.sink.gap,
-      },
-      main: selection.main,
+  const context = shapeDescendantContext(rule, selection);
+  if (context === null) return;
+  const keys = Object.keys(context.inner);
+  const failedIndex =
+    context.failedKey === null ? -1 : keys.indexOf(context.failedKey);
+  for (let index = 0; index < keys.length; index += 1) {
+    appendSelectedShapeDescendant({
+      context,
+      failedIndex,
+      index,
+      key: keys[index],
+      selection,
+      value,
     });
   }
+}
+
+type ShapeDescendantContext = {
+  readonly byKey: Map<string, AffectedSeg[][]>;
+  readonly failedKey: string | null;
+  readonly inner: Record<string, IntrospectableSchema>;
+};
+
+function shapeDescendantContext(
+  rule: IntrospectableSchema,
+  selection: IndexSelection,
+): ShapeDescendantContext | null {
+  const inner = rule.__schema;
+  if (inner === undefined) return null;
+  const byKey = groupAffectedByChildKey(inner, selection.suffixes);
+  if (byKey === null) return null;
+  // An object-container failure at this exact path comes from a predicate
+  // chained after the shape evaluator; every child already ran successfully.
+  if (mainFailedAtPath(selection.main, selection.sink.basePath)) return null;
+  const failedKey = failedChildKey(inner, selection);
+  // A full main run already executed every reachable member. Supplement it
+  // only when its single failure identifies a short-circuit boundary.
+  if (fullMainWithoutFailureBoundary(selection, failedKey)) return null;
+  return { byKey, failedKey, inner };
+}
+
+function fullMainWithoutFailureBoundary(
+  selection: IndexSelection,
+  failedKey: string | null,
+): boolean {
+  return selection.sink.fullMain && failedKey === null;
+}
+
+type ShapeDescendantRun = {
+  readonly context: ShapeDescendantContext;
+  readonly failedIndex: number;
+  readonly index: number;
+  readonly key: string;
+  readonly selection: IndexSelection;
+  readonly value: Record<string, unknown>;
+};
+
+function appendSelectedShapeDescendant(run: ShapeDescendantRun): void {
+  const { context, failedIndex, index, key, selection, value } = run;
+  const rests = context.byKey.get(key);
+  if (rests === undefined) return;
+  if (memberPrecedesFailure(index, failedIndex)) return;
+  const childSelection: IndexSelection = {
+    suffixes: rests,
+    sink: {
+      basePath: [...selection.sink.basePath, key],
+      fullMain: selection.sink.fullMain,
+      gap: selection.sink.gap,
+      out: selection.sink.out,
+    },
+    main: selection.main,
+  };
+  if (memberFollowsFailure(index, failedIndex)) {
+    appendShadowedShapeMember(context.inner[key], value, key, childSelection);
+    return;
+  }
+  appendSupplementalFailures(context.inner[key], value[key], childSelection);
+}
+
+function memberPrecedesFailure(index: number, failedIndex: number): boolean {
+  return failedIndex >= 0 && index < failedIndex;
+}
+
+function memberFollowsFailure(index: number, failedIndex: number): boolean {
+  return failedIndex >= 0 && index > failedIndex;
+}
+
+function mainFailedAtPath(
+  main: readonly SchemaRunResult[],
+  path: readonly string[],
+): boolean {
+  const failures = main.filter(result => !result.pass);
+  if (failures.length !== 1) return false;
+  const failurePath = failures[0].path ?? [];
+  return (
+    failurePath.length === path.length &&
+    path.every((segment, index) => String(failurePath[index]) === segment)
+  );
+}
+
+/**
+ * Returns the immediate child whose failure stopped this shape, when the
+ * main run proves that later siblings were never executed. Failure paths are
+ * already rebased to the root, so the current sink path locates the relevant
+ * segment at any nesting depth.
+ */
+function failedChildKey(
+  inner: Record<string, IntrospectableSchema>,
+  selection: IndexSelection,
+): string | null {
+  const key = failedDescendantHead(selection);
+  if (key === null) return null;
+  return hasOwnProperty(inner, key) ? key : null;
+}
+
+function failedDescendantHead(selection: IndexSelection): string | null {
+  const failures = selection.main.filter(result => !result.pass);
+  if (failures.length !== 1) return null;
+  const path = failures[0].path ?? [];
+  const base = selection.sink.basePath;
+  if (path.length <= base.length) return null;
+  if (!base.every((segment, index) => String(path[index]) === segment)) {
+    return null;
+  }
+  return String(path[base.length]);
+}
+
+/** Members through the failing array position were already visited. */
+function mainVisitedArrayIndex(
+  index: number,
+  selection: IndexSelection,
+): boolean {
+  const head = failedDescendantHead(selection);
+  if (head === null || !/^(0|[1-9]\d*)$/.test(head)) return false;
+  const failedIndex = Number(head);
+  return Number.isSafeInteger(failedIndex) && index <= failedIndex;
+}
+
+/** Record iteration follows own-key order and stops at its failing entry. */
+function mainVisitedRecordKey(
+  value: Record<string, unknown>,
+  key: string,
+  selection: IndexSelection,
+): boolean {
+  const failedKey = failedDescendantHead(selection);
+  if (failedKey === null) return false;
+  const keys = Object.keys(value);
+  const failedIndex = keys.indexOf(failedKey);
+  const selectedIndex = keys.indexOf(key);
+  return failedIndex >= 0 && selectedIndex >= 0 && selectedIndex <= failedIndex;
+}
+
+/**
+ * Runs one selected shape member that lies strictly after the main run's
+ * first failing sibling. This is not a duplicate: n4s shape containers stop
+ * at that sibling. Nested projected containers and coercions use the same
+ * member path as array supplementation.
+ */
+function appendShadowedShapeMember(
+  rule: IntrospectableSchema,
+  value: Record<string, unknown>,
+  key: string,
+  selection: IndexSelection,
+): void {
+  const child = hasOwnProperty(value, key) ? value[key] : undefined;
+  const narrowed = projectRule(rule, selection.suffixes);
+  // This member is now its own projected run. Descendant supplementation
+  // must reason from that local outcome, not the earlier full-root failure.
+  const sink: IndexRunSink = { ...selection.sink, fullMain: false };
+  if (narrowed === FRAGMENT_EXCLUDED) {
+    tryAppendMembers(rule, child, { ...selection, sink });
+    return;
+  }
+  runProjectedMember(narrowed ?? rule, child, selection.suffixes, sink);
 }
 
 type MemberDispatch =
@@ -1567,6 +1739,7 @@ function appendTupleIndices(
 ): boolean {
   const indices = indexHeads(selection.suffixes);
   for (const index of indices) {
+    if (mainVisitedArrayIndex(index, selection)) continue;
     if (index >= value.length) continue;
     const member = members[index];
     if (member === undefined) {
@@ -1613,6 +1786,7 @@ function appendUnionMembers(
   }
   const indices = indexHeads(selection.suffixes);
   for (const index of indices) {
+    if (mainVisitedArrayIndex(index, selection)) continue;
     appendUnionElement(members, value, index, selection);
   }
   return indices.length > 0;
@@ -1624,8 +1798,8 @@ function appendUnionElement(
   index: number,
   selection: IndexSelection,
 ): void {
+  if (index >= value.length) return;
   const child = value[index];
-  if (child === undefined) return;
   const memberPath = [...selection.sink.basePath, String(index)];
   if (isCoveredByMain(selection.main, memberPath)) return;
   // Union membership is whole-member by semantics: narrowing a member for
@@ -1688,6 +1862,10 @@ function appendSingleIndex(
   index: number,
   selection: IndexSelection,
 ): void {
+  // isArrayOf/tuple validate every position below length, including sparse
+  // holes and explicit undefined values. Only an index beyond the runtime
+  // array is absent and must be ignored.
+  if (index >= value.length) return;
   appendSingleMember(item, value[index], selection, index);
 }
 
@@ -1697,6 +1875,9 @@ function appendSingleKey(
   key: string,
   selection: IndexSelection,
 ): void {
+  // Records validate own entries only. Preserve explicit undefined values;
+  // unlike an absent key, record() would run its value rule for them.
+  if (!hasOwnProperty(value, key)) return;
   appendSingleMember(item, value[key], selection, key);
 }
 
@@ -1706,7 +1887,6 @@ function appendSingleMember(
   selection: IndexSelection,
   head: string | number,
 ): void {
-  if (child === undefined) return;
   const memberPath = [...selection.sink.basePath, String(head)];
   // Exactly-once: the main run's outcome for this member is authoritative —
   // rerunning it would double-execute stateful validators (P1-4).
@@ -1715,8 +1895,9 @@ function appendSingleMember(
   const narrowed = projectRule(item, itemSuffixes);
   const sink: IndexRunSink = {
     basePath: memberPath,
-    out: selection.sink.out,
+    fullMain: false,
     gap: selection.sink.gap,
+    out: selection.sink.out,
   };
   if (narrowed === FRAGMENT_EXCLUDED) {
     // Nested index-selected container: descend into its own members instead
@@ -1728,13 +1909,7 @@ function appendSingleMember(
     });
     return;
   }
-  runProjectedMember(
-    narrowed ?? item,
-    child,
-    itemSuffixes,
-    sink,
-    selection.main,
-  );
+  runProjectedMember(narrowed ?? item, child, itemSuffixes, sink);
 }
 
 function runProjectedMember(
@@ -1742,7 +1917,6 @@ function runProjectedMember(
   child: unknown,
   itemSuffixes: AffectedSeg[][],
   sink: IndexRunSink,
-  main: readonly SchemaRunResult[],
 ): void {
   // No container-kind guard here: the member rule runs against the same
   // element the full run would reach (isArrayOf prefixes the member index
@@ -1750,16 +1924,17 @@ function runProjectedMember(
   // members the full run never reaches are exactly what the supplement is
   // for. Contradicting container-vs-data dispatch is guarded one level up
   // in tryAppendMembers instead.
-  for (const result of prefixFailureResults(
+  const localResults = prefixFailureResults(
     safeRunItem(projected, child, sink),
     sink.basePath,
-  )) {
+  );
+  for (const result of localResults) {
     sink.out.push(result);
   }
   appendSupplementalFailures(projected, child, {
     suffixes: itemSuffixes,
     sink,
-    main,
+    main: localResults,
   });
 }
 
@@ -2028,7 +2203,7 @@ function buildProjectedSchemaInner(
 
   const { projectedTop, excluded } = projectTopSchema(topSchema, byTop);
   if (Object.keys(projectedTop).length > 0) {
-    const projected = looseProjectedTop(projectedTop);
+    const projected = projectedTopRule(schema, projectedTop);
     if (!projected) return null;
     return preserveOptionality(schema, projected);
   }
@@ -2037,9 +2212,9 @@ function buildProjectedSchemaInner(
 
 /**
  * The introspectable top-level shape, or null when the top container cannot
- * be rebuilt: a partial-like top would gain requiredness and a moved chain
- * would lose container validators — the caller falls back to the full run
- * with post-filtering instead (P1-1/P1-2 parity).
+ * be rebuilt. Partial containers are representable as a loose shape whose
+ * selected members are optional; a moved chain is not, because rebuilding
+ * would lose its container validators.
  */
 function introspectableTopSchema(
   schema: IntrospectableSchema,
@@ -2051,7 +2226,7 @@ function introspectableTopSchema(
 }
 
 function topContainerRebuildable(schema: IntrospectableSchema): boolean {
-  return !isPartialLikeContainer(schema) && chainBaselineMatches(schema);
+  return chainBaselineMatches(schema);
 }
 
 /**
@@ -2072,12 +2247,13 @@ function passThroughFragment(
   }
 }
 
-function looseProjectedTop(
+function projectedTopRule(
+  original: IntrospectableSchema,
   projectedTop: Record<string, IntrospectableSchema>,
 ): IntrospectableSchema | null {
   if (Object.keys(projectedTop).length === 0) return null;
   try {
-    return looseRule(projectedTop);
+    return rebuildShapeContainer(original, projectedTop);
   } catch {
     // Unprojectable fragment (e.g. an orphaned dependsOn source at the top
     // level): fall back to the full schema run with post-filter.
@@ -2256,21 +2432,19 @@ function projectShapeRule(
 }
 
 /**
- * Rebuilds a narrowed shape fragment. Rebuilding as loose() is only valid
- * for required-semantics containers with an unmoved chain: a partial-like
- * container would gain requiredness (false positives), and a container
- * with validators chained after construction would lose them (P1-1) — in
- * both cases the original rule is retained instead, keeping full-run
- * parity via post-filtering.
+ * Rebuilds a narrowed shape fragment. Partial semantics are represented by
+ * optionalizing each retained member inside a loose container: missing
+ * selected keys pass while unrelated original keys remain accepted. A moved
+ * chain still cannot be rebuilt because its container validators are private
+ * to the original rule.
  */
 function rebuildShapeRule(
   rule: IntrospectableSchema,
   filtered: Record<string, IntrospectableSchema>,
 ): IntrospectableSchema | null {
-  if (isPartialLikeContainer(rule)) return rule;
   if (!chainBaselineMatches(rule)) return rule;
   try {
-    return preserveOptionality(rule, looseRule(filtered));
+    return preserveOptionality(rule, rebuildShapeContainer(rule, filtered));
   } catch {
     // A narrowed fragment can orphan a dependsOn source (e.g. taxId needs
     // its sibling country): rebuilding then throws. Keep the whole subtree —
@@ -2367,6 +2541,25 @@ const looseRule = enforce.loose as LooseCombinator;
 type OptionalCombinator = (inner: IntrospectableSchema) => IntrospectableSchema;
 
 const optionalRule = enforce.optional as OptionalCombinator;
+
+function rebuildShapeContainer(
+  original: IntrospectableSchema,
+  filtered: Record<string, IntrospectableSchema>,
+): IntrospectableSchema {
+  return looseRule(
+    isPartialLikeContainer(original) ? optionalizeMembers(filtered) : filtered,
+  );
+}
+
+function optionalizeMembers(
+  members: Record<string, IntrospectableSchema>,
+): Record<string, IntrospectableSchema> {
+  const optionalized: Record<string, IntrospectableSchema> = {};
+  for (const key of Object.keys(members)) {
+    optionalized[key] = optionalRule(members[key]);
+  }
+  return optionalized;
+}
 
 function projectArrayRule(
   rule: IntrospectableSchema,

@@ -674,6 +674,108 @@ describe('changed() source-retaining projection', () => {
     expect(changed.hasErrors('profile.nickname')).toBe(false);
   });
 
+  it('projects a partial container without first-failure masking', async () => {
+    const schema = enforce.shape({
+      profile: enforce.partial({
+        unrelated: enforce.isString().longerThan(5),
+        country: enforce.isString(),
+        state: enforce
+          .isString()
+          .longerThan(5)
+          .dependsOn($ => $.country),
+      }),
+    });
+    const data = {
+      profile: { unrelated: 'x', country: 'US', state: 'x' },
+    };
+
+    expect(schema.run(data).path).toEqual(['profile', 'unrelated']);
+    const changed = await create((): void => {}, schema)
+      .changed('profile.country')
+      .run(data);
+
+    expect(changed.hasErrors('profile.unrelated')).toBe(false);
+    expect(changed.hasErrors('profile.state')).toBe(true);
+  });
+
+  it('projects a partial root without making omitted keys required', async () => {
+    const schema = enforce.partial({
+      unrelated: enforce.isString().longerThan(5),
+      country: enforce.isString(),
+      state: enforce
+        .isString()
+        .longerThan(5)
+        .dependsOn($ => $.country),
+    });
+    const data = { unrelated: 'x', country: 'US', state: 'x' };
+
+    expect(schema.run(data).path).toEqual(['unrelated']);
+    const changed = await create((): void => {}, schema)
+      .changed('country')
+      .run(data);
+
+    expect(changed.hasErrors('unrelated')).toBe(false);
+    expect(changed.hasErrors('state')).toBe(true);
+  });
+
+  it('supplements shadowed members in a retained chained container', async () => {
+    const schema = enforce.shape({
+      profile: enforce
+        .loose({
+          unrelated: enforce.isString().longerThan(5),
+          country: enforce.isString(),
+          state: enforce
+            .isString()
+            .longerThan(5)
+            .dependsOn($ => $.country),
+        })
+        .hasAllowedFlag(),
+    });
+    const data = {
+      profile: {
+        flag: true,
+        unrelated: 'x',
+        country: 'US',
+        state: 'x',
+      },
+    };
+
+    expect(schema.run(data).path).toEqual(['profile', 'unrelated']);
+    const changed = await create((): void => {}, schema)
+      .changed('profile.country')
+      .run(data);
+
+    expect(changed.hasErrors('profile.unrelated')).toBe(false);
+    expect(changed.hasErrors('profile.state')).toBe(true);
+  });
+
+  it('supplements shadowed members when the root container is retained', async () => {
+    const schema = enforce
+      .loose({
+        unrelated: enforce.isString().longerThan(5),
+        country: enforce.isString(),
+        state: enforce
+          .isString()
+          .longerThan(5)
+          .dependsOn($ => $.country),
+      })
+      .hasAllowedFlag();
+    const data = {
+      flag: true,
+      unrelated: 'x',
+      country: 'US',
+      state: 'x',
+    };
+
+    expect(schema.run(data).path).toEqual(['unrelated']);
+    const changed = await create((): void => {}, schema)
+      .changed('country')
+      .run(data);
+
+    expect(changed.hasErrors('unrelated')).toBe(false);
+    expect(changed.hasErrors('state')).toBe(true);
+  });
+
   it('P1-3a: changed() surfaces an affected tuple member hidden by first-failure', async () => {
     // Tuples report only the first failing position: member 0 fails, so the
     // full run never reaches member 1. The positional supplement must still

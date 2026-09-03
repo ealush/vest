@@ -16,6 +16,40 @@ declare global {
 }
 
 describe('changed() supplement exactly-once execution', () => {
+  it('validates an affected array element whose value is undefined', async () => {
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.condition(
+          (value: unknown): boolean => typeof value === 'string',
+        ),
+      ),
+    });
+    const data = { rows: ['ok', undefined] };
+
+    expect(schema.run(data).path).toEqual(['rows', '1']);
+    const changed = await create((): void => {}, schema)
+      .changed('rows.1')
+      .run(data);
+
+    expect(changed.hasErrors('rows.1')).toBe(true);
+  });
+
+  it('validates an affected record entry whose value is undefined', async () => {
+    const valueRule = enforce.condition(
+      (value: unknown): boolean => typeof value === 'string',
+    );
+    const schema = enforce.shape({ dict: enforce.record(valueRule) });
+    const data = { dict: { first: 42, selected: undefined } };
+
+    expect(schema.run(data).path).toEqual(['dict', 'first']);
+    const changed = await create((): void => {}, schema)
+      .changed('dict.selected')
+      .run(data);
+
+    expect(changed.hasErrors('dict.first')).toBe(false);
+    expect(changed.hasErrors('dict.selected')).toBe(true);
+  });
+
   it('record per-key: the affected member validator fires exactly once', async () => {
     // F3: the projection keeps records whole (key-rule parity), so the
     // main run already executes every key. The supplement must not re-run
@@ -236,5 +270,51 @@ describe('changed() supplement exactly-once execution', () => {
     expect(changed.hasErrors()).toBe(false);
     expect(calls.filter(value => value === 'NY')).toHaveLength(1);
     expect(calls.filter(value => value === 'CA')).toHaveLength(1);
+  });
+
+  it('full-fallback supplement does not revisit array members before the failure', async () => {
+    const calls: unknown[] = [];
+    enforce.extend({
+      countFallbackState: (value: unknown): boolean => {
+        calls.push(value);
+        return typeof value === 'string' && value.length > 5;
+      },
+    });
+    enforce.extend({
+      hasFallbackFlag: (value: { flag?: unknown }): boolean =>
+        value.flag === true,
+    });
+    const schema = enforce
+      .loose({
+        rows: enforce.isArrayOf(enforce.isString().countFallbackState()),
+        flag: enforce.isBoolean(),
+      })
+      .hasFallbackFlag();
+    const data = {
+      rows: ['first-ok', 'x', 'third-ok'],
+      flag: true,
+    };
+
+    schema.run(data);
+    const baselineFirst = calls.filter(value => value === 'first-ok').length;
+    const baselineFailure = calls.filter(value => value === 'x').length;
+    expect(calls).not.toContain('third-ok');
+    calls.length = 0;
+
+    const changed = await create((): void => {}, schema)
+      .changed(['rows.0', 'rows.2'])
+      .run(data);
+
+    expect(changed.hasErrors()).toBe(false);
+    // Invalid changed() runs use n4s's normal parse-then-run fallback, so
+    // members reached by the main execution unit match two direct runs.
+    // The supplement must not add a third visit to an earlier member.
+    expect(calls.filter(value => value === 'first-ok')).toHaveLength(
+      baselineFirst * 2,
+    );
+    expect(calls.filter(value => value === 'x')).toHaveLength(
+      baselineFailure * 2,
+    );
+    expect(calls.filter(value => value === 'third-ok')).toHaveLength(1);
   });
 });

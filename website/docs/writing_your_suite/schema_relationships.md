@@ -189,11 +189,12 @@ Semantics:
 > **Deferred to v2 — `$.parent`**
 >
 > `$.parent` (parent-scope escape) is **intentionally deferred** — add only if a real use case demands it.
-> In V1, accessing `$.parent` throws `Error('$.parent deferred to v2')` instead of returning `undefined`.
+> In V1, a resolver that touches `$.parent` throws at schema composition time: `EnforceSchemaError: Failed to resolve dependency for "a": $.parent deferred to v2`.
 >
 > ```ts
-> // @deferred v2 — throws in V1
-> $.parent.sibling; // Error('$.parent deferred to v2')
+> enforce.shape({
+>   a: enforce.isString().dependsOn($ => $.parent.sibling), // throws in V1
+> });
 > ```
 
 ## Dependencies and Focused Validation
@@ -235,6 +236,8 @@ as the affected set. This preserves `only()` semantics while giving frameworks a
 - `changed()` — dependency-aware affected-set selection
 
 `include()` then becomes a lower-level escape hatch, not the primary way to express cross-field behavior.
+
+`schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs.
 
 ## Dependencies Are Not Automatically Transitive
 

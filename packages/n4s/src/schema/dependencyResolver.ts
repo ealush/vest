@@ -344,7 +344,28 @@ function childShape(rule: unknown): unknown {
 
 function itemChildShape(item: unknown): unknown {
   if (!item || typeof item !== 'object') return {};
+  if (Array.isArray(item)) return mergedItemShape(item);
   return (item as { __schema?: Record<PropertyKey, unknown> }).__schema ?? {};
+}
+
+/**
+ * Merges the __schemas of several item rules (tuple elements or multi-rule
+ * array members) so dotted-path validation can traverse the union. Members
+ * without a __schema contribute nothing.
+ */
+function mergedItemShape(itemSchemas: unknown[]): Record<PropertyKey, unknown> {
+  const merged: Record<PropertyKey, unknown> = {};
+  for (const entry of itemSchemas) {
+    Object.assign(merged, itemEntryShape(entry));
+  }
+  return merged;
+}
+
+function itemEntryShape(entry: unknown): Record<PropertyKey, unknown> {
+  if (!entry || typeof entry !== 'object') return {};
+  const inner = (entry as { __schema?: unknown }).__schema;
+  if (!inner || typeof inner !== 'object') return {};
+  return inner as Record<PropertyKey, unknown>;
 }
 
 // eslint-disable-next-line complexity
@@ -449,10 +470,14 @@ function validateSourceExists(
     ) {
       const itemSchema = (rule as unknown as Record<symbol, unknown>)[
         Symbol.for('vest:itemSchema')
-      ] as unknown as Record<PropertyKey, unknown>;
-      walkShape =
-        (itemSchema as unknown as { __schema?: Record<PropertyKey, unknown> })
-          ?.__schema ?? itemSchema;
+      ];
+      walkShape = Array.isArray(itemSchema)
+        ? mergedItemShape(itemSchema)
+        : ((
+            itemSchema as unknown as {
+              __schema?: Record<PropertyKey, unknown>;
+            }
+          )?.__schema ?? (itemSchema as Record<PropertyKey, unknown>));
     } else {
       walkShape = null;
     }
@@ -471,12 +496,27 @@ function validateSourceExists(
     for (let i = 0; i < relativePath.length - 1; i++) {
       const seg = relativePath[i];
       if (seg.type !== 'property') continue;
-      const rule = (parentShape as Record<PropertyKey, unknown>)?.[
-        seg.key as string
-      ] as Record<PropertyKey, unknown> & {
-        __schema?: Record<PropertyKey, unknown>;
-        [key: symbol]: unknown;
-      };
+      const key = String((seg as unknown as PropertySegment).key);
+      if (!parentShape || typeof parentShape !== 'object') {
+        throw new EnforceSchemaError(
+          `EnforceSchemaError: "${targetField}" depends on unknown field "${key}"`,
+        );
+      }
+      const rule = (parentShape as Record<PropertyKey, unknown>)[key] as
+        | (Record<PropertyKey, unknown> & {
+            __schema?: Record<PropertyKey, unknown>;
+            [key: symbol]: unknown;
+          })
+        | null
+        | undefined;
+      if (rule === undefined || rule === null) {
+        const suggestion = findClosestKey(key, Object.keys(parentShape));
+        let msg = `EnforceSchemaError: "${targetField}" depends on unknown field "${key}"`;
+        if (suggestion) {
+          msg += `. Did you mean "${suggestion}"?`;
+        }
+        throw new EnforceSchemaError(msg);
+      }
       if (
         (rule as unknown as { __schema?: Record<PropertyKey, unknown> })
           ?.__schema
@@ -488,14 +528,18 @@ function validateSourceExists(
         (rule as unknown as Record<symbol, unknown>)[
           Symbol.for('vest:itemSchema')
         ]
-      )
-        parentShape =
-          (
-            (rule as unknown as Record<symbol, unknown>)[
-              Symbol.for('vest:itemSchema')
-            ] as unknown as { __schema?: Record<PropertyKey, unknown> }
-          )?.__schema ?? parentShape;
-      else parentShape = null;
+      ) {
+        const itemSchema = (rule as unknown as Record<symbol, unknown>)[
+          Symbol.for('vest:itemSchema')
+        ];
+        parentShape = Array.isArray(itemSchema)
+          ? mergedItemShape(itemSchema)
+          : ((
+              itemSchema as unknown as {
+                __schema?: Record<PropertyKey, unknown>;
+              }
+            )?.__schema ?? parentShape);
+      } else parentShape = null;
     }
   } else {
     parentShape = shapeToCheck as Record<PropertyKey, unknown> | null;

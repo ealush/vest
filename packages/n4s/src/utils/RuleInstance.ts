@@ -1,5 +1,6 @@
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
+import type { FIELD } from '../schema/scopeProxy';
 import type { SchemaPath } from '../schema/SchemaPath';
 import type {
   InternalRelationship,
@@ -32,6 +33,7 @@ import { RuleRunReturn } from './RuleRunReturn';
  */
 export interface ScopeHandle {
   readonly root: ScopeHandle;
+  [FIELD]: (fieldName: string) => ScopeHandle;
   [key: string]: ScopeHandle;
   [key: symbol]: unknown;
 }
@@ -43,12 +45,14 @@ export type DescribeResult = {
 
 // Copies a path segment-by-segment so public describe() output never shares
 // array or segment references with the live relationship graph.
-function clonePath(path: SchemaPath): SchemaPath {
+export function clonePath(path: SchemaPath): SchemaPath {
   return path.map(seg => ({ ...seg }));
 }
 
 // Strips internal rootedness flags and deep-clones all paths/segments.
-function cloneRelationship(rel: InternalRelationship): SchemaRelationship {
+export function cloneRelationship(
+  rel: InternalRelationship,
+): SchemaRelationship {
   return {
     ...(rel.metadata ? { metadata: { ...rel.metadata } } : {}),
     effect: rel.effect,
@@ -59,7 +63,9 @@ function cloneRelationship(rel: InternalRelationship): SchemaRelationship {
 
 // Groups cloned relationships by target. Clones again so dependencies share
 // no references with the relationships output either.
-function groupDependencies(resolved: SchemaRelationship[]): SchemaDependency[] {
+export function groupDependencies(
+  resolved: SchemaRelationship[],
+): SchemaDependency[] {
   const depMap = new Map<
     string,
     { target: SchemaPath; sources: SchemaPath[] }

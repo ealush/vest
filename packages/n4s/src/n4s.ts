@@ -55,6 +55,17 @@ export type {
 } from './schema/SchemaRelationship';
 export type { DescribeResult } from './utils/RuleInstance';
 
+/**
+ * Escape hatch for referencing a literal field whose name collides with a
+ * JavaScript internal (`then` is never chainable so refs stay non-thenable).
+ *
+ * @example
+ * ```typescript
+ * dependsOn($ => $[FIELD]('then'))
+ * ```
+ */
+export { FIELD } from './schema/scopeProxy';
+
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;
 type Enforce = typeof enforceEager &

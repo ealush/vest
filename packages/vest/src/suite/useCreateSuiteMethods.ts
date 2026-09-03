@@ -286,6 +286,15 @@ function useCreateChanged<
   ) {
     /** @deferred v2 — AbortSignal abort deferred */
     assertNoAbortSignal(options);
+    if (changedField === undefined) {
+      // Mirror only(undefined): a legal no-op — run without changed focus.
+      return useCreateSuiteMethods<F, G, T, S>(
+        suiteCallback,
+        { ...modifiers },
+        subscribe,
+        schema,
+      );
+    }
     const changedArray = Array.isArray(changedField)
       ? (changedField as string[])
       : [changedField as string];

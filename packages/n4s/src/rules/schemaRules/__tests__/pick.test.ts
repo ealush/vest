@@ -138,6 +138,15 @@ describe('pick', () => {
     expect(invalidResult.pass).toBe(false);
   });
 
+  it('rejects unknown keys at compile time', () => {
+    const schema = {
+      name: enforce.isString(),
+    };
+
+    // @ts-expect-error - 'typo' is not a schema key
+    void enforce.pick(schema, ['typo']);
+  });
+
   it('drops rooted edges whose provider was picked away', () => {
     const schema = {
       accountType: enforce.isString(),

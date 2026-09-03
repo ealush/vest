@@ -1,4 +1,9 @@
-import type { SchemaPath } from 'n4s/src/schema/SchemaPath';
+import type {
+  SchemaPath,
+  ItemSegment,
+  PropertySegment,
+} from 'n4s/src/schema/SchemaPath';
+import { isPropertySegment } from 'n4s/src/schema/SchemaPath';
 import type { SchemaRelationship } from 'n4s/src/schema/SchemaRelationship';
 
 const RESOLVED_RELATIONSHIPS = Symbol.for('vest:resolvedRelationships');
@@ -38,6 +43,15 @@ export function parseFieldName(field: string): SchemaPath {
   return segs as SchemaPath;
 }
 
+/**
+ * Canonical dotted form of a field name: brackets become dots, empty
+ * segments are dropped ('travelers[1].country' -> 'travelers.1.country').
+ * Single canonical implementation shared by matching and result filtering.
+ */
+export function normalizeFieldName(field: string): string {
+  return pathToFieldName(parseFieldName(field));
+}
+
 export function pathToFieldName(path: SchemaPath): string {
   const parts: string[] = [];
   for (const seg of path) {
@@ -72,8 +86,8 @@ function pathMatchesPattern(
     const p = pattern[i];
     const c = concrete[i];
     if (p.type !== c.type) return false;
-    if (p.type === 'property') {
-      if ((p as any).key !== (c as any).key) return false;
+    if (isPropertySegment(p) && isPropertySegment(c)) {
+      if (p.key !== c.key) return false;
     } else {
       // item segment: pattern binding is wildcard (e.g., 'travelers.$item'), concrete binding is index
       // Consider match if both are items, regardless of binding value
@@ -86,53 +100,159 @@ function pathMatchesPattern(
 }
 
 /**
- * Generates concrete target field names for a relationship given a concrete source field.
- * For same-item dependencies, the target's item binding should be replaced with the
- * concrete index from the source.
+ * Checks whether a concrete changed path is a strict parent prefix of a
+ * relationship source pattern. Item segments in the pattern act as wildcards.
+ * A parent-level changed path (e.g. 'profile' vs source [profile, country])
+ * must pull in the relationship's targets, otherwise nested failures under
+ * the parent are silently swallowed by exact-match focus.
+ */
+function isStrictPrefixOfSource(
+  pattern: SchemaPath,
+  concrete: SchemaPath,
+): boolean {
+  if (concrete.length === 0 || concrete.length >= pattern.length) return false;
+  return concrete.every((seg, index) => segmentsMatch(pattern[index], seg));
+}
+
+function segmentsMatch(
+  patternSeg: PropertySegment | ItemSegment | undefined,
+  concreteSeg: PropertySegment | ItemSegment,
+): boolean {
+  if (patternSeg === undefined || patternSeg.type !== concreteSeg.type) {
+    return false;
+  }
+  if (patternSeg.type === 'property' && concreteSeg.type === 'property') {
+    return patternSeg.key === concreteSeg.key;
+  }
+  return true;
+}
+
+/**
+ * Returns the top-level key of a schema path (its first property segment).
+ * Used as a binding-free fallback when an array target cannot be expanded
+ * to concrete indices: affected names must never leak internal '$item'
+ * bindings.
+ */
+function topLevelKeyOf(path: SchemaPath): string | null {
+  const [first] = path as (PropertySegment | ItemSegment)[];
+  if (first !== undefined && first.type === 'property') {
+    return String(first.key);
+  }
+  return null;
+}
+
+/**
+ * Resolves a relationship target's item segments to concrete indices taken
+ * from the concrete changed source at the same positions (same-item).
+ * Returns null when any target item has no corresponding concrete index —
+ * callers then expand from run data or fall back to the top-level key
+ * instead of emitting internal '$item' bindings.
  *
  * Example: relationship source [travelers, $item, country] -> target [travelers, $item, passport]
  * changed 'travelers.1.country' (concrete [travelers, 1, country]) matches source
  * then target concrete is [travelers, 1, passport] -> 'travelers.1.passport'
  */
-// eslint-disable-next-line complexity
-function generateConcreteTarget(
+function resolveTargetItems(
   patternTarget: SchemaPath,
   patternSource: SchemaPath,
   concreteSource: SchemaPath,
-): SchemaPath {
-  const segs: SchemaPath[number][] = [];
+): SchemaPath | null {
+  const segs: (PropertySegment | ItemSegment)[] = [];
   for (let i = 0; i < patternTarget.length; i++) {
-    const tSeg = patternTarget[i];
-    if (tSeg.type === 'item') {
-      // Find corresponding item segment in patternSource and concreteSource
-      // For same-item, the item binding at same position should be shared
-      // Find item position in pattern
-      const patternItemIndices: number[] = [];
-      patternSource.forEach((seg, idx) => {
-        if (seg.type === 'item') patternItemIndices.push(idx);
-      });
-      const targetItemPos = i;
-      // Check if this item position corresponds to a source item at same depth
-      // For same-item, source and target share same binding, so we can copy concrete's item binding
-      const sourceItemAtSamePos = patternSource[targetItemPos];
-      if (
-        sourceItemAtSamePos &&
-        sourceItemAtSamePos.type === 'item' &&
-        concreteSource[targetItemPos]?.type === 'item'
-      ) {
-        segs.push({
-          type: 'item',
-          binding: (concreteSource[targetItemPos] as any).binding,
-        });
-      } else {
-        // No corresponding source item, keep pattern's binding (should not happen for same-item)
-        segs.push({ ...tSeg } as any);
-      }
-    } else {
-      segs.push({ ...tSeg } as any);
-    }
+    const resolved = resolveTargetSegment(
+      patternTarget[i],
+      patternSource[i],
+      concreteSource[i],
+    );
+    if (resolved === null) return null;
+    segs.push(resolved);
   }
   return segs as SchemaPath;
+}
+
+function resolveTargetSegment(
+  targetSeg: PropertySegment | ItemSegment | undefined,
+  sourceSeg: PropertySegment | ItemSegment | undefined,
+  concreteSeg: PropertySegment | ItemSegment | undefined,
+): (PropertySegment | ItemSegment) | null {
+  if (targetSeg === undefined) return null;
+  if (targetSeg.type !== 'item') return { ...targetSeg };
+  // For same-item, the item binding at the same position is shared
+  // between source and target, so copy the concrete index.
+  return resolveItemBinding(sourceSeg, concreteSeg);
+}
+
+function resolveItemBinding(
+  sourceSeg: PropertySegment | ItemSegment | undefined,
+  concreteSeg: PropertySegment | ItemSegment | undefined,
+): ItemSegment | null {
+  if (sourceSeg === undefined || concreteSeg === undefined) return null;
+  if (sourceSeg.type !== 'item' || concreteSeg.type !== 'item') return null;
+  const resolved: ItemSegment = {
+    type: 'item',
+    binding: concreteSeg.binding,
+  };
+  return resolved;
+}
+
+/**
+ * Adds a relationship's targets to the affected set, concretized with the
+ * concrete changed source when possible. Array targets without a usable
+ * concrete index expand from run data; when expansion is impossible (no
+ * data) they fall back to the top-level key — never '$item' bindings.
+ */
+function addRelationshipTargets(
+  rel: SchemaRelationship,
+  concreteSource: SchemaPath,
+  data: unknown,
+  affectedSet: Set<string>,
+): void {
+  const target = rel.target as SchemaPath;
+  if (!target.some(seg => seg.type === 'item')) {
+    affectedSet.add(pathToFieldName(target));
+    return;
+  }
+  addArrayTargetFields(rel, concreteSource, data, affectedSet);
+}
+
+function addArrayTargetFields(
+  rel: SchemaRelationship,
+  concreteSource: SchemaPath,
+  data: unknown,
+  affectedSet: Set<string>,
+): void {
+  const target = rel.target as SchemaPath;
+  const resolved = resolveTargetItems(
+    target,
+    rel.source as SchemaPath,
+    concreteSource,
+  );
+  if (resolved) {
+    affectedSet.add(pathToFieldName(resolved));
+    return;
+  }
+  addUnresolvedArrayTarget(target, data, affectedSet);
+}
+
+function addUnresolvedArrayTarget(
+  target: SchemaPath,
+  data: unknown,
+  affectedSet: Set<string>,
+): void {
+  if (data === undefined || data === null) {
+    addTopLevelFallback(target, affectedSet);
+    return;
+  }
+  const expanded = expandArrayTargets(target, data);
+  for (const field of expanded) affectedSet.add(field);
+}
+
+function addTopLevelFallback(
+  target: SchemaPath,
+  affectedSet: Set<string>,
+): void {
+  const top = topLevelKeyOf(target);
+  if (top) affectedSet.add(top);
 }
 
 /**
@@ -164,54 +284,40 @@ export function getAffectedFields(
     path: parseFieldName(f),
   }));
 
-  const affectedSet = new Set<string>();
   // Always include the changed fields themselves
-  for (const cf of changedArray) {
-    affectedSet.add(cf);
-  }
+  const affectedSet = new Set<string>(changedArray);
 
+  collectRelationshipTargets(
+    relationships,
+    concreteChangedPaths,
+    data,
+    affectedSet,
+  );
+
+  return Array.from(affectedSet);
+}
+
+function collectRelationshipTargets(
+  relationships: SchemaRelationship[],
+  concreteChangedPaths: { field: string; path: SchemaPath }[],
+  data: unknown,
+  affectedSet: Set<string>,
+): void {
   for (const rel of relationships) {
     for (const { field: _field, path: concretePath } of concreteChangedPaths) {
       // Check if concrete changed path matches relationship source pattern
-      // For flat/nested: pattern [password] should match concrete [password] or [account,password] correctly
-      // We need exact match, not prefix, for now
       if (pathMatchesPattern(rel.source as SchemaPath, concretePath)) {
-        // For same-item array, generate concrete target with same index
-        const hasItemInSource = (rel.source as SchemaPath).some(
-          s => s.type === 'item',
-        );
-        const hasItemInTarget = (rel.target as SchemaPath).some(
-          s => s.type === 'item',
-        );
-
-        if (hasItemInSource && hasItemInTarget) {
-          // Same-item case: generate concrete target with index from concrete source
-          const concreteTarget = generateConcreteTarget(
-            rel.target as SchemaPath,
-            rel.source as SchemaPath,
-            concretePath,
-          );
-          affectedSet.add(pathToFieldName(concreteTarget));
-        } else if (!hasItemInSource && hasItemInTarget) {
-          // Root -> array item case: need to expand to all indices present in data
-          // For V1, if data is available and target is array item, expand to all indices
-          if (data) {
-            const expanded = expandArrayTargets(rel.target as SchemaPath, data);
-            for (const ef of expanded) affectedSet.add(ef);
-          } else {
-            // Without data, fallback to wildcard field name (not ideal, but for describe tests)
-            // Use target path as is with $item binding -> convert to field name with *
-            affectedSet.add(pathToFieldName(rel.target as SchemaPath));
-          }
-        } else {
-          // Flat or nested non-array
-          affectedSet.add(pathToFieldName(rel.target as SchemaPath));
-        }
+        addRelationshipTargets(rel, concretePath, data, affectedSet);
+      } else if (
+        isStrictPrefixOfSource(rel.source as SchemaPath, concretePath)
+      ) {
+        // Parent-level changed path (e.g. 'profile' vs source
+        // [profile, country]): pull in the relationship's targets,
+        // concretized from run data when indices are needed.
+        addRelationshipTargets(rel, concretePath, data, affectedSet);
       }
     }
   }
-
-  return Array.from(affectedSet);
 }
 
 /**
@@ -230,15 +336,13 @@ function expandArrayTargets(targetPath: SchemaPath, data: any): string[] {
       return;
     }
     const seg = targetPath[pathIdx];
-    if (seg.type === 'property') {
-      dfs(pathIdx + 1, dataNode?.[(seg as any).key], [
-        ...built,
-        seg,
-      ] as SchemaPath);
+    if (isPropertySegment(seg)) {
+      dfs(pathIdx + 1, dataNode?.[seg.key], [...built, seg] as SchemaPath);
     } else {
-      // item segment — dataNode should be the array at this position
+      // item segment — dataNode should be the array at this position.
+      // Without backing data the index cannot be concretized: skip the
+      // branch instead of leaking internal '$item' bindings.
       if (!Array.isArray(dataNode)) {
-        dfs(pathIdx + 1, undefined, [...built, seg] as SchemaPath);
         return;
       }
       for (let i = 0; i < dataNode.length; i++) {
@@ -250,5 +354,9 @@ function expandArrayTargets(targetPath: SchemaPath, data: any): string[] {
     }
   }
   dfs(0, data, [] as unknown as SchemaPath);
-  return results.length ? results : [pathToFieldName(targetPath)];
+  if (results.length) return results;
+  // Index expansion was impossible (no data): fall back to the top-level
+  // key so affected names never contain internal bindings.
+  const top = topLevelKeyOf(targetPath);
+  return top ? [top] : [];
 }

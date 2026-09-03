@@ -1,6 +1,7 @@
 /* eslint-disable complexity, max-lines-per-function, max-statements -- suite finalization */
 import { CB, makeResult, Result } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
+import { EnforceSchemaError } from '../../../n4s/src/errors/EnforceSchemaError';
 
 import { useCreateVestState } from '../core/Runtime';
 import { useInitVestBus } from '../core/VestBus/VestBus';
@@ -160,11 +161,9 @@ function validateDeferredRoots(schema: any): void {
           if (seg.type !== 'property') return;
           const key = String(seg.key);
           if (!Object.prototype.hasOwnProperty.call(current, key)) {
-            const err = new Error(
+            throw new EnforceSchemaError(
               `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${key}"`,
             );
-            err.name = 'EnforceSchemaError';
-            throw err;
           }
           const rule: any = current[key];
           if (i < path.length - 1) {

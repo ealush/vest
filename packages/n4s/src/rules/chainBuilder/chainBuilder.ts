@@ -8,13 +8,13 @@ import {
 } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
-import type { SchemaPath } from '../../schema/SchemaPath';
 import type {
   InternalRelationship,
   SchemaDependency,
   SchemaRelationship,
 } from '../../schema/SchemaRelationship';
 import type { RuleInstance, ScopeHandle } from '../../utils/RuleInstance';
+import { cloneRelationship, groupDependencies } from '../../utils/RuleInstance';
 import { assertRuleRootedPathsValid } from '../../schema/dependencyResolver';
 
 import { executeChain, type Predicate } from './chainExecutor';
@@ -40,38 +40,77 @@ type LazyMessage = DynamicValue<
   [value: unknown, originalMessage?: Stringable]
 >;
 
-// Reentrancy guard for the standalone finalization boundary below. Nested
-// rule runs execute synchronously inside the outer chain (chainExecutor is
-// fully synchronous), so exactly one boundary check runs per user-invoked
-// test/run/parse/validate: the outermost one, against the final root. The
-// depth window spans the whole chain execution, not just the check itself.
-let boundaryDepth = 0;
+// Boundary tracking for the standalone finalization boundary below. A plain
+// call-depth counter is wrong here: a custom matcher can run an INDEPENDENT
+// schema while another schema is active, and depth > 0 would wrongly skip
+// the independent schema's own check. Instead this is a stack of the rule
+// identities (chain targets) currently inside a boundary window.
+//
+// A nested entry skips its check only when it belongs to the active
+// composition — the same rule re-entered, or a rule mounted into an active
+// root's schema graph (reusable fragments whose dangling $.root edges stay
+// lenient until finalization against the final root). An independent root is
+// never a member of the active composition, so it always validates against
+// its own root shape, nested or not.
+const activeBoundaryRoots: object[] = [];
+
+// Maps each chain proxy to its internal target so composition membership
+// can be resolved by identity: `__schema` graphs hold proxies while the
+// boundary receives targets.
+const proxyToTarget = new WeakMap<object, object>();
+
+function isObjectNode(node: unknown): node is Record<PropertyKey, unknown> {
+  return !!node && typeof node === 'object';
+}
+
+function resolveBoundaryNode(node: unknown): object | null {
+  if (!isObjectNode(node)) return null;
+  return proxyToTarget.get(node) ?? node;
+}
+
+function schemaChildNodes(record: Record<PropertyKey, unknown>): unknown[] {
+  const schema = record.__schema;
+  if (!isObjectNode(schema)) return [];
+  return Object.values(schema);
+}
+
+function itemChildNodes(record: Record<PropertyKey, unknown>): unknown[] {
+  const item = record[Symbol.for('vest:itemSchema')];
+  return isObjectNode(item) ? [item] : [];
+}
+
+function childNodesOf(resolved: object): unknown[] {
+  const record = resolved as Record<PropertyKey, unknown>;
+  return [...schemaChildNodes(record), ...itemChildNodes(record)];
+}
+
+function isCompositionMember(rule: unknown, roots: object[]): boolean {
+  const seen = new Set<object>();
+  const pending: unknown[] = [...roots];
+  while (pending.length > 0) {
+    const resolved = resolveBoundaryNode(pending.pop());
+    if (resolved === rule) return true;
+    if (!resolved || seen.has(resolved)) continue;
+    seen.add(resolved);
+    pending.push(...childNodesOf(resolved));
+  }
+  return false;
+}
 
 function withStandaloneRootedBoundary<R>(rule: unknown, fn: () => R): R {
-  if (boundaryDepth > 0) return fn();
-  boundaryDepth++;
+  if (
+    activeBoundaryRoots.length > 0 &&
+    isCompositionMember(rule, activeBoundaryRoots)
+  ) {
+    return fn();
+  }
+  activeBoundaryRoots.push(rule as object);
   try {
     assertRuleRootedPathsValid(rule);
     return fn();
   } finally {
-    boundaryDepth--;
+    activeBoundaryRoots.pop();
   }
-}
-
-// Copies a path segment-by-segment so public describe() output never shares
-// array or segment references with the live relationship graph.
-function clonePath(path: SchemaPath): SchemaPath {
-  return path.map(seg => ({ ...seg }));
-}
-
-// Strips internal rootedness flags and deep-clones all paths/segments.
-function cloneRelationship(rel: InternalRelationship): SchemaRelationship {
-  return {
-    ...(rel.metadata ? { metadata: { ...rel.metadata } } : {}),
-    effect: rel.effect,
-    source: clonePath(rel.source),
-    target: clonePath(rel.target),
-  };
 }
 
 /**
@@ -209,23 +248,9 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
     const rawArray = raw as InternalRelationship[];
     // Deep-clone paths/segments and drop internal flags so the public
     // snapshot shares no references with the live relationship graph.
+    // Shared with RuleInstance.describe: identical output, one implementation.
     const resolved: SchemaRelationship[] = rawArray.map(cloneRelationship);
-    // Group by target to produce dependencies. Clone again so dependencies
-    // share no references with the relationships output either.
-    const depMap = new Map<
-      string,
-      { target: SchemaPath; sources: SchemaPath[] }
-    >();
-    for (const rel of resolved) {
-      const key = JSON.stringify(rel.target);
-      let dep = depMap.get(key);
-      if (!dep) {
-        dep = { target: clonePath(rel.target), sources: [] };
-        depMap.set(key, dep);
-      }
-      dep.sources.push(clonePath(rel.source));
-    }
-    const dependencies: SchemaDependency[] = Array.from(depMap.values());
+    const dependencies: SchemaDependency[] = groupDependencies(resolved);
     return {
       dependencies,
       relationships: resolved,
@@ -274,6 +299,8 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   (proxy as unknown as Record<symbol, unknown>)[
     Symbol.for('vest:unresolvedDeps')
   ] = unresolvedDeps;
+
+  proxyToTarget.set(proxy as unknown as object, target as object);
 
   return { add, proxy } as const;
 }

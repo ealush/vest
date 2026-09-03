@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { enforce } from '../n4s';
-import { FIELD, createScopeProxy, isDependencyRef } from '../schema/scopeProxy';
+import { enforce, FIELD } from '../n4s';
+import { createScopeProxy, isDependencyRef } from '../schema/scopeProxy';
 
 function pathKeys(path: unknown): string[] {
   return ((path ?? []) as Array<{ key?: unknown }>).map(seg => String(seg.key));
@@ -102,6 +102,29 @@ describe('scopeProxy field collisions', () => {
     expect(sourcesFor(schema.describe(), 'a')).toEqual(['then']);
     expect(sourcesFor(schema.describe(), 'b')).toEqual(['nested.then']);
     expect(sourcesFor(schema.describe(), 'c')).toEqual(['then']);
+  });
+
+  it('references a literal then field with full typing and no cast', () => {
+    const schema = enforce.shape({
+      then: enforce.isString(),
+      nested: enforce.shape({ then: enforce.isString() }),
+      a: enforce.isString().dependsOn($ => $[FIELD]('then')),
+      b: enforce.isString().dependsOn($ => $.nested[FIELD]('then')),
+      c: enforce.isString().dependsOn($ => $.root[FIELD]('then')),
+    });
+
+    expect(sourcesFor(schema.describe(), 'a')).toEqual(['then']);
+    expect(sourcesFor(schema.describe(), 'b')).toEqual(['nested.then']);
+    expect(sourcesFor(schema.describe(), 'c')).toEqual(['then']);
+    expect(
+      schema.test({
+        then: 't',
+        nested: { then: 'nt' },
+        a: 'x',
+        b: 'y',
+        c: 'z',
+      }),
+    ).toBe(true);
   });
 
   it('keeps normal deep chaining working', () => {

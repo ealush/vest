@@ -76,11 +76,11 @@ function collectSchemaRelationships(
       const prefix = [{ type: 'property', key } as const];
       relationships.push(...rebaseRelationships(nested, prefix));
     }
-    const item = fieldRule?.[ITEM_SCHEMA] as any;
-    if (item) {
+    for (const itemSchema of normalizeItemSchemas(fieldRule?.[ITEM_SCHEMA])) {
       const itemRels =
-        (item[RESOLVED_RELATIONSHIPS] as InternalRelationship[] | undefined) ||
-        [];
+        ((itemSchema as unknown as Record<symbol, unknown>)[
+          RESOLVED_RELATIONSHIPS
+        ] as InternalRelationship[] | undefined) || [];
       if (itemRels.length > 0) {
         relationships.push(
           ...rebaseRelationshipsForArray(itemRels, key, `${String(key)}.$item`),
@@ -89,6 +89,58 @@ function collectSchemaRelationships(
     }
   }
   return relationships;
+}
+
+/**
+ * Normalizes an ITEM_SCHEMA slot to a list of item rules. Single-rule
+ * containers (record values, single-rule arrays) store the rule directly;
+ * multi-member containers (tuple elements, multi-rule arrays) store a list.
+ */
+function normalizeItemSchemas(item: unknown): Record<PropertyKey, unknown>[] {
+  if (!item) return [];
+  const entries = Array.isArray(item) ? item : [item];
+  return entries.filter(
+    (entry): entry is Record<PropertyKey, unknown> =>
+      !!entry && typeof entry === 'object',
+  );
+}
+
+/**
+ * Whether a rule carries an item relationship graph: either a shape-like
+ * rule (has __schema) or a rule with resolved relationships.
+ */
+function isItemSchemaLike(rule: unknown): rule is Record<PropertyKey, unknown> {
+  if (!rule || typeof rule !== 'object') return false;
+  const candidate = rule as unknown as {
+    __schema?: unknown;
+  } & Record<symbol, unknown>;
+  return (
+    candidate.__schema !== undefined ||
+    candidate[RESOLVED_RELATIONSHIPS] !== undefined
+  );
+}
+
+/**
+ * Relationship-aware record wrapper: attaches the value rule (record(value)
+ * or record(key, value)) as the item schema, mirroring the single-object
+ * ITEM_SCHEMA pattern, so describe() rebases the value shape's item graph.
+ * Key rules are scalars and carry no item graph of their own.
+ */
+function createRecordWrapper(): (
+  arg1: unknown,
+  arg2?: unknown,
+) => RuleInstance<unknown, unknown[]> {
+  return (arg1: unknown, arg2?: unknown) => {
+    const recordRule = recordEvaluators.record as (
+      ...args: unknown[]
+    ) => RuleInstance<unknown, unknown[]>;
+    const rule = arg2 !== undefined ? recordRule(arg1, arg2) : recordRule(arg1);
+    const valueRule = arg2 !== undefined ? arg2 : arg1;
+    if (isItemSchemaLike(valueRule)) {
+      (rule as unknown as Record<symbol, unknown>)[ITEM_SCHEMA] = valueRule;
+    }
+    return rule;
+  };
 }
 
 function wrapOptional(rawOptional: (inner: any) => RuleInstance<any, [any]>) {
@@ -367,6 +419,17 @@ const schemaRulesWithArrayChaining = {
       if (itemSchema.__schema || itemSchema[RESOLVED_RELATIONSHIPS]) {
         (rule as any)[ITEM_SCHEMA] = itemSchema;
       }
+    } else if (rules.length > 1) {
+      // Multi-rule arrays accept an element matching ANY member rule (union
+      // semantics), so no single member owns the item graph. Store every
+      // graph-carrying member: describe() rebases the union of their edges
+      // under the same $item binding. This over-approximates (an edge fires
+      // for indices whose element matched a different member), but that is
+      // the invalidation-safe direction — and never a silent empty graph.
+      const schemas = rules.filter(isItemSchemaLike);
+      if (schemas.length > 0) {
+        (rule as any)[ITEM_SCHEMA] = schemas;
+      }
     }
     return rule;
   },
@@ -384,19 +447,36 @@ const schemaRulesWithArrayChaining = {
       if (itemSchema.__schema || itemSchema[RESOLVED_RELATIONSHIPS]) {
         (rule as any)[ITEM_SCHEMA] = itemSchema;
       }
+    } else if (rules.length > 1) {
+      // Same union semantics as isArrayOf above: keep every graph-carrying
+      // member so describe() rebases the union instead of dropping the graph.
+      const schemas = rules.filter(isItemSchemaLike);
+      if (schemas.length > 0) {
+        (rule as any)[ITEM_SCHEMA] = schemas;
+      }
     }
     return rule;
   },
   loose: schemaAttacher(schemaEvaluators.loose),
-  record: recordEvaluators.record,
+  record: createRecordWrapper(),
   shape: schemaAttacher(schemaEvaluators.shape),
-  tuple: (...rules: any[]) =>
-    addToChain(arrayRules, (value: any) => {
+  tuple: (...rules: any[]) => {
+    const rule = addToChain(arrayRules, (value: any) => {
       const result = ctx.run({ value }, () =>
         schemaRules.tuple(value, ...rules),
       );
       return RuleRunReturn.create(result, value);
-    }),
+    });
+    // Tuple elements are positional, but relationships inside an element are
+    // still same-item edges. Collect every graph-carrying element so
+    // describe() rebases the union under the $item binding (same union
+    // semantics as multi-rule arrays above — over-approximating, never empty).
+    const schemas = rules.filter(isItemSchemaLike);
+    if (schemas.length > 0) {
+      (rule as any)[ITEM_SCHEMA] = schemas;
+    }
+    return rule;
+  },
 };
 
 const baseEnforceLazy = {

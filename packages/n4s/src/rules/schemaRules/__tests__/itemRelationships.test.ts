@@ -148,6 +148,27 @@ describe('item relationships', () => {
     ).toEqual(['m.m.$item.m.$item.$item.country']);
   });
 
+  it('diamond members emit both the direct and the nested edge', () => {
+    // isArrayOf(mid, inner) with mid = isArrayOf(inner) reaches `inner`
+    // under two prefixes. A shared visited-set would swallow the second
+    // occurrence (under-invalidation); only the current descent path is
+    // guarded, so both edges surface.
+    const inner = enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    });
+    const schema = enforce.shape({
+      m: enforce.isArrayOf(enforce.isArrayOf(inner), inner),
+    });
+
+    expect(sourcesFor(schema.describe(), 'm.m.$item.state')).toEqual([
+      'm.m.$item.country',
+    ]);
+    expect(
+      sourcesFor(schema.describe(), 'm.m.$item.m.$item.$item.state'),
+    ).toEqual(['m.m.$item.m.$item.$item.country']);
+  });
+
   it('multi-rule array with a nested container member keeps the edge', () => {
     // Container members (no __schema of their own) must survive the
     // member filter so recursion can reach the graph inside them.

@@ -1038,17 +1038,17 @@ function appendSingleMember(
     basePath: [...selection.sink.basePath, String(head)],
     out: selection.sink.out,
   };
-  // A container-typed member rule run against contradicting data would
-  // invent a member failure the full run attributes to the container
-  // itself; skip the direct run there (the recursive supplement below
-  // self-guards through tryAppendMembers the same way).
-  if (kindValueMatches(projected, child)) {
-    for (const result of prefixFailureResults(
-      safeRunItem(projected, child),
-      sink.basePath,
-    )) {
-      sink.out.push(result);
-    }
+  // No container-kind guard here: the member rule runs against the same
+  // element the full run would reach (isArrayOf prefixes the member index
+  // onto inner failures, so attribution already matches), and shadowed
+  // members the full run never reaches are exactly what the supplement is
+  // for. Contradicting container-vs-data dispatch is guarded one level up
+  // in tryAppendMembers instead.
+  for (const result of prefixFailureResults(
+    safeRunItem(projected, child),
+    sink.basePath,
+  )) {
+    sink.out.push(result);
   }
   appendSupplementalFailures(projected, child, {
     suffixes: itemSuffixes,

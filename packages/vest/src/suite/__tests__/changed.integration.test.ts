@@ -1017,10 +1017,11 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(affected.hasErrors('1.state')).toBe(true);
     // @ts-expect-error - integration probe: see above.
     expect(affected.hasErrors('0.state')).toBe(false);
-    // The same failure outside the affected set is filtered out.
+    // The same failure outside the affected set is filtered out: without
+    // schema-level filtering the failure would still be emitted as a
+    // (focus-skipped) test, so the inventory — not just hasErrors — pins it.
     const unaffected = await suite.changed('0.state').run(data);
-    // @ts-expect-error - integration probe: see above.
-    expect(unaffected.hasErrors('1.state')).toBe(false);
+    expect(Object.keys(unaffected.tests)).not.toContain('1.state');
   });
 
   /** @deferred v2 — suite.changed with AbortSignal */

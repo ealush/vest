@@ -407,6 +407,8 @@ describe('changed() source-retaining projection', () => {
     // projection keeps the whole record rule. Suffixes alone cannot tell
     // numeric record keys from indices — the container-kind marker routes
     // here instead of the array rebuild, which would reject record data.
+    // A single affected key matters: with every key affected the value
+    // shape narrows to nothing and the old rebuild path is never reached.
     const schema = enforce.shape({
       dictionary: enforce.record(
         enforce.isString().longerThan(3),
@@ -418,7 +420,6 @@ describe('changed() source-retaining projection', () => {
     });
     const expanded = expandAffectedWithSources(schema, [
       'dictionary.1.country',
-      'dictionary.1.state',
     ]);
     const projected = buildProjectedSchema(schema, expanded);
     expect(projected).not.toBeNull();
@@ -430,7 +431,8 @@ describe('changed() source-retaining projection', () => {
     expect(() =>
       parse({ dictionary: { abcd: { country: 'CA', state: 'abc' } } }),
     ).not.toThrow();
-    // Key validation matches the full run exactly — nothing was dropped.
+    // Key validation matches the full run exactly — nothing was dropped
+    // (keys validate before values, so the short key throws either way).
     expect(() =>
       parse({ dictionary: { '1': { country: 'CA', state: 'abc' } } }),
     ).toThrow();
@@ -457,6 +459,29 @@ describe('changed() source-retaining projection', () => {
     // instead of array) to prove the supplement skips the contradiction.
     const changed = await suite.changed('tags.0').run(data);
     expect(changed.hasErrors('tags.0')).toBe(false);
+  });
+
+  it('supplement surfaces shadowed failures in kind-contradicting members', async () => {
+    // A nested member whose value contradicts the member kind: the full
+    // run attributes the inner failure to the member path (isArrayOf
+    // prefixes the member index), so the supplement must surface it even
+    // when an earlier member's failure shadows it in the main run.
+    // Guarding the member run itself by container kind would report this
+    // affected member clean — that guard belongs only to dispatch.
+    const schema = enforce.shape({
+      matrix: enforce.isArrayOf(
+        enforce.isArrayOf(
+          enforce.shape({ v: enforce.isString().longerThan(5) }),
+        ),
+      ),
+    });
+    const suite = create((_data: any) => {}, schema);
+    const data = { matrix: [[{ v: 'xx' }], 'oops'] };
+    // @ts-expect-error — reason: intentionally mistyped member ('oops'
+    // is not an array) to pin supplement attribution for contradicting
+    // members.
+    const changed = await suite.changed('matrix.1').run(data);
+    expect(changed.hasErrors('matrix.1')).toBe(true);
   });
 
   it('merge keeps same-message failures on colliding dotted paths', () => {

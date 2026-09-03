@@ -92,9 +92,14 @@ function collectSchemaRelationships(
  * Collects item-graph edges through arbitrarily nested containers. Each
  * level appends an `item` segment to the accumulated prefix, so an edge
  * inside `isArrayOf(isArrayOf(inner))` surfaces under
- * `m.$item.$item.*` instead of vanishing. The seen-set is per top-level
- * field: the same member rule object may be mounted under several fields,
- * and each mount rebases under its own key.
+ * `m.$item.$item.*` instead of vanishing. The seen-set guards only the
+ * current descent path (cycle safety): the same member rule object may
+ * legitimately recur under a different prefix — e.g. a diamond
+ * `isArrayOf(mid, inner)` where `mid = isArrayOf(inner)` emits both the
+ * direct `m.$item.*` edge and the nested `m.$item.$item.*` edge — and a
+ * shared set would swallow the second occurrence. It is per top-level
+ * field for the same reason: one member mounted under several fields
+ * rebases under each key independently.
  */
 function collectItemRelationships(
   item: unknown,
@@ -106,26 +111,30 @@ function collectItemRelationships(
   for (const entry of normalizeItemSchemas(item)) {
     if (seen.has(entry)) continue;
     seen.add(entry);
-    const segment = { type: 'item', binding } as const;
-    const slots = entry as unknown as Record<symbol, unknown>;
-    const itemRels =
-      (slots[RESOLVED_RELATIONSHIPS] as InternalRelationship[] | undefined) ||
-      [];
-    if (itemRels.length > 0) {
-      relationships.push(
-        ...rebaseRelationships(itemRels, [...prefix, segment]),
-      );
-    }
-    const nested = slots[ITEM_SCHEMA];
-    if (nested !== undefined) {
-      relationships.push(
-        ...collectItemRelationships(
-          nested,
-          [...prefix, segment],
-          `${binding}.$item`,
-          seen,
-        ),
-      );
+    try {
+      const segment = { type: 'item', binding } as const;
+      const slots = entry as unknown as Record<symbol, unknown>;
+      const itemRels =
+        (slots[RESOLVED_RELATIONSHIPS] as InternalRelationship[] | undefined) ||
+        [];
+      if (itemRels.length > 0) {
+        relationships.push(
+          ...rebaseRelationships(itemRels, [...prefix, segment]),
+        );
+      }
+      const nested = slots[ITEM_SCHEMA];
+      if (nested !== undefined) {
+        relationships.push(
+          ...collectItemRelationships(
+            nested,
+            [...prefix, segment],
+            `${binding}.$item`,
+            seen,
+          ),
+        );
+      }
+    } finally {
+      seen.delete(entry);
     }
   }
   return relationships;
@@ -135,14 +144,20 @@ function collectItemRelationships(
  * Normalizes an ITEM_SCHEMA slot to a list of item rules. Single-rule
  * containers (record values, single-rule arrays) store the rule directly;
  * multi-member containers (tuple elements, multi-rule arrays) store a list.
+ * Duplicate references within one list (e.g. a literal `isArrayOf(x, x)`)
+ * collapse to a single entry — each emits identical edges.
  */
 function normalizeItemSchemas(item: unknown): Record<PropertyKey, unknown>[] {
   if (!item) return [];
   const entries = Array.isArray(item) ? item : [item];
-  return entries.filter(
-    (entry): entry is Record<PropertyKey, unknown> =>
-      !!entry && typeof entry === 'object',
-  );
+  const out: Record<PropertyKey, unknown>[] = [];
+  for (const entry of entries) {
+    if (!entry || typeof entry !== 'object') continue;
+    if (!out.includes(entry as Record<PropertyKey, unknown>)) {
+      out.push(entry as Record<PropertyKey, unknown>);
+    }
+  }
+  return out;
 }
 
 /**

@@ -492,8 +492,8 @@ function runSchemaWithParse(
   // narrowed to the original affected paths afterward.
   const expanded = expandAffectedWithSources(schema, nestedAffected);
   const projectedSchema = buildProjectedSchema(schema, expanded);
-  const result = runProjectedOrFull(projectedSchema, schema, modifiers, data);
-  const supplement = collectArraySupplement(schema, expanded, data, result);
+  const mainRun = runProjectedOrFull(projectedSchema, schema, modifiers, data);
+  const supplement = collectSupplementForMain(mainRun, schema, expanded, data);
   // `only` is already merged into the affected set by the caller; `skip`
   // must additionally narrow synthesized failures (the projected run does
   // not take focused modifiers, unlike `applySchemaFocus`).
@@ -507,7 +507,7 @@ function runSchemaWithParse(
     );
     return filterSchemaResultsToAffected(full, nestedAffected, data, skip);
   }
-  const merged = mergeSupplementalResults(result, supplement.results);
+  const merged = mergeSupplementalResults(mainRun.results, supplement.results);
   return filterSchemaResultsToAffected(merged, nestedAffected, data, skip);
 }
 
@@ -553,6 +553,15 @@ function runFlatSchema(
 }
 
 /**
+ * One projected main run. `full` reports whether the main run already
+ * executed the full schema instead of a fragment.
+ */
+type ProjectedMainRun = {
+  results: SchemaRunResult[];
+  full: boolean;
+};
+
+/**
  * Runs the projected fragment, falling back to the full schema run with
  * post-filtering when the fragment cannot validate standalone (e.g. an
  * exotic rooted edge the source expansion did not retain).
@@ -562,15 +571,27 @@ function runProjectedOrFull(
   schema: IntrospectableSchema,
   modifiers: { only?: unknown; skip?: unknown },
   data: unknown,
-): SchemaRunResult[] {
+): ProjectedMainRun {
   if (!projectedSchema) {
-    return runExecutableSchema(changedFallbackSchema(schema, modifiers), data);
+    return {
+      full: true,
+      results: runExecutableSchema(
+        changedFallbackSchema(schema, modifiers),
+        data,
+      ),
+    };
   }
   try {
-    return runExecutableSchema(projectedSchema, data);
+    return { full: false, results: runExecutableSchema(projectedSchema, data) };
   } catch (error) {
     if (!isBoundaryError(error)) throw error;
-    return runExecutableSchema(changedFallbackSchema(schema, modifiers), data);
+    return {
+      full: true,
+      results: runExecutableSchema(
+        changedFallbackSchema(schema, modifiers),
+        data,
+      ),
+    };
   }
 }
 
@@ -994,6 +1015,23 @@ type ArraySupplement = {
   gap: boolean;
 };
 
+/**
+ * Resolves the per-member supplement for a projected main run. A main run
+ * that already executed the full schema (unprojectable top or an orphaned
+ * fragment) leaves nothing to supplement: every failure per-member runs
+ * could add is already present, so collecting them would only execute each
+ * member a second time (F4).
+ */
+function collectSupplementForMain(
+  mainRun: ProjectedMainRun,
+  schema: IntrospectableSchema,
+  expanded: string[],
+  data: unknown,
+): ArraySupplement {
+  if (mainRun.full) return { results: [], gap: false };
+  return collectArraySupplement(schema, expanded, data, mainRun.results);
+}
+
 function collectArraySupplement(
   schema: IntrospectableSchema,
   expanded: string[],
@@ -1101,6 +1139,13 @@ function appendSingleDispatch(
     appendContainerFailure(rule, value, selection);
     return true;
   }
+  if (mainExecutedWholeContainer(rule, selection)) {
+    // The main run executed every member of this kept-whole container with
+    // no failure under it: re-running affected members here would
+    // double-execute stateful validators (F3). Members the main run never
+    // reached (short-circuit shadowing) still run below (P1-3).
+    return true;
+  }
   if (isArray(value)) {
     return appendEachIndex(item, value, selection);
   }
@@ -1147,6 +1192,39 @@ function isCoveredByMain(
 
 function isRecordValue(value: unknown): value is Record<string, unknown> {
   return isObject(value) && !isArray(value);
+}
+
+/**
+ * Whether the main run already executed every member of this container:
+ * the projection kept it whole and reported no failure at or under its
+ * path. A kept-whole run short-circuits at the first failure, so any
+ * failure under the container means later members may never have run —
+ * those still need their supplement run (P1-3 shadowing).
+ */
+function mainExecutedWholeContainer(
+  rule: IntrospectableSchema,
+  selection: IndexSelection,
+): boolean {
+  if (isCoveredByMain(selection.main, selection.sink.basePath)) return false;
+  return projectionKeptWhole(rule, selection.suffixes);
+}
+
+/**
+ * Mirrors the projection's fragment fate for one container: kept-whole
+ * (the same rule back, or null which callers also keep) means the main run
+ * executed it. Never throws — an undecidable container keeps the
+ * established per-member behavior.
+ */
+function projectionKeptWhole(
+  rule: IntrospectableSchema,
+  suffixes: AffectedSeg[][],
+): boolean {
+  try {
+    const outcome = projectRule(rule, suffixes);
+    return outcome === null || outcome === rule;
+  } catch {
+    return false;
+  }
 }
 
 function appendEachIndex(

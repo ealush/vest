@@ -20,11 +20,13 @@ import { asArray } from 'vest-utils';
 import { ctx } from './enforceContext';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 import {
+  ITEM_CONTAINER,
   ITEM_SCHEMA,
   RESOLVED_RELATIONSHIPS,
   UNRESOLVED_DEPS,
   resolveInlineDeps,
 } from './schema/dependencyResolver';
+import type { ItemContainerKind } from './schema/dependencyResolver';
 import {
   rebaseRelationships,
   rebaseRelationshipsForArray,
@@ -140,8 +142,12 @@ function createRecordWrapper(): (
     // per-member execution (e.g. suite.changed() projection) can reach
     // primitive members too. describe() output is unchanged: members
     // without resolved relationships simply contribute no edges.
+    // (Lazy RuleInstances are always objects — chain proxies — so the
+    // object gate cannot silently drop a real member rule.)
     if (valueRule !== null && typeof valueRule === 'object') {
-      (rule as unknown as Record<symbol, unknown>)[ITEM_SCHEMA] = valueRule;
+      const slots = rule as unknown as Record<symbol, unknown>;
+      slots[ITEM_SCHEMA] = valueRule;
+      slots[ITEM_CONTAINER] = 'record' as ItemContainerKind;
     }
     return rule;
   };
@@ -165,6 +171,9 @@ function wrapOptional(rawOptional: (inner: any) => RuleInstance<any, [any]>) {
     }
     if (inner?.[ITEM_SCHEMA] && !(rule as any)[ITEM_SCHEMA]) {
       (rule as any)[ITEM_SCHEMA] = inner[ITEM_SCHEMA];
+    }
+    if (inner?.[ITEM_CONTAINER] && !(rule as any)[ITEM_CONTAINER]) {
+      (rule as any)[ITEM_CONTAINER] = inner[ITEM_CONTAINER];
     }
     return rule;
   };
@@ -420,8 +429,11 @@ const schemaRulesWithArrayChaining = {
     // Store the single member rule (graph-carrying or primitive) so
     // per-member execution can reach it; describe() rebasing skips
     // members without resolved relationships, so output is unchanged.
+    // (Lazy RuleInstances are always objects — chain proxies — so the
+    // object gate cannot silently drop a real member rule.)
     if (rules.length === 1 && rules[0] && typeof rules[0] === 'object') {
       (rule as any)[ITEM_SCHEMA] = rules[0];
+      (rule as any)[ITEM_CONTAINER] = 'array' as ItemContainerKind;
     } else if (rules.length > 1) {
       // Multi-rule arrays accept an element matching ANY member rule (union
       // semantics), so no single member owns the item graph. Store every
@@ -447,6 +459,7 @@ const schemaRulesWithArrayChaining = {
     });
     if (rules.length === 1 && rules[0] && typeof rules[0] === 'object') {
       (rule as any)[ITEM_SCHEMA] = rules[0];
+      (rule as any)[ITEM_CONTAINER] = 'array' as ItemContainerKind;
     } else if (rules.length > 1) {
       // Same union semantics as isArrayOf above: keep every graph-carrying
       // member so describe() rebases the union instead of dropping the graph.

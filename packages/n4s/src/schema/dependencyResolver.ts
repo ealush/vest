@@ -18,6 +18,15 @@ import type { Scope } from './scopeProxy';
 export const UNRESOLVED_DEPS = Symbol.for('vest:unresolvedDeps');
 export const RESOLVED_RELATIONSHIPS = Symbol.for('vest:resolvedRelationships');
 export const ITEM_SCHEMA = Symbol.for('vest:itemSchema');
+/**
+ * Marks which container flavor owns an ITEM_SCHEMA slot: single-rule
+ * arrays/lists narrow with `isArrayOf`, records narrow with `record`.
+ * Suffixes alone cannot tell them apart (numeric record keys look like
+ * indices), and rebuilding through the wrong combinator changes
+ * validation semantics — so the kind travels with the slot.
+ */
+export const ITEM_CONTAINER = Symbol.for('vest:itemContainer');
+export type ItemContainerKind = 'array' | 'record';
 
 export type UnresolvedDep = {
   resolver: (scope: Scope) => unknown;

@@ -73,7 +73,8 @@ export { FIELD } from './schema/scopeProxy';
  * integration (e.g. dependency-aware `suite.changed()` projection) that
  * must read — never write — the slot.
  */
-export { ITEM_SCHEMA } from './schema/dependencyResolver';
+export { ITEM_SCHEMA, ITEM_CONTAINER } from './schema/dependencyResolver';
+export type { ItemContainerKind } from './schema/dependencyResolver';
 
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;

@@ -1,6 +1,7 @@
-import { enforce, ITEM_SCHEMA } from 'n4s';
+import { enforce, ITEM_CONTAINER, ITEM_SCHEMA } from 'n4s';
 import type {
   DescribeResult,
+  ItemContainerKind,
   ItemSegment,
   PropertySegment,
   SchemaDependency,
@@ -421,7 +422,13 @@ function runFlatSchema(
   changedAffected?: string[] | null,
 ): SchemaRunResult[] {
   const result = runExecutableSchema(applySchemaFocus(schema, modifiers), data);
-  if (changedAffected == null || changedAffected.length === 0) {
+  // Narrowing applies to n4s schemas only: custom standard-schema results
+  // keep full-run parity (no affected/skip vocabulary exists for them).
+  if (
+    changedAffected == null ||
+    changedAffected.length === 0 ||
+    !isN4sSchema(schema)
+  ) {
     return result;
   }
   return filterSchemaResultsToAffected(
@@ -575,6 +582,36 @@ type SymbolSlots = Record<symbol, unknown>;
 
 function symbolSlotOf(rule: IntrospectableSchema, slot: symbol): unknown {
   return (rule as unknown as SymbolSlots)[slot];
+}
+
+/**
+ * Which container flavor owns the rule's item slot, if recorded.
+ * Suffixes alone cannot distinguish records with numeric keys from
+ * arrays — the kind travels with the slot from n4s instead.
+ */
+function containerKindOf(rule: IntrospectableSchema): ItemContainerKind | null {
+  const kind = symbolSlotOf(rule, ITEM_CONTAINER);
+  if (kind === 'array' || kind === 'record') {
+    return kind;
+  }
+  return null;
+}
+
+/**
+ * Whether the runtime value has the container flavor the rule declares.
+ * Guards member dispatch when schema and data disagree on the container
+ * type (e.g. array schema, object data): inventing member failures there
+ * would attribute paths the full run never produced.
+ */
+function kindValueMatches(rule: IntrospectableSchema, value: unknown): boolean {
+  const kind = containerKindOf(rule);
+  if (kind === 'array') {
+    return isArray(value);
+  }
+  if (kind === 'record') {
+    return isRecordValue(value);
+  }
+  return true;
 }
 
 type MatchableDependency = {
@@ -852,6 +889,7 @@ function tryAppendMembers(
 ): boolean {
   const item = singleItemSchema(rule);
   if (item === null) return false;
+  if (!kindValueMatches(rule, value)) return false;
   if (isArray(value)) {
     return appendEachIndex(item, value, selection);
   }
@@ -1054,7 +1092,7 @@ function prefixFailureResults(
   return out;
 }
 
-function mergeSupplementalResults(
+export function mergeSupplementalResults(
   main: SchemaRunResult[],
   extra: SchemaRunResult[],
 ): SchemaRunResult[] {
@@ -1311,6 +1349,10 @@ type OptionalCombinator = (inner: IntrospectableSchema) => IntrospectableSchema;
 
 const optionalRule = enforce.optional as OptionalCombinator;
 
+type RecordCombinator = (value: IntrospectableSchema) => IntrospectableSchema;
+
+const recordOfRule = enforce.record as RecordCombinator;
+
 function projectArrayRule(
   rule: IntrospectableSchema,
   itemSchema: IntrospectableSchema,
@@ -1320,6 +1362,12 @@ function projectArrayRule(
   const itemSuffixes = suffixes.map(suffix => suffix.slice(1));
   const projectedItem = projectRule(itemSchema, itemSuffixes);
   if (!projectedItem || projectedItem === itemSchema) return rule;
+  // Records narrow through `record()`, arrays through `isArrayOf()`:
+  // rebuilding through the wrong combinator changes validation semantics
+  // (notably for records with numeric keys, whose suffixes look indexed).
+  if (containerKindOf(rule) === 'record') {
+    return preserveOptionality(rule, recordOfRule(projectedItem));
+  }
   return preserveOptionality(rule, arrayOfRule(projectedItem));
 }
 

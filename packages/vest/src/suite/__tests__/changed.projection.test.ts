@@ -7,6 +7,7 @@ import {
   buildProjectedSchema,
   expandAffectedWithSources,
   filterSchemaResultsToAffected,
+  mergeSupplementalResults,
 } from '../useCreateSuiteRunner';
 import type { SchemaRunResult } from '../useCreateSuiteRunner';
 
@@ -398,6 +399,66 @@ describe('changed() source-retaining projection', () => {
     expect(changed.hasErrors('dictionary.1.state')).toBe(true);
     expect(changed.hasErrors('dictionary.0.state')).toBe(false);
     expect(seen).toContain('dictionary.1.country');
+  });
+
+  it('numeric-keyed records project through record(), not arrays', () => {
+    // Suffixes alone cannot tell numeric record keys from indices — the
+    // container-kind marker must route the rebuild to record(). An
+    // isArrayOf rebuild would reject record data outright.
+    const schema = enforce.shape({
+      dictionary: enforce.record(
+        enforce.shape({
+          country: enforce.isString(),
+          state: enforce.isString().dependsOn($ => $.country),
+        }),
+      ),
+    });
+    const expanded = expandAffectedWithSources(schema, [
+      'dictionary.1.country',
+      'dictionary.1.state',
+    ]);
+    const projected = buildProjectedSchema(schema, expanded);
+    expect(projected).not.toBeNull();
+    if (isNullish(projected)) {
+      throw new Error('projected schema must compose');
+    }
+    type DictData = Parameters<typeof schema.parse>[0];
+    const parse = (projected as unknown as ExecutableFragment<DictData>).parse;
+    expect(() =>
+      parse({ dictionary: { '1': { country: 'CA', state: 'abc' } } }),
+    ).not.toThrow();
+  });
+
+  it('supplement skips members when data contradicts the container kind', async () => {
+    // Array schema with object data: per-key dispatch would invent a
+    // member failure the full run never attributed. The container-kind
+    // guard must skip the supplement (the container failure itself stays).
+    const schema = enforce.shape({
+      tags: enforce.isArrayOf(enforce.isString().longerThan(5)),
+    });
+    const suite = create(() => {
+      test('tags', () => {
+        enforce('x').isString();
+      });
+    }, schema);
+
+    const data = { tags: { 0: 'xx' } };
+    // @ts-expect-error — reason: intentionally mistyped container (object
+    // instead of array) to prove the supplement skips the contradiction.
+    const changed = await suite.changed('tags.0').run(data);
+    expect(changed.hasErrors('tags.0')).toBe(false);
+  });
+
+  it('merge keeps same-message failures on colliding dotted paths', () => {
+    // A literal dotted record key and a nested path join identically —
+    // structured keys must not collapse them into one failure.
+    const main: SchemaRunResult[] = [
+      { pass: false, path: ['dictionary', 'a', 'b', 'state'], message: 'x' },
+    ];
+    const extra: SchemaRunResult[] = [
+      { pass: false, path: ['dictionary', 'a.b', 'state'], message: 'x' },
+    ];
+    expect(mergeSupplementalResults(main, extra)).toHaveLength(2);
   });
 
   it('primitive containers: per-member failures without graphs', async () => {

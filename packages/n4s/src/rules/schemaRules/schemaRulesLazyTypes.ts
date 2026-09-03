@@ -47,10 +47,16 @@ export type SchemaRuleLazyTypes = {
   partial: <S extends Record<string, RuleInstance<any>>>(
     schema: S,
   ) => PartialRuleInstance<S>;
-  pick: <S extends Record<string, RuleInstance<any>>>(
-    schema: S,
-    keys: string[] | string,
-  ) => PickRuleInstance<S>;
+  pick: {
+    <S extends Record<string, RuleInstance<any>>, K extends keyof S>(
+      schema: S,
+      keys: readonly K[] | K,
+    ): PickRuleInstance<Pick<S, K>>;
+    <S extends Record<string, RuleInstance<any>>>(
+      schema: S,
+      keys: string[] | string,
+    ): PickRuleInstance<S>;
+  };
   omit: <S extends Record<string, RuleInstance<any>>>(
     schema: S,
     keys: string[] | string,

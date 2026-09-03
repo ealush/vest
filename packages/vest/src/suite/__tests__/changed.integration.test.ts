@@ -46,12 +46,14 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     }, schema);
 
     await suite.run({
+      // @ts-expect-error - integration probe: data carries non-schema field 'email'
       email: 'a@b.com',
       password: 'abcdefgh',
       confirmPassword: 'abcdefgh',
     });
     log.reset();
     const result = await suite.changed('password').run({
+      // @ts-expect-error - integration probe: data carries non-schema field 'email'
       email: 'a@b.com',
       password: 'abcdefgh2',
       confirmPassword: 'abcdefgh',
@@ -413,7 +415,8 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       .changed('organizationId')
       .run({ organizationId: 'B', username: 'evyatar' });
     await p2;
-    await p1.catch(() => {});
+    // p1 is a pending async run at runtime; swallow its superseded rejection.
+    await Promise.resolve(p1).catch(() => {});
     // Final state should be B's invalid, not A's valid
     expect(suite.get().hasErrors('username')).toBe(true);
   });
@@ -689,10 +692,12 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       });
     }, schema);
 
+    // @ts-expect-error - integration probe: data carries non-schema field 'other'
     await suite.run({ a: { b: { c: 'x', d: 'y', other: 'z' } } });
     log.reset();
     await suite
       .changed('a.b.c')
+      // @ts-expect-error - integration probe: data carries non-schema field 'other'
       .run({ a: { b: { c: 'xx', d: 'y', other: 'z' } } });
     expect(log.get()).toEqual(['a.b.c', 'a.b.d']);
     expect(log.get()).not.toContain('a.b.other');
@@ -769,8 +774,10 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       });
     }, schema);
 
+    // @ts-expect-error - integration probe: data carries non-schema field 'c'
     await suite.run({ a: '1', b: '2', c: '3' });
     log.reset();
+    // @ts-expect-error - integration probe: data carries non-schema field 'c'
     await suite.changed('a').run({ a: 'x', b: '2', c: '3' });
     // Non-transitive + deduped: a changes -> b reruns, but b's change does not loop back to a again or to c
     const got = log.get();
@@ -781,6 +788,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(got.filter(f => f === 'b')).toHaveLength(1);
 
     log.reset();
+    // @ts-expect-error - integration probe: data carries non-schema field 'c'
     await suite.changed('b').run({ a: 'x', b: 'y', c: '3' });
     const got2 = log.get();
     expect(got2).toContain('a');

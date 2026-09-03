@@ -27,13 +27,6 @@ function createLog() {
   };
 }
 
-function _normalize(result: any) {
-  return {
-    hasErrors: (field: string) => result.hasErrors(field),
-    getErrors: (field: string) => result.getErrors(field),
-  };
-}
-
 // 1. Sanity / control tests
 describe('Acceptance — Sanity', () => {
   it('runs an ordinary suite without relationships', async () => {
@@ -64,10 +57,13 @@ describe('Acceptance — Sanity', () => {
     const dataValid = { password: 'abcdefgh', email: 'a@b.com' };
     const dataInvalid = { password: '123', email: '' };
     const r1 = await withoutSchema.run(dataValid);
+    // @ts-expect-error - acceptance probe: data carries non-schema field 'email'
     const _r2 = await withSchema.run(dataValid);
     expect(r1.hasErrors('password')).toBe(_r2.hasErrors('password'));
+    // @ts-expect-error - acceptance probe: 'email' is a tested field outside the schema
     expect(r1.hasErrors('email')).toBe(_r2.hasErrors('email'));
     const r3 = await withoutSchema.run(dataInvalid);
+    // @ts-expect-error - acceptance probe: data carries non-schema field 'email'
     const r4 = await withSchema.run(dataInvalid);
     expect(r3.getErrors('password')).toEqual(r4.getErrors('password'));
   });
@@ -234,7 +230,7 @@ describe('Acceptance — Feature success (before/after)', () => {
     const makeSuite = (schema: any) =>
       create((data: any) => {
         test('username', async () => {
-          const _available = await Promise.resolve(
+          await Promise.resolve(
             data.username !== 'taken' || data.organizationId === 'A',
           );
           // For org B, 'taken' should be invalid
@@ -290,6 +286,7 @@ describe('Acceptance — No regression', () => {
         enforce(data.b).isNotBlank();
       });
     }, schema);
+    // @ts-expect-error - acceptance probe: data outside the attached schema
     await suite2.run({ a: '1', b: '2' });
     expect(log.get()).toEqual(['a', 'b']);
   });
@@ -362,10 +359,12 @@ describe('Acceptance — No regression', () => {
       });
     }, schema);
     // Without include, only a runs via only
+    // @ts-expect-error - acceptance probe: data outside the attached schema
     const r1 = await suite.only('a').run({ a: '', b: '', c: '' });
     expect(r1.hasErrors('a')).toBe(true);
     // include should still work (if include is available)
     // For now just verify that adding schema doesn't break focus
+    // @ts-expect-error - acceptance probe: data outside the attached schema
     const _r2 = await suite.focus({ only: 'a' }).run({ a: '', b: '', c: '' });
     expect(_r2.hasErrors('a')).toBe(true);
   });
@@ -383,7 +382,6 @@ describe('Acceptance — No regression', () => {
     });
     const r1 = await suite.run({ a: '1', b: '' });
     expect(r1.hasErrors('b')).toBe(false); // skipped, so no error even though blank
-    const _r2 = await suite.run({ a: '1', b: '' });
     // Attach irrelevant schema and ensure same
     const schema = enforce.shape({
       x: enforce.isString(),
@@ -399,7 +397,9 @@ describe('Acceptance — No regression', () => {
         });
       });
     }, schema);
+    // @ts-expect-error - acceptance probe: data outside the attached schema
     const r3 = await suiteWithSchema.run({ a: '1', b: '' });
+    // @ts-expect-error - acceptance probe: 'b' is a tested field outside the schema
     expect(r3.hasErrors('b')).toBe(false);
   });
 
@@ -481,8 +481,11 @@ describe('Acceptance — No regression', () => {
         });
       });
     }, schema);
+    // @ts-expect-error - acceptance probe: data outside the attached schema
     const _r2 = await suiteWithSchema.run({ a: '', b: '' });
+    // @ts-expect-error - acceptance probe: 'a' is a tested field outside the schema
     expect(_r2.hasErrors('a')).toBe(true);
+    // @ts-expect-error - acceptance probe: 'b' is a tested field outside the schema
     expect(_r2.hasErrors('b')).toBe(true);
   });
 
@@ -507,7 +510,9 @@ describe('Acceptance — No regression', () => {
         });
       });
     }, schema);
+    // @ts-expect-error - acceptance probe: data outside the attached schema
     const _r2 = await suiteWithSchema.run({ items: ['a', '', 'c'] });
+    // @ts-expect-error - acceptance probe: 'items' is a tested field outside the schema
     expect(_r2.hasErrors('items.1')).toBe(true);
   });
 });

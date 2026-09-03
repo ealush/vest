@@ -5,10 +5,34 @@ import { propertySegment } from './SchemaPath';
 export const DEPENDENCY_REF = Symbol('vest:dependencyRef');
 export const ROOT_MARKER = Symbol('vest:rootMarker');
 
+// Reference metadata lives on symbols — never on string keys — so EVERY
+// string property access chains as a field name. Previously `path`/`isRoot`
+// were string-keyed metadata, which made `$.nested.path` / `$.nested.isRoot`
+// return metadata instead of a field reference.
+export const REF_PATH = Symbol('vest:refPath');
+export const REF_IS_ROOT = Symbol('vest:refIsRoot');
+
+/**
+ * Escape hatch for referencing a literal field whose name collides with a
+ * JavaScript internal.
+ *
+ * `then` is intentionally the ONLY non-chainable string key on dependency
+ * refs: if `ref.then` were defined, `await ref` / `Promise.resolve(ref)`
+ * could mistake a returned ref for a thenable and throw a TypeError via
+ * GetMethod. Every other string key — including `toJSON`, `valueOf`,
+ * `path`, `isRoot`, and `self` — chains as a normal field name.
+ *
+ * To depend on a literal field named `then`, use the hatch:
+ *   dependsOn($ => $[FIELD]('then'))
+ *   dependsOn($ => $.nested[FIELD]('then'))
+ *   dependsOn($ => $.root[FIELD]('then'))
+ */
+export const FIELD = Symbol('vest:scopeField');
+
 export type DependencyRef = {
   [DEPENDENCY_REF]: true;
-  path: SchemaPath;
-  isRoot: boolean;
+  [REF_PATH]: SchemaPath;
+  [REF_IS_ROOT]: boolean;
 };
 
 export function isDependencyRef(value: unknown): value is DependencyRef {
@@ -19,8 +43,17 @@ export function isDependencyRef(value: unknown): value is DependencyRef {
   );
 }
 
+export function getRefPath(ref: DependencyRef): SchemaPath {
+  return ref[REF_PATH];
+}
+
+export function isRootRef(ref: DependencyRef): boolean {
+  return ref[REF_IS_ROOT] === true;
+}
+
 export interface Scope {
   readonly root: Scope;
+  [FIELD]: (fieldName: string) => Scope;
   [key: string]: Scope;
 }
 
@@ -34,7 +67,13 @@ export function createScopeProxy(scopePath: SchemaPath): Scope {
     new Proxy({} as Record<PropertyKey, DependencyRef>, {
       get(_target, prop) {
         if (prop === ROOT_MARKER) return true as unknown as unknown;
+        if (prop === FIELD)
+          return (fieldName: string) =>
+            createDependencyRef([propertySegment(fieldName)], true);
         if (typeof prop === 'symbol') return undefined;
+        // `then` stays non-chainable so returned refs are never thenable.
+        // A root-level field literally named `then` is reachable via $[FIELD].
+        if (prop === 'then') return undefined;
         const path: SchemaPath = [propertySegment(prop as string)];
         return createDependencyRef(path, true);
       },
@@ -42,50 +81,73 @@ export function createScopeProxy(scopePath: SchemaPath): Scope {
 
   return new Proxy({} as Record<PropertyKey, unknown>, {
     get(_target, prop) {
+      if (prop === FIELD)
+        return (fieldName: string) =>
+          createDependencyRef(
+            [...scopePath, propertySegment(fieldName)],
+            false,
+          );
       if (typeof prop === 'symbol') return undefined;
-      if (prop === 'root') {
-        return createRootProxy();
-      }
-      /** @deferred v2 */
-      if (prop === 'parent') {
-        throw new Error('$.parent deferred to v2');
-      }
-      const path: SchemaPath = [...scopePath, propertySegment(prop as string)];
-      return createDependencyRef(path, false);
+      return scopeStringProp(scopePath, createRootProxy, prop);
     },
   }) as unknown as Scope;
 }
 
+function scopeStringProp(
+  scopePath: SchemaPath,
+  createRootProxy: () => Scope['root'],
+  prop: string | number,
+): unknown {
+  if (prop === 'root') {
+    return createRootProxy();
+  }
+  /** @deferred v2 */
+  if (prop === 'parent') {
+    throw new Error('$.parent deferred to v2');
+  }
+  // `then` stays non-chainable so returned refs are never thenable.
+  // A field literally named `then` is reachable via $[FIELD].
+  if (prop === 'then') return undefined;
+  const path: SchemaPath = [...scopePath, propertySegment(String(prop))];
+  return createDependencyRef(path, false);
+}
+
 function createDependencyRef(path: SchemaPath, isRoot: boolean): DependencyRef {
-  const base: DependencyRef = {
+  const base = {
     [DEPENDENCY_REF]: true,
-    path,
-    isRoot,
-  };
-  // Proxy to support chained access like $.obj.leaf or $.root.foo.bar
+    [REF_PATH]: path,
+    [REF_IS_ROOT]: isRoot,
+  } as DependencyRef;
+  // Proxy to support chained access like $.obj.leaf or $.root.foo.bar.
+  // Every string key chains as a field name — except `then`, which must stay
+  // undefined so refs are never thenable (see FIELD for the escape hatch).
   return new Proxy(base as unknown as object, {
-    // eslint-disable-next-line complexity
     get(target: unknown, prop: PropertyKey) {
-      if (prop === DEPENDENCY_REF) return true;
-      if (prop === 'path') return (target as unknown as DependencyRef).path;
-      if (prop === 'isRoot') return (target as unknown as DependencyRef).isRoot;
+      if (prop === FIELD)
+        return (fieldName: string) =>
+          createDependencyRef(
+            [
+              ...(target as unknown as DependencyRef)[REF_PATH],
+              propertySegment(fieldName),
+            ],
+            (target as unknown as DependencyRef)[REF_IS_ROOT],
+          );
       if (typeof prop === 'symbol')
         return (target as unknown as Record<symbol, unknown>)[prop];
-      // Prevent Promise-like then confusion and other internal props
-      if (prop === 'then' || prop === 'toJSON' || prop === 'valueOf') {
-        return undefined;
-      }
-      const propStr = String(prop);
-      const extendedPath: SchemaPath = [
-        ...(target as unknown as DependencyRef).path,
-        propertySegment(propStr),
-      ];
-      return createDependencyRef(
-        extendedPath,
-        (target as unknown as DependencyRef).isRoot,
-      );
+      return chainStringProp(target, prop);
     },
   }) as DependencyRef;
+}
+
+function chainStringProp(target: unknown, prop: string | number): unknown {
+  // `then` stays undefined so refs are never thenable (see FIELD).
+  if (String(prop) === 'then') return undefined;
+  const ref = target as unknown as DependencyRef;
+  const extendedPath: SchemaPath = [
+    ...ref[REF_PATH],
+    propertySegment(String(prop)),
+  ];
+  return createDependencyRef(extendedPath, ref[REF_IS_ROOT]);
 }
 
 /**

@@ -6,7 +6,12 @@ import type {
   InternalRelationship,
   SchemaRelationship,
 } from './SchemaRelationship';
-import { createScopeProxy, normalizeResolverResult } from './scopeProxy';
+import {
+  createScopeProxy,
+  getRefPath,
+  isRootRef,
+  normalizeResolverResult,
+} from './scopeProxy';
 import type { Scope } from './scopeProxy';
 
 // Symbols for storing unresolved deps on RuleInstance — must use Symbol.for to match chainBuilder
@@ -98,8 +103,17 @@ export function resolveInlineDeps(
         );
       }
 
+      if (result === undefined) {
+        throw new EnforceSchemaError(
+          `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver returned undefined. Did you forget to return the dependency (e.g., $ => $.other)? Return an explicit empty array [] for intentionally zero dependencies.`,
+        );
+      }
       const refs = normalizeResolverResult(result);
-      if (refs.length === 0 && result !== undefined) {
+      // An explicit empty array is the intentional zero-dependency form.
+      if (
+        refs.length === 0 &&
+        !(Array.isArray(result) && result.length === 0)
+      ) {
         throw new EnforceSchemaError(
           `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver must return a dependency ref (e.g., $ => $.other) or array of refs, got ${typeof result}`,
         );
@@ -114,12 +128,14 @@ export function resolveInlineDeps(
       }
 
       for (const ref of refs) {
-        let sourcePath: SchemaPath = ref.path;
-        const isRoot = ref.isRoot === true;
+        let sourcePath: SchemaPath = getRefPath(ref);
+        const isRoot = isRootRef(ref);
 
-        // Self-dependency normalization: $.self means the field itself
+        // Self-dependency normalization: bare $.self means the field itself,
         // e.g., enforce.isString().dependsOn($ => $.self) inside field "a"
-        // resolves to source [self] at scopePath prefix. Map "self" to target.
+        // resolves to the owning field (filtered as a no-op below). A real
+        // sibling field named "self" takes precedence: when the current scope
+        // declares its own "self" field, $.self references that sibling.
         if (
           sourcePath.length > 0 &&
           sourcePath[sourcePath.length - 1].type === 'property' &&
@@ -128,14 +144,15 @@ export function resolveInlineDeps(
               .key,
           ) === 'self'
         ) {
-          // Single self: $.self => owning field
+          // Single self: $.self => owning field (unless shadowed by sibling)
           if (
             sourcePath.length === scopePath.length + 1 &&
-            isPathPrefixedBy(sourcePath.slice(0, -1), scopePath)
+            isPathPrefixedBy(sourcePath.slice(0, -1), scopePath) &&
+            !Object.prototype.hasOwnProperty.call(shape, 'self')
           ) {
             sourcePath = targetPath;
           } else {
-            // $.self.foo etc. — treat as error, will be validated as unknown
+            // $.self.foo etc., or sibling "self" — validated as a normal ref
           }
         }
 
@@ -191,7 +208,143 @@ export function resolveInlineDeps(
     }
   }
 
+  // Composition stays lenient: a reusable fragment cannot know its final root
+  // until mounted, so dangling $.root edges are NOT rejected here. They are
+  // validated at finalization — standalone n4s runs via
+  // assertRuleRootedPathsValid (called from the chain test/run/parse/validate
+  // path) and Vest suites via the createSuite() finalizer.
+
   return relationships;
+}
+
+/**
+ * Finalization boundary for standalone n4s schemas: validates the rooted
+ * endpoints of a rule's own stored relationships against the rule's own root
+ * shape. Called from the chain test/run/parse/validate path so the same
+ * schema is valid or invalid regardless of whether it passes through Vest.
+ * Rules without rooted relationships (the common case) return immediately.
+ */
+export function assertRuleRootedPathsValid(rule: unknown): void {
+  if (!rule || typeof rule !== 'object') return;
+  const rels = checkableRootedRels(rule);
+  if (!rels) return;
+  const rootShape = rootShapeOf(rule);
+  if (!rootShape) return;
+  validateRootedRels(rels, rootShape);
+}
+
+function checkableRootedRels(rule: object): InternalRelationship[] | null {
+  const rels = (rule as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS];
+  if (!Array.isArray(rels)) return null;
+  const checkable = (rels as unknown[]).filter(isCheckableRel);
+  const hasRooted = checkable.some(
+    rel => rel.__isRootSource === true || rel.__isRootTarget === true,
+  );
+  return hasRooted ? checkable : null;
+}
+
+function rootShapeOf(rule: object): Record<PropertyKey, unknown> | null {
+  const rootShape = (rule as { __schema?: unknown }).__schema;
+  if (!rootShape || typeof rootShape !== 'object') return null;
+  return rootShape as Record<PropertyKey, unknown>;
+}
+
+function validateRootedRels(
+  rels: InternalRelationship[],
+  rootShape: Record<PropertyKey, unknown>,
+): void {
+  for (const rel of rels) {
+    if (rel.__isRootSource === true) {
+      validateRootedPath(rel.source, rootShape, targetFieldName(rel.target));
+    }
+    if (rel.__isRootTarget === true) {
+      validateRootedPath(rel.target, rootShape, targetFieldName(rel.source));
+    }
+  }
+}
+
+function isCheckableRel(rel: unknown): rel is InternalRelationship {
+  return (
+    !!rel &&
+    typeof rel === 'object' &&
+    Array.isArray((rel as InternalRelationship).source) &&
+    Array.isArray((rel as InternalRelationship).target)
+  );
+}
+
+function targetFieldName(path: SchemaPath | undefined): string {
+  if (Array.isArray(path) && path.length) {
+    const last = path[path.length - 1];
+    if (last && last.type === 'property') {
+      return String((last as unknown as PropertySegment).key);
+    }
+  }
+  return 'unknown';
+}
+
+/**
+ * Walks a rooted path against the current root shape. Same boundary as the
+ * suite finalizer: missing keys (including missing descendants of scalar
+ * fields) throw EnforceSchemaError.
+ */
+function validateRootedPath(
+  path: SchemaPath,
+  rootShape: Record<PropertyKey, unknown>,
+  fieldForMsg: string,
+): void {
+  let current: unknown = rootShape;
+  for (let i = 0; i < path.length; i++) {
+    current = checkRootedSegment(
+      path[i],
+      current,
+      i === path.length - 1,
+      fieldForMsg,
+    );
+  }
+}
+
+function checkRootedSegment(
+  seg: SchemaPath[number] | undefined,
+  current: unknown,
+  isLast: boolean,
+  fieldForMsg: string,
+): unknown {
+  if (!seg || seg.type !== 'property') return current;
+  const key = String((seg as unknown as PropertySegment).key);
+  assertRootKeyExists(current, key, fieldForMsg);
+  if (isLast) return (current as Record<PropertyKey, unknown>)[key];
+  return childShape((current as Record<PropertyKey, unknown>)[key]);
+}
+
+function assertRootKeyExists(
+  current: unknown,
+  key: string,
+  fieldForMsg: string,
+): void {
+  if (
+    !current ||
+    typeof current !== 'object' ||
+    !Object.prototype.hasOwnProperty.call(current, key)
+  ) {
+    throw new EnforceSchemaError(
+      `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${key}"`,
+    );
+  }
+}
+
+function childShape(rule: unknown): unknown {
+  if (!rule || typeof rule !== 'object') return {};
+  const candidate = rule as {
+    __schema?: Record<PropertyKey, unknown>;
+    [key: symbol]: unknown;
+  };
+  if (candidate.__schema) return candidate.__schema;
+  return itemChildShape(candidate[ITEM_SCHEMA]);
+}
+
+function itemChildShape(item: unknown): unknown {
+  if (!item || typeof item !== 'object') return {};
+  return (item as { __schema?: Record<PropertyKey, unknown> }).__schema ?? {};
 }
 
 // eslint-disable-next-line complexity

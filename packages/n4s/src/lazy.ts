@@ -56,7 +56,6 @@ type TCustomLazyRules = {
   >;
 };
 
-// eslint-disable-next-line complexity
 function collectSchemaRelationships(
   schema: Record<string, any>,
   keyFilter?: (key: string) => boolean,
@@ -139,7 +138,34 @@ function createPartialWrapper() {
   };
 }
 
-// eslint-disable-next-line complexity
+function rootedTopKey(
+  path: Array<{ type?: unknown; key?: unknown }>,
+): string | null {
+  const [first] = path;
+  return first && first.type === 'property' ? String(first.key) : null;
+}
+
+// Every rooted endpoint of a projected edge must resolve inside the
+// projection: `isKept` answers whether a top-level key survived pick/omit.
+function rootedEndpointsKept(
+  rel: InternalRelationship,
+  isKept: (top: string) => boolean,
+): boolean {
+  if ((rel as { __isRootSource?: boolean }).__isRootSource === true) {
+    const top = rootedTopKey(
+      rel.source as Array<{ type?: unknown; key?: unknown }>,
+    );
+    if (top && !isKept(top)) return false;
+  }
+  if ((rel as { __isRootTarget?: boolean }).__isRootTarget === true) {
+    const top = rootedTopKey(
+      rel.target as Array<{ type?: unknown; key?: unknown }>,
+    );
+    if (top && !isKept(top)) return false;
+  }
+  return true;
+}
+
 function createPickWrapper() {
   return (
     schema: Record<PropertyKey, unknown>,
@@ -183,6 +209,13 @@ function createPickWrapper() {
       const tKept = tTop ? keysSet.has(tTop) : true;
       return sKept && tKept;
     });
+    // A projection only carries edges fully resolvable within itself: drop
+    // rooted edges whose provider was picked away. Dependent expansion
+    // already ran on the full graph, and the run-time rooted boundary would
+    // otherwise reject the focused run.
+    relationships = relationships.filter(rel =>
+      rootedEndpointsKept(rel, top => keysSet.has(top)),
+    );
     const base = adaptDynamicRules<
       RuleInstance<any, [any]>,
       Pick<typeof schemaRules, 'pick'>
@@ -201,7 +234,6 @@ function createPickWrapper() {
   };
 }
 
-// eslint-disable-next-line complexity
 function createOmitWrapper() {
   return (
     schema: Record<PropertyKey, unknown>,
@@ -245,6 +277,11 @@ function createOmitWrapper() {
       const tKept = tTop ? !keysSet.has(tTop) : true;
       return sKept && tKept;
     });
+    // Same projection rule as pick: drop rooted edges whose provider was
+    // omitted so focused runs stay self-contained.
+    relationships = relationships.filter(rel =>
+      rootedEndpointsKept(rel, top => !keysSet.has(top)),
+    );
     const base = adaptDynamicRules<
       RuleInstance<unknown, [unknown]>,
       Pick<typeof schemaRules, 'omit'>

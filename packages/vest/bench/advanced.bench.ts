@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { bench, describe } from 'vitest';
 import {
   create,

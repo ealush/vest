@@ -1,5 +1,12 @@
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
+import type { SchemaPath } from '../schema/SchemaPath';
+import type {
+  InternalRelationship,
+  SchemaDependency,
+  SchemaRelationship,
+} from '../schema/SchemaRelationship';
+
 import { RuleRunReturn } from './RuleRunReturn';
 
 /**
@@ -30,9 +37,44 @@ export interface ScopeHandle {
 }
 
 export type DescribeResult = {
-  dependencies: Array<{ target: unknown; sources: unknown[] }>;
-  relationships: unknown[];
+  dependencies: SchemaDependency[];
+  relationships: SchemaRelationship[];
 };
+
+// Copies a path segment-by-segment so public describe() output never shares
+// array or segment references with the live relationship graph.
+function clonePath(path: SchemaPath): SchemaPath {
+  return path.map(seg => ({ ...seg }));
+}
+
+// Strips internal rootedness flags and deep-clones all paths/segments.
+function cloneRelationship(rel: InternalRelationship): SchemaRelationship {
+  return {
+    ...(rel.metadata ? { metadata: { ...rel.metadata } } : {}),
+    effect: rel.effect,
+    source: clonePath(rel.source),
+    target: clonePath(rel.target),
+  };
+}
+
+// Groups cloned relationships by target. Clones again so dependencies share
+// no references with the relationships output either.
+function groupDependencies(resolved: SchemaRelationship[]): SchemaDependency[] {
+  const depMap = new Map<
+    string,
+    { target: SchemaPath; sources: SchemaPath[] }
+  >();
+  for (const rel of resolved) {
+    const key = JSON.stringify(rel.target);
+    let dep = depMap.get(key);
+    if (!dep) {
+      dep = { target: clonePath(rel.target), sources: [] };
+      depMap.set(key, dep);
+    }
+    dep.sources.push(clonePath(rel.source));
+  }
+  return Array.from(depMap.values());
+}
 
 export class RuleInstance<T, Args extends any[] = any[]> {
   // The runtime object produced by create() supports dynamic chaining.
@@ -161,31 +203,14 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       const raw =
         ((instance as unknown as Record<symbol, unknown>)[
           Symbol.for('vest:resolvedRelationships')
-        ] as unknown[]) || [];
-      const resolved = (raw as Array<Record<string, unknown>>).map(rel => {
-        const { __isRootSource, __isRootTarget, ...clean } = rel as Record<
-          string,
-          unknown
-        > & {
-          __isRootSource?: unknown;
-          __isRootTarget?: unknown;
-        };
-        return clean;
-      });
-      const depMap = new Map<string, { target: unknown; sources: unknown[] }>();
-      for (const rel of resolved as Array<{
-        target: unknown;
-        source: unknown;
-      }>) {
-        const key = JSON.stringify(rel.target);
-        if (!depMap.has(key))
-          depMap.set(key, { target: rel.target, sources: [] });
-        depMap.get(key)!.sources.push(rel.source);
-      }
+        ] as InternalRelationship[]) || [];
+      // Deep-clone paths/segments and drop internal flags so the public
+      // snapshot shares no references with the live relationship graph.
+      const resolved: SchemaRelationship[] = raw.map(cloneRelationship);
       return {
-        dependencies: Array.from(depMap.values()),
+        dependencies: groupDependencies(resolved),
         relationships: resolved,
-      } as DescribeResult;
+      };
     };
 
     (instance as unknown as Record<string, unknown>).dependsOn = dependsOn;

@@ -8,7 +8,14 @@ import {
 } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
+import type { SchemaPath } from '../../schema/SchemaPath';
+import type {
+  InternalRelationship,
+  SchemaDependency,
+  SchemaRelationship,
+} from '../../schema/SchemaRelationship';
 import type { RuleInstance, ScopeHandle } from '../../utils/RuleInstance';
+import { assertRuleRootedPathsValid } from '../../schema/dependencyResolver';
 
 import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
@@ -32,6 +39,40 @@ type LazyMessage = DynamicValue<
   string,
   [value: unknown, originalMessage?: Stringable]
 >;
+
+// Reentrancy guard for the standalone finalization boundary below. Nested
+// rule runs execute synchronously inside the outer chain (chainExecutor is
+// fully synchronous), so exactly one boundary check runs per user-invoked
+// test/run/parse/validate: the outermost one, against the final root. The
+// depth window spans the whole chain execution, not just the check itself.
+let boundaryDepth = 0;
+
+function withStandaloneRootedBoundary<R>(rule: unknown, fn: () => R): R {
+  if (boundaryDepth > 0) return fn();
+  boundaryDepth++;
+  try {
+    assertRuleRootedPathsValid(rule);
+    return fn();
+  } finally {
+    boundaryDepth--;
+  }
+}
+
+// Copies a path segment-by-segment so public describe() output never shares
+// array or segment references with the live relationship graph.
+function clonePath(path: SchemaPath): SchemaPath {
+  return path.map(seg => ({ ...seg }));
+}
+
+// Strips internal rootedness flags and deep-clones all paths/segments.
+function cloneRelationship(rel: InternalRelationship): SchemaRelationship {
+  return {
+    ...(rel.metadata ? { metadata: { ...rel.metadata } } : {}),
+    effect: rel.effect,
+    source: clonePath(rel.source),
+    target: clonePath(rel.target),
+  };
+}
 
 /**
  * Creates a chain builder for rule validation.
@@ -71,18 +112,23 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   };
 
   const validate = ((...args: unknown[]) => {
-    const result = executeChain(chain, args[0] as unknown);
-    if (result.pass) {
-      return { value: result.type } as ReturnType<T['validate']>;
-    }
-    return {
-      issues: [
-        {
-          message: resolveMessage(result, args[0] as unknown),
-          path: result.path || [],
-        },
-      ],
-    } as ReturnType<T['validate']>;
+    // Standalone finalization boundary: a schema carrying dangling $.root
+    // edges is invalid here, even though composition stays lenient for
+    // reusable fragments (validated again at their final root).
+    return withStandaloneRootedBoundary(target, () => {
+      const result = executeChain(chain, args[0] as unknown);
+      if (result.pass) {
+        return { value: result.type } as ReturnType<T['validate']>;
+      }
+      return {
+        issues: [
+          {
+            message: resolveMessage(result, args[0] as unknown),
+            path: result.path || [],
+          },
+        ],
+      } as ReturnType<T['validate']>;
+    });
   }) as unknown as T['validate'];
 
   const test = ((...args: unknown[]) => {
@@ -107,16 +153,18 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   }) as unknown as T['parse'];
 
   const run = ((...args: unknown[]) => {
-    const result = executeChain(chain, args[0] as unknown);
-    if (!result.pass && lazyMessage) {
-      return {
-        ...result,
-        message:
-          dynamicValue(lazyMessage, args[0] as unknown, result.message) ??
-          result.message,
-      } as ReturnType<T['run']>;
-    }
-    return result as ReturnType<T['run']>;
+    return withStandaloneRootedBoundary(target, () => {
+      const result = executeChain(chain, args[0] as unknown);
+      if (!result.pass && lazyMessage) {
+        return {
+          ...result,
+          message:
+            dynamicValue(lazyMessage, args[0] as unknown, result.message) ??
+            result.message,
+        } as ReturnType<T['run']>;
+      }
+      return result as ReturnType<T['run']>;
+    });
   }) as unknown as T['run'];
 
   const message = (msg: Stringable): T => {
@@ -158,29 +206,26 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
         Symbol.for('vest:resolvedRelationships')
       ] ||
       [];
-    const rawArray = raw as Array<Record<string, unknown>>;
-    // Clean internal flags
-    const resolved = rawArray.map(rel => {
-      const { __isRootSource, __isRootTarget, ...clean } = rel as Record<
-        string,
-        unknown
-      > & {
-        __isRootSource?: unknown;
-        __isRootTarget?: unknown;
-      };
-      return clean;
-    });
-    // Group by target to produce dependencies
-    const depMap = new Map<string, { target: unknown; sources: unknown[] }>();
+    const rawArray = raw as InternalRelationship[];
+    // Deep-clone paths/segments and drop internal flags so the public
+    // snapshot shares no references with the live relationship graph.
+    const resolved: SchemaRelationship[] = rawArray.map(cloneRelationship);
+    // Group by target to produce dependencies. Clone again so dependencies
+    // share no references with the relationships output either.
+    const depMap = new Map<
+      string,
+      { target: SchemaPath; sources: SchemaPath[] }
+    >();
     for (const rel of resolved) {
-      const relRecord = rel as { target: unknown; source: unknown };
-      const key = JSON.stringify(relRecord.target);
-      if (!depMap.has(key)) {
-        depMap.set(key, { target: relRecord.target, sources: [] });
+      const key = JSON.stringify(rel.target);
+      let dep = depMap.get(key);
+      if (!dep) {
+        dep = { target: clonePath(rel.target), sources: [] };
+        depMap.set(key, dep);
       }
-      depMap.get(key)!.sources.push(relRecord.source);
+      dep.sources.push(clonePath(rel.source));
     }
-    const dependencies = Array.from(depMap.values());
+    const dependencies: SchemaDependency[] = Array.from(depMap.values());
     return {
       dependencies,
       relationships: resolved,

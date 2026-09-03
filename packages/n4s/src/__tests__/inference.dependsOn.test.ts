@@ -3,12 +3,18 @@
  * Verifies that $ is inferrable without explicit annotation
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars, vitest/valid-expect, vitest/no-commented-out-tests */
+/* eslint-disable vitest/valid-expect, vitest/no-commented-out-tests */
 import { describe, it, expect, expectTypeOf } from 'vitest';
 
 import { enforce } from '../n4s';
+import type {
+  DescribeResult,
+  SchemaDependency,
+  SchemaPath,
+  SchemaRelationship,
+} from '../n4s';
 
-function typeChecks() {
+export function typeChecks() {
   // $ should be inferred as Scope without annotation - scope inference
   const schema1 = enforce.shape({
     password: enforce.isString(),
@@ -27,15 +33,14 @@ function typeChecks() {
     password: string;
     confirmPassword: string;
   }>();
-  expectTypeOf(schema1.describe).returns.toEqualTypeOf<{
-    dependencies: Array<{ target: unknown; sources: unknown[] }>;
-    relationships: unknown[];
-  }>();
+  expectTypeOf(schema1.describe).returns.toEqualTypeOf<DescribeResult>();
   // dependency fields - describe output
   const desc1 = schema1.describe();
-  expectTypeOf(desc1.dependencies).toBeArray();
-  expectTypeOf(desc1.relationships).toBeArray();
-  expectTypeOf(desc1.dependencies[0]?.sources).toBeArray();
+  expectTypeOf(desc1.dependencies).toEqualTypeOf<SchemaDependency[]>();
+  expectTypeOf(desc1.relationships).toEqualTypeOf<SchemaRelationship[]>();
+  expectTypeOf(desc1.dependencies[0]?.sources).toEqualTypeOf<
+    readonly SchemaPath[]
+  >();
 
   // Revalidates also inferrable - scope inference
   const schema2 = enforce.shape({
@@ -46,10 +51,7 @@ function typeChecks() {
     }),
   });
   expectTypeOf(schema2.infer).toEqualTypeOf<{ a: string; b: string }>();
-  expectTypeOf(schema2.describe).returns.toMatchTypeOf<{
-    dependencies: Array<{ target: unknown; sources: unknown[] }>;
-    relationships: unknown[];
-  }>();
+  expectTypeOf(schema2.describe).returns.toEqualTypeOf<DescribeResult>();
 
   // Chained dependsOn - scope and dependency fields
   const schema3 = enforce.shape({
@@ -88,10 +90,7 @@ function typeChecks() {
     accountType: string;
     company: { taxId: string };
   }>();
-  expectTypeOf(outer.describe).returns.toMatchTypeOf<{
-    dependencies: Array<{ target: unknown; sources: unknown[] }>;
-    relationships: unknown[];
-  }>();
+  expectTypeOf(outer.describe).returns.toEqualTypeOf<DescribeResult>();
 
   // Array item - $ is still Scope, not array-specific - scope inference
   // Item must declare its own dependency source
@@ -123,10 +122,7 @@ function typeChecks() {
   // Optional wrappers preserve describe - describe() output
   const opt = enforce.optional(schema1);
   const d1 = opt.describe();
-  expectTypeOf(opt.describe).returns.toEqualTypeOf<{
-    dependencies: Array<{ target: unknown; sources: unknown[] }>;
-    relationships: unknown[];
-  }>();
+  expectTypeOf(opt.describe).returns.toEqualTypeOf<DescribeResult>();
   expectTypeOf(d1.dependencies).toBeArray();
   expectTypeOf(d1.relationships).toBeArray();
 
@@ -143,13 +139,14 @@ function typeChecks() {
     b?: string | undefined;
   }>();
   expectTypeOf(d2.dependencies).toBeArray();
-  expectTypeOf(partial.describe).returns.toMatchTypeOf<{
-    dependencies: Array<{ target: unknown; sources: unknown[] }>;
-    relationships: unknown[];
-  }>();
+  expectTypeOf(partial.describe).returns.toEqualTypeOf<DescribeResult>();
   void d1;
   void d2;
 }
+
+// typeChecks is type-only — not invoked at runtime to avoid enforce.shape side effects;
+// tsc --noEmit with expectTypeOf validates it statically
+void typeChecks;
 
 describe('inference.dependsOn', () => {
   it('schema with dependsOn typechecks without explicit annotation', () => {

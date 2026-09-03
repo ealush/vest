@@ -23,7 +23,7 @@ import { SummaryFailure } from '../SummaryFailure';
 
 import { gatherFailures } from './collectFailures';
 
-type InputFieldName<F extends TFieldName> = F;
+type InputFieldName<F extends TFieldName> = F | `${F}.${string}`;
 type InputGroupName<G extends TGroupName> = G;
 
 export function bindSuiteSelectors<

@@ -70,6 +70,7 @@ export function useCreateSuiteRunner<
     const schemaInput = args[0];
     // If suite was created via changed(), expand affected fields using actual data
     let transformedModifiers: any = transformedModifiersBase;
+    let changedAffected: string[] | null = null;
     if (hasChanged) {
       const rawChanged = (modifiers as any).__changed as string[];
       const affected = getAffectedFields(rawChanged, schema, schemaInput);
@@ -80,12 +81,28 @@ export function useCreateSuiteRunner<
         return [...new Set([...(baseArr as string[]), ...affected])];
       })();
       const withAffected: any = { ...modifiers, only: mergedOnly };
+      // Filter schema failures against the full focus set (base `only` +
+      // affected), not just the affected fields, so combined only+changed
+      // keeps base-only failures too.
+      if (mergedOnly.length === 0) {
+        // Explicit zero-field focus (e.g. changed([])): run no tests.
+        // `only: []` alone is a runtime no-op (no focus isolate is created),
+        // so skip-all carries the "run nothing" intent for suite tests. The
+        // schema side resolves to an empty pick via buildArrayProp.
+        withAffected.skip = true;
+      }
       delete withAffected.__changed;
       transformedModifiers = useTransformedModifiers<F, G>(withAffected);
+      changedAffected = mergedOnly;
     }
 
     const schemaRunResult = shouldRunSchema(schema)
-      ? runSchemaWithParse(schema, schemaInput, transformedModifiers)
+      ? runSchemaWithParse(
+          schema,
+          schemaInput,
+          transformedModifiers,
+          changedAffected,
+        )
       : undefined;
 
     const parsedDataChunk = getParsedDataChunk(schemaRunResult);
@@ -339,24 +356,114 @@ function runSchemaWithParse(
   schema: any,
   data: unknown,
   modifiers: { only?: unknown; skip?: unknown },
+  changedAffected?: string[] | null,
 ): SchemaRunResult[] {
-  const executableSchema = applySchemaFocus(schema, modifiers);
+  // changed() with nested affected paths cannot use enforce.pick (it selects
+  // top-level keys only, silently dropping nested validation). Run the full
+  // schema instead and narrow failures to the affected paths. Top-level-only
+  // focus keeps the existing pick/omit behavior identical.
+  const nestedAffected = getNestedChangedAffected(schema, changedAffected);
+  const executableSchema = nestedAffected
+    ? schema
+    : applySchemaFocus(schema, modifiers);
 
+  let result: SchemaRunResult[];
   const parseResult = tryParseSchema(executableSchema, data);
   if (parseResult) {
-    return parseResult;
+    result = parseResult;
+  } else if (isFunction(executableSchema.run)) {
+    result = normalizeSchemaRunResult(executableSchema.run(data), data);
+  } else {
+    result = [
+      {
+        pass: true,
+        type: data,
+      },
+    ];
   }
 
-  if (isFunction(executableSchema.run)) {
-    return normalizeSchemaRunResult(executableSchema.run(data), data);
-  }
+  return nestedAffected
+    ? filterSchemaResultsToAffected(result, nestedAffected, data)
+    : result;
+}
 
-  return [
-    {
-      pass: true,
-      type: data,
-    },
-  ];
+/**
+ * Detects when a changed() affected set cannot be projected with a top-level
+ * enforce.pick: any dotted/bracketed path (e.g. 'profile.state') would match
+ * no top-level key. Returns the affected list when a full-schema run with
+ * failure filtering is needed, null otherwise.
+ */
+function getNestedChangedAffected(
+  schema: any,
+  affected: string[] | null | undefined,
+): string[] | null {
+  if (!affected || !isN4sSchema(schema)) {
+    return null;
+  }
+  const hasNested = affected.some(isNestedFieldName);
+  return hasNested ? affected : null;
+}
+
+function isNestedFieldName(field: unknown): boolean {
+  return typeof field === 'string' && /[.[]/.test(field);
+}
+
+/**
+ * Narrows full-schema run results to failures under the affected changed paths.
+ * Passing entries are preserved; root failures (no path) are kept since they
+ * affect every field. A failure is kept on exact match or when either side is
+ * a parent path of the other (affected 'profile' keeps failures at
+ * 'profile.state', and a failure at 'profile' is relevant to 'profile.state').
+ */
+function filterSchemaResultsToAffected(
+  results: SchemaRunResult[],
+  affected: string[],
+  data: unknown,
+): SchemaRunResult[] {
+  const affectedSet = new Set(affected.map(normalizeAffectedFieldName));
+  const kept = results.filter(result =>
+    isAffectedSchemaResult(result, affectedSet),
+  );
+  if (kept.length > 0) {
+    return kept;
+  }
+  return [{ pass: true, type: results[0]?.type ?? data }];
+}
+
+function isAffectedSchemaResult(
+  result: SchemaRunResult,
+  affectedSet: Set<string>,
+): boolean {
+  if (result.pass) {
+    return true;
+  }
+  const failureName = (result.path ?? []).map(String).join('.');
+  return !failureName || isAffectedFailureName(failureName, affectedSet);
+}
+
+function isAffectedFailureName(
+  failureName: string,
+  affectedSet: Set<string>,
+): boolean {
+  for (const name of affectedSet) {
+    if (
+      failureName === name ||
+      failureName.startsWith(`${name}.`) ||
+      name.startsWith(`${failureName}.`)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function normalizeAffectedFieldName(field: string): string {
+  return field
+    .replace(/\[/g, '.')
+    .replace(/\]/g, '')
+    .split('.')
+    .filter(Boolean)
+    .join('.');
 }
 
 const N4S_VENDOR = 'n4s';
@@ -381,8 +488,9 @@ function applySchemaFocus(
 
 function buildArrayProp(prop: unknown): string[] | null {
   if (!prop) return null;
-  const arr = asArray(prop) as string[];
-  return arr.length > 0 ? arr : null;
+  // An explicitly empty array is a zero-field focus (e.g. changed([])):
+  // keep it so the schema resolves to an empty pick instead of no focus.
+  return asArray(prop) as string[];
 }
 
 function buildIntersectedSchemaInstance(

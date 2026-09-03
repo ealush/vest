@@ -39,6 +39,22 @@ export { ctx } from './enforceContext';
  */
 export { compose } from './compose';
 
+/**
+ * Public schema relationship introspection types.
+ * Returned by `describe()` on schema rules.
+ */
+export type {
+  ItemSegment,
+  PropertySegment,
+  SchemaPath,
+} from './schema/SchemaPath';
+export type {
+  InternalRelationship,
+  SchemaDependency,
+  SchemaRelationship,
+} from './schema/SchemaRelationship';
+export type { DescribeResult } from './utils/RuleInstance';
+
 type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
 type ContextFn = () => EnforceContext;
 type Enforce = typeof enforceEager &

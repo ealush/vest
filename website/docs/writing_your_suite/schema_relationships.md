@@ -186,6 +186,16 @@ Semantics:
 
 `$.root` should be explicit and rare. Reusable locals should prefer local refs.
 
+> **Validation timing for `$.root` paths**
+>
+> Local references are validated when the containing schema is composed
+> (unknown siblings throw `EnforceSchemaError` immediately). Rooted paths are
+> validated lazily instead: composition and `describe()` stay lenient so
+> focused fragments keep composing, and an unknown `$.root` field throws on
+> the first `test` / `validate` / `run` — or at suite creation, which
+> finalizes the graph. `describe()` may therefore show a dangling rooted
+> edge until the schema is executed.
+
 > **Deferred to v2 — `$.parent`**
 >
 > `$.parent` (parent-scope escape) is **intentionally deferred** — add only if a real use case demands it.

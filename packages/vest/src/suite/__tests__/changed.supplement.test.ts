@@ -265,6 +265,14 @@ describe('changed() supplement exactly-once execution', () => {
     const full = await suite.run(data);
     expect(full.hasErrors('a')).toBe(true);
 
+    // The failure is latent, not invented: unshadowed, the full run
+    // reports the absent required member too.
+    // @ts-expect-error - acceptance probe: runtime data omits required key
+    // 'b', which the loose input type requires
+    const unshadowedData: { a: string; b: string } = { a: 'ok-ok-ok' };
+    const unshadowed = await suite.run(unshadowedData);
+    expect(unshadowed.hasErrors('b')).toBe(true);
+
     const changed = await suite.changed('b').run(data);
     expect(changed.hasErrors('b')).toBe(true);
   });
@@ -280,6 +288,14 @@ describe('changed() supplement exactly-once execution', () => {
     // @ts-expect-error - acceptance probe: runtime data omits required key
     // 'b', which the shape input type requires
     const data: { a: string; b: string } = { a: 'x' };
+
+    // The failure is latent, not invented: unshadowed, the full run
+    // reports the absent required member too.
+    // @ts-expect-error - acceptance probe: runtime data omits required key
+    // 'b', which the shape input type requires
+    const unshadowedData: { a: string; b: string } = { a: 'ok-ok-ok' };
+    const unshadowed = await suite.run(unshadowedData);
+    expect(unshadowed.hasErrors('b')).toBe(true);
 
     const changed = await suite.changed('b').run(data);
     expect(changed.hasErrors('b')).toBe(true);

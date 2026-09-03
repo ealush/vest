@@ -585,10 +585,20 @@ function collectFlatMemberSupplement(
   if (topSchema === undefined) return [];
   const afterKey = shadowedAfterKey(main, topSchema);
   if (afterKey === null) return [];
-  return runShadowedMembers(topSchema, afterKey, { affected, skip, data });
+  // Absent-is-valid knowledge comes from the declared top container: a
+  // partial-like top never evaluates missing keys, so an absent affected
+  // member past the boundary is valid-absent, not a shadowed failure.
+  const absentValid = isPartialLikeContainer(schema);
+  return runShadowedMembers(topSchema, afterKey, {
+    affected,
+    absentValid,
+    data,
+    skip,
+  });
 }
 
 type ShadowedRun = {
+  readonly absentValid: boolean;
   readonly affected: string[];
   readonly skip: string[] | null;
   readonly data: unknown;
@@ -607,7 +617,11 @@ function runShadowedMembers(
     if (key === afterKey) {
       pastFailure = true;
     } else if (shouldRunShadowed(pastFailure, affectedSet, skipSet, key)) {
-      appendFlatMember(topSchema[key], key, run.data, out);
+      appendFlatMember(
+        topSchema[key],
+        { absentValid: run.absentValid, data: run.data, key },
+        out,
+      );
     }
   }
   return out;
@@ -647,16 +661,26 @@ function memberTopKey(
   return top;
 }
 
+type FlatMemberRun = {
+  readonly absentValid: boolean;
+  readonly data: unknown;
+  readonly key: string;
+};
+
 function appendFlatMember(
   rule: IntrospectableSchema,
-  key: string,
-  data: unknown,
+  run: FlatMemberRun,
   out: SchemaRunResult[],
 ): void {
-  const child = childValue(data, key);
-  // A declared shape member is validated even when absent: required rules
-  // fail on undefined while optional rules pass. This path is reached only
-  // when an earlier failure proved the member was never executed.
+  // A member absent from a partial-like top was never evaluated by the main
+  // run and is valid-absent: running it standalone would invent a failure
+  // the full run never reports. Absent members of required containers are
+  // genuinely invalid and run (failing correctly), as do present members —
+  // including explicit-undefined ones, which the full run evaluates.
+  if (skipAbsentMember(run)) return;
+  const child = childValue(run.data, run.key);
+  // This path is reached only when an earlier failure proved the member
+  // was never executed.
   let outcome: SchemaRunResult[];
   try {
     outcome = runExecutableSchema(rule, child);
@@ -666,9 +690,21 @@ function appendFlatMember(
     if (isBoundaryError(error)) return;
     throw error;
   }
-  for (const result of prefixFailureResults(outcome, [key])) {
+  for (const result of prefixFailureResults(outcome, [run.key])) {
     out.push(result);
   }
+}
+
+/**
+ * Presence (not value) decides absence: an explicit-undefined member is
+ * evaluated by container iteration, while a genuinely missing key is not.
+ */
+function isPresentKey(data: unknown, key: string): boolean {
+  return isObject(data) && hasOwnProperty(data, key);
+}
+
+function skipAbsentMember(run: FlatMemberRun): boolean {
+  return run.absentValid && !isPresentKey(run.data, run.key);
 }
 
 /**
@@ -1515,6 +1551,7 @@ function appendShapeDescendants(
 }
 
 type ShapeDescendantContext = {
+  readonly absentValid: boolean;
   readonly byKey: Map<string, AffectedSeg[][]>;
   readonly failedKey: string | null;
   readonly inner: Record<string, IntrospectableSchema>;
@@ -1535,7 +1572,10 @@ function shapeDescendantContext(
   // A full main run already executed every reachable member. Supplement it
   // only when its single failure identifies a short-circuit boundary.
   if (fullMainWithoutFailureBoundary(selection, failedKey)) return null;
-  return { byKey, failedKey, inner };
+  // Absent-is-valid knowledge for shadowed members: a partial-like parent
+  // never evaluates missing keys, so an absent member past the boundary is
+  // valid-absent, not a shadowed failure.
+  return { absentValid: isPartialLikeContainer(rule), byKey, failedKey, inner };
 }
 
 function fullMainWithoutFailureBoundary(
@@ -1570,10 +1610,26 @@ function appendSelectedShapeDescendant(run: ShapeDescendantRun): void {
     main: selection.main,
   };
   if (memberFollowsFailure(index, failedIndex)) {
+    if (isAbsentPartialMember(context, value, key)) return;
     appendShadowedShapeMember(context.inner[key], value, key, childSelection);
     return;
   }
   appendSupplementalFailures(context.inner[key], value[key], childSelection);
+}
+
+/**
+ * A member absent from a partial-like parent was never evaluated by the
+ * main run and is valid-absent: running it standalone would invent a
+ * failure the full run never reports. Present members — including
+ * explicit-undefined ones, which container iteration evaluates — always
+ * run, as do absent members of required containers (genuinely invalid).
+ */
+function isAbsentPartialMember(
+  context: ShapeDescendantContext,
+  value: Record<string, unknown>,
+  key: string,
+): boolean {
+  return context.absentValid && !hasOwnProperty(value, key);
 }
 
 function memberPrecedesFailure(index: number, failedIndex: number): boolean {

@@ -231,6 +231,98 @@ describe('changed() supplement exactly-once execution', () => {
     expect(changed.getErrors()['rows.1']).toEqual(full.getErrors()['rows.1']);
   });
 
+  it('flat supplement skips absent members of partial-like tops', async () => {
+    // Wave-3 F1: partial({a: fail, b}) with b absent — b is valid-absent,
+    // but past the failure boundary the supplement ran it standalone and
+    // invented a failure the full run never reports.
+    const schema = enforce.partial({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x' };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('a')).toBe(true);
+    expect(full.hasErrors('b')).toBe(false);
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(false);
+  });
+
+  it('flat supplement still fails absent required members of loose tops', async () => {
+    // Discriminator: loose requires presence, so an absent affected member
+    // past the boundary is genuinely invalid — the supplement must run it.
+    const schema = enforce.loose({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+    // @ts-expect-error - acceptance probe: runtime data omits required key
+    // 'b', which the loose input type requires
+    const data: { a: string; b: string } = { a: 'x' };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('a')).toBe(true);
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(true);
+  });
+
+  it('flat supplement still fails absent required members of strict shapes', async () => {
+    // Control: absent-required under shape() is invalid in the full run,
+    // so the supplement must surface it past the boundary too.
+    const schema = enforce.shape({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+    // @ts-expect-error - acceptance probe: runtime data omits required key
+    // 'b', which the shape input type requires
+    const data: { a: string; b: string } = { a: 'x' };
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(true);
+  });
+
+  it('nested supplement skips absent members of partial containers', async () => {
+    // Wave-3 F2: shape({profile: partial({u: fail, b})}) with b absent —
+    // b is valid-absent, but past the nested boundary the supplement ran
+    // the raw member rule against undefined and invented profile.b.
+    const schema = enforce.shape({
+      profile: enforce.partial({
+        u: enforce.isString().longerThan(5),
+        b: enforce.isString(),
+      }),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { profile: { u: 'x' } };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('profile.u')).toBe(true);
+
+    const changed = await suite.changed(['profile.u', 'profile.b']).run(data);
+    expect(changed.hasErrors('profile.u')).toBe(true);
+    expect(changed.hasErrors('profile.b')).toBe(false);
+  });
+
+  it('flat supplement evaluates explicit-undefined members', async () => {
+    // Presence, not value, decides absence: container iteration evaluates
+    // an explicit undefined in the full run, so the supplement must run it
+    // too — even under a partial-like top.
+    const schema = enforce.partial({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+
+    const unshadowed = await suite.run({ a: 'ok-ok-ok', b: undefined });
+    expect(unshadowed.hasErrors('b')).toBe(true);
+
+    const changed = await suite.changed('b').run({ a: 'x', b: undefined });
+    expect(changed.hasErrors('b')).toBe(true);
+  });
+
   it('full-fallback path executes each member validator at most once', async () => {
     // F4: a validator chained after the top container moves the baseline,
     // so the projection falls back to a full-schema main run. The

@@ -9641,7 +9641,7 @@ confirmPassword
 as the affected set. This preserves `only()` semantics while giving frameworks an interaction-aware operation. Keep them separate:
 
 - `only()` — explicit execution selection
-- `changed()` / `invalidate()` — dependency-aware affected-set selection
+- `changed()` — dependency-aware affected-set selection
 
 `include()` then becomes a lower-level escape hatch, not the primary way to express cross-field behavior.
 
@@ -9678,7 +9678,7 @@ Changing `startDate` invalidates `endDate` and vice versa. No loop occurs becaus
 confirmPassword: enforce.isString().dependsOn($ => $.password);
 // source-oriented (same edge):
 password: enforce.isString().revalidates($ => $.confirmPassword);
-// both → { source: ['password'], target: ['confirmPassword'], effect: 'invalidate' }
+// both → { source: [{ type: 'property', key: 'password' }], target: [{ type: 'property', key: 'confirmPassword' }], effect: 'invalidate' }
 ```
 
 > **Deferred to v2 — `effect: 'revalidate'`**
@@ -9707,16 +9707,38 @@ Serializable form:
 
 ```json
 {
-  "dependencies": [{ "target": ["confirmPassword"], "sources": [["password"]] }]
+  "dependencies": [
+    {
+      "target": [{ "type": "property", "key": "confirmPassword" }],
+      "sources": [[{ "type": "property", "key": "password" }]]
+    }
+  ],
+  "relationships": [
+    {
+      "source": [{ "type": "property", "key": "password" }],
+      "target": [{ "type": "property", "key": "confirmPassword" }],
+      "effect": "invalidate"
+    }
+  ]
 }
 ```
 
-Array item:
+Array item (the item binding is `<arrayKey>.$item`):
 
 ```json
 {
-  "target": ["travelers", { "item": "traveler" }, "passportNumber"],
-  "sources": [["travelers", { "item": "traveler" }, "passportCountry"]]
+  "target": [
+    { "type": "property", "key": "travelers" },
+    { "type": "item", "binding": "travelers.$item" },
+    { "type": "property", "key": "passportNumber" }
+  ],
+  "sources": [
+    [
+      { "type": "property", "key": "travelers" },
+      { "type": "item", "binding": "travelers.$item" },
+      { "type": "property", "key": "passportCountry" }
+    ]
+  ]
 }
 ```
 

@@ -9,6 +9,7 @@ declare global {
       countSupplementValue: (value: unknown) => boolean;
       countFallbackState: (value: unknown) => boolean;
       hasFallbackFlag: (value: { flag?: unknown }) => boolean;
+      countKeyedValue: (value: unknown) => boolean;
     }
   }
 }
@@ -55,6 +56,55 @@ describe('changed() supplement exactly-once execution', () => {
     const changed = await suite.changed('dict.a').run(data);
     expect(changed.hasErrors('dict.a')).toBe(true);
     expect(changed.hasErrors('dict.b')).toBe(false);
+  });
+
+  it('record per-key: an affected key-rule violation surfaces', async () => {
+    // W1: two-arg records close over a key rule no slot exposes. The
+    // whole-record main run reports only the first failing key and the
+    // supplement ran only the value rule, so changed('dict.a') stayed
+    // clean though 'a' itself violates the key rule.
+    const schema = enforce.shape({
+      dict: enforce.record(
+        enforce.isString().longerThan(2),
+        enforce.isNumber(),
+      ),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { dict: { ab: 1, a: 2 } };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('dict.ab')).toBe(true);
+
+    const changedA = await suite.changed('dict.a').run(data);
+    expect(changedA.hasErrors('dict.a')).toBe(true);
+
+    const changedAb = await suite.changed('dict.ab').run(data);
+    expect(changedAb.hasErrors('dict.ab')).toBe(true);
+  });
+
+  it('record per-key: passing two-arg entries still execute exactly once', async () => {
+    // The single-entry run replaces the value-only run (never adds to
+    // it), so a stateful value validator fires once total.
+    const calls: unknown[] = [];
+    enforce.extend({
+      countKeyedValue: (value: unknown): boolean => {
+        calls.push(value);
+        return typeof value === 'number';
+      },
+    });
+    const schema = enforce.shape({
+      dict: enforce.record(
+        enforce.isString().longerThan(2),
+        enforce.isNumber().countKeyedValue(),
+      ),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { dict: { abc: 1, def: 2 } };
+
+    const changed = await suite.changed('dict.abc').run(data);
+    expect(changed.hasErrors()).toBe(false);
+    expect(calls.filter(value => value === 1)).toHaveLength(1);
+    expect(calls).toHaveLength(2);
   });
 
   it('full-fallback path executes each member validator at most once', async () => {

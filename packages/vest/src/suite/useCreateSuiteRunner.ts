@@ -1150,7 +1150,7 @@ function appendSingleDispatch(
     return appendEachIndex(item, value, selection);
   }
   if (isRecordValue(value)) {
-    return appendEachKey(item, value, selection);
+    return appendRecordKeys(rule, item, value, selection);
   }
   return false;
 }
@@ -1239,16 +1239,123 @@ function appendEachIndex(
   return indices.length > 0;
 }
 
-function appendEachKey(
+function appendRecordKeys(
+  rule: IntrospectableSchema,
   item: IntrospectableSchema,
   value: Record<string, unknown>,
   selection: IndexSelection,
 ): boolean {
   const keys = keyHeads(selection.suffixes);
   for (const key of keys) {
-    appendSingleKey(item, value, key, selection);
+    appendRecordKey({ rule, item, value, key }, selection);
   }
   return keys.length > 0;
+}
+
+type RecordKeyRun = {
+  readonly rule: IntrospectableSchema;
+  readonly item: IntrospectableSchema;
+  readonly value: Record<string, unknown>;
+  readonly key: string;
+};
+
+function appendRecordKey(entry: RecordKeyRun, selection: IndexSelection): void {
+  if (shouldRunRecordEntry(entry, selection)) {
+    runRecordKeyEntry(entry, selection);
+    return;
+  }
+  appendSingleKey(entry.item, entry.value, entry.key, selection);
+}
+
+/**
+ * Whether an affected record key runs as a single-entry whole-record run
+ * instead of the value-only flow. Only genuine records qualify (the
+ * closed-over rule carries the two-arg key rule no slot exposes), only
+ * safe keys (a computed `{[__proto__]: …}` entry would set a prototype
+ * instead of an own key), and only exact-key selections (deeper paths keep
+ * the narrowed value flow, which the entry run cannot reproduce).
+ */
+function shouldRunRecordEntry(
+  entry: RecordKeyRun,
+  selection: IndexSelection,
+): boolean {
+  return (
+    containerKindOf(entry.rule) === 'record' &&
+    !isUnsafeKey(entry.key) &&
+    isExactKeySelection(selection.suffixes, entry.key)
+  );
+}
+
+function isExactKeySelection(suffixes: AffectedSeg[][], key: string): boolean {
+  const rests = suffixesForMember(suffixes, key);
+  return rests.length > 0 && rests.every(rest => rest.length === 0);
+}
+
+/**
+ * Evaluates one affected record key with the record's own rule against a
+ * single-entry object, so a two-arg key rule violation on the affected key
+ * surfaces instead of hiding behind first-failure ordering (the supplement
+ * otherwise runs only the value rule). Entry evaluation is independent per
+ * key in n4s, and attribution matches the value flow: the record prefixes
+ * the key, the merger prefixes the container path. Replaces (never adds
+ * to) the value-only run, so stateful validators still fire exactly once.
+ */
+function runRecordKeyEntry(
+  entry: RecordKeyRun,
+  selection: IndexSelection,
+): void {
+  const child = entry.value[entry.key];
+  if (child === undefined) return;
+  const memberPath = [...selection.sink.basePath, entry.key];
+  // Exactly-once like the value flow: a main-run failure here is already
+  // reported — rerunning would double-execute stateful validators.
+  if (isCoveredByMain(selection.main, memberPath)) return;
+  const outcome = safeRunItem(
+    entry.rule,
+    { [entry.key]: child },
+    selection.sink,
+  );
+  pushRecordEntryResults(outcome, entry.key, selection.sink);
+}
+
+function pushRecordEntryResults(
+  outcome: SchemaRunResult[],
+  key: string,
+  sink: IndexRunSink,
+): void {
+  for (const result of prefixFailureResults(outcome, sink.basePath)) {
+    if (!result.pass) {
+      sink.out.push(result);
+      continue;
+    }
+    pushRecordEntryPass(result, key, sink);
+  }
+}
+
+/**
+ * Unwraps a passing single-entry result to its entry value so the F5
+ * coercion fold places the coerced value (not the single-entry object) at
+ * the member path. Entries the key rule renamed have no affected-path
+ * home, so they contribute no patch — the fragment keeps its raw value.
+ */
+function pushRecordEntryPass(
+  result: SchemaRunResult,
+  key: string,
+  sink: IndexRunSink,
+): void {
+  const entryValue = recordEntryValue(result.type, key);
+  if (entryValue === undefined) {
+    sink.out.push({ pass: result.pass, path: result.path });
+    return;
+  }
+  sink.out.push({ ...result, type: entryValue });
+}
+
+function recordEntryValue(type: unknown, key: string): unknown {
+  if (!isObject(type)) return undefined;
+  const parsed = type as Record<string, unknown>;
+  if (!hasOwnProperty(parsed, key)) return undefined;
+  return parsed[key];
 }
 
 function appendShapeDescendants(

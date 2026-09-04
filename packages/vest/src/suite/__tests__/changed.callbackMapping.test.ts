@@ -4,6 +4,29 @@ import { enforce } from 'n4s';
 import { create } from '../../vest';
 
 describe('focused schema callback mapping', () => {
+  it('maps untouched fields before the first-ever focused callback without validating them', async () => {
+    const validationCalls: unknown[] = [];
+    const seenAges: number[] = [];
+    const schema = enforce.shape({
+      age: enforce.isNumeric().toNumber(),
+      guard: enforce.condition((value: unknown): boolean => {
+        validationCalls.push(value);
+        return typeof value === 'string';
+      }),
+      note: enforce.isString(),
+    });
+    const suite = create(data => {
+      seenAges.push(data.age);
+    }, schema);
+
+    await suite
+      .changed('note')
+      .run({ age: '42', guard: 'untouched', note: 'hello' });
+
+    expect(seenAges).toEqual([42]);
+    expect(validationCalls).toEqual([]);
+  });
+
   it('retains successful untouched transformations across sequential changed runs', async () => {
     const seen: unknown[] = [];
     const schema = enforce.shape({

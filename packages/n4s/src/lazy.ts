@@ -28,11 +28,14 @@ import {
   UNRESOLVED_DEPS,
   resolveInlineDeps,
 } from './schema/dependencyResolver';
+import { isSchemaExecutionProjection } from './schema/projectionContext';
 import type { ItemContainerKind } from './schema/dependencyResolver';
 import { snapshotChainBaseline } from './rules/chainBuilder/chainBuilder';
 import { rebaseRelationships } from './schema/rebase';
 import type { SchemaPath } from './schema/SchemaPath';
 import type { InternalRelationship } from './schema/SchemaRelationship';
+
+const MAP_VALUE = Symbol.for('vest:mapValue');
 
 /**
  * Extracts the output type from a custom matcher function.
@@ -63,6 +66,10 @@ function collectSchemaRelationships(
   schema: Record<string, unknown>,
   keyFilter?: (key: string) => boolean,
 ): InternalRelationship[] {
+  // Execution-only fragments are built after the complete relationship
+  // graph has already produced the selective plan. Recompiling relationships
+  // here would force dependency providers back into executable fragments.
+  if (isSchemaExecutionProjection()) return [];
   const relationships: InternalRelationship[] = resolveInlineDeps(
     schema as Record<string, RuleInstance<unknown, unknown[]>>,
     [],
@@ -249,6 +256,9 @@ function wrapOptional(
     }
     if (innerSlots[ITEM_CONTAINER] && !slots[ITEM_CONTAINER]) {
       slots[ITEM_CONTAINER] = innerSlots[ITEM_CONTAINER];
+    }
+    if (innerSlots[MAP_VALUE] && !slots[MAP_VALUE]) {
+      slots[MAP_VALUE] = innerSlots[MAP_VALUE];
     }
     // The wrapper validates through the inner rule, so the rebuild
     // baseline is the inner rule's current chain state — not the fresh

@@ -1,4 +1,4 @@
-import { mapPassing } from './parserUtils';
+import { mapPassing, registerParserRules } from './parserUtils';
 
 function toCamelCase(value: string): string {
   return value
@@ -146,3 +146,5 @@ export const stringParsers = {
   trimEnd,
   trimStart,
 } as const;
+
+registerParserRules(stringParsers);

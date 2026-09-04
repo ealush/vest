@@ -23,6 +23,7 @@ import {
 import type { ItemContainerKind } from './dependencyResolver';
 import type { ItemSegment, PropertySegment, SchemaPath } from './SchemaPath';
 import { isPropertySegment } from './SchemaPath';
+import { withSchemaExecutionProjection } from './projectionContext';
 import type {
   SchemaDependency,
   SchemaRelationship,
@@ -127,12 +128,16 @@ export function runSchemaPaths(
     ...options,
     affected: expandChangedToAffected(schema, options.affected, data),
   });
-  return runSchemaWithParse(
-    schema as SelectiveSchema,
-    data,
-    { only: focus.onlyList, skip: focus.skip },
-    focus.effectiveAffected,
-  );
+  const execute = (): SelectiveSchemaResult[] =>
+    runSchemaWithParse(
+      schema as SelectiveSchema,
+      data,
+      { only: focus.onlyList, skip: focus.skip },
+      focus.effectiveAffected,
+    );
+  return focus.effectiveAffected === null
+    ? execute()
+    : withSchemaExecutionProjection(execute);
 }
 
 /**
@@ -267,32 +272,28 @@ function runSchemaWithParse(
   modifiers: FocusModifiers,
   changedAffected?: readonly string[] | null,
 ): SelectiveSchemaResult[] {
-  const nestedAffected = getNestedChangedAffected(schema, changedAffected);
-  if (nestedAffected == null) {
+  if (changedAffected == null) {
     return runFlatSchema(schema, modifiers, data, changedAffected);
   }
+  if (changedAffected.length === 0) return [{ pass: true, type: data }];
   const divergentFallback = runExplicitUndefinedFallback(
     schema,
     modifiers,
-    nestedAffected,
+    changedAffected,
     data,
   );
   if (divergentFallback !== null) return divergentFallback;
-  // Retain dependency sources (local siblings, $.root providers) so the
-  // projected fragment still composes to a valid graph. Failures stay
-  // narrowed to the original affected paths afterward.
-  const expanded = expandAffectedWithSources(schema, nestedAffected);
   const { mainRun, supplement } = runProjectedMain(
     schema,
     modifiers,
-    expanded,
+    [...changedAffected],
     data,
   );
   return narrowProjectedResults({
     data,
     mainRun,
     modifiers,
-    nestedAffected,
+    nestedAffected: changedAffected,
     schema,
     supplement,
   });
@@ -388,16 +389,10 @@ function runExplicitUndefinedFallback(
   nestedAffected: readonly string[],
   data: unknown,
 ): SelectiveSchemaResult[] | null {
-  if (!hasExplicitUndefinedUnknownKey(schema, nestedAffected, data)) {
+  if (!hasExplicitUndefinedProjectionDivergence(schema, nestedAffected, data)) {
     return null;
   }
-  return runFullWithAffectedFilter({
-    affected: nestedAffected,
-    data,
-    modifiers,
-    schema,
-    skip: buildSkipFilter(modifiers.skip),
-  });
+  return runFlatSchema(schema, modifiers, data, nestedAffected);
 }
 
 /**
@@ -740,29 +735,6 @@ function isBoundaryError(error: unknown): boolean {
   );
 }
 
-/**
- * Detects when a changed() affected set cannot be projected with a top-level
- * enforce.pick: a dotted/bracketed path (e.g. 'profile.state') would match
- * no top-level key. Returns the affected list when a full-schema run with
- * failure filtering is needed, null otherwise. Non-shape n4s roots also
- * return null (projection needs __schema); runFlatSchema filters those runs
- * by affected path instead of projecting them.
- */
-function getNestedChangedAffected(
-  schema: SelectiveSchema,
-  affected: readonly string[] | null | undefined,
-): readonly string[] | null {
-  if (!affected || !isN4sSchema(schema)) {
-    return null;
-  }
-  const hasNested = affected.some(isNestedFieldName);
-  return hasNested ? affected : null;
-}
-
-function isNestedFieldName(field: unknown): boolean {
-  return typeof field === 'string' && /[.[]/.test(field);
-}
-
 type AffectedSeg = string | number;
 
 /**
@@ -814,36 +786,28 @@ function parseAffectedPath(field: string): AffectedSeg[] {
 }
 
 /**
- * Whether an affected path names an undeclared key whose runtime value is
- * explicitly undefined and own-enumerable. The extra-key sentinel is a
- * value-only rule (`value === undefined`), so it passes there while a
- * strict shape() — which iterates own enumerable keys — fails. Callers
- * take the full-run fallback instead, so the selective verdict always
- * matches the full-run verdict. Present-with-value unknown keys diverge
- * nowhere (the sentinel fails exactly like the full run), and absent or
- * non-enumerable keys pass on both sides. Metadata-only: never executes
- * user validators and never throws (unresolvable paths simply abstain).
+ * Whether projection would change explicit-undefined semantics. This occurs
+ * for unknown strict-shape keys (the value-only sentinel cannot distinguish
+ * absence) and declared partial members (the projected optional wrapper would
+ * skip a present undefined value that the full partial container evaluates).
+ * Callers take the full-run fallback so the selective verdict stays exact.
+ * Metadata-only: never executes user validators and never throws.
  */
-function hasExplicitUndefinedUnknownKey(
+function hasExplicitUndefinedProjectionDivergence(
   schema: SelectiveSchema,
   affected: readonly string[],
   data: unknown,
 ): boolean {
-  try {
-    return affected.some(field =>
-      isUndefinedUnknownAtPath(schema, field, data),
-    );
-  } catch {
-    return false;
+  for (const field of affected) {
+    let path: AffectedSeg[];
+    try {
+      path = parseAffectedPath(field);
+    } catch {
+      continue;
+    }
+    if (checkAffectedSegments(schema, data, path, 0)) return true;
   }
-}
-
-function isUndefinedUnknownAtPath(
-  schema: SelectiveSchema,
-  field: string,
-  data: unknown,
-): boolean {
-  return checkAffectedSegments(schema, data, parseAffectedPath(field), 0);
+  return false;
 }
 
 function checkAffectedSegments(
@@ -912,16 +876,21 @@ function stepKeySegment(
       dataNode: readDataKey(dataNode, seg),
     };
   }
-  return finalKeyStep(inner, dataNode, seg);
+  return finalKeyStep(schemaNode, inner, dataNode, seg);
 }
 
 function finalKeyStep(
+  schemaNode: SelectiveSchema,
   inner: Record<string, SelectiveSchema>,
   dataNode: unknown,
   seg: string,
 ): AffectedStep {
   return {
-    diverged: isDivergentUnknownKey(inner, dataNode, seg),
+    diverged:
+      isDivergentUnknownKey(inner, dataNode, seg) ||
+      (hasOwnProperty(inner, seg) &&
+        isPartialLikeContainer(schemaNode) &&
+        isExplicitUndefined(dataNode, seg)),
     schemaNode: undefined,
     dataNode: undefined,
   };

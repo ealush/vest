@@ -144,6 +144,7 @@ export function useCreateSuiteRunner<
   // Note: we cannot compute affected here without data, so we do it inside runSuite below.
   const transformedModifiersBase = useTransformedModifiers<F, G>(modifiers);
 
+  // eslint-disable-next-line complexity -- orchestration branches mirror suite modifiers
   return function runSuite(
     ...args: S extends undefined
       ? Parameters<T>
@@ -180,7 +181,7 @@ export function useCreateSuiteRunner<
     // runSchemaPaths owns the single expansion of the run path.
     let transformedModifiers = transformedModifiersBase;
     let changedAffected: string[] | null = null;
-    let mappedAffected = mappedFocusPaths(transformedModifiersBase);
+    let mappedAffected = mappedFocusPaths<F, G>(transformedModifiersBase);
     if (changedFields) {
       const focus = useChangedRunFocus<F, G>(
         changedFields,
@@ -213,12 +214,16 @@ export function useCreateSuiteRunner<
     const callbackInput = getCallbackInput({
       affected: mappedAffected,
       fallback: schemaInput,
+      schema,
       schemaRunResult,
       state: suiteState,
       suiteCallback,
     });
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
-    const runData = callbackInput;
+    const runData =
+      schema && schemaRunResult?.every(result => result.pass)
+        ? parsedDataChunk
+        : schemaInput;
 
     const suiteResult = SuiteContext.run(
       {
@@ -335,20 +340,19 @@ function baseOnlyListOf<F extends TFieldName, G extends TGroupName>(
  * retained callback mapping. null means an unfocused full schema run.
  */
 function mappedFocusPaths<F extends TFieldName, G extends TGroupName>(
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: Pick<SuiteModifiers<F, G>, 'only' | 'skip'>,
 ): string[] | null {
   if (modifiers.skip === true) return [];
   if (modifiers.only == null) return null;
   const skipped = new Set(
     modifiers.skip
       ? asArray(modifiers.skip).filter(
-          (entry): entry is string => typeof entry === 'string',
+          (entry): entry is F => typeof entry === 'string',
         )
       : [],
   );
   return asArray(modifiers.only).filter(
-    (entry): entry is string =>
-      typeof entry === 'string' && !skipped.has(entry),
+    (entry): entry is F => typeof entry === 'string' && !skipped.has(entry),
   );
 }
 
@@ -383,6 +387,7 @@ function snapshotParsedData(data: unknown): unknown {
 type CallbackInputParams = {
   affected: string[] | null;
   fallback: unknown;
+  schema: unknown;
   schemaRunResult: SchemaRunResult[] | undefined;
   state: object;
   suiteCallback: CB;
@@ -398,8 +403,10 @@ type CallbackInputParams = {
  * Validation failures keep the established raw-input fallback and do not
  * poison the last successful mapped value.
  */
+// eslint-disable-next-line complexity -- full, failed, initial, and retained snapshots
 function getCallbackInput(params: CallbackInputParams): unknown {
-  const { affected, fallback, schemaRunResult, state, suiteCallback } = params;
+  const { affected, fallback, schema, schemaRunResult, state, suiteCallback } =
+    params;
   if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
     return fallback;
   }
@@ -415,16 +422,76 @@ function getCallbackInput(params: CallbackInputParams): unknown {
 
   const previous = cache.get(state);
   if (previous === undefined) {
-    // A focused run can legitimately be the first run. There is no prior
-    // mapped snapshot to preserve yet, so keep the selective engine's current
-    // output rather than speculatively executing unrelated validators.
-    cache.set(state, current);
-    return current;
+    const initial = mapWithoutValidation(schema, fallback);
+    const merged = mergeMappedPaths(initial, current, affected);
+    cache.set(state, merged);
+    return merged;
   }
 
   const merged = mergeMappedPaths(previous, current, affected);
   cache.set(state, merged);
   return merged;
+}
+
+type MappingResult = { pass: boolean; type: unknown };
+type InternalRule = Record<PropertyKey, unknown>;
+const MAP_VALUE = Symbol.for('vest:mapValue');
+const ITEM_SCHEMA = Symbol.for('vest:itemSchema');
+const ITEM_CONTAINER = Symbol.for('vest:itemContainer');
+
+/** Maps parser steps while deliberately skipping validation predicates. */
+function mapWithoutValidation(rule: unknown, value: unknown): unknown {
+  if (!isObject(rule)) return value;
+  const slots = rule as InternalRule;
+  const mapped = mapStructuredValue(slots, value);
+  const mapValue = slots[MAP_VALUE];
+  if (typeof mapValue !== 'function') return mapped;
+  const result = (mapValue as (input: unknown) => MappingResult)(mapped);
+  return result.pass ? result.type : mapped;
+}
+
+// eslint-disable-next-line complexity -- discriminates shape, tuple, array, and record metadata
+function mapStructuredValue(rule: InternalRule, value: unknown): unknown {
+  const shape = rule.__schema;
+  if (isObject(shape) && isObject(value) && !isArray(value)) {
+    const output = { ...(value as object) } as Record<string, unknown>;
+    for (const key of Object.keys(shape as object)) {
+      if (Object.prototype.hasOwnProperty.call(output, key)) {
+        output[key] = mapWithoutValidation(
+          (shape as Record<string, unknown>)[key],
+          output[key],
+        );
+      }
+    }
+    return output;
+  }
+
+  const itemSchema = rule[ITEM_SCHEMA];
+  if (isArray(value) && itemSchema !== undefined) {
+    if (isArray(itemSchema)) {
+      // Multi-rule arrays are unions, so choosing a mapper would require
+      // running validators. Tuple metadata has no container discriminator.
+      if (rule[ITEM_CONTAINER] === 'array') return value;
+      return value.map((item, index) =>
+        mapWithoutValidation(itemSchema[index], item),
+      );
+    }
+    return value.map(item => mapWithoutValidation(itemSchema, item));
+  }
+  if (
+    rule[ITEM_CONTAINER] === 'record' &&
+    itemSchema !== undefined &&
+    isObject(value) &&
+    !isArray(value)
+  ) {
+    return Object.fromEntries(
+      Object.entries(value as object).map(([key, item]) => [
+        key,
+        mapWithoutValidation(itemSchema, item),
+      ]),
+    );
+  }
+  return value;
 }
 
 function mergeMappedPaths(

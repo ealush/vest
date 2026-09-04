@@ -29,6 +29,7 @@ import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 
 const COMPOSITION_CHILDREN = Symbol.for('vest:compositionChildren');
+const MAP_VALUE = Symbol.for('vest:mapValue');
 
 export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
   keyof Omit<
@@ -119,6 +120,7 @@ function collectCompositionMembers(root: unknown): WeakSet<object> {
   return members;
 }
 
+// eslint-disable-next-line complexity -- two identity forms across nested frames
 function isActiveCompositionMember(rule: unknown): boolean {
   if (!isObjectNode(rule)) return false;
   const resolved = resolveBoundaryNode(rule);
@@ -176,20 +178,23 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   rules: RuleFunctions<T> | Record<string, (...args: unknown[]) => unknown>,
 ) {
   const chain: Predicate[] = [];
+  const mappingChain: Predicate[] = [];
   const target: Partial<T> = {};
   let lazyMessage: Maybe<LazyMessage> = undefined;
   const unresolvedDeps: Array<{
     resolver: (scope: ScopeHandle) => unknown;
   }> = [];
 
-  const add = (p: Predicate): T => {
+  const add = (p: Predicate, mapsValue = false): T => {
     chain.push(p);
+    if (mapsValue) mappingChain.push(p);
     syncChainInfo();
     return proxy;
   };
 
-  const prepend = (p: Predicate): T => {
+  const prepend = (p: Predicate, mapsValue = false): T => {
     chain.unshift(p);
+    if (mapsValue) mappingChain.unshift(p);
     syncChainInfo();
     return proxy;
   };
@@ -345,6 +350,10 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   (proxy as unknown as Record<symbol, unknown>)[
     Symbol.for('vest:unresolvedDeps')
   ] = unresolvedDeps;
+  const mapValue = (value: unknown): ReturnType<typeof executeChain> =>
+    executeChain(mappingChain, value);
+  (target as unknown as Record<symbol, unknown>)[MAP_VALUE] = mapValue;
+  (proxy as unknown as Record<symbol, unknown>)[MAP_VALUE] = mapValue;
   proxyToTarget.set(proxy as unknown as object, target as object);
 
   return { add, proxy } as const;

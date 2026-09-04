@@ -6,12 +6,12 @@ describe('runSchemaPaths flat execution projection', () => {
   it('does not execute a dependency source when only the target changed', () => {
     const calls: string[] = [];
     const schema = enforce.shape({
-      country: enforce.condition(value => {
+      country: enforce.condition((value: unknown) => {
         calls.push(`country:${String(value)}`);
         return typeof value === 'string';
       }),
       state: enforce
-        .condition(value => {
+        .condition((value: unknown) => {
           calls.push(`state:${String(value)}`);
           return typeof value === 'string';
         })
@@ -31,17 +31,17 @@ describe('runSchemaPaths flat execution projection', () => {
   it('executes a changed source and its direct dependent exactly once', () => {
     const calls: string[] = [];
     const schema = enforce.shape({
-      country: enforce.condition(value => {
+      country: enforce.condition((value: unknown) => {
         calls.push(`country:${String(value)}`);
         return typeof value === 'string';
       }),
       state: enforce
-        .condition(value => {
+        .condition((value: unknown) => {
           calls.push(`state:${String(value)}`);
           return typeof value === 'string';
         })
         .dependsOn($ => $.country),
-      email: enforce.condition(value => {
+      email: enforce.condition((value: unknown) => {
         calls.push(`email:${String(value)}`);
         return typeof value === 'string';
       }),
@@ -59,18 +59,18 @@ describe('runSchemaPaths flat execution projection', () => {
   it('keeps dependency fan-out non-transitive', () => {
     const calls: string[] = [];
     const schema = enforce.shape({
-      a: enforce.condition(value => {
+      a: enforce.condition((value: unknown) => {
         calls.push(`a:${String(value)}`);
         return true;
       }),
       b: enforce
-        .condition(value => {
+        .condition((value: unknown) => {
           calls.push(`b:${String(value)}`);
           return true;
         })
         .dependsOn($ => $.a),
       c: enforce
-        .condition(value => {
+        .condition((value: unknown) => {
           calls.push(`c:${String(value)}`);
           return true;
         })
@@ -86,13 +86,13 @@ describe('runSchemaPaths flat execution projection', () => {
     const calls: string[] = [];
     const schema = enforce.shape({
       a: enforce
-        .condition(value => {
+        .condition((value: unknown) => {
           calls.push(`a:${String(value)}`);
           return true;
         })
         .dependsOn($ => $.b),
       b: enforce
-        .condition(value => {
+        .condition((value: unknown) => {
           calls.push(`b:${String(value)}`);
           return true;
         })

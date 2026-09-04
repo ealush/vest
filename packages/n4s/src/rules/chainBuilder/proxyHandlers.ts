@@ -6,7 +6,7 @@ import {
   type DescribeResult,
   type ScopeHandle,
 } from '../../utils/RuleInstance';
-import { CHAIN_PREPEND } from '../parsers/parserUtils';
+import { CHAIN_PREPEND, isParserRule } from '../parsers/parserUtils';
 
 import type { Predicate } from './chainExecutor';
 import { getLazyRule } from './lazyRegistry';
@@ -25,12 +25,12 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     validate,
     '~standard': standard,
   }: {
-    add: (p: Predicate) => T;
+    add: (p: Predicate, mapsValue?: boolean) => T;
     dependsOn: (resolver: (scope: ScopeHandle) => unknown) => T;
     describe: () => DescribeResult;
     message: (msg: any) => T;
     parse: T['parse'];
-    prepend: (p: Predicate) => T;
+    prepend: (p: Predicate, mapsValue?: boolean) => T;
     run: T['run'];
     test: T['test'];
     validate: T['validate'];
@@ -69,7 +69,10 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
   rules: Record<string, any>,
   methods: Record<string, any>,
   methodKeys: Set<string>,
-  inserters: { add: (p: Predicate) => T; prepend: (p: Predicate) => T },
+  inserters: {
+    add: (p: Predicate, mapsValue?: boolean) => T;
+    prepend: (p: Predicate, mapsValue?: boolean) => T;
+  },
 ) {
   function getRuleHandler(prop: string | symbol) {
     if (hasOwnProperty(rules, prop)) {
@@ -77,7 +80,10 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
         ? inserters.prepend
         : inserters.add;
       return (...args: any[]) =>
-        insert((value: any) => rules[prop](value, ...args));
+        insert(
+          (value: unknown) => rules[prop](value, ...args),
+          isParserRule(rules[prop]),
+        );
     }
 
     if (typeof prop === 'string') {

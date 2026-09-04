@@ -1,4 +1,4 @@
-import { runSchemaPaths } from 'n4s';
+import { parseAffectedFieldName, runSchemaPaths } from 'n4s';
 import type { SelectiveSchemaResult } from 'n4s';
 import {
   assign,
@@ -7,6 +7,7 @@ import {
   freezeAssign,
   isArray,
   isObject,
+  isUnsafeKey,
   withResolvers,
 } from 'vest-utils';
 
@@ -65,6 +66,16 @@ export type SchemaRunResult = SelectiveSchemaResult;
  */
 const pendingRuns = new WeakMap<CB, WeakMap<object, Set<unknown>>>();
 
+/**
+ * Last successfully mapped callback input per concrete suite state.
+ *
+ * This is intentionally distinct from SuiteResult.run.data.parsed. Parsed
+ * result metadata stays per-run (the v6 contract); this cache exists only so
+ * a focused schema run does not violate the callback's full schema-output
+ * type by replacing untouched transformed fields with raw input values.
+ */
+const mappedCallbackData = new WeakMap<CB, WeakMap<object, unknown>>();
+
 function pendingRunsFor(suiteCallback: CB): WeakMap<object, Set<unknown>> {
   const existing = pendingRuns.get(suiteCallback);
   if (existing !== undefined) {
@@ -72,6 +83,14 @@ function pendingRunsFor(suiteCallback: CB): WeakMap<object, Set<unknown>> {
   }
   const created = new WeakMap<object, Set<unknown>>();
   pendingRuns.set(suiteCallback, created);
+  return created;
+}
+
+function mappedDataFor(suiteCallback: CB): WeakMap<object, unknown> {
+  const existing = mappedCallbackData.get(suiteCallback);
+  if (existing !== undefined) return existing;
+  const created = new WeakMap<object, unknown>();
+  mappedCallbackData.set(suiteCallback, created);
   return created;
 }
 
@@ -133,6 +152,7 @@ export function useCreateSuiteRunner<
     const runTime = new Date();
     const { resolve: rawResolve, promise } =
       withResolvers<SuiteResult<F, G, S>>();
+    const suiteState = VestRuntime.useXAppData();
 
     // Ownership: a newer run of the same suite supersedes older
     // still-pending runs (plain or changed()). Superseded runs adopt the
@@ -141,7 +161,7 @@ export function useCreateSuiteRunner<
     // wins over any later completion of the stale run.
     const forgetPendingRun = chainSupersededRuns(
       suiteCallback,
-      VestRuntime.useXAppData(),
+      suiteState,
       promise,
       rawResolve,
     );
@@ -160,6 +180,7 @@ export function useCreateSuiteRunner<
     // runSchemaPaths owns the single expansion of the run path.
     let transformedModifiers = transformedModifiersBase;
     let changedAffected: string[] | null = null;
+    let mappedAffected = mappedFocusPaths(transformedModifiersBase);
     if (changedFields) {
       const focus = useChangedRunFocus<F, G>(
         changedFields,
@@ -169,6 +190,7 @@ export function useCreateSuiteRunner<
       );
       transformedModifiers = focus.transformedModifiers;
       changedAffected = focus.changedAffected;
+      mappedAffected = focus.mappedAffected;
     }
 
     // Dependency-aware schema execution is owned by n4s behind one
@@ -188,7 +210,13 @@ export function useCreateSuiteRunner<
       schema ? snapshotParsedData(parsedDataChunk) : undefined
     ) as Partial<InferSchemaOutput<S>> | undefined;
 
-    const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
+    const callbackInput = getCallbackInput({
+      affected: mappedAffected,
+      fallback: schemaInput,
+      schemaRunResult,
+      state: suiteState,
+      suiteCallback,
+    });
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
     const runData = callbackInput;
 
@@ -254,6 +282,7 @@ function useChangedRunFocus<F extends TFieldName, G extends TGroupName>(
 ): {
   transformedModifiers: ReturnType<typeof useTransformedModifiers<F, G>>;
   changedAffected: string[];
+  mappedAffected: string[];
 } {
   const affected = getAffectedFields(changedFields, schema, schemaInput);
   const baseOnly = modifiers.only;
@@ -288,6 +317,7 @@ function useChangedRunFocus<F extends TFieldName, G extends TGroupName>(
   return {
     transformedModifiers: useTransformedModifiers<F, G>(withAffected),
     changedAffected: [...new Set([...rawChanged, ...baseList])],
+    mappedAffected: mappedFocusPaths(withAffected) ?? [],
   };
 }
 
@@ -298,6 +328,28 @@ function baseOnlyListOf<F extends TFieldName, G extends TGroupName>(
 ): string[] {
   if (!only) return [];
   return asArray(only).filter(entry => typeof entry === 'string');
+}
+
+/**
+ * Focus paths whose parsed values this run is allowed to replace in the
+ * retained callback mapping. null means an unfocused full schema run.
+ */
+function mappedFocusPaths<F extends TFieldName, G extends TGroupName>(
+  modifiers: SuiteModifiers<F, G>,
+): string[] | null {
+  if (modifiers.skip === true) return [];
+  if (modifiers.only == null) return null;
+  const skipped = new Set(
+    modifiers.skip
+      ? asArray(modifiers.skip).filter(
+          (entry): entry is string => typeof entry === 'string',
+        )
+      : [],
+  );
+  return asArray(modifiers.only).filter(
+    (entry): entry is string =>
+      typeof entry === 'string' && !skipped.has(entry),
+  );
 }
 
 /**
@@ -328,19 +380,118 @@ function snapshotParsedData(data: unknown): unknown {
   return data;
 }
 
+type CallbackInputParams = {
+  affected: string[] | null;
+  fallback: unknown;
+  schemaRunResult: SchemaRunResult[] | undefined;
+  state: object;
+  suiteCallback: CB;
+};
+
 /**
- * Resolves the value that should be passed into the suite callback.
+ * Resolves the value passed into the user suite callback.
+ *
+ * Full successful schema runs replace the retained mapped value. Focused
+ * successful runs patch only their executed paths into that retained value.
+ * This keeps the callback's schema-output type truthful without changing the
+ * intentionally per-run semantics of SuiteResult.run.data.parsed.
+ * Validation failures keep the established raw-input fallback and do not
+ * poison the last successful mapped value.
  */
-function getCallbackInput(
-  schemaRunResult: SchemaRunResult[] | undefined,
-  fallback: unknown,
-): unknown {
+function getCallbackInput(params: CallbackInputParams): unknown {
+  const { affected, fallback, schemaRunResult, state, suiteCallback } = params;
   if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
     return fallback;
   }
 
   const [firstResult] = schemaRunResult;
-  return firstResult?.type ?? fallback;
+  const current = firstResult?.type ?? fallback;
+  const cache = mappedDataFor(suiteCallback);
+
+  if (affected === null) {
+    cache.set(state, current);
+    return current;
+  }
+
+  const previous = cache.get(state);
+  if (previous === undefined) {
+    // A focused run can legitimately be the first run. There is no prior
+    // mapped snapshot to preserve yet, so keep the selective engine's current
+    // output rather than speculatively executing unrelated validators.
+    cache.set(state, current);
+    return current;
+  }
+
+  const merged = mergeMappedPaths(previous, current, affected);
+  cache.set(state, merged);
+  return merged;
+}
+
+function mergeMappedPaths(
+  previous: unknown,
+  current: unknown,
+  affected: readonly string[],
+): unknown {
+  if (affected.length === 0) return previous;
+  let merged = previous;
+  for (const field of affected) {
+    const path = concreteFieldPath(field);
+    if (path.length === 0 || path.some(isUnsafePathSegment)) continue;
+    merged = setPathValue(merged, current, path, 0);
+  }
+  return merged;
+}
+
+type ConcretePathSegment = string | number;
+
+function concreteFieldPath(field: string): ConcretePathSegment[] {
+  return parseAffectedFieldName(field).map(segment => {
+    if (segment.type === 'property') return String(segment.key);
+    const index = Number(segment.binding);
+    return Number.isSafeInteger(index) && index >= 0 ? index : segment.binding;
+  });
+}
+
+function isUnsafePathSegment(segment: ConcretePathSegment): boolean {
+  return typeof segment === 'string' && isUnsafeKey(segment);
+}
+
+function setPathValue(
+  previous: unknown,
+  current: unknown,
+  path: readonly ConcretePathSegment[],
+  index: number,
+): unknown {
+  if (index >= path.length) return current;
+  const key = path[index];
+  if (key === undefined) return previous;
+
+  const previousChild = readPathValue(previous, key);
+  const currentChild = readPathValue(current, key);
+  const nextChild = setPathValue(previousChild, currentChild, path, index + 1);
+  return writePathValue(previous, key, nextChild);
+}
+
+function readPathValue(value: unknown, key: ConcretePathSegment): unknown {
+  if (!isObject(value) && !isArray(value)) return undefined;
+  return (value as Record<PropertyKey, unknown>)[key];
+}
+
+function writePathValue(
+  value: unknown,
+  key: ConcretePathSegment,
+  nextChild: unknown,
+): unknown {
+  if (isArray(value)) {
+    const copy = [...value];
+    copy[Number(key)] = nextChild;
+    return copy;
+  }
+  const copy: Record<string, unknown> = isObject(value)
+    ? { ...(value as Record<string, unknown>) }
+    : {};
+  copy[String(key)] = nextChild;
+  return copy;
 }
 
 /**

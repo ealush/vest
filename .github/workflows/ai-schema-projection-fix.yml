@@ -5,9 +5,6 @@ on:
     branches:
       - feat/schema-relationships-20260903-fix
 
-permissions:
-  contents: write
-
 jobs:
   patch:
     runs-on: ubuntu-latest
@@ -74,7 +71,6 @@ jobs:
     buildProjectedSchema(schema, expanded),
   );
 
-  // Keep genuine unprojectable cases on the normal full-schema fallback.
   if (!projectedSchema) {
     const mainRun = runProjectedOrFull(null, schema, modifiers, data);
     const supplement = collectSupplementForMain(mainRun, schema, expanded, data);

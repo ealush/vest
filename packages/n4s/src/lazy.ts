@@ -34,8 +34,7 @@ import { snapshotChainBaseline } from './rules/chainBuilder/chainBuilder';
 import { rebaseRelationships } from './schema/rebase';
 import type { SchemaPath } from './schema/SchemaPath';
 import type { InternalRelationship } from './schema/SchemaRelationship';
-
-const MAP_VALUE = Symbol.for('vest:mapValue');
+import { MAP_VALUE } from './schema/mapWithoutValidation';
 
 /**
  * Extracts the output type from a custom matcher function.

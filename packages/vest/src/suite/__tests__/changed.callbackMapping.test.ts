@@ -3,6 +3,15 @@ import { enforce } from 'n4s';
 
 import { create } from '../../vest';
 
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      focusedToNumber: (value: unknown) => { pass: boolean; type: number };
+      focusedValidator: (value: unknown) => boolean;
+    }
+  }
+}
+
 describe('focused schema callback mapping', () => {
   it('maps untouched fields before the first-ever focused callback without validating them', async () => {
     const validationCalls: unknown[] = [];
@@ -18,6 +27,41 @@ describe('focused schema callback mapping', () => {
     const suite = create(data => {
       seenAges.push(data.age);
     }, schema);
+
+    await suite
+      .changed('note')
+      .run({ age: '42', guard: 'untouched', note: 'hello' });
+
+    expect(seenAges).toEqual([42]);
+    expect(validationCalls).toEqual([]);
+  });
+
+  it('maps explicitly registered custom parsers without running custom validators', async () => {
+    const validationCalls: unknown[] = [];
+    enforce.extend(
+      {
+        focusedToNumber: (value: unknown) => ({
+          pass: true,
+          type: Number(value),
+        }),
+        focusedValidator: (value: unknown) => {
+          validationCalls.push(value);
+          return true;
+        },
+      },
+      { parsers: ['focusedToNumber'] },
+    );
+    const seenAges: number[] = [];
+    const suite = create(
+      data => {
+        seenAges.push(data.age);
+      },
+      enforce.shape({
+        age: enforce.focusedToNumber(),
+        guard: enforce.focusedValidator(),
+        note: enforce.isString(),
+      }),
+    );
 
     await suite
       .changed('note')

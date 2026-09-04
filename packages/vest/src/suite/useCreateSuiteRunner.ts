@@ -1,4 +1,8 @@
-import { parseAffectedFieldName, runSchemaPaths } from 'n4s';
+import {
+  mapWithoutValidation,
+  parseAffectedFieldName,
+  runSchemaPaths,
+} from 'n4s';
 import type { SelectiveSchemaResult } from 'n4s';
 import {
   assign,
@@ -431,67 +435,6 @@ function getCallbackInput(params: CallbackInputParams): unknown {
   const merged = mergeMappedPaths(previous, current, affected);
   cache.set(state, merged);
   return merged;
-}
-
-type MappingResult = { pass: boolean; type: unknown };
-type InternalRule = Record<PropertyKey, unknown>;
-const MAP_VALUE = Symbol.for('vest:mapValue');
-const ITEM_SCHEMA = Symbol.for('vest:itemSchema');
-const ITEM_CONTAINER = Symbol.for('vest:itemContainer');
-
-/** Maps parser steps while deliberately skipping validation predicates. */
-function mapWithoutValidation(rule: unknown, value: unknown): unknown {
-  if (!isObject(rule)) return value;
-  const slots = rule as InternalRule;
-  const mapped = mapStructuredValue(slots, value);
-  const mapValue = slots[MAP_VALUE];
-  if (typeof mapValue !== 'function') return mapped;
-  const result = (mapValue as (input: unknown) => MappingResult)(mapped);
-  return result.pass ? result.type : mapped;
-}
-
-// eslint-disable-next-line complexity -- discriminates shape, tuple, array, and record metadata
-function mapStructuredValue(rule: InternalRule, value: unknown): unknown {
-  const shape = rule.__schema;
-  if (isObject(shape) && isObject(value) && !isArray(value)) {
-    const output = { ...(value as object) } as Record<string, unknown>;
-    for (const key of Object.keys(shape as object)) {
-      if (Object.prototype.hasOwnProperty.call(output, key)) {
-        output[key] = mapWithoutValidation(
-          (shape as Record<string, unknown>)[key],
-          output[key],
-        );
-      }
-    }
-    return output;
-  }
-
-  const itemSchema = rule[ITEM_SCHEMA];
-  if (isArray(value) && itemSchema !== undefined) {
-    if (isArray(itemSchema)) {
-      // Multi-rule arrays are unions, so choosing a mapper would require
-      // running validators. Tuple metadata has no container discriminator.
-      if (rule[ITEM_CONTAINER] === 'array') return value;
-      return value.map((item, index) =>
-        mapWithoutValidation(itemSchema[index], item),
-      );
-    }
-    return value.map(item => mapWithoutValidation(itemSchema, item));
-  }
-  if (
-    rule[ITEM_CONTAINER] === 'record' &&
-    itemSchema !== undefined &&
-    isObject(value) &&
-    !isArray(value)
-  ) {
-    return Object.fromEntries(
-      Object.entries(value as object).map(([key, item]) => [
-        key,
-        mapWithoutValidation(itemSchema, item),
-      ]),
-    );
-  }
-  return value;
 }
 
 function mergeMappedPaths(

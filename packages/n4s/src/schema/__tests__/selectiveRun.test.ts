@@ -11,7 +11,6 @@ import type { SelectiveSchemaResult } from '../../n4s';
 import type { RuleInstance } from '../../utils/RuleInstance';
 import {
   buildProjectedSchema,
-  expandAffectedWithSources,
   filterSchemaResultsToAffected,
   mergeSupplementalResults,
 } from '../selectiveRun';
@@ -90,17 +89,6 @@ describe('runSchemaPaths selective contract', () => {
       EnforceSchemaError,
     );
     expect(() => runSchemaPaths(null, data)).toThrowError(EnforceSchemaError);
-  });
-
-  it('expandAffectedWithSources retains dependency sources', () => {
-    const schema = enforce.shape({
-      password: enforce.isString(),
-      confirmPassword: enforce.isString().dependsOn($ => $.password),
-    });
-
-    const expanded = expandAffectedWithSources(schema, ['confirmPassword']);
-    expect(expanded).toContain('confirmPassword');
-    expect(expanded).toContain('password');
   });
 });
 
@@ -493,9 +481,6 @@ describe('runSchemaPaths dependency expansion', () => {
       a: enforce.isString().dependsOn($ => $.b),
       b: enforce.isString().dependsOn($ => $.a),
     });
-    const expanded = expandAffectedWithSources(schema, ['a']);
-    expect(expanded).toContain('a');
-    expect(expanded).toContain('b');
     // Raw 'a' fans out to its dependent 'b' inside the run: both invalid
     // members are reported, and the cyclic fixpoint still terminates.
     const bad = { a: 42, b: 43 };
@@ -518,9 +503,6 @@ describe('runSchemaPaths dependency expansion', () => {
         taxId: enforce.isString().dependsOn($ => $.root.account.country),
       }),
     });
-    expect(expandAffectedWithSources(schema, ['company.taxId'])).toContain(
-      'account.country',
-    );
     const badTax = {
       account: { country: 'US' },
       company: { name: 'x', taxId: 42 },
@@ -691,77 +673,6 @@ describe('runSchemaPaths single expansion', () => {
 });
 
 describe('selectiveRun projection internals', () => {
-  const rootSchema = enforce.shape({
-    accountType: enforce.isString(),
-    company: enforce.shape({
-      country: enforce.isString(),
-      taxId: enforce.isString().dependsOn($ => [$.country, $.root.accountType]),
-    }),
-  });
-
-  it('retains the local sibling source for a nested dependent', () => {
-    const expanded = expandAffectedWithSources(rootSchema, [
-      'accountType',
-      'company.taxId',
-    ]);
-    expect(expanded).toContain('accountType');
-    expect(expanded).toContain('company.taxId');
-    expect(expanded).toContain('company.country');
-  });
-
-  it('retains the $.root provider for a nested dependent', () => {
-    const expanded = expandAffectedWithSources(rootSchema, [
-      'company.country',
-      'company.taxId',
-    ]);
-    expect(expanded).toContain('accountType');
-  });
-
-  it('projected fragments compose without orphaned sources', () => {
-    for (const affected of [
-      ['accountType', 'company.taxId'],
-      ['company.country', 'company.taxId'],
-    ]) {
-      const expanded = expandAffectedWithSources(rootSchema, affected);
-      const projected = buildProjectedSchema(rootSchema, expanded);
-      expect(projected).not.toBeNull();
-      if (projected === null) {
-        throw new Error('projected schema must compose');
-      }
-      type RootData = Parameters<typeof rootSchema.parse>[0];
-      const parse = (projected as unknown as ExecutableFragment<RootData>)
-        .parse;
-      expect(() =>
-        parse({
-          accountType: 'business',
-          company: { country: 'CA', taxId: '123' },
-        }),
-      ).not.toThrow();
-    }
-  });
-
-  it('concretizes array item sources to the affected index', () => {
-    const schema = enforce.shape({
-      rows: enforce.isArrayOf(
-        enforce.shape({
-          country: enforce.isString(),
-          state: enforce.isString().dependsOn($ => $.country),
-        }),
-      ),
-    });
-    const expanded = expandAffectedWithSources(schema, [
-      'rows.1.country',
-      'rows.1.state',
-    ]);
-    expect(expanded).toContain('rows.1.country');
-    const projected = buildProjectedSchema(schema, expanded);
-    expect(projected).not.toBeNull();
-  });
-
-  it('passes through when the schema exposes no dependencies', () => {
-    expect(expandAffectedWithSources({}, ['a.b'])).toEqual(['a.b']);
-  });
-
   it('records keep the full rule under projection (key-rule parity)', () => {
     // Narrowing through record(value) would drop a two-arg record's key
     // rule (n4s exposes only the value rule in the item slot), so the
@@ -777,10 +688,7 @@ describe('selectiveRun projection internals', () => {
         }),
       ),
     });
-    const expanded = expandAffectedWithSources(schema, [
-      'dictionary.1.country',
-    ]);
-    const projected = buildProjectedSchema(schema, expanded);
+    const projected = buildProjectedSchema(schema, ['dictionary.1.country']);
     expect(projected).not.toBeNull();
     if (projected === null) {
       throw new Error('projected schema must compose');

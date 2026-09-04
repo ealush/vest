@@ -24,12 +24,12 @@ import {
 } from '../../schema/dependencyResolver';
 import type { ChainBaseline, ChainInfo } from '../../schema/dependencyResolver';
 import { isSchemaExecutionProjection } from '../../schema/projectionContext';
+import { MAP_VALUE } from '../../schema/mapWithoutValidation';
 
 import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 
 const COMPOSITION_CHILDREN = Symbol.for('vest:compositionChildren');
-const MAP_VALUE = Symbol.for('vest:mapValue');
 
 export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
   keyof Omit<

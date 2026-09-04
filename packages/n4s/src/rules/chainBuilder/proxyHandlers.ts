@@ -89,7 +89,8 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
     if (typeof prop === 'string') {
       const lazyRule = getLazyRule(prop);
       if (lazyRule) {
-        return (...args: any[]) => inserters.add(lazyRule(...args));
+        return (...args: unknown[]) =>
+          inserters.add(lazyRule.build(args), lazyRule.mapsValue);
       }
     }
 
@@ -108,7 +109,8 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
     },
     has(_target: T, prop: string | symbol) {
       if (typeof prop === 'string') {
-        if (methodKeys.has(prop) || getLazyRule(prop)) return true;
+        if (methodKeys.has(prop) || getLazyRule(prop) !== undefined)
+          return true;
       }
       if (hasOwnProperty(rules, prop)) return true;
       return Reflect.has(_target as object, prop);

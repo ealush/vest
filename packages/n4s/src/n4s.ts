@@ -110,6 +110,7 @@ export { EnforceSchemaError } from './errors/EnforceSchemaError';
  * chain-validator preservation, and member execution.
  */
 export { runSchemaPaths } from './schema/selectiveRun';
+export { mapWithoutValidation } from './schema/mapWithoutValidation';
 export type {
   SelectiveRunOptions,
   SelectiveSchema,
@@ -118,15 +119,22 @@ export type {
 /**
  * Canonical affected-path parser shared by the selective engine and Vest's
  * suite.changed(). The projection internals (`buildProjectedSchema`,
- * `expandAffectedWithSources`, `filterSchemaResultsToAffected`,
- * `mergeSupplementalResults`) are intentionally not re-exported here
+ * `filterSchemaResultsToAffected`, `mergeSupplementalResults`) are not
+ * re-exported here
  * — Vest production code reaches them only through `runSchemaPaths`.
  */
 export { parseAffectedFieldName } from './schema/selectiveRun';
 export type { ScopeHandle } from './utils/RuleInstance';
 export type { SchemaMemberRule } from './rules/schemaRules/schemaRulesLazyTypes';
 
-type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
+type ExtendOptions<Rules> = {
+  parsers?: readonly (keyof Rules & string)[];
+};
+type ExtensionRule = (...args: never[]) => unknown;
+type ExtendFn = <Rules extends Record<string, ExtensionRule>>(
+  rules: Rules,
+  options?: ExtendOptions<Rules>,
+) => void;
 type ContextFn = () => EnforceContext;
 type Enforce = typeof enforceEager &
   typeof enforceLazy & { extend: ExtendFn; context: ContextFn };
@@ -188,6 +196,9 @@ enforce.context = function context(): EnforceContext {
  * Custom rules become available on both eager and lazy APIs.
  *
  * @param rules - Object mapping rule names to validation functions
+ * @param options.parsers - Custom rules that are safe to execute as pure
+ * transformations when mapping an unfocused value. Rules are validators by
+ * default and are never speculatively executed.
  *
  * @example
  * ```typescript
@@ -212,8 +223,13 @@ enforce.context = function context(): EnforceContext {
  * }
  * ```
  */
-enforce.extend = function extend(
-  rules: Record<string, (...args: any[]) => any>,
+enforce.extend = function extend<Rules extends Record<string, ExtensionRule>>(
+  rules: Rules,
+  options?: ExtendOptions<Rules>,
 ) {
-  extendEnforce(enforce, rules);
+  extendEnforce(
+    enforce as unknown as Record<string, unknown>,
+    rules,
+    new Set(options?.parsers),
+  );
 };

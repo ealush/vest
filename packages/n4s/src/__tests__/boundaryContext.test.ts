@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { enforce } from '../n4s';
+import { compose, enforce } from '../n4s';
 
 declare global {
   namespace n4s {
@@ -17,7 +17,6 @@ describe('standalone boundary validation context', () => {
       b: enforce.isString().dependsOn($ => $.root.missing),
     });
 
-    // Standalone the dangling rooted edge throws.
     expect(() => dangling.test({ a: 'a', b: 'b' })).toThrowError(
       /"b" depends on unknown field "missing"/,
     );
@@ -34,8 +33,6 @@ describe('standalone boundary validation context', () => {
       }),
     });
 
-    // The independent schema must keep enforcing its own boundary while
-    // nested: it throws instead of silently passing.
     expect(() => outer.test({ pair: { a: 'a', b: 'b' } })).toThrowError(
       /"b" depends on unknown field "missing"/,
     );
@@ -52,6 +49,31 @@ describe('standalone boundary validation context', () => {
 
     expect(outer.test({ accountType: 'p', company: { taxId: 'x' } })).toBe(
       true,
+    );
+  });
+
+  it('keeps a rooted fragment mounted through compose() lenient to the final root', () => {
+    const inner = enforce.shape({
+      taxId: enforce.isString().dependsOn($ => $.root.accountType),
+    });
+    const outer = enforce.shape({
+      accountType: enforce.isString(),
+      company: compose(inner),
+    });
+
+    expect(outer.test({ accountType: 'p', company: { taxId: 'x' } })).toBe(
+      true,
+    );
+  });
+
+  it('still rejects a composed standalone fragment without its root provider', () => {
+    const inner = enforce.shape({
+      taxId: enforce.isString().dependsOn($ => $.root.accountType),
+    });
+    const wrapped = compose(inner);
+
+    expect(() => wrapped.test({ taxId: 'x' })).toThrowError(
+      /"taxId" depends on unknown field "accountType"/,
     );
   });
 

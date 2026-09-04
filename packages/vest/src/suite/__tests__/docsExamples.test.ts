@@ -202,7 +202,7 @@ describe('executable documentation examples', () => {
     expect(shipping.hasErrors('street')).toBe(true);
   });
 
-  it('revalidates documented dependent password fields together', () => {
+  it('re-runs documented dependent password fields together', () => {
     const { passwordSuite } = executeCodeBlock(
       'website/docs/guides/dependent-fields.md',
       0,

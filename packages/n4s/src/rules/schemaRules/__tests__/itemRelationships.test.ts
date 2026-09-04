@@ -4,6 +4,7 @@ import { compose, enforce } from '../../../n4s';
 import { EnforceSchemaError } from '../../../errors/EnforceSchemaError';
 import { RESOLVED_RELATIONSHIPS } from '../../../schema/dependencyResolver';
 import type { SchemaRelationship } from '../../../schema/SchemaRelationship';
+import type { ScopeHandle } from '../../../utils/RuleInstance';
 
 type PathSegment = {
   type?: string;
@@ -277,10 +278,24 @@ describe('item relationships', () => {
       /deferred to v2/,
     );
   });
+
+  it('revalidates() throws the stable removed-before-V1 migration error', () => {
+    // `revalidates()` was removed before V1 and exists only as a throwing
+    // stub. The message is pinned exactly — keep it stable.
+    let message = '';
+    try {
+      enforce.isString().revalidates(($: ScopeHandle) => $.country);
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    expect(message).toBe(
+      'revalidates() was removed before V1; use .dependsOn() for the same edge',
+    );
+  });
 });
 
 describe('dotted dependsOn with a missing intermediate', () => {
-  it('throws EnforceSchemaError naming the missing segment', () => {
+  it('throws EnforceSchemaError naming the full dotted path', () => {
     let caught: unknown;
     try {
       enforce.shape({
@@ -292,11 +307,11 @@ describe('dotted dependsOn with a missing intermediate', () => {
 
     expect(caught).toBeInstanceOf(EnforceSchemaError);
     expect((caught as Error).message).toMatch(
-      /EnforceSchemaError: "x" depends on unknown field "a"/,
+      /EnforceSchemaError: "x" depends on unknown field "a\.b"/,
     );
   });
 
-  it('names a missing nested intermediate rather than crashing', () => {
+  it('quotes the full dotted path for a missing nested intermediate', () => {
     let caught: unknown;
     try {
       enforce.shape({
@@ -311,7 +326,7 @@ describe('dotted dependsOn with a missing intermediate', () => {
 
     expect(caught).toBeInstanceOf(EnforceSchemaError);
     expect((caught as Error).message).toMatch(
-      /EnforceSchemaError: "x" depends on unknown field "b"/,
+      /EnforceSchemaError: "x" depends on unknown field "a\.b\.c"/,
     );
   });
 });

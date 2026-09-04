@@ -1,4 +1,4 @@
-import { enforce } from 'n4s';
+import { enforce, runSchemaPaths } from 'n4s';
 import { describe, it, expect } from 'vitest';
 
 import {
@@ -12,6 +12,28 @@ import {
   include,
 } from '../../vest';
 import { each } from '../../isolates/each';
+
+type Deferred = {
+  promise: Promise<void>;
+  release: () => void;
+};
+
+function createDeferred(): Deferred {
+  let release: () => void = () => {};
+  const promise = new Promise<void>(resolve => {
+    release = resolve;
+  });
+  return { promise, release };
+}
+
+// Drains pending microtasks and one macrotask turn without any wall-clock
+// margin: the stale async continuation after a gate release is a bounded
+// microtask chain, so awaiting it to quiesce is deterministic.
+function flushAsyncWork(): Promise<void> {
+  return new Promise<void>(resolve => {
+    setImmediate(resolve);
+  });
+}
 
 function createExecutionLog() {
   const fields: string[] = [];
@@ -405,31 +427,49 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(log.get()).toEqual(['organizationId', 'username']);
   });
 
-  // 12. stale async cannot win
-  it.skip('12. stale async result cannot win after changed() — TODO: requires Vest abort signal integration', async () => {
+  // 12. stale async cannot win — deterministic: A is gated behind a manual
+  // deferred (no wall-clock margins). The superseded run adopts the
+  // successor's promise, so awaiting p1 observes B's outcome and the stale
+  // late result can never surface through any handle.
+  it('12. stale async result cannot win after changed()', async () => {
     const schema = enforce.shape({
       organizationId: enforce.isString(),
       username: enforce.isString().dependsOn($ => $.organizationId),
     });
+    const gate = createDeferred();
+    const firstDone = createDeferred();
     const suite = create(data => {
       test('username', async () => {
-        // Different delays: A takes longer than B, so B should win even if A resolves later
-        const delay = data.organizationId === 'A' ? 30 : 10;
-        await new Promise(res => setTimeout(res, delay));
-        const available = data.organizationId !== 'B';
-        enforce(available).isTruthy();
+        try {
+          // Only the stale run waits; the successor never blocks on it.
+          if (data.organizationId === 'A') {
+            await gate.promise;
+          }
+          const available = data.organizationId !== 'B';
+          enforce(available).isTruthy();
+        } finally {
+          if (data.organizationId === 'A') {
+            firstDone.release();
+          }
+        }
       });
     }, schema);
     const p1 = suite.run({ organizationId: 'A', username: 'evyatar' });
-    // Before A resolves, change to B (B will resolve faster)
-    await new Promise(res => setTimeout(res, 5));
     const p2 = suite
       .changed('organizationId')
       .run({ organizationId: 'B', username: 'evyatar' });
-    await p2;
-    // p1 is a pending async run at runtime; swallow its superseded rejection.
-    await Promise.resolve(p1).catch(() => {});
-    // Final state should be B's invalid, not A's valid
+    // B wins: its invalid username is the current state.
+    const r2 = await p2;
+    expect(r2.hasErrors('username')).toBe(true);
+    expect(suite.get().hasErrors('username')).toBe(true);
+    // Release A; its late completion is neutralized by the reconciler, and
+    // p1 adopted p2's promise at B's start, so both handles agree.
+    gate.release();
+    await firstDone.promise;
+    await flushAsyncWork();
+    const r1 = await p1;
+    expect(r1.hasErrors('username')).toBe(true);
+    expect(r1).toBe(r2);
     expect(suite.get().hasErrors('username')).toBe(true);
   });
 
@@ -811,38 +851,8 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(got2.filter(f => f === 'b')).toHaveLength(1);
   });
 
-  // 20. revalidates is the source-oriented alias of dependsOn
-  it('20. revalidates — changed(source) runs the revalidated target, not vice versa', async () => {
-    const schema = enforce.shape({
-      password: enforce.isString().revalidates($ => $.confirmPassword),
-      confirmPassword: enforce.isString(),
-    });
-    const log = createExecutionLog();
-    const suite = create(data => {
-      test('password', () => {
-        log.record('password');
-        enforce(data.password).isNotBlank();
-      });
-      test('confirmPassword', () => {
-        log.record('confirmPassword');
-        enforce(data.confirmPassword).equals(data.password);
-      });
-    }, schema);
-    await suite.run({ password: 'abcdefgh', confirmPassword: 'abcdefgh' });
-    log.reset();
-    await suite
-      .changed('password')
-      .run({ password: 'xyz', confirmPassword: 'xyz' });
-    expect(log.get()).toEqual(['password', 'confirmPassword']);
-    log.reset();
-    await suite
-      .changed('confirmPassword')
-      .run({ password: 'xyz', confirmPassword: 'wxyz' });
-    expect(log.get()).toEqual(['confirmPassword']);
-  });
-
-  // 21. only() merges into the changed() affected set
-  it('21. only() merges with changed() — base-only plus affected all run', async () => {
+  // 20. only() merges into the changed() affected set
+  it('20. only() merges with changed() — base-only plus affected all run', async () => {
     const schema = enforce.shape({
       a: enforce.isString(),
       b: enforce.isString().dependsOn($ => $.a),
@@ -869,20 +879,8 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(log.get().sort()).toEqual(['a', 'b', 'c']);
   });
 
-  // 22. AbortSignal overload throws the documented V1 error
-  it('22. suite.changed(field, { signal }) throws deferred-to-v2 in V1', () => {
-    const schema = enforce.shape({
-      a: enforce.isString(),
-    });
-    const suite = create(() => {}, schema);
-    const controller = new AbortController();
-    expect(() => suite.changed('a', { signal: controller.signal })).toThrow(
-      'suite.changed({ signal: AbortSignal }) deferred to v2',
-    );
-  });
-
-  // 23. omitWhen removes the dependent test but the edge still exists
-  it('23. omitWhen — dependent edge recorded but omitted test never runs', async () => {
+  // 22. omitWhen removes the dependent test but the edge still exists
+  it('22. omitWhen — dependent edge recorded but omitted test never runs', async () => {
     const schema = enforce.shape({
       country: enforce.isString(),
       state: enforce.isString().dependsOn($ => $.country),
@@ -907,8 +905,8 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(result.hasErrors('country')).toBe(false);
   });
 
-  // 24. optional() fields keep their dependency edges under changed()
-  it('24. optional() — dependent edge fires alongside the optional marker', async () => {
+  // 23. optional() fields keep their dependency edges under changed()
+  it('23. optional() — dependent edge fires alongside the optional marker', async () => {
     const schema = enforce.shape({
       country: enforce.isString(),
       nick: enforce.isString().dependsOn($ => $.country),
@@ -931,8 +929,8 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(log.get()).toEqual(['country', 'nick']);
   });
 
-  // 25. warn dependents are included as normal tests
-  it('25. warn — dependent warn test runs on source change', async () => {
+  // 24. warn dependents are included as normal tests
+  it('24. warn — dependent warn test runs on source change', async () => {
     const schema = enforce.shape({
       country: enforce.isString(),
       state: enforce.isString().dependsOn($ => $.country),
@@ -955,8 +953,8 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(log.get()).toEqual(['country', 'state']);
   });
 
-  // 26. group dependents respect rebasing under changed()
-  it('26. group — dependent inside a group runs on source change', async () => {
+  // 25. group dependents respect rebasing under changed()
+  it('25. group — dependent inside a group runs on source change', async () => {
     const schema = enforce.shape({
       country: enforce.isString(),
       state: enforce.isString().dependsOn($ => $.country),
@@ -980,14 +978,20 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(log.get()).toEqual(['country', 'state']);
   });
 
-  // 27. include().when() does not disturb changed() invalidation
-  it('27. include().when() — conditional inclusion coexists with changed()', async () => {
+  // 26. include().when() under changed() — both the included branch
+  // (condition field is part of the run) and the withheld branch
+  // (condition field is not part of the run). The schema deliberately has
+  // no country->state dependency edge, so `include()` is the only reason
+  // 'state' can run: it is never in the affected set itself.
+  it('26. include().when() — conditional inclusion coexists with changed()', async () => {
     const schema = enforce.shape({
       country: enforce.isString(),
-      state: enforce.isString().dependsOn($ => $.country),
+      state: enforce.isString(),
+      city: enforce.isString(),
     });
     const log = createExecutionLog();
     const suite = create(data => {
+      include('state').when('country');
       test('country', () => {
         log.record('country');
         enforce(data.country).isNotBlank();
@@ -996,50 +1000,171 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
         log.record('state');
         enforce(data.state).isNotBlank();
       });
-      include('state').when('country');
+      test('city', () => {
+        log.record('city');
+        enforce(data.city).isNotBlank();
+      });
     }, schema);
-    await suite.run({ country: 'US', state: 'CA' });
+    await suite.run({ country: 'US', state: 'CA', city: 'NYC' });
     log.reset();
-    await suite.changed('country').run({ country: 'US', state: 'CA' });
+    // Condition met: 'country' is in the changed() run, so inclusion fires
+    // and otherwise-unaffected 'state' runs.
+    await suite
+      .changed('country')
+      .run({ country: 'US', state: 'CA', city: 'NYC' });
     expect(log.get()).toEqual(['country', 'state']);
+    log.reset();
+    // Condition unmet: 'country' is not in the changed() run, so inclusion
+    // is withheld and 'state' stays skipped.
+    await suite.changed('city').run({ country: 'US', state: 'CA', city: 'LA' });
+    expect(log.get()).toEqual(['city']);
   });
 
-  // 28. root-container suite schemas filter failures by affected path
-  it('28. root array schema — changed() reports only affected failures', async () => {
+  // 27. root-container suite schemas filter failures by affected path.
+  // Pins the schema-level filter (n4s `runSchemaPaths` affected narrowing),
+  // not just focus exclusion: focus-excluded tests still land in the result
+  // inventory as skipped nodes, so a missing key proves the failure was
+  // dropped before emission — only the schema-level filter can do that.
+  it('27. root array schema — changed() reports only affected failures', async () => {
     const schema = enforce.isArrayOf(
       enforce.shape({
         country: enforce.isString().longerThan(5),
         state: enforce.isString().longerThan(5),
       }),
     );
-    const suite = create(() => {}, schema);
     const data = [
       { country: 'abcdef', state: 'abcdef' },
       { country: 'abcdef', state: 'yy' },
     ];
+    const failurePaths = (
+      results: readonly { pass: boolean; path?: readonly string[] }[],
+    ): string[] =>
+      results
+        .filter(result => !result.pass)
+        .map(result => (result.path ?? []).join('.'));
+    // Schema level: the full run surfaces the 1.state failure (array runs
+    // short-circuit at the first failing element); narrowing to the
+    // affected path keeps exactly it, while narrowing to an unaffected
+    // path drops it via pass-through.
+    expect(failurePaths(runSchemaPaths(schema, data))).toEqual(['1.state']);
+    expect(
+      failurePaths(runSchemaPaths(schema, data, { affected: ['1.state'] })),
+    ).toEqual(['1.state']);
+    expect(
+      runSchemaPaths(schema, data, { affected: ['0.state'] }).some(
+        result => !result.pass,
+      ),
+    ).toBe(false);
+    // Suite level: the same narrowing is observable through changed().
+    const suite = create(() => {}, schema);
     const affected = await suite.changed('1.state').run(data);
     // @ts-expect-error - integration probe: array-element paths ('1.state')
     // are runtime failure names the type-level field vocabulary cannot name.
     expect(affected.hasErrors('1.state')).toBe(true);
     // @ts-expect-error - integration probe: see above.
     expect(affected.hasErrors('0.state')).toBe(false);
-    // The same failure outside the affected set is filtered out. This
-    // locks the round-4 filter behavior as characterization: out-of-focus
-    // schema failures never reach the test inventory either way, so the
-    // assertion holds with and without schema-level filtering — it guards
-    // the observable contract, not the internal code path.
     const unaffected = await suite.changed('0.state').run(data);
+    // @ts-expect-error - integration probe: see above.
+    expect(unaffected.hasErrors('1.state')).toBe(false);
     expect(Object.keys(unaffected.tests)).not.toContain('1.state');
   });
 
+  // 28. ownership chaining is per-suite, not changed()-specific: a plain
+  // run adopts its plain successor's promise, so the stale handle observes
+  // the latest outcome.
+  it('28. plain run adopts its plain successor outcome', async () => {
+    const gate = createDeferred();
+    const firstDone = createDeferred();
+    const suite = create((data: { tag: string }) => {
+      test('tag', async () => {
+        try {
+          if (data.tag === 'first') {
+            await gate.promise;
+          }
+          enforce(data.tag).isNotBlank();
+        } finally {
+          if (data.tag === 'first') {
+            firstDone.release();
+          }
+        }
+      });
+    });
+    const p1 = suite.run({ tag: 'first' });
+    const p2 = suite.run({ tag: 'second' });
+    const r2 = await p2;
+    expect(r2.hasErrors('tag')).toBe(false);
+    expect(suite.get().hasErrors('tag')).toBe(false);
+    gate.release();
+    await firstDone.promise;
+    await flushAsyncWork();
+    const r1 = await p1;
+    expect(r1).toBe(r2);
+    // The successor follows the normal path and resolves.
+    await expect(p2).resolves.toBeDefined();
+  });
+
+  // 29. the ownership key is stable per suite: interleaved runs of a second
+  // suite chain only within their own suite — B resolves with its own
+  // result while A's first run adopts A's second run.
+  it('29. interleaved suites chain independently', async () => {
+    const gateA = createDeferred();
+    const gateB = createDeferred();
+    const createGatedSuite = (gate: Deferred, label: string) =>
+      create((data: { tag: string }) => {
+        test('tag', async () => {
+          await gate.promise;
+          enforce(data.tag).equals(label);
+        });
+      });
+    const suiteA = createGatedSuite(gateA, 'a');
+    const suiteB = createGatedSuite(gateB, 'b');
+    const pA1 = suiteA.run({ tag: 'a' });
+    const pB = suiteB.run({ tag: 'b' });
+    // A second run of A chains only A's first run — B is untouched.
+    const pA2 = suiteA.run({ tag: 'a' });
+    gateA.release();
+    const rA2 = await pA2;
+    expect(rA2.hasErrors('tag')).toBe(false);
+    expect(suiteA.get().hasErrors('tag')).toBe(false);
+    const rA1 = await pA1;
+    expect(rA1).toBe(rA2);
+    // Suite B chains nothing: it resolves normally with its own result.
+    gateB.release();
+    const rB = await pB;
+    expect(rB.hasErrors('tag')).toBe(false);
+    expect(suiteB.get().hasErrors('tag')).toBe(false);
+    await expect(pB).resolves.toBeDefined();
+  });
+
+  // 30. AbortSignal overload throws the documented V1 error (exact
+  // message). Placed after all concurrency tests on purpose: throwing
+  // inside the persisted `changed` wrapper leaves the ambient runtime
+  // context pointing at this suite (the context primitive restores nothing
+  // on throw), so later suites would otherwise execute against the wrong
+  // runtime. Single-suite tests tolerate that; interleaved suites do not.
+  it('30. suite.changed(field, { signal }) throws deferred-to-v2 in V1', () => {
+    const schema = enforce.shape({
+      a: enforce.isString(),
+    });
+    const suite = create(() => {}, schema);
+    const controller = new AbortController();
+    expect(() =>
+      suite.changed('a', { signal: controller.signal }),
+    ).toThrowError(
+      new Error('suite.changed({ signal: AbortSignal }) deferred to v2'),
+    );
+  });
+
   /** @deferred v2 — suite.changed with AbortSignal */
-  it.skip('deferred v2 — suite.changed(field, { signal: AbortSignal }) abort', () => {
-    // Placeholder: V2 will support aborting stale async via AbortSignal.
-    // In V1 this overload throws Error('suite.changed({ signal: AbortSignal }) deferred to v2').
-    // Example future usage:
-    //   const controller = new AbortController();
-    //   suite.changed('organizationId', { signal: controller.signal }).run(data);
-    //   controller.abort();
-    // This should cancel the in-flight async test and prevent stale results from winning.
+  it('deferred v2 — suite.changed(field, { signal: AbortSignal }) throws in V1', () => {
+    const suite = create(() => {
+      test('username', () => {});
+    });
+    const controller = new AbortController();
+    expect(() =>
+      suite.changed('username', { signal: controller.signal }),
+    ).toThrowError(
+      new Error('suite.changed({ signal: AbortSignal }) deferred to v2'),
+    );
   });
 });

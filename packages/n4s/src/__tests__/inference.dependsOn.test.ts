@@ -42,17 +42,6 @@ export function typeChecks() {
     readonly SchemaPath[]
   >();
 
-  // Revalidates also inferrable - scope inference
-  const schema2 = enforce.shape({
-    a: enforce.isString(),
-    b: enforce.isString().revalidates($ => {
-      expectTypeOf($).toMatchTypeOf<{ root: unknown }>();
-      return $.a;
-    }),
-  });
-  expectTypeOf(schema2.infer).toEqualTypeOf<{ a: string; b: string }>();
-  expectTypeOf(schema2.describe).returns.toEqualTypeOf<DescribeResult>();
-
   // Chained dependsOn - scope and dependency fields
   const schema3 = enforce.shape({
     country: enforce.isString(),
@@ -62,7 +51,7 @@ export function typeChecks() {
         expectTypeOf($).toMatchTypeOf<{ root: unknown }>();
         return $.country;
       })
-      .revalidates($ => {
+      .dependsOn($ => {
         expectTypeOf($).toMatchTypeOf<{ root: unknown }>();
         return $.country;
       }),

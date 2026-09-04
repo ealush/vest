@@ -14,7 +14,11 @@ import type {
   SchemaRelationship,
 } from '../../schema/SchemaRelationship';
 import type { RuleInstance, ScopeHandle } from '../../utils/RuleInstance';
-import { cloneRelationship, groupDependencies } from '../../utils/RuleInstance';
+import {
+  cloneRelationship,
+  groupDependencies,
+  REVALIDATES_REMOVED_MESSAGE,
+} from '../../utils/RuleInstance';
 import {
   CHAIN_BASELINE,
   CHAIN_INFO,
@@ -40,6 +44,10 @@ export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
   >,
   (...args: unknown[]) => boolean | ReturnType<Predicate>
 >;
+
+// REVALIDATES_REMOVED_MESSAGE lives in utils/RuleInstance (imported above)
+// and is re-exported here so existing import sites keep working.
+export { REVALIDATES_REMOVED_MESSAGE };
 
 type LazyMessage = DynamicValue<
   string,
@@ -135,7 +143,6 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   let lazyMessage: Maybe<LazyMessage> = undefined;
   const unresolvedDeps: Array<{
     resolver: (scope: ScopeHandle) => unknown;
-    isRevalidates: boolean;
   }> = [];
 
   const add = (p: Predicate): T => {
@@ -248,7 +255,7 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   };
 
   const dependsOn = (resolver: (scope: ScopeHandle) => unknown): T => {
-    unresolvedDeps.push({ resolver, isRevalidates: false });
+    unresolvedDeps.push({ resolver });
     // also store on target for external inspection (shape resolver)
     (target as unknown as Record<symbol, unknown>)[
       Symbol.for('vest:unresolvedDeps')
@@ -259,15 +266,11 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
     return proxy;
   };
 
-  const revalidates = (resolver: (scope: ScopeHandle) => unknown): T => {
-    unresolvedDeps.push({ resolver, isRevalidates: true });
-    (target as unknown as Record<symbol, unknown>)[
-      Symbol.for('vest:unresolvedDeps')
-    ] = unresolvedDeps;
-    (proxy as unknown as Record<symbol, unknown>)[
-      Symbol.for('vest:unresolvedDeps')
-    ] = unresolvedDeps;
-    return proxy;
+  // Removed-before-V1 stub: `revalidates()` never existed in a release.
+  // It throws an actionable migration error instead of failing silently
+  // as an unknown rule.
+  const revalidates = (): T => {
+    throw new Error(REVALIDATES_REMOVED_MESSAGE);
   };
 
   const describe = (): ReturnType<T['describe']> => {

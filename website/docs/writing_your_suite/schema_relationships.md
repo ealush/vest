@@ -2,8 +2,7 @@
 sidebar_position: 4
 title: Schema Relationships
 description: Declare validation relationships between fields in Enforce schemas.
-keywords:
-  [Vest, Enforce, Schema, Relationships, dependsOn, revalidates, cross-field]
+keywords: [Vest, Enforce, Schema, Relationships, dependsOn, cross-field]
 ---
 
 # Schema Relationships
@@ -22,9 +21,9 @@ What Vest cannot know from this code is that the validity of `confirmPassword` d
 
 Schema Relationships make that relationship an optional, declarative part of an Enforce schema. The schema remains responsible for describing data **and relationships between data**. The suite remains responsible for execution, retained state, warnings, async work, groups, and interaction behavior.
 
-`dependsOn` is the first relationship primitive. The internal representation is a single directed graph (`source → target`, `effect: 'invalidate'`) that can later host `revalidates` and other effects without redesigning the schema API.
+`dependsOn` is the first relationship primitive. The internal representation is a single directed graph (`source → target`, `effect: 'invalidate'`) that can later host other effects without redesigning the schema API.
 
-A relationship declaration should be: type-safe (or runtime + ESLint safe), refactor-safe, composable through nested schemas, meaningful for repeated/array schemas (same-item scoped), machine-readable without parsing source, small enough that users are not maintaining a second copy of their form, colocated with the field it describes, useful to Vest itself (not just metadata), and extensible.
+A relationship declaration should be: ergonomic, runtime-validated during composition, composable through nested schemas, meaningful for repeated/array schemas (same-item scoped), machine-readable without parsing source, small enough that users are not maintaining a second copy of their form, colocated with the field it describes, useful to Vest itself (not just metadata), and extensible.
 
 ## Cross-field Dependencies
 
@@ -44,7 +43,7 @@ const registrationSchema = enforce.shape({
 
 `$` does not contain your form values.
 
-It is a typed (or structurally-checked) reference to sibling fields in the **current schema scope**.
+It is an ergonomic symbolic reference to sibling fields in the **current schema scope**, runtime-validated during composition. TypeScript does not restrict property names to existing fields — any property access on `$` typechecks.
 
 This means:
 
@@ -109,7 +108,7 @@ const accountSchema = enforce.shape({
 });
 ```
 
-No dotted strings to keep synchronized. Renaming `password` is caught at the `dependsOn` line (or at schema composition with a runtime/ESLint error).
+No dotted strings to keep synchronized. A misspelled or stale field name (e.g. renaming `password` without updating `$ => $.password`) throws `EnforceSchemaError` when the containing schema is composed — a runtime check during composition, not a TypeScript compile-time error. No ESLint rule for this exists in V1.
 
 ## Reusable Nested Schemas
 
@@ -218,7 +217,7 @@ Semantics:
 > **Deferred to v2 — `$.parent`**
 >
 > `$.parent` (parent-scope escape) is **intentionally deferred** — add only if a real use case demands it.
-> In V1, a resolver that touches `$.parent` throws at schema composition time: `EnforceSchemaError: Failed to resolve dependency for "a": $.parent deferred to v2`.
+> In V1, a resolver that touches `$.parent` throws at schema composition time with `err.message` exactly `Failed to resolve dependency for "a": $.parent deferred to v2` (an `EnforceSchemaError`).
 >
 > ```ts
 > enforce.shape({
@@ -266,11 +265,13 @@ as the affected set. This preserves `only()` semantics while giving frameworks a
 
 `include()` then becomes a lower-level escape hatch, not the primary way to express cross-field behavior.
 
-`schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs. `suite.changed()` additionally re-runs the projected rule per affected array index / record key, so an affected member failure hidden behind an earlier unaffected one is still surfaced.
+`schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs. Selective schema execution additionally re-runs the projected rule per affected array index / record key, so an affected member failure hidden behind an earlier unaffected one is still surfaced.
 
-Selective execution holds for focused runs: members outside the affected set never execute, and each affected member executes exactly once — safe for stateful validators. Tuple members run positionally and union (`isArrayOf` with several members) elements resolve whole-member any-match, both with the same attribution a full run would report. Shapes whose fields are all `optional()` are still ordinary required-semantics containers (only `partial()` skips missing keys). Validators chained onto a container itself, or a `partial()` top-level schema, cannot be projected safely: those runs validate the full schema and narrow the failures to the affected paths instead, so results always match the full run.
+Split of responsibilities: Vest expands `changed()` fields to affected paths from the relationship graph, then asks the schema to validate exactly those paths via `runSchemaPaths(schema, data, options?)`. Everything after that is n4s-owned — container-kind detection, fragment projection, short-circuit supplementation, chain-validator preservation, and member execution. Vest never reverse-engineers container semantics.
 
-To decide whether a container can be projected, `changed()` may invoke its validators with synthetic probe values (`{}`, `undefined`, `null`) — for example to detect partial-style or `optional()`-style acceptance. Construction-time markers (`partial()`, `optional()`) short-circuit most rules before any probing; the remaining empty-value probe runs at most once per rule instance and is cached. A probe that throws fails safe toward the full run. Validators with observable side effects should be aware they can fire with a probe value outside any suite run.
+Selective execution holds for focused runs: members outside the affected set never execute, and each affected single-rule or tuple member executes exactly once — safe for stateful validators. Union (`isArrayOf` with several members) elements instead resolve whole-member any-match: each affected element is checked against the members in order until one matches, so member validators may execute more than once (once per affected element) — do not rely on exactly-once for stateful validators inside union members. Tuple members run positionally and union elements resolve whole-member any-match, both with the same attribution a full run would report. Shapes whose fields are all `optional()` are still ordinary required-semantics containers (only `partial()` skips missing keys). Validators chained onto a container itself, or a `partial()` top-level schema, cannot be projected safely: those runs validate the full schema and narrow the failures to the affected paths instead, so results always match the full run.
+
+To decide whether a container can be projected, n4s reads construction-time markers (`partial()`, `optional()`) only. Introspection never executes user validators: no synthetic probe values (`{}`, `undefined`, `null`) are ever passed to validation code, so validators with observable side effects only ever fire with real run data inside a suite run. Schemas without recognizable metadata (unknown or exotic rules) are not projected: those runs validate the full schema and narrow the failures to the affected paths instead — slower, but with results always matching the full run.
 
 ## Dependencies Are Not Automatically Transitive
 
@@ -296,31 +297,23 @@ const schema = enforce.shape({
 
 Changing `startDate` invalidates `endDate` and vice versa. No loop occurs because dependencies describe invalidation, not imperative calls.
 
-## Revalidates — Source-Oriented Alias
-
-`dependsOn` is target-oriented, `revalidates` is source-oriented — same edge in V1:
-
-```ts
-// target-oriented:
-confirmPassword: enforce.isString().dependsOn($ => $.password);
-// source-oriented (same edge):
-password: enforce.isString().revalidates($ => $.confirmPassword);
-// both → { source: [{ type: 'property', key: 'password' }], target: [{ type: 'property', key: 'confirmPassword' }], effect: 'invalidate' }
-```
-
 > **Deferred to v2 — `effect: 'revalidate'`**
 >
 > V1: only `effect: 'invalidate'` ("previous result is stale") is supported.
-> Supplying `effect: 'revalidate'` (immediately rerun vs stale) is **deferred to v2** and will throw `Error("effect:'revalidate' deferred to v2")` in V1.
+> Supplying `effect: 'revalidate'` (immediately rerun vs stale) is **deferred to v2** and will throw with `err.message` exactly `effect:'revalidate' deferred to v2 — only 'invalidate' supported in V1`.
 > The assertion is at composition time (`enforce` + `lazy.ts`):
 >
 > ```ts
 > /** @deferred v2 — effect:'revalidate' deferred, only 'invalidate' supported in V1 */
 > if (effect !== 'invalidate')
->   throw new Error(`effect:'${effect}' deferred to v2`);
+>   throw new Error(
+>     `effect:'${effect}' deferred to v2 — only 'invalidate' supported in V1`,
+>   );
 > ```
 >
 > Future `revalidate` vs `invalidate` distinction (immediately rerun vs stale) is deferred.
+>
+> `revalidates()` was removed before V1; use `.dependsOn()` for the same edge.
 
 ## Introspection
 

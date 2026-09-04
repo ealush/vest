@@ -54,17 +54,6 @@ describe('Schema creation — with vs without relationships', () => {
   );
 
   bench(
-    'A3 create flat with revalidates alias [2 fields, 1 edge]',
-    () => {
-      enforce.shape({
-        a: enforce.isString().revalidates($ => $.b),
-        b: enforce.isString(),
-      });
-    },
-    { time: 250 },
-  );
-
-  bench(
     'A4 create flat multi-source [4 fields, total→3]',
     () => {
       enforce.shape({

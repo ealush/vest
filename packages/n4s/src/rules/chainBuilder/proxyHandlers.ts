@@ -28,11 +28,11 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   }: {
     add: (p: Predicate) => T;
     dependsOn: (resolver: (scope: ScopeHandle) => unknown) => T;
+    revalidates: () => T;
     describe: () => DescribeResult;
     message: (msg: any) => T;
     parse: T['parse'];
     prepend: (p: Predicate) => T;
-    revalidates: (resolver: (scope: ScopeHandle) => unknown) => T;
     run: T['run'];
     test: T['test'];
     validate: T['validate'];

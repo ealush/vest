@@ -4,7 +4,7 @@ import type {
   PropertySegment,
   SchemaRelationship,
 } from 'n4s';
-import { isPropertySegment } from 'n4s';
+import { isPropertySegment, parseAffectedFieldName } from 'n4s';
 import { isArray, isNullish, isObject } from 'vest-utils';
 
 const RESOLVED_RELATIONSHIPS = Symbol.for('vest:resolvedRelationships');
@@ -27,25 +27,13 @@ export function assertNoAbortSignal(options?: ChangedOptions): void {
 
 /**
  * Parses a field name string like 'billing.country' or 'travelers[1].country'
- * or 'travelers.1.country' into a SchemaPath for matching.
- * Numeric segments are treated as item segments (array indices).
+ * or 'travelers.1.country' into a SchemaPath for matching. Delegates to the
+ * single canonical parser in n4s (`parseAffectedFieldName`): bracket/dot
+ * normalization and numeric→item coercion live there, so both sides agree
+ * on what 'travelers[1].country' means.
  */
 export function parseFieldName(field: string): SchemaPath {
-  // Normalize brackets to dots: travelers[1].country -> travelers.1.country
-  const normalized = field.replace(/\[/g, '.').replace(/\]/g, '');
-  const parts = normalized.split('.').filter(Boolean);
-  const segs: SchemaPath[number][] = [];
-  for (const part of parts) {
-    // Numeric segment after an array property is considered an item
-    // We treat every numeric string as item; property named '123' would be
-    // ambiguous but rare and acceptable for changed() matching.
-    if (/^\d+$/.test(part)) {
-      segs.push({ type: 'item', binding: part });
-    } else {
-      segs.push({ type: 'property', key: part });
-    }
-  }
-  return segs as SchemaPath;
+  return parseAffectedFieldName(field);
 }
 
 /**

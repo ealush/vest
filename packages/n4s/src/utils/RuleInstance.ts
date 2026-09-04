@@ -82,6 +82,13 @@ export function groupDependencies(
   return Array.from(depMap.values());
 }
 
+// Stable removal message for the pre-V1 `revalidates()` API. Pinned by
+// `itemRelationships.test.ts` — do not reword without updating the test.
+// Lives here (not chainBuilder) so both the class factory below and the
+// chain proxy can share it without an import cycle.
+export const REVALIDATES_REMOVED_MESSAGE =
+  'revalidates() was removed before V1; use .dependsOn() for the same edge';
+
 export class RuleInstance<T, Args extends any[] = any[]> {
   // The runtime object produced by create() supports dynamic chaining.
 
@@ -117,8 +124,13 @@ export class RuleInstance<T, Args extends any[] = any[]> {
 
   // Schema relationship API — typed to allow inference of $ without annotation
   dependsOn!: (resolver: (scope: ScopeHandle) => unknown) => this;
-  revalidates!: (resolver: (scope: ScopeHandle) => unknown) => this;
   describe!: () => DescribeResult;
+  /**
+   * Removed-before-V1 stub: `revalidates()` never shipped in a release.
+   * Kept on the type so schema-member constraints stay satisfied; always
+   * throws the REVALIDATES_REMOVED_MESSAGE migration error at runtime.
+   */
+  revalidates!: (resolver: (scope: ScopeHandle) => unknown) => never;
 
   private constructor() {}
 
@@ -135,7 +147,6 @@ export class RuleInstance<T, Args extends any[] = any[]> {
   ): R {
     const unresolvedDeps: Array<{
       resolver: (scope: ScopeHandle) => unknown;
-      isRevalidates: boolean;
     }> = [];
     const validate = (...args: Args): StandardSchemaV1.Result<T> => {
       const result = rule(...args);
@@ -187,19 +198,12 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       validate,
     } as unknown as R & {
       dependsOn: (resolver: (scope: ScopeHandle) => unknown) => R;
-      revalidates: (resolver: (scope: ScopeHandle) => unknown) => R;
       describe: () => DescribeResult;
+      revalidates: (resolver: (scope: ScopeHandle) => unknown) => never;
     };
 
     const dependsOn = (resolver: (scope: ScopeHandle) => unknown): R => {
-      unresolvedDeps.push({ resolver, isRevalidates: false });
-      (instance as unknown as Record<symbol, unknown>)[
-        Symbol.for('vest:unresolvedDeps')
-      ] = unresolvedDeps;
-      return instance as unknown as R;
-    };
-    const revalidates = (resolver: (scope: ScopeHandle) => unknown): R => {
-      unresolvedDeps.push({ resolver, isRevalidates: true });
+      unresolvedDeps.push({ resolver });
       (instance as unknown as Record<symbol, unknown>)[
         Symbol.for('vest:unresolvedDeps')
       ] = unresolvedDeps;
@@ -219,9 +223,13 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       };
     };
 
+    const revalidates = (): never => {
+      throw new Error(REVALIDATES_REMOVED_MESSAGE);
+    };
+
     (instance as unknown as Record<string, unknown>).dependsOn = dependsOn;
-    (instance as unknown as Record<string, unknown>).revalidates = revalidates;
     (instance as unknown as Record<string, unknown>).describe = describe;
+    (instance as unknown as Record<string, unknown>).revalidates = revalidates;
     (instance as unknown as Record<symbol, unknown>)[
       Symbol.for('vest:unresolvedDeps')
     ] = unresolvedDeps;

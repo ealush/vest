@@ -1,4 +1,4 @@
-# Benchmark Design — Schema Relationships (`dependsOn` / `revalidates` + `suite.changed()`)
+# Benchmark Design — Schema Relationships (`dependsOn` + `suite.changed()`)
 
 > **Status:** Implemented — `packages/vest/bench/schema-relationships.bench.ts` and `packages/vest/bench/granular/schema-relationships-changed.bench.ts` (49 rows) shipped with RFC rev2 V1.
 > **Author:** Benchmark Designer (workflow child parallel-4)
@@ -81,7 +81,7 @@ Suites pre-populate state outside `bench()` (e.g. `suite.run(list100)` before de
 
 The new functionality spans two packages:
 
-- **n4s** — `enforce.shape({ field: enforce.isString().dependsOn($ => $.other) })` + `revalidates` alias + `describe()` metadata + rebasing (nested reuse, `isArrayOf($item)`, `$.root`, 3-level nesting, cyclic, bracket keys, `loose`/`partial` notes). Evidence: `packages/n4s/src/__tests__/schemaRelationships*.test.ts` (4 files, ~218 + composition + interaction + acceptance-10), `packages/n4s/src/schema/{SchemaRelationship,SchemaPath,dependencyResolver,rebase,scopeProxy}.ts`.
+- **n4s** — `enforce.shape({ field: enforce.isString().dependsOn($ => $.other) })` + `describe()` metadata + rebasing (nested reuse, `isArrayOf($item)`, `$.root`, 3-level nesting, cyclic, bracket keys, `loose`/`partial` notes). Evidence: `packages/n4s/src/__tests__/schemaRelationships*.test.ts` (4 files, ~218 + composition + interaction + acceptance-10), `packages/n4s/src/schema/{SchemaRelationship,SchemaPath,dependencyResolver,rebase,scopeProxy}.ts`.
 - **vest** — `suite.changed('field')` incremental re-run (merge gate, deduped affected set = changed + direct dependents, non-transitive, same-item array scoping, reusable-nested isolation, async, `skipWhen`/`only` authority). Evidence: `packages/vest/src/suite/changed.ts`, `packages/vest/src/suite/__tests__/changed.integration.test.ts` (13 cases), `schemaRelationships.suite.test.ts` (V1 `only()` does NOT auto-expand).
 
 The prompt's "23-list" has no single canonical file; it is the union of: 10 acceptance cases (RFC rev2) + 13 changed-integration cases = 23. Composition/interaction files add variants but collapse to the same 23. This design maps every bench row back to that 23.
@@ -224,20 +224,20 @@ Rows are ordered to tell a story: (A) schema cost → (B) describe cost → (C) 
 
 `describe 'Schema creation — with vs without relationships'`
 
-| #   | Bench name                              | What it does                                                                                                                | Knob        | Maps to                                 |
-| --- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------- | --------------------------------------- |
-| A1  | `create flat (no rel)`                  | `enforce.shape({ a: isString(), b: isString() })`                                                                           | micro       | baseline                                |
-| A2  | `create flat with dependsOn`            | same + `b: isString().dependsOn($=>$.a)`                                                                                    | micro       | acceptance-1, flat-scenarios            |
-| A3  | `create flat with revalidates (alias)`  | `a: isString().revalidates($=>$.b)` vs A2 — should be same hz                                                               | micro       | acceptance-10, revalidates.test         |
-| A4  | `create flat with multi-source`         | `total: isNumber().dependsOn($=>[%.quantity, %.unitPrice, %.currency])`                                                     | micro       | dependsOn multi-source test             |
-| A5  | `create nested (3 levels) with rebase`  | `outer{ middle{ inner{ zip dependsOn city }}}` — 3-level rebase cost                                                        | micro       | composition three-level                 |
-| A6  | `create reusable (shared address ×2)`   | `address={country,state dependsOn country}; checkout={billing:address,shipping:address}` — purity check (child not mutated) | micro       | composition reusable, acceptance-3      |
-| A7  | `create array same-item (one traveler)` | `travelers: isArrayOf(traveler{ passportNumber dependsOn passportCountry })` — single $item binding                         | micro       | composition array item, acceptance-4    |
-| A8  | `create $.root escape`                  | `company.taxId dependsOn [$.country, $.root.accountType]`                                                                   | micro       | composition $.root, acceptance-5/8      |
-| A9  | `create nested arrays (orders→items)`   | `orders: isArrayOf(order{ items: isArrayOf(item{ discount dependsOn name }) })` — 2× $item bindings                         | micro       | composition nested arrays, acceptance-6 |
-| A10 | `create cyclic (2-node)`                | `start dependsOn end, end dependsOn start` — legal                                                                          | micro       | acceptance-7                            |
-| A11 | `create fan-out (1→2)`                  | `a, b dependsOn a, c dependsOn a` — 1 source, 2 targets                                                                     | micro       | changed-integration-7 dedupe            |
-| A12 | `create large (100-field chain Pain)`   | 100 keys, every 10th with dependsOn predecessor                                                                             | heavy-micro | stress — ensures creation scales        |
+| #   | Bench name                                     | What it does                                                                                                                | Knob        | Maps to                                 |
+| --- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------- | --------------------------------------- |
+| A1  | `create flat (no rel)`                         | `enforce.shape({ a: isString(), b: isString() })`                                                                           | micro       | baseline                                |
+| A2  | `create flat with dependsOn`                   | same + `b: isString().dependsOn($=>$.a)`                                                                                    | micro       | acceptance-1, flat-scenarios            |
+| A3  | _(removed — `revalidates` deferred out of V1)_ | —                                                                                                                           | —           | —                                       |
+| A4  | `create flat with multi-source`                | `total: isNumber().dependsOn($=>[%.quantity, %.unitPrice, %.currency])`                                                     | micro       | dependsOn multi-source test             |
+| A5  | `create nested (3 levels) with rebase`         | `outer{ middle{ inner{ zip dependsOn city }}}` — 3-level rebase cost                                                        | micro       | composition three-level                 |
+| A6  | `create reusable (shared address ×2)`          | `address={country,state dependsOn country}; checkout={billing:address,shipping:address}` — purity check (child not mutated) | micro       | composition reusable, acceptance-3      |
+| A7  | `create array same-item (one traveler)`        | `travelers: isArrayOf(traveler{ passportNumber dependsOn passportCountry })` — single $item binding                         | micro       | composition array item, acceptance-4    |
+| A8  | `create $.root escape`                         | `company.taxId dependsOn [$.country, $.root.accountType]`                                                                   | micro       | composition $.root, acceptance-5/8      |
+| A9  | `create nested arrays (orders→items)`          | `orders: isArrayOf(order{ items: isArrayOf(item{ discount dependsOn name }) })` — 2× $item bindings                         | micro       | composition nested arrays, acceptance-6 |
+| A10 | `create cyclic (2-node)`                       | `start dependsOn end, end dependsOn start` — legal                                                                          | micro       | acceptance-7                            |
+| A11 | `create fan-out (1→2)`                         | `a, b dependsOn a, c dependsOn a` — 1 source, 2 targets                                                                     | micro       | changed-integration-7 dedupe            |
+| A12 | `create large (100-field chain Pain)`          | 100 keys, every 10th with dependsOn predecessor                                                                             | heavy-micro | stress — ensures creation scales        |
 
 Expectation: A2 ≈ A1 within 5% (metadata-only V1). If A2 regresses >10% this is a release-blocker. A5–A9 measure rebase overhead, not validation.
 

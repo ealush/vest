@@ -7,8 +7,10 @@ import {
   create,
   test,
   group,
+  include,
   skipWhen,
   omitWhen,
+  only,
   optional,
   warn,
 } from '../../vest';
@@ -47,7 +49,7 @@ describe('Acceptance — Sanity', (): void => {
     expect(result.getErrors('password')).toEqual(['Too short']);
   });
 
-  it('attaching a schema does not change full-run behavior', async (): Promise<void> => {
+  it('relationship metadata does not change existing suite test behavior', async (): Promise<void> => {
     const cb = (data: {
       password: string;
       email?: string;
@@ -276,6 +278,31 @@ describe('Acceptance — Feature success (before/after)', (): void => {
       .run({ organizationId: 'B', username: 'taken' });
     expect(suiteWith.get().hasErrors('username')).toBe(true);
   });
+
+  it('dependsOn is directional — changed(source) runs target, not vice versa', async (): Promise<void> => {
+    const schema = enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.a),
+    });
+    const log = createLog();
+    const suite = create((data: { a: string; b: string }): void => {
+      test('a', (): void => {
+        log.record('a');
+        enforce(data.a).isNotBlank();
+      });
+      test('b', (): void => {
+        log.record('b');
+        enforce(data.b).isNotBlank();
+      });
+    }, schema);
+    await suite.run({ a: 'x', b: 'y' });
+    log.reset();
+    await suite.changed('a').run({ a: 'x', b: 'y' });
+    expect(log.get()).toEqual(['a', 'b']);
+    log.reset();
+    await suite.changed('b').run({ a: 'x', b: 'y' });
+    expect(log.get()).toEqual(['b']);
+  });
 });
 
 // 3. No-regression
@@ -380,31 +407,61 @@ describe('Acceptance — No regression', (): void => {
     expect(resultFull.hasErrors('b')).toBe(true);
   });
 
-  it('include() unchanged', async (): Promise<void> => {
-    const schema = enforce.shape({
+  it('include() unchanged — include().when() cross-field inclusion ignores relationship metadata', async (): Promise<void> => {
+    const schemaWithout = enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString(),
+      c: enforce.isString(),
+    });
+    const schemaWith = enforce.shape({
       a: enforce.isString(),
       b: enforce.isString().dependsOn($ => $.a),
+      c: enforce.isString(),
     });
-    const suite = create((data: { a: string; b: string; c?: string }): void => {
-      test('a', (): void => {
-        enforce(data.a).isNotBlank();
-      });
-      test('b', (): void => {
-        enforce(data.b).isNotBlank();
-      });
-      test('c', (): void => {
-        enforce(data.c).isNotBlank();
-      });
-    }, schema);
-    // Without include, only a runs via only
-    // @ts-expect-error - acceptance probe: data outside the attached schema
-    const r1 = await suite.only('a').run({ a: '', b: '', c: '' });
-    expect(r1.hasErrors('a')).toBe(true);
-    // include should still work (if include is available)
-    // For now just verify that adding schema doesn't break focus
-    // @ts-expect-error - acceptance probe: data outside the attached schema
-    const _r2 = await suite.focus({ only: 'a' }).run({ a: '', b: '', c: '' });
-    expect(_r2.hasErrors('a')).toBe(true);
+    const makeSuite = (schema: typeof schemaWith | typeof schemaWithout) => {
+      const log = createLog();
+      const suite = create(
+        (data: { a: string; b: string; c: string }): void => {
+          only('a');
+          include('b').when('a');
+          test('a', (): void => {
+            log.record('a');
+            enforce(data.a).isNotBlank();
+          });
+          test('b', (): void => {
+            log.record('b');
+            enforce(data.b).isNotBlank();
+          });
+          test('c', (): void => {
+            log.record('c');
+            enforce(data.c).isNotBlank();
+          });
+        },
+        schema,
+      );
+      return { log, suite };
+    };
+    const data = { a: '', b: '', c: '' };
+    const plain = makeSuite(schemaWithout);
+    const withRel = makeSuite(schemaWith);
+    const rPlain = await plain.suite.run(data);
+    const rWith = await withRel.suite.run(data);
+    // Cross-field inclusion actually happened: only('a') ran 'a' plus the
+    // included 'b', while unrelated 'c' stayed out.
+    expect(plain.log.get()).toEqual(['a', 'b']);
+    expect(rPlain.hasErrors('a')).toBe(true);
+    expect(rPlain.hasErrors('b')).toBe(true);
+    expect(rPlain.hasErrors('c')).toBe(false);
+    // Attached dependsOn() relationships leave that behavior unchanged.
+    expect(withRel.log.get()).toEqual(plain.log.get());
+    expect(rWith.hasErrors('a')).toBe(rPlain.hasErrors('a'));
+    expect(rWith.hasErrors('b')).toBe(rPlain.hasErrors('b'));
+    expect(rWith.hasErrors('c')).toBe(rPlain.hasErrors('c'));
+    // Inclusion survives dependency-aware runs: changed('a') still runs the
+    // included dependent 'b' while unrelated 'c' stays out.
+    withRel.log.reset();
+    await withRel.suite.changed('a').run(data);
+    expect(withRel.log.get()).toEqual(['a', 'b']);
   });
 
   it('skipWhen() unchanged — canonical sequence', async (): Promise<void> => {
@@ -463,31 +520,66 @@ describe('Acceptance — No regression', (): void => {
     expect(_r2.hasErrors('b')).toBe(false);
   });
 
-  it.skip('optional() unchanged — TODO', async (): Promise<void> => {
-    const suite = create((data: { a: string }): void => {
-      optional('a');
-      test('a', (): void => {
-        enforce(data.a).isNotBlank();
-      });
+  it('optional() unchanged', async (): Promise<void> => {
+    const schema = enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.a),
     });
-    const r1 = await suite.run({ a: '' });
-    expect(r1.isValid()).toBe(true); // optional empty is valid
-  });
-
-  it.skip('warn() unchanged — TODO', async (): Promise<void> => {
+    const log = createLog();
     const suite = create((data: { a: string; b: string }): void => {
+      optional('b');
       test('a', (): void => {
+        log.record('a');
         enforce(data.a).isNotBlank();
       });
-      warn();
       test('b', (): void => {
+        log.record('b');
         enforce(data.b).isNotBlank();
       });
+    }, schema);
+    const r1 = await suite.run({ a: 'x', b: '' });
+    expect(r1.isValid()).toBe(true); // optional empty is valid
+    expect(log.get()).toEqual(['a']); // blank optional omitted, as in run()
+    log.reset();
+    // A valued optional dependent is still included when its source changes.
+    const r2 = await suite.changed('a').run({ a: 'y', b: 'z' });
+    expect(log.get()).toEqual(['a', 'b']);
+    expect(r2.isValid()).toBe(true);
+    log.reset();
+    // A blank optional dependent stays omitted under changed(), like run().
+    const r3 = await suite.changed('a').run({ a: 'y', b: '' });
+    expect(log.get()).toEqual(['a']);
+    expect(r3.isValid()).toBe(true);
+  });
+
+  it('warn() unchanged', async (): Promise<void> => {
+    const schema = enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.a),
     });
+    const log = createLog();
+    const suite = create((data: { a: string; b: string }): void => {
+      test('a', (): void => {
+        log.record('a');
+        enforce(data.a).isNotBlank();
+      });
+      test('b', (): void => {
+        log.record('b');
+        warn();
+        enforce(data.b).isNotBlank();
+      });
+    }, schema);
     const r1 = await suite.run({ a: '', b: '' });
     expect(r1.hasErrors('a')).toBe(true);
     expect(r1.hasWarnings('b')).toBe(true);
     expect(r1.hasErrors('b')).toBe(false);
+    log.reset();
+    const r2 = await suite.changed('a').run({ a: '', b: '' });
+    // Warn dependents are included as normal tests, keeping warn severity.
+    expect(log.get()).toEqual(['a', 'b']);
+    expect(r2.hasErrors('a')).toBe(true);
+    expect(r2.hasWarnings('b')).toBe(true);
+    expect(r2.hasErrors('b')).toBe(false);
   });
 
   it('group() unchanged', async (): Promise<void> => {

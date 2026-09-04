@@ -52,7 +52,11 @@ export interface SchemaMemberRule {
     readonly types: StandardSchemaV1.Types<unknown, unknown>;
   };
   dependsOn(resolver: (scope: ScopeHandle) => unknown): SchemaMemberRule;
-  revalidates(resolver: (scope: ScopeHandle) => unknown): SchemaMemberRule;
+  /**
+   * Removed before V1. Always throws an actionable migration error
+   * ('removed before V1; use .dependsOn() for the same edge').
+   */
+  revalidates(resolver: (scope: ScopeHandle) => unknown): never;
   describe(): DescribeResult;
 }
 

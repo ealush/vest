@@ -87,6 +87,42 @@ export {
   chainBaselineMatches,
   hasChainBaseline,
 } from './schema/dependencyResolver';
+/**
+ * Suite-creation finalizer for deferred (`$.root`) relationship endpoints.
+ * Validates the mounted graph's rooted paths against the final root shape.
+ *
+ * @internal Kept exported only because Vest's `createSuite.ts` consumes it
+ * and private-path imports are banned — not part of the supported public
+ * API surface, which otherwise exposes only `runSchemaPaths` (plus its
+ * types) and the canonical affected-path parser below.
+ */
+export { assertSchemaRootPathsValid } from './schema/dependencyResolver';
+/**
+ * Error thrown for schema composition and boundary violations (unknown
+ * dependency fields, orphaned fragment sources). Public so consumers can
+ * catch it by identity regardless of which entry built the schema.
+ */
+export { EnforceSchemaError } from './errors/EnforceSchemaError';
+/**
+ * The single contract for dependency-aware schema execution. The caller
+ * passes raw changed fields; n4s owns changed→affected expansion,
+ * container kinds, fragment projection, short-circuit supplementation,
+ * chain-validator preservation, and member execution.
+ */
+export { runSchemaPaths } from './schema/selectiveRun';
+export type {
+  SelectiveRunOptions,
+  SelectiveSchema,
+  SelectiveSchemaResult,
+} from './schema/selectiveRun';
+/**
+ * Canonical affected-path parser shared by the selective engine and Vest's
+ * suite.changed(). The projection internals (`buildProjectedSchema`,
+ * `expandAffectedWithSources`, `filterSchemaResultsToAffected`,
+ * `mergeSupplementalResults`) are intentionally not re-exported here
+ * — Vest production code reaches them only through `runSchemaPaths`.
+ */
+export { parseAffectedFieldName } from './schema/selectiveRun';
 export type { ScopeHandle } from './utils/RuleInstance';
 export type { SchemaMemberRule } from './rules/schemaRules/schemaRulesLazyTypes';
 

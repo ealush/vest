@@ -1,3 +1,5 @@
+import { hasOwnProperty, isNullish, isObject } from 'vest-utils';
+
 import { EnforceSchemaError } from '../errors/EnforceSchemaError';
 import type { RuleInstance } from '../utils/RuleInstance';
 import type { ItemSegment, PropertySegment, SchemaPath } from './SchemaPath';
@@ -103,7 +105,6 @@ export type ItemContainerKind = 'array' | 'record';
 
 export type UnresolvedDep = {
   resolver: (scope: Scope) => unknown;
-  isRevalidates: boolean;
 };
 
 /**
@@ -265,27 +266,7 @@ export function resolveInlineDeps(
             }
           : { source: sourcePath, target: targetPath, effect: 'invalidate' };
 
-        if (dep.isRevalidates) {
-          // revalidates: fieldKey revalidates(target)  =>  target dependsOn fieldKey
-          // So source is current field, target is the referenced field
-          const revalidatedTarget = sourcePath;
-          const revalidatedSource: SchemaPath = targetPath;
-          const revalidatedRel: InternalRelationship = isRoot
-            ? {
-                source: revalidatedSource,
-                target: revalidatedTarget,
-                effect: 'invalidate',
-                __isRootTarget: true,
-              }
-            : {
-                source: revalidatedSource,
-                target: revalidatedTarget,
-                effect: 'invalidate',
-              };
-          relationships.push(revalidatedRel);
-        } else {
-          relationships.push(rel);
-        }
+        relationships.push(rel);
       }
     }
   }
@@ -374,6 +355,7 @@ function validateRootedPath(
   rootShape: Record<PropertyKey, unknown>,
   fieldForMsg: string,
 ): void {
+  const unknownField = dottedSchemaPath(path);
   let current: unknown = rootShape;
   for (let i = 0; i < path.length; i++) {
     current = checkRootedSegment(
@@ -381,6 +363,7 @@ function validateRootedPath(
       current,
       i === path.length - 1,
       fieldForMsg,
+      unknownField,
     );
   }
 }
@@ -390,18 +373,34 @@ function checkRootedSegment(
   current: unknown,
   isLast: boolean,
   fieldForMsg: string,
+  unknownField: string,
 ): unknown {
   if (!seg || seg.type !== 'property') return current;
   const key = String((seg as unknown as PropertySegment).key);
-  assertRootKeyExists(current, key, fieldForMsg);
+  assertRootKeyExists(current, key, fieldForMsg, unknownField);
   if (isLast) return (current as Record<PropertyKey, unknown>)[key];
   return childShape((current as Record<PropertyKey, unknown>)[key]);
+}
+
+/**
+ * Canonical dotted form of a schema path for error messages (property keys
+ * by name, item segments by binding). Unknown-field errors always quote
+ * this full path, never the leaf alone, so nested misses like
+ * `$.root.account.missing` read as "account.missing".
+ */
+function dottedSchemaPath(path: SchemaPath): string {
+  return path
+    .map(seg =>
+      seg.type === 'property' ? String(seg.key) : String(seg.binding),
+    )
+    .join('.');
 }
 
 function assertRootKeyExists(
   current: unknown,
   key: string,
   fieldForMsg: string,
+  unknownField: string,
 ): void {
   if (
     !current ||
@@ -409,7 +408,7 @@ function assertRootKeyExists(
     !Object.prototype.hasOwnProperty.call(current, key)
   ) {
     throw new EnforceSchemaError(
-      `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${key}"`,
+      `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${unknownField}"`,
     );
   }
 }
@@ -499,6 +498,10 @@ function validateSourceExists(
 
   const isRooted = !isPathPrefixedBy(sourcePath, scopePath);
 
+  // Quoted in every unknown-field error below: the full dotted source path,
+  // never the leaf alone.
+  const unknownField = dottedSchemaPath(sourcePath);
+
   // Scalar-descendant check: walk sourcePath intermediates and ensure each
   // prefix before the next property is a shape-like (has __schema), not a scalar.
   // For path [obj, leaf] where obj is string, the field `obj` scalar has a child `leaf` → error.
@@ -534,7 +537,7 @@ function validateSourceExists(
       );
       const scalarKey = String(seg.key);
       throw new EnforceSchemaError(
-        `EnforceSchemaError: "${targetField}" depends on "${scalarKey}.${descendant}" but "${scalarKey}" is a scalar field and has no child "${descendant}"`,
+        `EnforceSchemaError: "${targetField}" depends on "${unknownField}" but "${scalarKey}" is a scalar field and has no child "${descendant}"`,
       );
     }
     // Descend into shape for next iteration
@@ -576,7 +579,7 @@ function validateSourceExists(
       const key = String((seg as unknown as PropertySegment).key);
       if (!parentShape || typeof parentShape !== 'object') {
         throw new EnforceSchemaError(
-          `EnforceSchemaError: "${targetField}" depends on unknown field "${key}"`,
+          `EnforceSchemaError: "${targetField}" depends on unknown field "${unknownField}"`,
         );
       }
       const rule = (parentShape as Record<PropertyKey, unknown>)[key] as
@@ -588,7 +591,7 @@ function validateSourceExists(
         | undefined;
       if (rule === undefined || rule === null) {
         const suggestion = findClosestKey(key, Object.keys(parentShape));
-        let msg = `EnforceSchemaError: "${targetField}" depends on unknown field "${key}"`;
+        let msg = `EnforceSchemaError: "${targetField}" depends on unknown field "${unknownField}"`;
         if (suggestion) {
           msg += `. Did you mean "${suggestion}"?`;
         }
@@ -633,7 +636,7 @@ function validateSourceExists(
       String(keyToCheck.key),
       Object.keys(checkShape),
     );
-    let msg = `EnforceSchemaError: "${targetField}" depends on unknown field "${String(keyToCheck.key)}"`;
+    let msg = `EnforceSchemaError: "${targetField}" depends on unknown field "${unknownField}"`;
     if (suggestion) {
       msg += `. Did you mean "${suggestion}"?`;
     }
@@ -709,4 +712,153 @@ function levenshtein(a: string, b: string): number {
     }
   }
   return matrix[b.length][a.length];
+}
+
+function recordOf(value: unknown): Record<PropertyKey, unknown> {
+  return value as unknown as Record<PropertyKey, unknown>;
+}
+
+// eslint-disable-next-line complexity -- moved suite finalizer, branchy by nature
+function nestedShapeOf(rule: unknown): Record<PropertyKey, unknown> {
+  const child: unknown = isObject(rule) ? recordOf(rule).__schema : undefined;
+  if (isObject(child)) return recordOf(child);
+  const item: unknown = isObject(rule)
+    ? recordOf(rule)[ITEM_SCHEMA]
+    : undefined;
+  const itemChild: unknown = isObject(item)
+    ? recordOf(item).__schema
+    : undefined;
+  if (isObject(itemChild)) return recordOf(itemChild);
+  return {};
+}
+
+function lastPropertyKeyOf(path: SchemaPath): string {
+  const last: SchemaPath[number] | undefined = path[path.length - 1];
+  if (last !== undefined && last.type === 'property') return String(last.key);
+  return 'unknown';
+}
+
+/**
+ * Suite-creation finalizer for deferred (`$.root`) relationship endpoints.
+ * Composition stays lenient so focused fragments keep composing; this
+ * boundary validates the rooted endpoints of the whole mounted graph
+ * against the final root shape and throws EnforceSchemaError on unknown
+ * fields. Non-enforce errors are ignored so introspection never breaks
+ * suite creation.
+ */
+export function assertSchemaRootPathsValid(schema: unknown): void {
+  try {
+    assertSchemaRootPathsValidInner(schema);
+  } catch (e) {
+    // instanceof-first, with an error-name fallback for errors thrown by a
+    // second copy of the n4s classes (dual-copy interop).
+    if (e instanceof EnforceSchemaError) throw e;
+    if (isObject(e) && (e as { name?: unknown }).name === 'EnforceSchemaError')
+      throw e;
+    // Non-enforce errors (e.g., describe not available) are ignored
+  }
+}
+
+// eslint-disable-next-line complexity -- moved suite finalizer, branchy by nature
+function assertSchemaRootPathsValidInner(schema: unknown): void {
+  const relationships: InternalRelationship[] = [];
+  const seen = new WeakSet<object>();
+  // eslint-disable-next-line complexity -- moved suite finalizer, branchy by nature
+  const collect = (node: unknown): void => {
+    if (!node || typeof node !== 'object' || seen.has(node)) return;
+    seen.add(node);
+    const rels = recordOf(node)[RESOLVED_RELATIONSHIPS] as
+      | InternalRelationship[]
+      | undefined;
+    if (Array.isArray(rels) && rels.length) relationships.push(...rels);
+    const inner: unknown = recordOf(node).__schema;
+    if (!isNullish(inner) && typeof inner === 'object') {
+      if (Array.isArray(inner)) {
+        for (const v of inner as unknown[]) collect(v);
+      } else {
+        for (const v of Object.values(recordOf(inner))) collect(v);
+        collect(inner);
+      }
+    }
+    const item: unknown = recordOf(node)[ITEM_SCHEMA];
+    if (item) collect(item);
+    // Plain shape object (no __schema/RESOLVED wrapper)
+    if (
+      !recordOf(node).__schema &&
+      !recordOf(node)[RESOLVED_RELATIONSHIPS] &&
+      !recordOf(node)[ITEM_SCHEMA]
+    ) {
+      // Check if this looks like a plain shape record
+      const vals = Object.values(recordOf(node));
+      if (
+        vals.length &&
+        vals.some(
+          (v: unknown): boolean =>
+            !isNullish(v) &&
+            typeof v === 'object' &&
+            recordOf(v).__schema !== undefined,
+        )
+      ) {
+        for (const v of vals) collect(v);
+      } else if (
+        vals.length &&
+        vals.some(
+          (v: unknown): boolean =>
+            !isNullish(v) &&
+            typeof v === 'object' &&
+            recordOf(v)[RESOLVED_RELATIONSHIPS] !== undefined,
+        )
+      ) {
+        for (const v of vals) collect(v);
+      }
+    }
+  };
+  collect(schema);
+  // Also collect from schema.__schema directly if schema is a RuleInstance wrapping a plain shape
+  const schemaInner: unknown = recordOf(schema).__schema;
+  if (schemaInner) collect(schemaInner);
+  if (!relationships.length) return;
+  // Also consider top-level keys from describe dependencies target
+  for (const rel of relationships) {
+    const isRootSource = rel.__isRootSource === true;
+    const isRootTarget = rel.__isRootTarget === true;
+    if (!isRootSource && !isRootTarget) continue;
+    // For root source, check full path exists in final schema (not just top-level)
+    // to catch missing descendant like $.root.account.missing
+
+    const checkPath = (path: SchemaPath, fieldForMsg: string): void => {
+      const rootShape: unknown = recordOf(schema).__schema;
+      const unknownField = dottedSchemaPath(path);
+      let current: Record<PropertyKey, unknown> = isObject(rootShape)
+        ? recordOf(rootShape)
+        : {};
+      path.forEach((seg: SchemaPath[number], i: number): void => {
+        if (seg.type !== 'property') return;
+        const key = String(seg.key);
+        if (!hasOwnProperty(current, key)) {
+          throw new EnforceSchemaError(
+            `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${unknownField}"`,
+          );
+        }
+        const rule: unknown = current[key];
+        if (i < path.length - 1) {
+          current = nestedShapeOf(rule);
+        }
+      });
+    };
+    const targetField =
+      Array.isArray(rel.target) && rel.target.length
+        ? lastPropertyKeyOf(rel.target)
+        : 'unknown';
+    const sourceField =
+      Array.isArray(rel.source) && rel.source.length
+        ? lastPropertyKeyOf(rel.source)
+        : 'unknown';
+    if (isRootSource) {
+      checkPath(rel.source, targetField);
+    }
+    if (isRootTarget) {
+      checkPath(rel.target, sourceField);
+    }
+  }
 }

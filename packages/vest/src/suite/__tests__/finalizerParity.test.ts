@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-// Relative source imports pin both boundaries to the same n4s copy.
-import { enforce } from '../../../../n4s/src/n4s';
-import { EnforceSchemaError } from '../../../../n4s/src/errors/EnforceSchemaError';
+// Public-entry imports pin both boundaries to the same n4s copy.
+import { enforce, EnforceSchemaError } from 'n4s';
 
 import { create } from '../../vest';
 

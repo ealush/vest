@@ -1,15 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { enforce } from 'n4s';
-import { isNullish } from 'vest-utils';
 
 import { create, test } from '../../vest';
-import {
-  buildProjectedSchema,
-  expandAffectedWithSources,
-  filterSchemaResultsToAffected,
-  mergeSupplementalResults,
-} from '../useCreateSuiteRunner';
-import type { SchemaRunResult } from '../useCreateSuiteRunner';
 
 declare global {
   namespace n4s {
@@ -20,15 +12,6 @@ declare global {
   }
 }
 
-/**
- * Executable view of a projected fragment. The generic schema type cannot
- * name its own data type, so each test pins it from its own schema instead
- * of reaching for an untyped escape hatch.
- */
-type ExecutableFragment<Data> = {
-  parse: (value: Data) => unknown;
-};
-
 const rootSchema = enforce.shape({
   accountType: enforce.isString(),
   company: enforce.shape({
@@ -38,51 +21,69 @@ const rootSchema = enforce.shape({
 });
 
 describe('changed() source-retaining projection', () => {
-  it('retains the local sibling source for a nested dependent', () => {
-    const expanded = expandAffectedWithSources(rootSchema, [
-      'accountType',
-      'company.taxId',
-    ]);
-    expect(expanded).toContain('accountType');
-    expect(expanded).toContain('company.taxId');
-    expect(expanded).toContain('company.country');
+  it('retains the local sibling source for a nested dependent', async () => {
+    // The invalid dependent composes only with its sibling source
+    // retained: the affected leaf failure is reported, not swallowed by an
+    // orphaned-source fallback.
+    const suite = create(() => {}, rootSchema);
+    const data: {
+      accountType: string;
+      company: { country: string; taxId: string | number };
+    } = {
+      accountType: 'business',
+      company: { country: 'CA', taxId: 42 },
+    };
+    // @ts-expect-error - probe: taxId is deliberately rule-invalid (number)
+    const changed = await suite.changed('company.taxId').run(data);
+    expect(changed.hasErrors('company.taxId')).toBe(true);
   });
 
-  it('retains the $.root provider for a nested dependent', () => {
-    const expanded = expandAffectedWithSources(rootSchema, [
-      'company.country',
-      'company.taxId',
-    ]);
-    expect(expanded).toContain('accountType');
+  it('retains the $.root provider for a nested dependent', async () => {
+    // Broken provider, valid dependent: the retained source composes, and
+    // the provider failure attributes away from the affected leaf.
+    const suite = create(() => {}, rootSchema);
+    const data: {
+      accountType: string | number;
+      company: { country: string; taxId: string };
+    } = {
+      accountType: 42,
+      company: { country: 'CA', taxId: 'ok' },
+    };
+    // @ts-expect-error - probe: accountType is deliberately rule-invalid
+    const changed = await suite.changed('company.taxId').run(data);
+    expect(changed.hasErrors('company.taxId')).toBe(false);
+    expect(changed.hasErrors()).toBe(false);
   });
 
-  it('projected fragment composes without orphaned sources', () => {
-    for (const affected of [
-      ['accountType', 'company.taxId'],
-      ['company.country', 'company.taxId'],
-    ]) {
-      const expanded = expandAffectedWithSources(rootSchema, affected);
-      const projected = buildProjectedSchema(rootSchema, expanded);
-      expect(projected).not.toBeNull();
-      if (isNullish(projected)) {
-        throw new Error('projected schema must compose');
-      }
-      // Projected fragments stay executable: parse accepts the source
-      // schema's own data. The fragment type cannot name that data type, so
-      // this single interop-boundary assertion pins it precisely per schema.
-      type RootData = Parameters<typeof rootSchema.parse>[0];
-      const parse = (projected as unknown as ExecutableFragment<RootData>)
-        .parse;
-      expect(() =>
-        parse({
-          accountType: 'business',
-          company: { country: 'CA', taxId: '123' },
-        }),
-      ).not.toThrow();
-    }
+  it('projected fragments compose without orphaned sources', async () => {
+    // Both the source-side and target-side changes run to a verdict:
+    // neither direction orphans a dependency source at composition.
+    const suite = create(() => {}, rootSchema);
+    const badTax: {
+      accountType: string;
+      company: { country: string; taxId: string | number };
+    } = {
+      accountType: 'business',
+      company: { country: 'CA', taxId: 42 },
+    };
+    // @ts-expect-error - probe: taxId is deliberately rule-invalid (number)
+    const byTarget = await suite.changed('company.taxId').run(badTax);
+    expect(byTarget.hasErrors('company.taxId')).toBe(true);
+    const badCountry: {
+      accountType: string;
+      company: { country: string | number; taxId: string };
+    } = {
+      accountType: 'business',
+      company: { country: 42, taxId: 'ok' },
+    };
+    // @ts-expect-error - probe: country is deliberately rule-invalid
+    const bySource = await suite.changed('company.country').run(badCountry);
+    expect(bySource.hasErrors('company.country')).toBe(true);
   });
 
-  it('concretizes array item sources to the affected index', () => {
+  it('concretizes array item targets to the changed index', async () => {
+    // Only index 0 is invalid while index 1 changed: same-index
+    // concretization must not leak the unaffected index 0 failure in.
     const schema = enforce.shape({
       rows: enforce.isArrayOf(
         enforce.shape({
@@ -91,17 +92,33 @@ describe('changed() source-retaining projection', () => {
         }),
       ),
     });
-    const expanded = expandAffectedWithSources(schema, [
-      'rows.1.country',
-      'rows.1.state',
-    ]);
-    expect(expanded).toContain('rows.1.country');
-    const projected = buildProjectedSchema(schema, expanded);
-    expect(projected).not.toBeNull();
+    const suite = create(() => {}, schema);
+    const data: {
+      rows: { country: string; state: string | number }[];
+    } = {
+      rows: [
+        { country: 'US', state: 42 },
+        { country: 'CA', state: 'ok' },
+      ],
+    };
+    // @ts-expect-error - probe: rows.0.state is deliberately rule-invalid
+    const changed = await suite.changed('rows.1.country').run(data);
+    expect(changed.hasErrors('rows.1.state')).toBe(false);
+    expect(changed.hasErrors('rows.0.state')).toBe(false);
+    expect(changed.hasErrors()).toBe(false);
   });
 
-  it('passes through when the schema exposes no dependencies', () => {
-    expect(expandAffectedWithSources({}, ['a.b'])).toEqual(['a.b']);
+  it('passes changed names through when the schema exposes no dependencies', async () => {
+    // No graph, no expansion: the raw changed name still selects its test.
+    const seen: string[] = [];
+    const suite = create((data: { a: { b: string } }) => {
+      test('a.b', () => {
+        seen.push('a.b');
+        enforce(data.a.b).isString();
+      });
+    });
+    await suite.changed('a.b').run({ a: { b: 'x' } });
+    expect(seen).toEqual(['a.b']);
   });
 
   it('record string keys: changed(recordKey.field) invalidates dependents', async () => {
@@ -302,104 +319,6 @@ describe('changed() source-retaining projection', () => {
     expect(skipped.hasErrors('profile.state')).toBe(false);
   });
 
-  it('failure filtering: exact skips, parent keeps, coercion equality', () => {
-    // Nested skip names are unreachable through the typed focus API, so
-    // the post-filter contract is pinned directly: exact skips drop,
-    // parent skips do not (runtime parity), parent matching keeps in both
-    // directions, root failures stay, numeric coercions ('1' vs 1) compare
-    // equal, and dotted record keys keep the historical keep-behavior
-    // (dedupe collisions for them are handled by structured result keys).
-    const failure = (
-      path: readonly string[],
-      message = 'invalid',
-    ): SchemaRunResult => ({ pass: false, path, message });
-    const data = {};
-    const live = (results: SchemaRunResult[]): boolean =>
-      results.some(result => !result.pass);
-
-    // Exact skip drops (an empty keep-set falls back to a pass entry).
-    expect(
-      live(
-        filterSchemaResultsToAffected(
-          [failure(['profile', 'state'])],
-          ['profile'],
-          data,
-          ['profile.state'],
-        ),
-      ),
-    ).toBe(false);
-
-    // Parent skip does not suppress nested synthesis (runtime parity):
-    // the failure is affected, and only an exact skip drops it.
-    expect(
-      live(
-        filterSchemaResultsToAffected(
-          [failure(['profile', 'state'])],
-          ['profile.state'],
-          data,
-          ['profile'],
-        ),
-      ),
-    ).toBe(true);
-
-    // Numeric coercions compare equal on both sides.
-    expect(
-      live(
-        filterSchemaResultsToAffected(
-          [failure(['dictionary', '1', 'state'])],
-          ['dictionary.1.country', 'dictionary.1.state'],
-          data,
-          null,
-        ),
-      ),
-    ).toBe(true);
-
-    // Dotted record keys keep the historical keep-behavior.
-    expect(
-      live(
-        filterSchemaResultsToAffected(
-          [failure(['dictionary', 'a.b', 'state'])],
-          ['dictionary.a'],
-          data,
-          null,
-        ),
-      ),
-    ).toBe(true);
-
-    // Pathless failures read as global: kept, never skipped.
-    expect(
-      live(filterSchemaResultsToAffected([failure([])], ['a'], data, ['a'])),
-    ).toBe(true);
-
-    // Bracket-spelled skips do not suppress dotted synthesis (runtime
-    // parity): the runtime matches skip entries against test names exactly,
-    // so skip('items[0]') leaves a synthesized 'items.0' failure in
-    // place — exactly what the full run reports, where nested skips are
-    // no-ops in omit().
-    expect(
-      live(
-        filterSchemaResultsToAffected(
-          [failure(['items', '0'])],
-          ['items.0'],
-          data,
-          ['items[0]'],
-        ),
-      ),
-    ).toBe(true);
-
-    // The exact dotted spelling still drops.
-    expect(
-      live(
-        filterSchemaResultsToAffected(
-          [failure(['items', '0'])],
-          ['items.0'],
-          data,
-          ['items.0'],
-        ),
-      ),
-    ).toBe(false);
-  });
-
   it('skip() of a parent does not suppress nested synthesis', async () => {
     // Runtime skip() matches user tests by exact field name; synthesized
     // schema tests mirror that — skipping 'profile' leaves a nested
@@ -461,46 +380,6 @@ describe('changed() source-retaining projection', () => {
     expect(seen).toContain('dictionary.1.country');
   });
 
-  it('records keep the full rule under projection (key-rule parity)', () => {
-    // Narrowing through record(value) would drop a two-arg record's key
-    // rule (n4s exposes only the value rule in the item slot), so the
-    // projection keeps the whole record rule. Suffixes alone cannot tell
-    // numeric record keys from indices — the container-kind marker routes
-    // here instead of the array rebuild, which would reject record data.
-    // A single affected key matters: with every key affected the value
-    // shape narrows to nothing and the old rebuild path is never reached.
-    const schema = enforce.shape({
-      dictionary: enforce.record(
-        enforce.isString().longerThan(3),
-        enforce.shape({
-          country: enforce.isString(),
-          state: enforce.isString().dependsOn($ => $.country),
-        }),
-      ),
-    });
-    const expanded = expandAffectedWithSources(schema, [
-      'dictionary.1.country',
-    ]);
-    const projected = buildProjectedSchema(schema, expanded);
-    expect(projected).not.toBeNull();
-    if (isNullish(projected)) {
-      throw new Error('projected schema must compose');
-    }
-    type DictData = Parameters<typeof schema.parse>[0];
-    const parse = (projected as unknown as ExecutableFragment<DictData>).parse;
-    expect(() =>
-      parse({ dictionary: { abcd: { country: 'CA', state: 'abc' } } }),
-    ).not.toThrow();
-    // Key validation matches the full run exactly — nothing was dropped
-    // (keys validate before values, so the short key throws either way).
-    expect(() =>
-      parse({ dictionary: { '1': { country: 'CA', state: 'abc' } } }),
-    ).toThrow();
-    expect(() =>
-      schema.parse({ dictionary: { '1': { country: 'CA', state: 'abc' } } }),
-    ).toThrow();
-  });
-
   it('supplement skips members when data contradicts the container kind', async () => {
     // Array schema with object data: per-key dispatch would invent a
     // member failure the full run never attributed. The container-kind
@@ -542,18 +421,6 @@ describe('changed() source-retaining projection', () => {
     // members.
     const changed = await suite.changed('matrix.1').run(data);
     expect(changed.hasErrors('matrix.1')).toBe(true);
-  });
-
-  it('merge keeps same-message failures on colliding dotted paths', () => {
-    // A literal dotted record key and a nested path join identically —
-    // structured keys must not collapse them into one failure.
-    const main: SchemaRunResult[] = [
-      { pass: false, path: ['dictionary', 'a', 'b', 'state'], message: 'x' },
-    ];
-    const extra: SchemaRunResult[] = [
-      { pass: false, path: ['dictionary', 'a.b', 'state'], message: 'x' },
-    ];
-    expect(mergeSupplementalResults(main, extra)).toHaveLength(2);
   });
 
   it('primitive containers: per-member failures without graphs', async () => {

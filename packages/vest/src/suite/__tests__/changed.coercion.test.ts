@@ -2,8 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { enforce } from 'n4s';
 
 import { create } from '../../vest';
-import { mergeSupplementalResults } from '../useCreateSuiteRunner';
-import type { SchemaRunResult } from '../useCreateSuiteRunner';
 
 const coercingSchema = enforce.shape({
   rows: enforce.isArrayOf(enforce.isNumeric().toNumber()),
@@ -65,15 +63,5 @@ describe('changed() coercion parity for excluded array members', () => {
     expect(changed.run.data.parsed).toEqual(full.run.data.parsed);
     expect(changedInput).toEqual(data);
     expect(changedInput).toEqual(fullInput);
-  });
-
-  it('merge folds passing supplement types instead of appending them', () => {
-    const main: SchemaRunResult[] = [{ pass: true, type: { rows: ['42'] } }];
-    const extra: SchemaRunResult[] = [
-      { pass: true, path: ['rows', '0'], type: 42 },
-    ];
-    const merged = mergeSupplementalResults(main, extra);
-    expect(merged).toHaveLength(1);
-    expect(merged[0]?.type).toEqual({ rows: [42] });
   });
 });

@@ -4,7 +4,6 @@ import { compose, enforce } from '../../../n4s';
 import { EnforceSchemaError } from '../../../errors/EnforceSchemaError';
 import { RESOLVED_RELATIONSHIPS } from '../../../schema/dependencyResolver';
 import type { SchemaRelationship } from '../../../schema/SchemaRelationship';
-import type { ScopeHandle } from '../../../utils/RuleInstance';
 
 type PathSegment = {
   type?: string;
@@ -98,8 +97,6 @@ describe('item relationships', () => {
   });
 
   it('multi-rule isArrayOf describes the union of member edges', () => {
-    // Union semantics: an element may match ANY member rule, so the item
-    // graph is the union of member graphs (over-approximating, never empty).
     const schema = enforce.shape({
       items: enforce.isArrayOf(
         enforce.shape({
@@ -131,8 +128,6 @@ describe('item relationships', () => {
   });
 
   it('doubly nested isArrayOf describes the inner edge', () => {
-    // The item graph lives two ITEM_SCHEMA hops down; describe() must
-    // recurse instead of dropping it (each level appends an item segment).
     const schema = enforce.shape({
       m: enforce.isArrayOf(
         enforce.isArrayOf(
@@ -150,10 +145,6 @@ describe('item relationships', () => {
   });
 
   it('diamond members emit both the direct and the nested edge', () => {
-    // isArrayOf(mid, inner) with mid = isArrayOf(inner) reaches `inner`
-    // under two prefixes. A shared visited-set would swallow the second
-    // occurrence (under-invalidation); only the current descent path is
-    // guarded, so both edges surface.
     const inner = enforce.shape({
       country: enforce.isString(),
       state: enforce.isString().dependsOn($ => $.country),
@@ -171,8 +162,6 @@ describe('item relationships', () => {
   });
 
   it('converging diamonds emit one edge, not 2^d copies', () => {
-    // The same member reachable via several same-depth paths (here via
-    // both members) yields byte-identical edges; describe() keeps one.
     const inner = enforce.shape({
       country: enforce.isString(),
       state: enforce.isString().dependsOn($ => $.country),
@@ -189,8 +178,6 @@ describe('item relationships', () => {
   });
 
   it('multi-rule array with a nested container member keeps the edge', () => {
-    // Container members (no __schema of their own) must survive the
-    // member filter so recursion can reach the graph inside them.
     const schema = enforce.shape({
       m: enforce.isArrayOf(
         enforce.isArrayOf(
@@ -226,8 +213,6 @@ describe('item relationships', () => {
   });
 
   it('composed graph-carrying rule keeps its edge when mounted', () => {
-    // compose() of a single composite forwards the schema slots, so the
-    // composed rule describes exactly like the rule it wraps.
     const inner = enforce.shape({
       country: enforce.isString(),
       state: enforce.isString().dependsOn($ => $.country),
@@ -259,9 +244,6 @@ describe('item relationships', () => {
   });
 
   it('non-invalidate effects throw the deferred-to-v2 error at composition', () => {
-    // No public API produces a 'revalidate' effect in V1 — every resolver
-    // emits 'invalidate'. The planted slot below pins the composition-time
-    // V1 boundary so a future effect value cannot slip through silently.
     const inner = enforce.shape({
       country: enforce.isString(),
       state: enforce.isString().dependsOn($ => $.country),
@@ -276,20 +258,6 @@ describe('item relationships', () => {
     ];
     expect(() => enforce.shape({ m: enforce.isArrayOf(inner) })).toThrow(
       /deferred to v2/,
-    );
-  });
-
-  it('revalidates() throws the stable removed-before-V1 migration error', () => {
-    // `revalidates()` was removed before V1 and exists only as a throwing
-    // stub. The message is pinned exactly — keep it stable.
-    let message = '';
-    try {
-      enforce.isString().revalidates(($: ScopeHandle) => $.country);
-    } catch (e) {
-      message = (e as Error).message;
-    }
-    expect(message).toBe(
-      'revalidates() was removed before V1; use .dependsOn() for the same edge',
     );
   });
 });

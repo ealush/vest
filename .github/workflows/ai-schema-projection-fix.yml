@@ -10,49 +10,43 @@ permissions:
 
 jobs:
   patch:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: feat/schema-relationships-20260903-fix
           fetch-depth: 0
-      - name: Apply projection changes
-        shell: bash
+      - name: Patch selective execution
         run: |
-          python <<'PY'
+          python3 <<'PY'
           from pathlib import Path
 
           dep = Path('packages/n4s/src/schema/dependencyResolver.ts')
           text = dep.read_text()
           needle = "import { propertySegment } from './SchemaPath';\n"
-          replacement = needle + "import { isSchemaExecutionProjection } from './projectionContext';\n"
-          assert needle in text and "from './projectionContext'" not in text
-          text = text.replace(needle, replacement, 1)
-
+          if "from './projectionContext'" not in text:
+              assert needle in text
+              text = text.replace(needle, needle + "import { isSchemaExecutionProjection } from './projectionContext';\n", 1)
           needle = "export function resolveInlineDeps(\n  shape: Record<string, RuleInstance<unknown, unknown[]>>,\n  scopePath: SchemaPath,\n  rootShape: Record<PropertyKey, unknown>,\n): SchemaRelationship[] {\n  const relationships: SchemaRelationship[] = [];"
-          replacement = "export function resolveInlineDeps(\n  shape: Record<string, RuleInstance<unknown, unknown[]>>,\n  scopePath: SchemaPath,\n  rootShape: Record<PropertyKey, unknown>,\n): SchemaRelationship[] {\n  // Selective execution already planned relationships from the complete\n  // schema. Its private fragment is executable validation only: rebuilding\n  // relationship metadata here would require provider fields to be retained\n  // and would accidentally execute validators outside the affected set.\n  if (isSchemaExecutionProjection()) return [];\n\n  const relationships: SchemaRelationship[] = [];"
+          replacement = "export function resolveInlineDeps(\n  shape: Record<string, RuleInstance<unknown, unknown[]>>,\n  scopePath: SchemaPath,\n  rootShape: Record<PropertyKey, unknown>,\n): SchemaRelationship[] {\n  // Selective execution already planned relationships from the complete\n  // schema. Its private fragment is executable validation only.\n  if (isSchemaExecutionProjection()) return [];\n\n  const relationships: SchemaRelationship[] = [];"
           assert needle in text
-          text = text.replace(needle, replacement, 1)
-          dep.write_text(text)
+          dep.write_text(text.replace(needle, replacement, 1))
 
           selective = Path('packages/n4s/src/schema/selectiveRun.ts')
           text = selective.read_text()
           needle = "import { isPropertySegment } from './SchemaPath';\n"
-          replacement = needle + "import { withSchemaExecutionProjection } from './projectionContext';\n"
-          assert needle in text and "from './projectionContext'" not in text
-          text = text.replace(needle, replacement, 1)
+          if "from './projectionContext'" not in text:
+              assert needle in text
+              text = text.replace(needle, needle + "import { withSchemaExecutionProjection } from './projectionContext';\n", 1)
 
           old = """  // Retain dependency sources (local siblings, $.root providers) so the
   // projected fragment still composes to a valid graph. Failures stay
   // narrowed to the original affected paths afterward.
   const expanded = expandAffectedWithSources(schema, nestedAffected);
 """
-          new = """  // Relationship metadata has already done its job: it selected the affected
-  // targets above. The executable projection must contain only those targets;
-  // retaining source validators would turn invalidation metadata into an
-  // execution dependency. Projection construction runs in an internal mode
-  // that does not recompile dependsOn() edges into the private fragment.
+          new = """  // Relationship metadata selected the affected targets above. The private
+  // executable fragment contains those targets only; retaining providers
+  // would turn invalidation metadata into an execution dependency.
   const expanded = [...nestedAffected];
 """
           assert old in text
@@ -76,50 +70,28 @@ jobs:
   expanded: string[],
   data: unknown,
 ): { mainRun: ProjectedMainRun; supplement: ArraySupplement } {
-  // Construct the private fragment after planning has consumed the complete
-  // relationship graph. This lets a target be projected without retaining
-  // (and therefore executing) validators for its dependency providers.
   const projectedSchema = withSchemaExecutionProjection(() =>
     buildProjectedSchema(schema, expanded),
   );
 
-  // If projection is impossible for reasons unrelated to relationship
-  // providers (unknown provenance, moved container chain, etc.), preserve the
-  // established full-run fallback and its normal boundary validation.
+  // Keep genuine unprojectable cases on the normal full-schema fallback.
   if (!projectedSchema) {
     const mainRun = runProjectedOrFull(null, schema, modifiers, data);
-    const supplement = collectSupplementForMain(
-      mainRun,
-      schema,
-      expanded,
-      data,
-    );
+    const supplement = collectSupplementForMain(mainRun, schema, expanded, data);
     return { mainRun, supplement };
   }
 
   return withSchemaExecutionProjection(() => {
-    const mainRun = runProjectedOrFull(
-      projectedSchema,
-      schema,
-      modifiers,
-      data,
-    );
-    const supplement = collectSupplementForMain(
-      mainRun,
-      schema,
-      expanded,
-      data,
-    );
+    const mainRun = runProjectedOrFull(projectedSchema, schema, modifiers, data);
+    const supplement = collectSupplementForMain(mainRun, schema, expanded, data);
     return { mainRun, supplement };
   });
 }
 """
           assert old in text
-          text = text.replace(old, new, 1)
-          selective.write_text(text)
+          selective.write_text(text.replace(old, new, 1))
           PY
 
-          git rm .github/workflows/ai-schema-projection-fix.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add packages/n4s/src/schema/dependencyResolver.ts packages/n4s/src/schema/selectiveRun.ts

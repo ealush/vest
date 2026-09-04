@@ -14,21 +14,20 @@ import type {
   SchemaRelationship,
 } from '../../schema/SchemaRelationship';
 import type { RuleInstance, ScopeHandle } from '../../utils/RuleInstance';
-import {
-  cloneRelationship,
-  groupDependencies,
-  REVALIDATES_REMOVED_MESSAGE,
-} from '../../utils/RuleInstance';
+import { cloneRelationship, groupDependencies } from '../../utils/RuleInstance';
 import {
   CHAIN_BASELINE,
   CHAIN_INFO,
   ITEM_SCHEMA,
+  RESOLVED_RELATIONSHIPS,
   assertRuleRootedPathsValid,
 } from '../../schema/dependencyResolver';
 import type { ChainBaseline, ChainInfo } from '../../schema/dependencyResolver';
 
 import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
+
+const COMPOSITION_CHILDREN = Symbol.for('vest:compositionChildren');
 
 export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
   keyof Omit<
@@ -39,94 +38,125 @@ export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
     | 'parse'
     | '~standard'
     | 'dependsOn'
-    | 'revalidates'
     | 'describe'
   >,
   (...args: unknown[]) => boolean | ReturnType<Predicate>
 >;
-
-// REVALIDATES_REMOVED_MESSAGE lives in utils/RuleInstance (imported above)
-// and is re-exported here so existing import sites keep working.
-export { REVALIDATES_REMOVED_MESSAGE };
 
 type LazyMessage = DynamicValue<
   string,
   [value: unknown, originalMessage?: Stringable]
 >;
 
-// Boundary tracking for the standalone finalization boundary below. A plain
-// call-depth counter is wrong here: a custom matcher can run an INDEPENDENT
-// schema while another schema is active, and depth > 0 would wrongly skip
-// the independent schema's own check. Instead this is a stack of the rule
-// identities (chain targets) currently inside a boundary window.
-//
-// A nested entry skips its check only when it belongs to the active
-// composition — the same rule re-entered, or a rule mounted into an active
-// root's schema graph (reusable fragments whose dangling $.root edges stay
-// lenient until finalization against the final root). An independent root is
-// never a member of the active composition, so it always validates against
-// its own root shape, nested or not.
-const activeBoundaryRoots: object[] = [];
+type ObjectLike = object | ((...args: any[]) => unknown);
+type BoundaryFrame = {
+  members: WeakSet<object>;
+};
+
+// Only roots containing deferred $.root relationships need boundary tracking.
+// Each active root computes its composition membership once; nested chain runs
+// are then O(1) WeakSet lookups instead of repeatedly walking the schema graph.
+const activeBoundaryFrames: BoundaryFrame[] = [];
 
 // Maps each chain proxy to its internal target so composition membership
-// can be resolved by identity: `__schema` graphs hold proxies while the
-// boundary receives targets.
+// resolves by identity: __schema graphs store proxies while run()/validate()
+// receive their underlying targets.
 const proxyToTarget = new WeakMap<object, object>();
 
-function isObjectNode(node: unknown): node is Record<PropertyKey, unknown> {
-  return !!node && typeof node === 'object';
+function isObjectNode(node: unknown): node is ObjectLike {
+  return (
+    node !== null && (typeof node === 'object' || typeof node === 'function')
+  );
 }
 
 function resolveBoundaryNode(node: unknown): object | null {
   if (!isObjectNode(node)) return null;
-  return proxyToTarget.get(node) ?? node;
+  return proxyToTarget.get(node as object) ?? (node as object);
 }
 
 function schemaChildNodes(record: Record<PropertyKey, unknown>): unknown[] {
   const schema = record.__schema;
-  if (!isObjectNode(schema)) return [];
+  if (!schema || typeof schema !== 'object') return [];
   return Object.values(schema);
 }
 
 function itemChildNodes(record: Record<PropertyKey, unknown>): unknown[] {
   const item = record[ITEM_SCHEMA];
-  // Tuples and multi-rule isArrayOf store their element schemas as an array;
-  // each element is a composition member, not an opaque object.
   if (Array.isArray(item)) return item.filter(isObjectNode);
   return isObjectNode(item) ? [item] : [];
 }
 
-function childNodesOf(resolved: object): unknown[] {
-  const record = resolved as Record<PropertyKey, unknown>;
-  return [...schemaChildNodes(record), ...itemChildNodes(record)];
+function explicitCompositionChildren(
+  record: Record<PropertyKey, unknown>,
+): unknown[] {
+  const children = record[COMPOSITION_CHILDREN];
+  return Array.isArray(children) ? children.filter(isObjectNode) : [];
 }
 
-function isCompositionMember(rule: unknown, roots: object[]): boolean {
+function childNodesOf(resolved: object): unknown[] {
+  const record = resolved as Record<PropertyKey, unknown>;
+  return [
+    ...schemaChildNodes(record),
+    ...itemChildNodes(record),
+    ...explicitCompositionChildren(record),
+  ];
+}
+
+function collectCompositionMembers(root: unknown): WeakSet<object> {
+  const members = new WeakSet<object>();
   const seen = new Set<object>();
-  const pending: unknown[] = [...roots];
+  const pending: unknown[] = [root];
   while (pending.length > 0) {
-    const resolved = resolveBoundaryNode(pending.pop());
-    if (resolved === rule) return true;
+    const raw = pending.pop();
+    if (isObjectNode(raw)) members.add(raw as object);
+    const resolved = resolveBoundaryNode(raw);
     if (!resolved || seen.has(resolved)) continue;
     seen.add(resolved);
+    members.add(resolved);
     pending.push(...childNodesOf(resolved));
+  }
+  return members;
+}
+
+function isActiveCompositionMember(rule: unknown): boolean {
+  if (!isObjectNode(rule)) return false;
+  const resolved = resolveBoundaryNode(rule);
+  if (!resolved) return false;
+  for (let i = activeBoundaryFrames.length - 1; i >= 0; i--) {
+    const frame = activeBoundaryFrames[i];
+    if (frame?.members.has(rule as object) || frame?.members.has(resolved)) {
+      return true;
+    }
   }
   return false;
 }
 
+function hasRootedRelationships(rule: unknown): boolean {
+  if (!isObjectNode(rule)) return false;
+  const rels = (rule as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS];
+  return (
+    Array.isArray(rels) &&
+    (rels as InternalRelationship[]).some(
+      rel => rel.__isRootSource === true || rel.__isRootTarget === true,
+    )
+  );
+}
+
 function withStandaloneRootedBoundary<R>(rule: unknown, fn: () => R): R {
-  if (
-    activeBoundaryRoots.length > 0 &&
-    isCompositionMember(rule, activeBoundaryRoots)
-  ) {
+  // The common case: ordinary rules and relationship graphs with only local
+  // edges pay no boundary bookkeeping at all.
+  if (!hasRootedRelationships(rule)) return fn();
+  if (activeBoundaryFrames.length > 0 && isActiveCompositionMember(rule)) {
     return fn();
   }
-  activeBoundaryRoots.push(rule as object);
+
+  const frame = { members: collectCompositionMembers(rule) };
+  activeBoundaryFrames.push(frame);
   try {
     assertRuleRootedPathsValid(rule);
     return fn();
   } finally {
-    activeBoundaryRoots.pop();
+    activeBoundaryFrames.pop();
   }
 }
 
@@ -157,8 +187,6 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
     return proxy;
   };
 
-  // Records the observable trace of chain depth. Combinators snapshot it
-  // as a baseline at construction; consumers bail when it moved.
   const syncChainInfo = (): void => {
     const slots = target as unknown as Record<symbol, unknown>;
     const current = slots[CHAIN_INFO] as ChainInfo | undefined;
@@ -175,16 +203,11 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
     value: unknown,
   ): string => {
     const defaultMessage = result.message || 'Validation failed';
-    if (!lazyMessage) {
-      return defaultMessage;
-    }
+    if (!lazyMessage) return defaultMessage;
     return dynamicValue(lazyMessage, value, result.message) ?? defaultMessage;
   };
 
   const validate = ((...args: unknown[]) => {
-    // Standalone finalization boundary: a schema carrying dangling $.root
-    // edges is invalid here, even though composition stays lenient for
-    // reusable fragments (validated again at their final root).
     return withStandaloneRootedBoundary(target, () => {
       const result = executeChain(chain, args[0] as unknown);
       if (result.pass) {
@@ -208,16 +231,11 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
     return !result.issues;
   }) as unknown as T['test'];
 
-  // Internal compatibility method - converts StandardSchema Result to RuleRunReturn
-
   const parse = ((...args: unknown[]) => {
     const result = (
       validate as unknown as (...a: unknown[]) => ReturnType<T['validate']>
     )(...args);
-    if (!result.issues) {
-      return result.value as ReturnType<T['parse']>;
-    }
-
+    if (!result.issues) return result.value as ReturnType<T['parse']>;
     const [firstIssue] = result.issues as Array<{ message?: string }>;
     throw new TypeError(firstIssue?.message || 'Validation failed');
   }) as unknown as T['parse'];
@@ -240,8 +258,6 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   const message = (msg: Stringable): T => {
     if (msg) {
       lazyMessage = msg;
-      // A custom message changes failure text, so it dirties the chain
-      // trace exactly like an extra predicate would.
       const slots = target as unknown as Record<symbol, unknown>;
       const current = slots[CHAIN_INFO] as ChainInfo | undefined;
       const next: ChainInfo = {
@@ -256,7 +272,6 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
 
   const dependsOn = (resolver: (scope: ScopeHandle) => unknown): T => {
     unresolvedDeps.push({ resolver });
-    // also store on target for external inspection (shape resolver)
     (target as unknown as Record<symbol, unknown>)[
       Symbol.for('vest:unresolvedDeps')
     ] = unresolvedDeps;
@@ -264,13 +279,6 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
       Symbol.for('vest:unresolvedDeps')
     ] = unresolvedDeps;
     return proxy;
-  };
-
-  // Removed-before-V1 stub: `revalidates()` never existed in a release.
-  // It throws an actionable migration error instead of failing silently
-  // as an unknown rule.
-  const revalidates = (): T => {
-    throw new Error(REVALIDATES_REMOVED_MESSAGE);
   };
 
   const describe = (): ReturnType<T['describe']> => {
@@ -283,15 +291,11 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
       ] ||
       [];
     const rawArray = raw as InternalRelationship[];
-    // Deep-clone paths/segments and drop internal flags so the public
-    // snapshot shares no references with the live relationship graph.
-    // Shared with RuleInstance.describe: identical output, one implementation.
     const resolved: SchemaRelationship[] = rawArray.map(cloneRelationship);
     const dependencies: SchemaDependency[] = groupDependencies(resolved);
-    return {
-      dependencies,
-      relationships: resolved,
-    } as ReturnType<T['describe']>;
+    return { dependencies, relationships: resolved } as ReturnType<
+      T['describe']
+    >;
   };
 
   const proxy: T = new Proxy(
@@ -325,18 +329,15 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
       message,
       parse,
       prepend,
-      revalidates,
       run,
       test,
       validate,
     }),
   );
 
-  // Ensure symbols are accessible via proxy get trap fallback
   (proxy as unknown as Record<symbol, unknown>)[
     Symbol.for('vest:unresolvedDeps')
   ] = unresolvedDeps;
-
   proxyToTarget.set(proxy as unknown as object, target as object);
 
   return { add, proxy } as const;

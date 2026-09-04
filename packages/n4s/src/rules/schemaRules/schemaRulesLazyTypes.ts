@@ -52,17 +52,9 @@ export interface SchemaMemberRule {
     readonly types: StandardSchemaV1.Types<unknown, unknown>;
   };
   dependsOn(resolver: (scope: ScopeHandle) => unknown): SchemaMemberRule;
-  /**
-   * Removed before V1. Always throws an actionable migration error
-   * ('removed before V1; use .dependsOn() for the same edge').
-   */
-  revalidates(resolver: (scope: ScopeHandle) => unknown): never;
   describe(): DescribeResult;
 }
 
-/**
- * Type mappings for schema rule lazy API return types
- */
 export type SchemaRuleLazyTypes = {
   isArrayOf: <Rules extends RuleInstance<any, any>[]>(
     ...rules: Rules

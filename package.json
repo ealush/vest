@@ -2,7 +2,7 @@
   "name": "vest-monorepo",
   "scripts": {
     "build": "vx build && yarn build:llms",
-    "test": "vx test run --typecheck",
+    "test": "vx test run --typecheck && tsc --noEmit",
     "test:watch": "vx test",
     "bench": "npx tsx vx/scripts/benchmark-reporter.ts --update",
     "release": "vx release",

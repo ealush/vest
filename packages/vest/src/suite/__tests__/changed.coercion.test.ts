@@ -44,6 +44,29 @@ describe('changed() coercion parity for excluded array members', () => {
     expect(changed.run.data.parsed).toEqual(full.run.data.parsed);
   });
 
+  it('preserves transformations outside the changed subtree', async () => {
+    const schema = enforce.shape({
+      profile: enforce.shape({ state: enforce.isString() }),
+      age: enforce.isNumeric().toNumber(),
+    });
+
+    let callbackInput: unknown;
+    const suite = create(data => {
+      callbackInput = data;
+    }, schema);
+
+    const input = { profile: { state: 'CA' }, age: '42' };
+    const full = await suite.run(input);
+    const changed = await suite.changed('profile.state').run(input);
+
+    expect(full.run.data.parsed).toEqual({
+      profile: { state: 'CA' },
+      age: 42,
+    });
+    expect(changed.run.data.parsed).toEqual(full.run.data.parsed);
+    expect(callbackInput).toEqual(full.run.data.parsed);
+  });
+
   it('failing run: raw-input fallback parity is preserved', async () => {
     let fullInput: unknown;
     let changedInput: unknown;

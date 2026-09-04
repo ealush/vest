@@ -23,6 +23,7 @@ import {
   assertRuleRootedPathsValid,
 } from '../../schema/dependencyResolver';
 import type { ChainBaseline, ChainInfo } from '../../schema/dependencyResolver';
+import { isSchemaExecutionProjection } from '../../schema/projectionContext';
 
 import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
@@ -143,6 +144,12 @@ function hasRootedRelationships(rule: unknown): boolean {
 }
 
 function withStandaloneRootedBoundary<R>(rule: unknown, fn: () => R): R {
+  // Selective execution has already consumed relationship metadata to plan
+  // the fragment. A planner-owned execution projection validates values only;
+  // re-enforcing $.root provider membership here would turn metadata into an
+  // execution dependency and force unrelated source validators to run.
+  if (isSchemaExecutionProjection()) return fn();
+
   // The common case: ordinary rules and relationship graphs with only local
   // edges pay no boundary bookkeeping at all.
   if (!hasRootedRelationships(rule)) return fn();

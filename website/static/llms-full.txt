@@ -9716,7 +9716,9 @@ Changing `startDate` invalidates `endDate` and vice versa. No loop occurs becaus
 > ```ts
 > /** @deferred v2 — effect:'revalidate' deferred, only 'invalidate' supported in V1 */
 > if (effect !== 'invalidate')
->   throw new Error(`effect:'${effect}' deferred to v2 — only 'invalidate' supported in V1`);
+>   throw new Error(
+>     `effect:'${effect}' deferred to v2 — only 'invalidate' supported in V1`,
+>   );
 > ```
 >
 > Future `revalidate` vs `invalidate` distinction (immediately rerun vs stale) is deferred.

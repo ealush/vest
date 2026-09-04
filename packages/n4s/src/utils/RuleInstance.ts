@@ -17,19 +17,6 @@ import { RuleRunReturn } from './RuleRunReturn';
  *
  * @template T - The output type this rule produces (may differ from input when parsers are used)
  * @template Args - The argument types for this rule (Args[0] is the input type)
- *
- * @example
- * ```typescript
- * const stringRule = enforce.isString();
- *
- * // Test returns boolean
- * stringRule.test('hello'); // true
- * stringRule.test(123); // false
- *
- * // StandardSchema validate method
- * const schemaResult = stringRule.validate('hello');
- * console.log(schemaResult.value); // 'hello'
- * ```
  */
 export interface ScopeHandle {
   readonly root: ScopeHandle;
@@ -43,13 +30,10 @@ export type DescribeResult = {
   relationships: SchemaRelationship[];
 };
 
-// Copies a path segment-by-segment so public describe() output never shares
-// array or segment references with the live relationship graph.
 export function clonePath(path: SchemaPath): SchemaPath {
   return path.map(seg => ({ ...seg }));
 }
 
-// Strips internal rootedness flags and deep-clones all paths/segments.
 export function cloneRelationship(
   rel: InternalRelationship,
 ): SchemaRelationship {
@@ -61,8 +45,6 @@ export function cloneRelationship(
   };
 }
 
-// Groups cloned relationships by target. Clones again so dependencies share
-// no references with the relationships output either.
 export function groupDependencies(
   resolved: SchemaRelationship[],
 ): SchemaDependency[] {
@@ -82,66 +64,24 @@ export function groupDependencies(
   return Array.from(depMap.values());
 }
 
-// Stable removal message for the pre-V1 `revalidates()` API. Pinned by
-// `itemRelationships.test.ts` — do not reword without updating the test.
-// Lives here (not chainBuilder) so both the class factory below and the
-// chain proxy can share it without an import cycle.
-export const REVALIDATES_REMOVED_MESSAGE =
-  'revalidates() was removed before V1; use .dependsOn() for the same edge';
-
 export class RuleInstance<T, Args extends any[] = any[]> {
-  // The runtime object produced by create() supports dynamic chaining.
-
   [key: string]: any;
 
-  // Type-only property for inference of rule return type
-  // (not used at runtime, assigned in create())
   infer!: T;
-
-  // Type-only declaration for the test function shape (returns boolean)
   test!: (...args: Args) => boolean;
-
-  // Internal compatibility method - returns RuleRunReturn format
   run!: (...args: Args) => RuleRunReturn<T>;
-
-  // Type-only declaration for the StandardSchema validate method
   validate!: (...args: Args) => StandardSchemaV1.Result<T>;
-
-  // Type-only declaration for parse helper that throws on issues
   parse!: (...args: Args) => T;
 
-  // Type-only declaration for StandardSchema property.
-  // The intersection with `{ readonly types: ... }` narrows `types` from optional
-  // (as declared in StandardSchemaV1.Props) to required. This is safe because
-  // RuleInstance.create() always sets `types` at runtime, and it enables
-  // TypeScript's conditional type inference in `InferSchemaData<S>` and
-  // `InferSchemaOutput<S>` to correctly extract `input` (Args[0]) vs `output` (T)
-  // — which is critical for parser chains where input and output types differ
-  // (e.g., isNumeric().toNumber(): input = string | number, output = number).
   '~standard'!: StandardSchemaV1.Props<Args[0], T> & {
     readonly types: StandardSchemaV1.Types<Args[0], T>;
   };
 
-  // Schema relationship API — typed to allow inference of $ without annotation
   dependsOn!: (resolver: (scope: ScopeHandle) => unknown) => this;
   describe!: () => DescribeResult;
-  /**
-   * Removed-before-V1 stub: `revalidates()` never shipped in a release.
-   * Kept on the type so schema-member constraints stay satisfied; always
-   * throws the REVALIDATES_REMOVED_MESSAGE migration error at runtime.
-   */
-  revalidates!: (resolver: (scope: ScopeHandle) => unknown) => never;
 
   private constructor() {}
 
-  /**
-   * Creates a new RuleInstance from a validation function.
-   * The created instance provides `test()`, `validate()` methods
-   * and the `~standard` property for StandardSchema compliance.
-   *
-   * @param rule - Validation function that returns a RuleRunReturn
-   * @returns A new RuleInstance that can be executed with values
-   */
   static create<R extends RuleInstance<T, Args>, T, Args extends any[]>(
     rule: (...args: Args) => RuleRunReturn<T>,
   ): R {
@@ -150,9 +90,7 @@ export class RuleInstance<T, Args extends any[] = any[]> {
     }> = [];
     const validate = (...args: Args): StandardSchemaV1.Result<T> => {
       const result = rule(...args);
-      if (result.pass) {
-        return { value: result.type };
-      }
+      if (result.pass) return { value: result.type };
       return {
         issues: [
           {
@@ -163,17 +101,11 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       };
     };
 
-    // Internal compatibility method - wraps validate and converts result back
-    const run = (...args: Args): RuleRunReturn<T> => {
-      return rule(...args);
-    };
+    const run = (...args: Args): RuleRunReturn<T> => rule(...args);
 
     const parse = (...args: Args): T => {
       const result = validate(...args);
-      if (!result.issues) {
-        return result.value;
-      }
-
+      if (!result.issues) return result.value;
       const [firstIssue] = result.issues;
       throw new TypeError(firstIssue?.message || 'Validation failed');
     };
@@ -199,7 +131,6 @@ export class RuleInstance<T, Args extends any[] = any[]> {
     } as unknown as R & {
       dependsOn: (resolver: (scope: ScopeHandle) => unknown) => R;
       describe: () => DescribeResult;
-      revalidates: (resolver: (scope: ScopeHandle) => unknown) => never;
     };
 
     const dependsOn = (resolver: (scope: ScopeHandle) => unknown): R => {
@@ -209,13 +140,12 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       ] = unresolvedDeps;
       return instance as unknown as R;
     };
+
     const describe = (): DescribeResult => {
       const raw =
         ((instance as unknown as Record<symbol, unknown>)[
           Symbol.for('vest:resolvedRelationships')
         ] as InternalRelationship[]) || [];
-      // Deep-clone paths/segments and drop internal flags so the public
-      // snapshot shares no references with the live relationship graph.
       const resolved: SchemaRelationship[] = raw.map(cloneRelationship);
       return {
         dependencies: groupDependencies(resolved),
@@ -223,13 +153,8 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       };
     };
 
-    const revalidates = (): never => {
-      throw new Error(REVALIDATES_REMOVED_MESSAGE);
-    };
-
     (instance as unknown as Record<string, unknown>).dependsOn = dependsOn;
     (instance as unknown as Record<string, unknown>).describe = describe;
-    (instance as unknown as Record<string, unknown>).revalidates = revalidates;
     (instance as unknown as Record<symbol, unknown>)[
       Symbol.for('vest:unresolvedDeps')
     ] = unresolvedDeps;

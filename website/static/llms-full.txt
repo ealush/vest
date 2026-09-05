@@ -1784,6 +1784,24 @@ enforce.extend({
 enforce(user.email).isValidEmail();
 ```
 
+### Parser-style custom rules and selective runs
+
+Custom rules are validators by default: Vest never executes them speculatively. That matters for dependency-aware runs — when `suite.changed()` revalidates an affected subset, untouched fields are mapped without running their validators. If your custom rule is really a **parser** (a pure transformation that cannot fail on its own, like upper-casing or trimming), declare it in `parsers` so selective runs can apply it to untouched fields:
+
+```js
+enforce.extend(
+  {
+    normalizeId: value => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Rules left out of `parsers` keep validator treatment: they run only when their own field is in the affected set. See [Input vs output types with parsers](https://vestjs.dev/docs/writing_your_suite/schema_validation#input-vs-output-types-with-parsers) and [Custom Parsers and Selective Runs](https://vestjs.dev/docs/writing_your_suite/schema_relationships#custom-parsers-and-selective-runs).
+
 ## Custom rules return value
 
 Rules can return a boolean or a rule-result object. `pass` indicates success, and `message` may be a string or a function that returns the failure message.
@@ -8215,6 +8233,20 @@ Combine `suite.only()` with `isTested()` for the best UX:
 - Use `isTested(fieldName)` when rendering to decide whether to show errors
   :::
 
+:::tip Related fields
+`suite.only()` runs exactly the field you name. When fields depend on each other through a schema [`dependsOn()`](https://vestjs.dev/docs/writing_your_suite/schema_relationships) relationship (e.g. `confirmPassword` depends on `password`), prefer `suite.changed()` in the handler — it revalidates the blurred field **plus its dependents**, so related errors refresh together:
+
+```javascript
+function handleBlur(fieldName, formData) {
+  // Re-runs the blurred field and anything that depends on it
+  const res = suite.changed(fieldName).run(formData);
+  setResult(res);
+}
+```
+
+Without a schema, `changed()` simply behaves like `only()` for that run.
+:::
+
 ## Complete Example
 
 ```javascript
@@ -8269,11 +8301,13 @@ function Form() {
 | :--------------------------- | :---------------------------- | :----------------------------------- |
 | **Did the user touch this?** | Check `field.isDirty`         | Check `result.isTested('field')`     |
 | **Validate on Blur**         | Call `validateField('field')` | Call `suite.only('field').run(data)` |
+| **Revalidate dependents**    | Manually track field links    | `suite.changed('field').run(data)`   |
 
 By combining `isTested()` (to hide premature errors) and `suite.only()` (to update specific fields), you get precise control over the user experience without tightly coupling your validation to the DOM.
 
 ## Related
 
+- [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships) - `dependsOn()` and dependency-aware revalidation with `suite.changed()`
 - [Focused Updates](https://vestjs.dev/docs/writing_your_suite/focused_updates) - Deep dive into `suite.only()` and `suite.focus()`
 - [Accessing the Result](https://vestjs.dev/docs/writing_your_suite/accessing_the_result) - Learn about `isTested()` and other result methods
 
@@ -8483,6 +8517,22 @@ When multiple modifiers are used, they are evaluated in the following order of p
 
 > **Note**: A test is run only if it passes _all_ active filters. For example, if you use `onlyGroup: 'A'` and `skip: 'field1'`, `field1` inside `Group A` will be skipped.
 
+### Dependency-Aware Focus with `suite.changed()`
+
+`only()` runs exactly the fields you name — nothing more. When your suite has a schema with [`dependsOn()`](https://vestjs.dev/docs/writing_your_suite/schema_relationships) relationships, `suite.changed()` goes one step further: it runs the named fields **plus every field the relationship graph marks as affected**, so dependents never go stale:
+
+```javascript
+// Re-runs `password` and, via dependsOn, `confirmPassword` too.
+suite.changed('password').run(formData);
+
+// Arrays, chaining, and nested paths all work.
+suite.changed(['password', 'country']).run(formData);
+suite.changed('password').only('confirmPassword').run(formData);
+suite.changed('travelers[1].passportCountry').run(formData);
+```
+
+Use `only()` for explicit execution selection and `changed()` for interaction-driven revalidation. See [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships) for the full reference, including the affected-set rules and end-to-end examples.
+
 ## Fluent Chain API
 
 `focus()` returns a "runnable" interface, allowing you to chain it with `afterEach`, `afterField`, or `run`.
@@ -8683,6 +8733,7 @@ suite.focus({ onlyGroup: 'groupA' }).run(formData); // ✅
 
 ## Related
 
+- [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships) - Dependency-aware revalidation with `suite.changed()` and `dependsOn()`
 - [Including and Excluding Fields](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/skip_and_only) - Using `only()` and `skip()` inside suites
 - [Include](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/include) - Link related fields to run together
 - [Test Groups](https://vestjs.dev/docs/writing_tests/advanced_test_features/grouping_tests) - Grouping tests together
@@ -9688,6 +9739,86 @@ Selective execution holds for focused runs: members outside the affected set nev
 
 To decide whether a container can be projected, n4s reads construction-time markers (`partial()`, `optional()`) only. Introspection never executes user validators: no synthetic probe values (`{}`, `undefined`, `null`) are ever passed to validation code, so validators with observable side effects only ever fire with real run data inside a suite run. Schemas without recognizable metadata (unknown or exotic rules) are not projected: those runs validate the full schema and narrow the failures to the affected paths instead — slower, but with results always matching the full run.
 
+### `suite.changed()` Reference
+
+`suite.changed()` is the interaction API that consumes the relationship graph. It takes the fields the user touched and runs them plus everything the graph marks as affected:
+
+```ts
+suite.changed('password').run(data);
+```
+
+Accepted field arguments:
+
+- `suite.changed('password')` — expand the affected set from one field.
+- `suite.changed(['password', 'country'])` — expand from several fields (union of affected sets).
+- `suite.changed(undefined)` — legal no-op that runs without changed focus, mirroring `only(undefined)`.
+- `suite.changed([])` — explicit empty focus: runs no tests.
+
+Behavior notes:
+
+- Returns a focused suite, so it chains with the other focus APIs: `suite.changed('password').only('confirmPassword').run(data)`. Combining `only()` with `changed()` runs the union — the `only()` base fields plus the affected set.
+- Changed names may be nested paths in either spelling — `suite.changed('company.country')` and `suite.changed('travelers[1].passportCountry')` resolve to the same affected set.
+- Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
+
+### End-to-End: Revalidating a Form on Change
+
+A complete blur-handler flow. The schema declares the relationship once; every keystroke handler stays the same shape:
+
+```ts
+import { create, test, enforce } from 'vest';
+
+const schema = enforce.shape({
+  password: enforce.isString().longerThanOrEquals(8),
+  confirmPassword: enforce.isString().dependsOn($ => $.password),
+});
+
+const suite = create(data => {
+  test('password', 'Password must be at least 8 characters', () => {
+    enforce(data.password).longerThanOrEquals(8);
+  });
+  test('confirmPassword', 'Passwords must match', () => {
+    enforce(data.confirmPassword).equals(data.password);
+  });
+}, schema);
+
+// Initial full run on submit or mount.
+let result = suite.run({ password: 'hunter22', confirmPassword: 'hunter22' });
+
+// The user edits the password field. Re-run for the changed field:
+// Vest re-runs `password` plus the affected `confirmPassword` test
+// and preserves every other result.
+result = suite.changed('password').run({
+  password: 'hunter2',
+  confirmPassword: 'hunter22',
+});
+
+result.hasErrors('confirmPassword'); // true — the stale dependent was re-evaluated
+```
+
+With several changed fields at once, pass an array — the affected set is the union:
+
+```ts
+result = suite.changed(['password', 'email']).run(nextData);
+```
+
+### Custom Parsers and Selective Runs
+
+Selective runs apply parser steps (built-in steps like `trim()` or `toNumber()`, which only transform data) to untouched fields without executing validation predicates — so those transforms must be pure. Custom rules added with `enforce.extend` are treated as validators by default and are never executed speculatively. If a custom rule is really a parser — a pure transformation that cannot fail on its own — register it explicitly so selective runs can apply it:
+
+```ts
+enforce.extend(
+  {
+    normalizeId: (value: string) => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Unlisted custom rules keep validator treatment: they run only when their own field is in the affected set, never as mapping helpers. See [Input vs output types with parsers](https://vestjs.dev/docs/writing_your_suite/schema_validation#input-vs-output-types-with-parsers) for the full typing story.
+
 ## Dependencies Are Not Automatically Transitive
 
 ```text
@@ -9833,6 +9964,14 @@ V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set exp
 > ```
 >
 > No behavior change for current V1 usage `suite.changed(field).run(data)` — only the signal overload is deferred.
+
+## Related
+
+- [Schema Validation](https://vestjs.dev/docs/writing_your_suite/schema_validation) — passing a schema to `create()`, parsed data, and registering custom `parsers`.
+- [Focused Updates](https://vestjs.dev/docs/writing_your_suite/focused_updates) — the `only()` / `skip()` / `focus()` semantics that `changed()` builds on.
+- [Handling User Interaction](https://vestjs.dev/docs/writing_your_suite/dirty_checking) — the `onBlur` / `onChange` patterns where `changed()` fits.
+- [Creating Custom Rules](https://vestjs.dev/docs/enforce/creating_custom_rules) — `enforce.extend`, including parser-style rules.
+- [Data Parsers](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/data_parsers) — the built-in parser steps selective runs can apply safely.
 
 
 # Schema Validation
@@ -9989,6 +10128,7 @@ When using `create(callback, schema)`, the current TypeScript standard is:
   - `suite.remove(fieldName)`
   - `suite.resetField(fieldName)`
   - `suite.only(fieldName)`
+  - `suite.changed(fieldName)` (single name, array, or `undefined`; see [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships#suitechanged-reference))
   - `suite.afterField(fieldName, callback)`
   - `only(fieldName)` / `skip(fieldName)` hooks
 
@@ -10016,6 +10156,8 @@ suite.only('username').run({
   username: 'example',
 });
 ```
+
+For interaction-driven revalidation that also refreshes dependent fields, use `suite.changed()` instead — see [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships).
 
 :::
 

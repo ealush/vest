@@ -159,6 +159,7 @@ When using `create(callback, schema)`, the current TypeScript standard is:
   - `suite.remove(fieldName)`
   - `suite.resetField(fieldName)`
   - `suite.only(fieldName)`
+  - `suite.changed(fieldName)` (single name, array, or `undefined`; see [Schema Relationships](./schema_relationships#suitechanged-reference))
   - `suite.afterField(fieldName, callback)`
   - `only(fieldName)` / `skip(fieldName)` hooks
 
@@ -186,6 +187,8 @@ suite.only('username').run({
   username: 'example',
 });
 ```
+
+For interaction-driven revalidation that also refreshes dependent fields, use `suite.changed()` instead — see [Schema Relationships](./schema_relationships).
 
 :::
 

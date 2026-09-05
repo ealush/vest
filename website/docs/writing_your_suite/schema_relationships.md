@@ -273,6 +273,86 @@ Selective execution holds for focused runs: members outside the affected set nev
 
 To decide whether a container can be projected, n4s reads construction-time markers (`partial()`, `optional()`) only. Introspection never executes user validators: no synthetic probe values (`{}`, `undefined`, `null`) are ever passed to validation code, so validators with observable side effects only ever fire with real run data inside a suite run. Schemas without recognizable metadata (unknown or exotic rules) are not projected: those runs validate the full schema and narrow the failures to the affected paths instead — slower, but with results always matching the full run.
 
+### `suite.changed()` Reference
+
+`suite.changed()` is the interaction API that consumes the relationship graph. It takes the fields the user touched and runs them plus everything the graph marks as affected:
+
+```ts
+suite.changed('password').run(data);
+```
+
+Accepted field arguments:
+
+- `suite.changed('password')` — expand the affected set from one field.
+- `suite.changed(['password', 'country'])` — expand from several fields (union of affected sets).
+- `suite.changed(undefined)` — legal no-op that runs without changed focus, mirroring `only(undefined)`.
+- `suite.changed([])` — explicit empty focus: runs no tests.
+
+Behavior notes:
+
+- Returns a focused suite, so it chains with the other focus APIs: `suite.changed('password').only('confirmPassword').run(data)`. Combining `only()` with `changed()` runs the union — the `only()` base fields plus the affected set.
+- Changed names may be nested paths in either spelling — `suite.changed('company.country')` and `suite.changed('travelers[1].passportCountry')` resolve to the same affected set.
+- Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
+
+### End-to-End: Revalidating a Form on Change
+
+A complete blur-handler flow. The schema declares the relationship once; every keystroke handler stays the same shape:
+
+```ts
+import { create, test, enforce } from 'vest';
+
+const schema = enforce.shape({
+  password: enforce.isString().longerThanOrEquals(8),
+  confirmPassword: enforce.isString().dependsOn($ => $.password),
+});
+
+const suite = create(data => {
+  test('password', 'Password must be at least 8 characters', () => {
+    enforce(data.password).longerThanOrEquals(8);
+  });
+  test('confirmPassword', 'Passwords must match', () => {
+    enforce(data.confirmPassword).equals(data.password);
+  });
+}, schema);
+
+// Initial full run on submit or mount.
+let result = suite.run({ password: 'hunter22', confirmPassword: 'hunter22' });
+
+// The user edits the password field. Re-run for the changed field:
+// Vest re-runs `password` plus the affected `confirmPassword` test
+// and preserves every other result.
+result = suite.changed('password').run({
+  password: 'hunter2',
+  confirmPassword: 'hunter22',
+});
+
+result.hasErrors('confirmPassword'); // true — the stale dependent was re-evaluated
+```
+
+With several changed fields at once, pass an array — the affected set is the union:
+
+```ts
+result = suite.changed(['password', 'email']).run(nextData);
+```
+
+### Custom Parsers and Selective Runs
+
+Selective runs apply parser steps (built-in steps like `trim()` or `toNumber()`, which only transform data) to untouched fields without executing validation predicates — so those transforms must be pure. Custom rules added with `enforce.extend` are treated as validators by default and are never executed speculatively. If a custom rule is really a parser — a pure transformation that cannot fail on its own — register it explicitly so selective runs can apply it:
+
+```ts
+enforce.extend(
+  {
+    normalizeId: (value: string) => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Unlisted custom rules keep validator treatment: they run only when their own field is in the affected set, never as mapping helpers. See [Input vs output types with parsers](./schema_validation#input-vs-output-types-with-parsers) for the full typing story.
+
 ## Dependencies Are Not Automatically Transitive
 
 ```text
@@ -418,3 +498,11 @@ V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set exp
 > ```
 >
 > No behavior change for current V1 usage `suite.changed(field).run(data)` — only the signal overload is deferred.
+
+## Related
+
+- [Schema Validation](./schema_validation) — passing a schema to `create()`, parsed data, and registering custom `parsers`.
+- [Focused Updates](./focused_updates) — the `only()` / `skip()` / `focus()` semantics that `changed()` builds on.
+- [Handling User Interaction](./dirty_checking) — the `onBlur` / `onChange` patterns where `changed()` fits.
+- [Creating Custom Rules](../enforce/creating_custom_rules) — `enforce.extend`, including parser-style rules.
+- [Data Parsers](../enforce/builtin-enforce-plugins/data_parsers) — the built-in parser steps selective runs can apply safely.

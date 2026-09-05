@@ -37,6 +37,7 @@ describe('typed suite', () => {
     expect(result.groups.G100?.F1).toBeUndefined();
   });
 
+  // eslint-disable-next-line vitest/expect-expect
   it('should type focus group modifiers based on suite group generics', () => {
     suite.focus({ onlyGroup: 'G1', skipGroup: ['G2'] }).run();
 
@@ -58,6 +59,9 @@ describe('typed suite', () => {
     res.hasWarnings('F3');
     res.hasWarningsByGroup('G2');
     res.hasWarningsByGroup('G3', 'F1');
+    res.hasSuccesses('F1');
+    res.hasSuccessesByGroup('G2');
+    res.hasSuccessesByGroup('G3', 'F1');
     res.isValid('F1');
 
     // @ts-expect-error

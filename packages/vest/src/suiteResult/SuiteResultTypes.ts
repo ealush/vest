@@ -4,7 +4,7 @@ import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 
 import { Severity } from './Severity';
-import { SummaryFailure } from './SummaryFailure';
+import { SummaryItem } from './SummaryItem';
 import { SuiteSelectors } from './selectors/suiteSelectors';
 import { SuiteModifiers } from '../suite/SuiteTypes';
 
@@ -13,6 +13,7 @@ export class SummaryBase {
   public warnCount = 0;
   public testCount = 0;
   public pendingCount = 0;
+  public successCount = 0;
 }
 
 export class SuiteSummary<
@@ -21,8 +22,9 @@ export class SuiteSummary<
   D = unknown,
   S extends TSchema = undefined,
 > extends SummaryBase {
-  public [Severity.ERRORS]: SummaryFailure<F, G>[] = [];
-  public [Severity.WARNINGS]: SummaryFailure<F, G>[] = [];
+  public [Severity.ERRORS]: SummaryItem<F, G>[] = [];
+  public [Severity.WARNINGS]: SummaryItem<F, G>[] = [];
+  public [Severity.SUCCESS]: SummaryItem<F, G>[] = [];
   public groups: Groups<G, F> = {} as Groups<G, F>;
   public tests: Tests<F> = {} as Tests<F>;
   public run!: {
@@ -76,6 +78,7 @@ type ValidProperty = {
 export type CommonSummaryProperties = SummaryBase & {
   errors: string[];
   warnings: string[];
+  success: string[];
 };
 
 export type GetFailuresResponse = FailureMessages | string[];

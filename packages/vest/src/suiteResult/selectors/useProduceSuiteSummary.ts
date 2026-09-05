@@ -17,7 +17,7 @@ import {
   TGroupName,
   TSchema,
 } from '../SuiteResultTypes';
-import { SummaryFailure } from '../SummaryFailure';
+import { SummaryItem } from '../SummaryItem';
 
 import {
   useNoMissingTestsLogic,
@@ -124,16 +124,23 @@ function useAppendToTest<F extends TFieldName>(
   return test;
 }
 
+// eslint-disable-next-line max-statements, complexity
 function addSummaryStats<F extends TFieldName, G extends TGroupName>(
   testObject: TIsolateTest<F>,
   summary: SuiteSummary<F, G>,
 ): SuiteSummary<F, G> {
   if (VestTest.isWarning(testObject).unwrap()) {
     summary.warnCount++;
-    summary.warnings.push(SummaryFailure.fromTestObject(testObject));
+    summary.warnings.push(SummaryItem.fromTestObject(testObject));
   } else if (VestTest.isFailing(testObject).unwrap()) {
     summary.errorCount++;
-    summary.errors.push(SummaryFailure.fromTestObject(testObject));
+    summary.errors.push(SummaryItem.fromTestObject(testObject));
+  } else if (
+    VestTest.isSuccessSeverity(testObject).unwrap() &&
+    VestTest.isPassing(testObject).unwrap()
+  ) {
+    summary.successCount++;
+    summary.success.push(SummaryItem.fromTestObject(testObject));
   }
 
   if (VestTest.isStartedStatus(testObject)) {
@@ -203,6 +210,11 @@ function updateFailures(
     incrementFailures(nextSummaryKey, Severity.ERRORS, message);
   } else if (VestTest.isWarning(testObject).unwrap()) {
     incrementFailures(nextSummaryKey, Severity.WARNINGS, message);
+  } else if (
+    VestTest.isSuccessSeverity(testObject).unwrap() &&
+    VestTest.isPassing(testObject).unwrap()
+  ) {
+    incrementFailures(nextSummaryKey, Severity.SUCCESS, message);
   }
 }
 
@@ -222,6 +234,7 @@ function baseTestStats<S extends CommonSummaryProperties>(): S {
   return assign(new SummaryBase(), {
     errors: [],
     warnings: [],
+    success: [],
   }) as unknown as S;
 }
 

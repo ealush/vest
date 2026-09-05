@@ -21,6 +21,8 @@ What Vest cannot know from this code is that the validity of `confirmPassword` d
 
 Schema Relationships make that relationship an optional, declarative part of an Enforce schema. The schema remains responsible for describing data **and relationships between data**. The suite remains responsible for execution, retained state, warnings, async work, groups, and interaction behavior.
 
+The model is dependency-aware invalidation of retained validation state — not dependency-driven execution. As an invariant: a validation result remains cached until its field changes or a value it depends on changes. `dependsOn()` declares the dependency half of that invariant; `suite.changed()` supplies the change event. The schema never says how to validate, in what order, or what the rule is — only which remembered results may have become stale.
+
 `dependsOn` is the first relationship primitive. The internal representation is a single directed graph (`source → target`, `effect: 'invalidate'`) that can later host other effects without redesigning the schema API.
 
 A relationship declaration should be: ergonomic, runtime-validated during composition, composable through nested schemas, meaningful for repeated/array schemas (same-item scoped), machine-readable without parsing source, small enough that users are not maintaining a second copy of their form, colocated with the field it describes, useful to Vest itself (not just metadata), and extensible.
@@ -267,7 +269,7 @@ as the affected set. This preserves `only()` semantics while giving frameworks a
 
 `schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs. Selective schema execution additionally re-runs the projected rule per affected array index / record key, so an affected member failure hidden behind an earlier unaffected one is still surfaced.
 
-Split of responsibilities: Vest expands `changed()` fields to affected paths from the relationship graph, then asks the schema to validate exactly those paths via `runSchemaPaths(schema, data, options?)`. Everything after that is n4s-owned — container-kind detection, fragment projection, short-circuit supplementation, chain-validator preservation, and member execution. Vest never reverse-engineers container semantics.
+Split of responsibilities: Enforce owns spatial and structural truth (the graph, schema paths, selective execution); Vest owns temporal truth (retained state, test focus, reconciliation). The handshake between them is narrow — Vest hands n4s the schema, the run data, and the raw changed names; n4s returns the concrete affected set. Vest resolves that set once through the canonical planner, then gives the exact same set to both suite focus and schema execution via `runSchemaPaths(schema, data, options?)`. Everything after that is n4s-owned — container-kind detection, fragment projection, short-circuit supplementation, chain-validator preservation, and member execution. Vest never reverse-engineers container semantics.
 
 Selective execution holds for focused runs: members outside the affected set never execute, and each affected single-rule or tuple member executes exactly once — safe for stateful validators. Union (`isArrayOf` with several members) elements instead resolve whole-member any-match: each affected element is checked against the members in order until one matches, so member validators may execute more than once (once per affected element) — do not rely on exactly-once for stateful validators inside union members. Tuple members run positionally and union elements resolve whole-member any-match, both with the same attribution a full run would report. Shapes whose fields are all `optional()` are still ordinary required-semantics containers (only `partial()` skips missing keys). Validators chained onto a container itself, or a `partial()` top-level schema, cannot be projected safely: those runs validate the full schema and narrow the failures to the affected paths instead, so results always match the full run.
 
@@ -362,7 +364,7 @@ B → C
 
 where `A → B` means "target `B` may be stale when `A` changes."
 
-If `A` changes, `B` must be reconsidered. `C` does not — `B`'s value didn't change. Expansion is on changed values, not transitive closure. If `C` also depends on `A`, declare it explicitly.
+If `A` changes, `B` must be reconsidered. `C` does not — `B`'s value didn't change. Expansion is on changed values, not transitive closure. If `C` also depends on `A`, declare it explicitly. Revalidation does not imply mutation: rerunning `B` because `A` changed does not mean `B` changed, so `B`'s dependents remain valid.
 
 ## Circular Dependencies
 
@@ -464,6 +466,7 @@ Consumable by Vest, framework adapters, devtools, docs, and agents. Relationship
 
 ## What Dependencies Intentionally Do Not Do
 
+- Does not execute anything or impose validation order — purely invalidation metadata.
 - Does not inspect suite closures.
 - Does not make arbitrary JS declarative.
 - Does not replicate `test()`/`group()`/`warn()`/`only()`/`skipWhen`/async inside Enforce.

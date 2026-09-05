@@ -38,11 +38,11 @@ export function createContext<T>(defaultContextValue?: T): CtxApi<T> {
     const parentContext = isInsideContext() ? use() : EMPTY_CONTEXT;
 
     contextValue = value;
-
-    const res = cb();
-
-    contextValue = parentContext;
-    return res;
+    try {
+      return cb();
+    } finally {
+      contextValue = parentContext;
+    }
   }
 
   function isInsideContext(): boolean {

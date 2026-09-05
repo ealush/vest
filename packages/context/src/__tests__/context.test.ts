@@ -2,11 +2,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import { createContext, CtxApi } from '../context';
 
+type TestContextValue = string | Record<string, string> | undefined;
+
 describe('Context', () => {
-  let ctx: CtxApi<any>;
+  let ctx: CtxApi<TestContextValue>;
 
   beforeEach(() => {
-    ctx = createContext();
+    ctx = createContext<TestContextValue>();
   });
 
   describe('Exposed Methods', () => {
@@ -29,7 +31,7 @@ describe('Context', () => {
 
       describe('When a default value was provided', () => {
         beforeEach(() => {
-          ctx = createContext('i am the default value!');
+          ctx = createContext<TestContextValue>('i am the default value!');
         });
 
         it('should return the default value', () => {
@@ -55,7 +57,7 @@ describe('Context', () => {
 
       describe('When a default value was provided', () => {
         beforeEach(() => {
-          ctx = createContext('i am the default value!');
+          ctx = createContext<TestContextValue>('i am the default value!');
         });
         it('Should disregard default value', () => {
           expect(() => {
@@ -99,6 +101,36 @@ describe('Context', () => {
         });
         expect(ctx.use()).toBeUndefined();
       });
+
+      it('restores every context layer when a nested callback throws', () => {
+        const outer = { layer: 'outer' };
+        const inner = { layer: 'inner' };
+
+        ctx.run(outer, () => {
+          expect(() =>
+            ctx.run(inner, () => {
+              expect(ctx.use()).toBe(inner);
+              throw new Error('boom');
+            }),
+          ).toThrow('boom');
+          expect(ctx.use()).toBe(outer);
+        });
+
+        expect(ctx.use()).toBeUndefined();
+      });
+    });
+
+    it('restores the parent context when the callback throws', () => {
+      const value = { layer: 'throwing' };
+
+      expect(() =>
+        ctx.run(value, () => {
+          expect(ctx.use()).toBe(value);
+          throw new Error('boom');
+        }),
+      ).toThrow('boom');
+
+      expect(ctx.use()).toBeUndefined();
     });
   });
 });

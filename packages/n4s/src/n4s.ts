@@ -109,7 +109,7 @@ export { EnforceSchemaError } from './errors/EnforceSchemaError';
  * container kinds, fragment projection, short-circuit supplementation,
  * chain-validator preservation, and member execution.
  */
-export { runSchemaPaths } from './schema/selectiveRun';
+export { resolveAffectedPaths, runSchemaPaths } from './schema/selectiveRun';
 export { mapWithoutValidation } from './schema/mapWithoutValidation';
 export type {
   SelectiveRunOptions,

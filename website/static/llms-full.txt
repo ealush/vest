@@ -28,6 +28,7 @@ Runs the suite. Passes arguments to the suite callback.
 - **Returns**: A `SuiteResult` object.
   - If the suite contains async tests, the result object **also implements the Promise interface**, allowing you to `await` it.
   - You can always access synchronous result data immediately (e.g., `result.hasErrors()`), even if the promise is pending.
+  - If another stateful `suite.run()` starts while an earlier run is pending, awaiting the earlier handle resolves to the newer run's result. This prevents obsolete async work from exposing stale state. `runStatic()` remains independent.
 - [Read more about `suite.run`](https://vestjs.dev/docs/writing_your_suite/vests_suite#running-validations)
 
 #### `suite.runStatic(...args)`
@@ -3553,7 +3554,11 @@ If you only need to parse an API payload once, an Enforce schema's `.parse()` me
 
 Async validation becomes incorrect when requests finish in a different order from the one in which they started. A slow response for an old value can otherwise replace the answer for the value currently on screen.
 
-Vest associates async work with the run that created it. When a newer focused run supersedes an older one, the older result cannot update the current suite state.
+Vest associates async work with the run that created it. When a newer stateful
+run supersedes an older one—focused or full—the older result cannot update the
+current suite state. Awaiting the older run handle resolves to the newer run's
+result, so callers cannot accidentally observe an obsolete result. Independent
+`runStatic()` calls do not share this ownership chain.
 
 ```ts
 import { create, enforce, skipWhen, test } from 'vest';
@@ -9923,6 +9928,37 @@ result.value; // typed as { age: number; name: string }
 ```
 
 The first rule in a chain determines the input type, and the last parser in the chain determines the output type. This means you never need `@ts-expect-error` or `as any` for valid parser coercion inputs.
+
+Focused runs still pass the complete parsed output to the suite callback. On a
+first focused run, Vest applies parser steps to untouched fields without
+running their validation predicates. Parser transforms should therefore be
+pure. If a custom `enforce.extend` rule is a parser, register it explicitly so
+focused mapping can recognize it:
+
+```typescript
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      normalizeId: (value: string) => { pass: boolean; type: string };
+    }
+  }
+}
+
+enforce.extend(
+  {
+    normalizeId: (value: string) => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Custom extension rules are treated as validators unless they are listed in
+`parsers`. The per-run `result.run.data.parsed` value still reflects only the
+schema work performed by that run; the callback receives the complete mapped
+output assembled for the suite.
 
 ### What becomes typed from the schema
 

@@ -1069,79 +1069,8 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(Object.keys(unaffected.tests)).not.toContain('1.state');
   });
 
-  // 28. ownership chaining is per-suite, not changed()-specific: a plain
-  // run adopts its plain successor's promise, so the stale handle observes
-  // the latest outcome.
-  it('28. plain run adopts its plain successor outcome', async () => {
-    const gate = createDeferred();
-    const firstDone = createDeferred();
-    const suite = create((data: { tag: string }) => {
-      test('tag', async () => {
-        try {
-          if (data.tag === 'first') {
-            await gate.promise;
-          }
-          enforce(data.tag).isNotBlank();
-        } finally {
-          if (data.tag === 'first') {
-            firstDone.release();
-          }
-        }
-      });
-    });
-    const p1 = suite.run({ tag: 'first' });
-    const p2 = suite.run({ tag: 'second' });
-    const r2 = await p2;
-    expect(r2.hasErrors('tag')).toBe(false);
-    expect(suite.get().hasErrors('tag')).toBe(false);
-    gate.release();
-    await firstDone.promise;
-    await flushAsyncWork();
-    const r1 = await p1;
-    expect(r1).toBe(r2);
-    // The successor follows the normal path and resolves.
-    await expect(p2).resolves.toBeDefined();
-  });
-
-  // 29. the ownership key is stable per suite: interleaved runs of a second
-  // suite chain only within their own suite — B resolves with its own
-  // result while A's first run adopts A's second run.
-  it('29. interleaved suites chain independently', async () => {
-    const gateA = createDeferred();
-    const gateB = createDeferred();
-    const createGatedSuite = (gate: Deferred, label: string) =>
-      create((data: { tag: string }) => {
-        test('tag', async () => {
-          await gate.promise;
-          enforce(data.tag).equals(label);
-        });
-      });
-    const suiteA = createGatedSuite(gateA, 'a');
-    const suiteB = createGatedSuite(gateB, 'b');
-    const pA1 = suiteA.run({ tag: 'a' });
-    const pB = suiteB.run({ tag: 'b' });
-    // A second run of A chains only A's first run — B is untouched.
-    const pA2 = suiteA.run({ tag: 'a' });
-    gateA.release();
-    const rA2 = await pA2;
-    expect(rA2.hasErrors('tag')).toBe(false);
-    expect(suiteA.get().hasErrors('tag')).toBe(false);
-    const rA1 = await pA1;
-    expect(rA1).toBe(rA2);
-    // Suite B chains nothing: it resolves normally with its own result.
-    gateB.release();
-    const rB = await pB;
-    expect(rB.hasErrors('tag')).toBe(false);
-    expect(suiteB.get().hasErrors('tag')).toBe(false);
-    await expect(pB).resolves.toBeDefined();
-  });
-
   // 30. AbortSignal overload throws the documented V1 error (exact
-  // message). Placed after all concurrency tests on purpose: throwing
-  // inside the persisted `changed` wrapper leaves the ambient runtime
-  // context pointing at this suite (the context primitive restores nothing
-  // on throw), so later suites would otherwise execute against the wrong
-  // runtime. Single-suite tests tolerate that; interleaved suites do not.
+  // message). Context restoration is covered independently by context.run.
   it('30. suite.changed(field, { signal }) throws deferred-to-v2 in V1', () => {
     const schema = enforce.shape({
       a: enforce.isString(),

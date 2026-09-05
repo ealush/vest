@@ -149,6 +149,29 @@ describe('focused schema callback mapping', () => {
     ]);
   });
 
+  it('does not resurrect a stale mapping after a failed full run', async () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push(data);
+      },
+      enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+        state: enforce.isString(),
+      }),
+    );
+
+    await suite.run({ age: '42', state: 'CA' });
+    await suite.run({ age: '99', state: 123 as unknown as string });
+    await suite.changed('state').run({ age: '99', state: 'NY' });
+
+    expect(seen).toEqual([
+      { age: 42, state: 'CA' },
+      { age: '99', state: 123 },
+      { age: 99, state: 'NY' },
+    ]);
+  });
+
   it('keeps only() exact while retaining untouched successful mappings', async () => {
     const seen: unknown[] = [];
     const schema = enforce.shape({

@@ -78,6 +78,7 @@ Runs the suite. Passes arguments to the suite callback.
 - **Returns**: A `SuiteResult` object.
   - If the suite contains async tests, the result object **also implements the Promise interface**, allowing you to `await` it.
   - You can always access synchronous result data immediately (e.g., `result.hasErrors()`), even if the promise is pending.
+  - If another stateful `suite.run()` starts while an earlier run is pending, awaiting the earlier handle resolves to the newer run's result. This prevents obsolete async work from exposing stale state. `runStatic()` remains independent.
 - [Read more about `suite.run`](./writing_your_suite/vests_suite.md#running-validations)
 
 #### `suite.runStatic(...args)`

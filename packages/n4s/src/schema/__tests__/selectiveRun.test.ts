@@ -5,6 +5,7 @@ import {
   EnforceSchemaError,
   enforce,
   parseAffectedFieldName,
+  resolveAffectedPaths,
   runSchemaPaths,
 } from '../../n4s';
 import type { SelectiveSchemaResult } from '../../n4s';
@@ -152,6 +153,19 @@ describe('assertSchemaRootPathsValid suite finalizer', () => {
   it('ignores schemas without relationships', () => {
     expect(() => assertSchemaRootPathsValid(undefined)).not.toThrow();
     expect(() => assertSchemaRootPathsValid({})).not.toThrow();
+  });
+
+  it('propagates unexpected finalizer traversal failures', () => {
+    const schema = {};
+    Object.defineProperty(schema, '__schema', {
+      get: () => {
+        throw new TypeError('broken schema metadata');
+      },
+    });
+
+    expect(() => assertSchemaRootPathsValid(schema)).toThrowError(
+      new TypeError('broken schema metadata'),
+    );
   });
 });
 
@@ -642,6 +656,20 @@ describe('runSchemaPaths single expansion', () => {
     expect(failures.some(result => (result.path ?? []).join('.') === 'c')).toBe(
       false,
     );
+  });
+
+  it('accepts one pre-resolved plan without expanding it again', () => {
+    const schema = chain();
+    const resolved = resolveAffectedPaths(schema, ['a']);
+    expect(resolved).toEqual(['a', 'b']);
+
+    const failures = runSchemaPaths(
+      schema,
+      { a: 42, b: 43, c: 44 },
+      { resolvedAffected: resolved },
+    ).filter(result => !result.pass);
+
+    expect(failures.map(result => result.path)).toEqual([['a'], ['b']]);
   });
 
   it('fans a raw array-parent change out from run data', () => {

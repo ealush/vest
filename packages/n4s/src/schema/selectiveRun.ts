@@ -64,8 +64,8 @@ export type SelectiveRunOptions = {
   /**
    * Raw changed fields in canonical dotted form (e.g. 'travelers.1.country',
    * brackets accepted: 'travelers[1].country'); n4s expands them against
-   * the schema relationship graph (dependents fan-out from run data plus
-   * dependency-source retention), so callers pass raw names and never
+   * the schema relationship graph (dependents fan-out from run data), so
+   * callers pass raw names and never
    * pre-expand. Null or undefined runs the full schema with focus
    * narrowing only. An explicit empty array runs nothing (a single passing
    * entry carrying the input data).
@@ -77,6 +77,8 @@ export type SelectiveRunOptions = {
    * indistinguishable from an index and resolves as one.
    */
   readonly affected?: readonly string[] | null;
+  /** @internal Pre-resolved by resolveAffectedPaths for Vest integration. */
+  readonly resolvedAffected?: readonly string[] | null;
   /**
    * Inclusion focus: top-level field names (dotted names select subtrees).
    * Always intersects `affected` — `only` narrows execution, never widens
@@ -123,7 +125,10 @@ export function runSchemaPaths(
   }
   const focus = selectiveFocusOf({
     ...options,
-    affected: expandChangedToAffected(schema, options.affected, data),
+    affected:
+      options.resolvedAffected === undefined
+        ? expandChangedToAffected(schema, options.affected, data)
+        : options.resolvedAffected,
   });
   const execute = (): SelectiveSchemaResult[] =>
     runSchemaWithParse(
@@ -1023,9 +1028,9 @@ function kindValueMatches(rule: SelectiveSchema, value: unknown): boolean {
 }
 
 /**
- * Forward changed→affected fan-out over the relationship graph. Together
- * with the source retention above this is the single expansion of the run
- * path: `runSchemaPaths` takes raw changed fields and expands here, so no
+ * Forward changed→affected fan-out over the relationship graph. This is
+ * the single expansion of the run path: `runSchemaPaths` takes raw changed
+ * fields and expands here, so no
  * caller pre-expands (expanding twice would compose transitively and break
  * the pinned non-transitive contract — changed(a) runs a and b, not c).
  *
@@ -1043,7 +1048,19 @@ function expandChangedToAffected(
   data: unknown,
 ): readonly string[] | null {
   if (affected == null) return null;
-  const changedArray = stringEntriesOf(affected);
+  return resolveAffectedPaths(schema, affected, data);
+}
+
+/** Resolves raw changed names to the canonical, direct affected set. */
+export function resolveAffectedPaths(
+  schema: unknown,
+  changedFields: string | readonly string[],
+  data?: unknown,
+): string[] {
+  const entries = Array.isArray(changedFields)
+    ? changedFields
+    : [changedFields];
+  const changedArray = stringEntriesOf(entries).map(canonicalAffectedName);
   if (changedArray.length === 0) return [];
   const relationships = getSchemaRelationships(schema);
   if (relationships.length === 0) {

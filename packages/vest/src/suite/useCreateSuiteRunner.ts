@@ -181,8 +181,7 @@ export function useCreateSuiteRunner<
     // If suite was created via changed(), resolve test-selection focus
     // using the actual run data (enables root->array fan-out). Suite-test
     // focus needs the expanded affected set so dependents' user tests
-    // execute; the schema run below takes the raw changed names instead —
-    // runSchemaPaths owns the single expansion of the run path.
+    // execute. The exact same resolved set is passed to n4s below.
     let transformedModifiers = transformedModifiersBase;
     let changedAffected: string[] | null = null;
     let mappedAffected = mappedFocusPaths<F, G>(transformedModifiersBase);
@@ -198,12 +197,12 @@ export function useCreateSuiteRunner<
       mappedAffected = focus.mappedAffected;
     }
 
-    // Dependency-aware schema execution is owned by n4s behind one
-    // contract: raw changed() names in, expanded validation out. Suite-test
-    // focus above stays expanded so dependents' user tests execute.
+    // Dependency-aware schema execution is owned by n4s. Vest resolves the
+    // plan once through n4s, then gives that exact set to both suite focus
+    // and schema execution so direct dependencies never fan out twice.
     const schemaRunResult = shouldRunSchema(schema)
       ? runSchemaPaths(schema, schemaInput, {
-          affected: changedAffected,
+          resolvedAffected: changedAffected,
           only: transformedModifiers.only,
           skip: transformedModifiers.skip,
         })
@@ -278,9 +277,9 @@ export function useCreateSuiteRunner<
  * the expanded affected set drives suite-test selection (dependents' user
  * tests must execute), while the schema input stays raw — the unexpanded
  * changed names plus base `only` names (so combined only+changed still
- * validates the base fields). runSchemaPaths expands the schema input
- * internally; pre-expanding here as well would apply fan-out twice and
- * compose transitively, breaking the pinned non-transitive changed()
+ * validates the base fields). n4s resolves the changed names here and the
+ * resulting plan is reused by both execution layers; expanding it again
+ * would compose transitively and break the pinned non-transitive changed()
  * contract.
  */
 function useChangedRunFocus<F extends TFieldName, G extends TGroupName>(
@@ -320,12 +319,9 @@ function useChangedRunFocus<F extends TFieldName, G extends TGroupName>(
     withAffected.skip = true;
   }
   delete withAffected.__changed;
-  const rawChanged = changedFields.filter(
-    (entry): entry is string => typeof entry === 'string',
-  );
   return {
     transformedModifiers: useTransformedModifiers<F, G>(withAffected),
-    changedAffected: [...new Set([...rawChanged, ...baseList])],
+    changedAffected: mergedOnly,
     mappedAffected: mappedFocusPaths(withAffected) ?? [],
   };
 }
@@ -411,14 +407,14 @@ type CallbackInputParams = {
 function getCallbackInput(params: CallbackInputParams): unknown {
   const { affected, fallback, schema, schemaRunResult, state, suiteCallback } =
     params;
+  const cache = mappedDataFor(suiteCallback);
   if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
+    if (affected === null) cache.delete(state);
     return fallback;
   }
 
   const [firstResult] = schemaRunResult;
   const current = firstResult?.type ?? fallback;
-  const cache = mappedDataFor(suiteCallback);
-
   if (affected === null) {
     cache.set(state, current);
     return current;

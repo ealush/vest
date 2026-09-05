@@ -5,6 +5,44 @@ import { create, test } from '../../vest';
 import { getAffectedFields } from '../changed';
 
 describe('changed() nested schema focus and empty changed', () => {
+  it('normalizes bracket and dotted paths to identical suite focus', async () => {
+    const executed: string[] = [];
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.shape({
+          name: enforce.isString(),
+          slug: enforce.isString().dependsOn($ => $.name),
+        }),
+      ),
+    });
+    const suite = create(() => {
+      test('rows.1.name', () => {
+        executed.push('rows.1.name');
+      });
+      test('rows.1.slug', () => {
+        executed.push('rows.1.slug');
+      });
+      test('rows.0.name', () => {
+        executed.push('rows.0.name');
+      });
+    }, schema);
+    const data = {
+      rows: [
+        { name: 'zero', slug: 'zero' },
+        { name: 'one', slug: 'one' },
+      ],
+    };
+
+    const bracket = await suite.changed('rows[1].name').run(data);
+    const bracketExecuted = [...executed];
+    executed.length = 0;
+    const dotted = await suite.changed('rows.1.name').run(data);
+
+    expect(bracketExecuted).toEqual(['rows.1.name', 'rows.1.slug']);
+    expect(executed).toEqual(bracketExecuted);
+    expect(bracket.run.focus).toEqual(dotted.run.focus);
+  });
+
   it('P1: changed(profile.country) reports nested profile.state schema failure', async () => {
     const schema = enforce.shape({
       profile: enforce.shape({

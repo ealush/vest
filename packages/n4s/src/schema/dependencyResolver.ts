@@ -743,20 +743,12 @@ function lastPropertyKeyOf(path: SchemaPath): string {
  * Composition stays lenient so focused fragments keep composing; this
  * boundary validates the rooted endpoints of the whole mounted graph
  * against the final root shape and throws EnforceSchemaError on unknown
- * fields. Non-enforce errors are ignored so introspection never breaks
- * suite creation.
+ * fields. Unexpected traversal failures propagate instead of being treated
+ * as a valid graph.
  */
 export function assertSchemaRootPathsValid(schema: unknown): void {
-  try {
-    assertSchemaRootPathsValidInner(schema);
-  } catch (e) {
-    // instanceof-first, with an error-name fallback for errors thrown by a
-    // second copy of the n4s classes (dual-copy interop).
-    if (e instanceof EnforceSchemaError) throw e;
-    if (isObject(e) && (e as { name?: unknown }).name === 'EnforceSchemaError')
-      throw e;
-    // Non-enforce errors (e.g., describe not available) are ignored
-  }
+  if (!isObject(schema)) return;
+  assertSchemaRootPathsValidInner(schema);
 }
 
 // eslint-disable-next-line complexity -- moved suite finalizer, branchy by nature

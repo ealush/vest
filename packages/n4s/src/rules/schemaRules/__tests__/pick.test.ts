@@ -12,7 +12,6 @@ describe('pick', () => {
     const pickedSchema = enforce.pick(schema, ['name', 'age']);
 
     // Pick name and age, validating valid inputs
-    // @ts-expect-error - partial object, un-picked keys omitted
     const result = pickedSchema.run({ name: 'John Doe', age: 30 });
     expect(result.pass).toBe(true);
 
@@ -33,7 +32,6 @@ describe('pick', () => {
 
     const pickedSchema = enforce.pick(schema, 'id');
 
-    // @ts-expect-error - partial object, un-picked keys omitted
     const result = pickedSchema.run({ id: 1 });
     expect(result.pass).toBe(true);
 
@@ -54,7 +52,6 @@ describe('pick', () => {
     // 'email' is in the schema but missing in the value.
     // If we only pick 'name' and 'age', it should still pass.
     const pickedSchema = enforce.pick(schema, ['name', 'age']);
-    // @ts-expect-error - partial object, un-picked keys omitted
     const result = pickedSchema.run({ name: 'John Doe', age: 30 });
     expect(result.pass).toBe(true);
   });
@@ -106,7 +103,6 @@ describe('pick', () => {
     const pickedSchema = enforce.pick(schema, []);
 
     const result = pickedSchema.run({
-      // @ts-expect-error - intentionally passing string instead of number
       id: 'invalid_type_but_not_checked',
     });
     expect(result.pass).toBe(true);
@@ -136,10 +132,32 @@ describe('pick', () => {
       name: 'John',
       // @ts-expect-error - intentionally passing string instead of number
       age: 'thirty',
-      // @ts-expect-error - intentionally passing number instead of string
       email: 123,
     });
 
     expect(invalidResult.pass).toBe(false);
+  });
+
+  it('rejects unknown keys at compile time', () => {
+    const schema = {
+      name: enforce.isString(),
+    };
+
+    // @ts-expect-error - 'typo' is not a schema key
+    void enforce.pick(schema, ['typo']);
+  });
+
+  it('drops rooted edges whose provider was picked away', () => {
+    const schema = {
+      accountType: enforce.isString(),
+      child: enforce.isString().dependsOn($ => $.root.accountType),
+    };
+
+    const pickedSchema = enforce.pick(schema, ['child']);
+
+    // The focused projection stays self-contained: no dangling provider,
+    // so the run-time rooted boundary accepts it.
+    expect(pickedSchema.describe().relationships).toEqual([]);
+    expect(pickedSchema.test({ child: 'x' })).toBe(true);
   });
 });

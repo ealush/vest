@@ -99,6 +99,37 @@ result.value; // typed as { age: number; name: string }
 
 The first rule in a chain determines the input type, and the last parser in the chain determines the output type. This means you never need `@ts-expect-error` or `as any` for valid parser coercion inputs.
 
+Focused runs still pass the complete parsed output to the suite callback. On a
+first focused run, Vest applies parser steps to untouched fields without
+running their validation predicates. Parser transforms should therefore be
+pure. If a custom `enforce.extend` rule is a parser, register it explicitly so
+focused mapping can recognize it:
+
+```typescript
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      normalizeId: (value: string) => { pass: boolean; type: string };
+    }
+  }
+}
+
+enforce.extend(
+  {
+    normalizeId: (value: string) => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Custom extension rules are treated as validators unless they are listed in
+`parsers`. The per-run `result.run.data.parsed` value still reflects only the
+schema work performed by that run; the callback receives the complete mapped
+output assembled for the suite.
+
 ### What becomes typed from the schema
 
 With `create(callback, schema)`, TypeScript narrows:
@@ -128,6 +159,7 @@ When using `create(callback, schema)`, the current TypeScript standard is:
   - `suite.remove(fieldName)`
   - `suite.resetField(fieldName)`
   - `suite.only(fieldName)`
+  - `suite.changed(fieldName)` (single name, array, or `undefined`; see [Schema Relationships](./schema_relationships#suitechanged-reference))
   - `suite.afterField(fieldName, callback)`
   - `only(fieldName)` / `skip(fieldName)` hooks
 
@@ -155,6 +187,8 @@ suite.only('username').run({
   username: 'example',
 });
 ```
+
+For interaction-driven revalidation that also refreshes dependent fields, use `suite.changed()` instead — see [Schema Relationships](./schema_relationships).
 
 :::
 

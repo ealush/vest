@@ -8,7 +8,11 @@ keywords: [async form validation, race condition, AbortSignal, TypeScript, Vest]
 
 Async validation becomes incorrect when requests finish in a different order from the one in which they started. A slow response for an old value can otherwise replace the answer for the value currently on screen.
 
-Vest associates async work with the run that created it. When a newer focused run supersedes an older one, the older result cannot update the current suite state.
+Vest associates async work with the run that created it. When a newer stateful
+run supersedes an older one—focused or full—the older result cannot update the
+current suite state. Awaiting the older run handle resolves to the newer run's
+result, so callers cannot accidentally observe an obsolete result. Independent
+`runStatic()` calls do not share this ownership chain.
 
 ```ts
 import { create, enforce, skipWhen, test } from 'vest';

@@ -64,6 +64,24 @@ enforce.extend({
 enforce(user.email).isValidEmail();
 ```
 
+### Parser-style custom rules and selective runs
+
+Custom rules are validators by default: Vest never executes them speculatively. That matters for dependency-aware runs — when `suite.changed()` revalidates an affected subset, untouched fields are mapped without running their validators. If your custom rule is really a **parser** (a pure transformation that cannot fail on its own, like upper-casing or trimming), declare it in `parsers` so selective runs can apply it to untouched fields:
+
+```js
+enforce.extend(
+  {
+    normalizeId: value => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Rules left out of `parsers` keep validator treatment: they run only when their own field is in the affected set. See [Input vs output types with parsers](../writing_your_suite/schema_validation#input-vs-output-types-with-parsers) and [Custom Parsers and Selective Runs](../writing_your_suite/schema_relationships#custom-parsers-and-selective-runs).
+
 ## Custom rules return value
 
 Rules can return a boolean or a rule-result object. `pass` indicates success, and `message` may be a string or a function that returns the failure message.

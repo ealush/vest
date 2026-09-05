@@ -2,6 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { enforce } from '../../../n4s';
 
 describe('omit', () => {
+  it('rejects unknown keys at compile time', () => {
+    const schema = {
+      name: enforce.isString(),
+    };
+
+    // @ts-expect-error - 'typo' is not a schema key
+    void enforce.omit(schema, ['typo']);
+  });
+
   it('Should successfully validate a schema ignoring omitted keys', () => {
     const schema = {
       name: enforce.isString(),
@@ -12,7 +21,6 @@ describe('omit', () => {
     const omittedSchema = enforce.omit(schema, ['email']);
 
     // Omit email, validating valid inputs for name and age
-    // @ts-expect-error - partial object, omitted keys missing
     const result = omittedSchema.run({ name: 'John Doe', age: 30 });
     expect(result.pass).toBe(true);
 
@@ -34,7 +42,6 @@ describe('omit', () => {
     // omit name
     const omittedSchema = enforce.omit(schema, 'name');
 
-    // @ts-expect-error - partial object, omitted keys missing
     const result = omittedSchema.run({ id: 1 });
     expect(result.pass).toBe(true);
 
@@ -61,9 +68,9 @@ describe('omit', () => {
     const schema = { name: enforce.isString() };
     const omittedSchema = enforce.omit(schema, ['name']);
 
-    // @ts-expect-error - testing non-object value
+    // Note: the fully-omitted schema type is `{}` so non-null payloads
+    // typecheck here; the runtime still rejects them (asserted below).
     expect(omittedSchema.run('string_value').pass).toBe(false);
-    // @ts-expect-error - testing non-object value
     expect(omittedSchema.run(123).pass).toBe(false);
     // @ts-expect-error - testing non-object value
     expect(omittedSchema.run(null).pass).toBe(false);
@@ -71,6 +78,7 @@ describe('omit', () => {
 
   it('Should protect against dangerous prototype keys', () => {
     const schema = { admin: enforce.isBoolean() };
+    // @ts-expect-error - 'id' is not a schema key (runtime ignores unknown omit keys)
     const omittedSchema = enforce.omit(schema, ['id']);
 
     const dangerousValue = JSON.parse('{"__proto__": {"admin": true}}');
@@ -92,7 +100,6 @@ describe('omit', () => {
     const omittedSchema = enforce.omit(schema, ['id']);
 
     const result = omittedSchema.run({
-      // @ts-expect-error - intentionally passing string instead of number
       id: 'invalid_type_but_omitted',
     });
     expect(result.pass).toBe(true);
@@ -122,7 +129,6 @@ describe('omit', () => {
       name: 'John',
       // @ts-expect-error - intentionally passing string instead of number
       age: 'thirty',
-      // @ts-expect-error - intentionally passing number instead of string
       email: 123,
     });
 

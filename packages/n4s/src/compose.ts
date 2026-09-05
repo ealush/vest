@@ -1,8 +1,16 @@
 import { StringObject, assign, invariant, mapFirst } from 'vest-utils';
 
 import { ctx } from './enforceContext';
+import {
+  ITEM_CONTAINER,
+  ITEM_SCHEMA,
+  RESOLVED_RELATIONSHIPS,
+  UNRESOLVED_DEPS,
+} from './schema/dependencyResolver';
 import { RuleInstance } from './utils/RuleInstance';
 import { RuleRunReturn } from './utils/RuleRunReturn';
+
+const COMPOSITION_CHILDREN = Symbol.for('vest:compositionChildren');
 
 type ComposeResult<T = any> = RuleInstance<T, [T]> & {
   (value: T): void;
@@ -26,18 +34,14 @@ type ComposeResult<T = any> = RuleInstance<T, [T]> & {
  *   enforce.lessThan(150)
  * );
  *
- * // Use with lazy API
  * isAdult.test(25); // true
  * isAdult.test(16); // false
  *
- * // Use with eager API
  * enforce(30).run(isAdult); // passes
  *
- * // Call directly (throws on failure)
  * isAdult(25); // ok
  * isAdult(16); // throws
  *
- * // Compose with other rules
  * const userSchema = enforce.shape({
  *   age: isAdult,
  *   name: enforce.isString()
@@ -58,6 +62,19 @@ export function compose<T = any>(
       infer: {} as T,
     },
   );
+
+  // A single composite keeps its schema identity through composition. Forward
+  // its schema slots so mounting the composed rule preserves its dependency
+  // graph and container metadata, and retain the wrapped rule as an explicit
+  // composition child. The latter matters for deferred $.root validation:
+  // compose() returns a callable function, so ordinary __schema traversal alone
+  // cannot prove that the wrapped chain is mounted under the active root.
+  //
+  // Multiple composites are intentionally left unmerged — their relationship
+  // graphs would need explicit union semantics that compose() does not define.
+  if (composites.length === 1 && composites[0]) {
+    forwardSchemaSlots(composites[0], composedFn as ComposeResult<T>);
+  }
 
   return composedFn as ComposeResult<T>;
 
@@ -82,4 +99,26 @@ export function compose<T = any>(
       return result;
     });
   }
+}
+
+/**
+ * Forwards the schema slots from a single composite onto the composed rule.
+ * Relationship lists are copied so later mounts cannot alias the source's
+ * arrays; plain slots carry over by reference. COMPOSITION_CHILDREN is
+ * boundary-only metadata used to retain wrapper identity during execution.
+ */
+function forwardSchemaSlots<T>(
+  source: RuleInstance<unknown, [unknown]>,
+  target: ComposeResult<T>,
+): void {
+  const from = source as unknown as Record<PropertyKey, unknown>;
+  const to = target as unknown as Record<PropertyKey, unknown>;
+  for (const slot of [UNRESOLVED_DEPS, RESOLVED_RELATIONSHIPS]) {
+    const entries = from[slot];
+    if (Array.isArray(entries)) to[slot] = [...entries];
+  }
+  for (const slot of ['__schema', ITEM_SCHEMA, ITEM_CONTAINER]) {
+    if (from[slot] !== undefined) to[slot] = from[slot];
+  }
+  to[COMPOSITION_CHILDREN] = [source];
 }

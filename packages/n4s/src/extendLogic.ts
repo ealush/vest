@@ -3,6 +3,9 @@ import { ctx } from './enforceContext';
 import { addToChain, registerLazyRule } from './rules/genRuleChain';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 
+type ExtensionRule = (...args: never[]) => unknown;
+type MutableEnforce = Record<string, unknown>;
+
 /**
  * Extends the enforce API with custom validation rules.
  * Custom rules are added to both eager and lazy APIs automatically.
@@ -39,27 +42,41 @@ import { RuleRunReturn } from './utils/RuleRunReturn';
  * });
  * ```
  */
-export function extendEnforce(
-  enforce: any,
-  rules: Record<string, (...args: any[]) => any>,
+export function extendEnforce<Rules extends Record<string, ExtensionRule>>(
+  enforce: MutableEnforce,
+  rules: Rules,
+  parserNames: ReadonlySet<string> = new Set(),
 ) {
   extendEager(rules);
 
   Object.keys(rules).forEach(ruleName => {
     const rule = rules[ruleName];
-    const ruleWrapper = (value: any, ...args: any[]) => {
-      const res = ctx.run({ value }, () => rule(value, ...args));
-      return RuleRunReturn.create(res, value);
+    const callableRule = rule as unknown as (
+      value: unknown,
+      ...args: unknown[]
+    ) => unknown;
+    const ruleWrapper = (value: unknown, ...args: unknown[]) => {
+      const res = ctx.run({ value }, () => callableRule(value, ...args));
+      return RuleRunReturn.create(
+        res as boolean | RuleRunReturn<unknown>,
+        value,
+      );
     };
 
-    enforce[ruleName] = (...args: any[]) =>
-      addToChain({}, (value: any) => ruleWrapper(value, ...args));
+    const mapsValue = parserNames.has(ruleName);
+    enforce[ruleName] = (...args: unknown[]) =>
+      addToChain(
+        {},
+        (value: unknown) => ruleWrapper(value, ...args),
+        mapsValue,
+      );
 
     registerLazyRule(
       ruleName,
-      (...args: any[]) =>
-        (value: any) =>
+      (...args: unknown[]) =>
+        (value: unknown) =>
           ruleWrapper(value, ...args),
+      mapsValue,
     );
   });
 }

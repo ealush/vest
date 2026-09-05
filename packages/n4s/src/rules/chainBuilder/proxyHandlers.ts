@@ -1,8 +1,12 @@
 import { hasOwnProperty } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
-import { RuleInstance } from '../../utils/RuleInstance';
-import { CHAIN_PREPEND } from '../parsers/parserUtils';
+import {
+  RuleInstance,
+  type DescribeResult,
+  type ScopeHandle,
+} from '../../utils/RuleInstance';
+import { CHAIN_PREPEND, isParserRule } from '../parsers/parserUtils';
 
 import type { Predicate } from './chainExecutor';
 import { getLazyRule } from './lazyRegistry';
@@ -11,26 +15,32 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
   rules: Record<string, (...args: any[]) => any>,
   {
     add,
+    dependsOn,
+    describe,
+    message,
+    parse,
+    prepend,
+    run,
     test,
     validate,
-    run,
-    parse,
-    message,
-    prepend,
     '~standard': standard,
   }: {
-    add: (p: Predicate) => T;
+    add: (p: Predicate, mapsValue?: boolean) => T;
+    dependsOn: (resolver: (scope: ScopeHandle) => unknown) => T;
+    describe: () => DescribeResult;
+    message: (msg: any) => T;
+    parse: T['parse'];
+    prepend: (p: Predicate, mapsValue?: boolean) => T;
+    run: T['run'];
     test: T['test'];
     validate: T['validate'];
-    run: T['run'];
-    parse: T['parse'];
-    message: (msg: any) => T;
-    prepend: (p: Predicate) => T;
     '~standard': StandardSchemaV1.Props<any, any>;
   },
 ) {
   const methods = {
     '~standard': standard,
+    dependsOn,
+    describe,
     message,
     parse,
     run,
@@ -38,12 +48,14 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     validate,
   };
   const methodKeys = new Set([
+    'dependsOn',
+    'describe',
     'infer',
+    'message',
+    'parse',
+    'run',
     'test',
     'validate',
-    'run',
-    'parse',
-    'message',
     '~standard',
   ]);
 
@@ -57,7 +69,10 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
   rules: Record<string, any>,
   methods: Record<string, any>,
   methodKeys: Set<string>,
-  inserters: { add: (p: Predicate) => T; prepend: (p: Predicate) => T },
+  inserters: {
+    add: (p: Predicate, mapsValue?: boolean) => T;
+    prepend: (p: Predicate, mapsValue?: boolean) => T;
+  },
 ) {
   function getRuleHandler(prop: string | symbol) {
     if (hasOwnProperty(rules, prop)) {
@@ -65,13 +80,17 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
         ? inserters.prepend
         : inserters.add;
       return (...args: any[]) =>
-        insert((value: any) => rules[prop](value, ...args));
+        insert(
+          (value: unknown) => rules[prop](value, ...args),
+          isParserRule(rules[prop]),
+        );
     }
 
     if (typeof prop === 'string') {
       const lazyRule = getLazyRule(prop);
       if (lazyRule) {
-        return (...args: any[]) => inserters.add(lazyRule(...args));
+        return (...args: unknown[]) =>
+          inserters.add(lazyRule.build(args), lazyRule.mapsValue);
       }
     }
 
@@ -90,7 +109,8 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
     },
     has(_target: T, prop: string | symbol) {
       if (typeof prop === 'string') {
-        if (methodKeys.has(prop) || getLazyRule(prop)) return true;
+        if (methodKeys.has(prop) || getLazyRule(prop) !== undefined)
+          return true;
       }
       if (hasOwnProperty(rules, prop)) return true;
       return Reflect.has(_target as object, prop);

@@ -23,7 +23,6 @@ describe('enforce.record() in Vest', () => {
     });
 
     expect(result.isValid()).toBe(false);
-    // @ts-expect-error - dot-path field name
     expect(result.hasErrors('settings.notifications')).toBe(true);
   });
 
@@ -43,7 +42,6 @@ describe('enforce.record() in Vest', () => {
       .run({ name: '', permissions: { bad: 'value' } });
 
     // permissions.bad should not be validated because we focused on name
-    // @ts-expect-error - dot-path field name
     expect(result.hasErrors('permissions.bad')).toBe(false);
     expect(result.isValid()).toBe(true);
   });

@@ -4,6 +4,7 @@ import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 import { Subscribe } from '../core/VestBus/VestBus';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { FieldExclusion } from '../hooks/focused/focused';
+import type { ChangedOptions } from './changed';
 import {
   SuiteResult,
   TFieldName,
@@ -44,6 +45,13 @@ type SuiteMethods<
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
   resetField: CB<void, [fieldName: F]>;
+  changed: CB<
+    FocusedMethods<F, G, T, S>,
+    [
+      changedField: FieldExclusion<F> | string | string[],
+      options?: ChangedOptions,
+    ]
+  >;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
@@ -72,6 +80,13 @@ type FocusedMethods<
 > = {
   afterEach: CB<FocusedMethods<F, G, T, S>, [callback: CB]>;
   afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  changed: CB<
+    FocusedMethods<F, G, T, S>,
+    [
+      changedField: FieldExclusion<F> | string | string[],
+      options?: ChangedOptions,
+    ]
+  >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
@@ -91,6 +106,14 @@ type AfterMethods<
 > = {
   afterEach: CB<AfterMethods<F, G, T, S>, [callback: CB]>;
   afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  /** @deferred v2 — signal abort deferred */
+  changed: CB<
+    FocusedMethods<F, G, T, S>,
+    [
+      changedField: FieldExclusion<F> | string | string[],
+      options?: ChangedOptions,
+    ]
+  >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
   run: (
@@ -120,6 +143,11 @@ export type SuiteModifiers<
 > = {
   only?: FieldExclusion<F>;
   onlyGroup?: G | G[];
-  skip?: FieldExclusion<F>;
+  // boolean is legal: skip(true) skips everything (used by changed([]) to
+  // carry zero-field focus to the runtime; the schema side resolves it via
+  // an empty pick before boolean skip can reach name matching).
+  skip?: FieldExclusion<F> | boolean;
   skipGroup?: G | G[];
+  /** @internal — deferred changed() expansion */
+  __changed?: string[];
 };

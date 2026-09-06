@@ -396,6 +396,48 @@ describe('Schema Runtime Validation', () => {
       expect(result.run.data.parsed).toEqual({ score: 42 });
       expect(Object.isFrozen(result.run.data.parsed)).toBe(true);
     });
+
+    it('isolates nested callback mutations from results and future focused runs', () => {
+      const nestedSchema = enforce.shape({
+        profile: enforce.shape({ name: enforce.isString() }),
+        score: enforce.isNumeric().toNumber(),
+      });
+      const callbackNames: string[] = [];
+      let runCount = 0;
+      const suite = create(data => {
+        callbackNames.push(data.profile.name);
+        if (runCount++ === 0) data.profile.name = 'callback-mutated';
+      }, nestedSchema);
+
+      const first = suite.run({
+        profile: { name: 'original' },
+        score: '1',
+      });
+
+      expect(first.types?.output).toEqual({
+        profile: { name: 'original' },
+        score: 1,
+      });
+      expect(first.run.data.parsed).toEqual(first.types?.output);
+      expect(Object.isFrozen(first.run.data.parsed?.profile)).toBe(true);
+
+      const second = suite.changed('score').run({
+        profile: { name: 'new-raw-value' },
+        score: '2',
+      });
+
+      // The focused run retains the last successfully mapped untouched field,
+      // but never the callback's mutation of that field.
+      expect(callbackNames).toEqual(['original', 'original']);
+      expect(second.types?.output).toEqual({
+        profile: { name: 'original' },
+        score: 2,
+      });
+      expect(second.run.data.parsed).toEqual({
+        profile: { name: 'new-raw-value' },
+        score: 2,
+      });
+    });
   });
 
   describe('Stateful behavior', () => {

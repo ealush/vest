@@ -488,19 +488,7 @@ Schema Relationships are **metadata + `suite.changed()` in V1**. `describe()` re
 | `group` / `each`                            | records (rebased)                                                                                                                       | `run()` unchanged; `changed()` respects rebasing and same-item scoping                                                              |
 | `warn`                                      | records                                                                                                                                 | `run()` unchanged; `changed()` includes warn dependents as normal tests                                                             |
 
-V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set expansion (flat, nested, reusable, array same-item, and root→array fan-out via run-time `data`). Only the `signal` overload is deferred:
-
-> **Deferred to v2 — `suite.changed(field, { signal: AbortSignal })`**
->
-> AbortSignal-based cancellation for `suite.changed` is **deferred to v2**.
-> In V1, calling `suite.changed(field, { signal })` throws `Error('suite.changed({ signal: AbortSignal }) deferred to v2')`.
->
-> ```ts
-> /** @deferred v2 — suite.changed AbortSignal support deferred */
-> suite.changed('username', { signal: controller.signal }).run(data); // throws in V1
-> ```
->
-> No behavior change for current V1 usage `suite.changed(field).run(data)` — only the signal overload is deferred.
+V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set expansion (flat, nested, reusable, array same-item, and root→array fan-out via run-time `data`). Abortable changed runs are not part of the V1 API.
 
 ## Related
 

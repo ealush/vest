@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import { enforce } from '../../../n4s';
+import { invokeWithUnknown } from '../../../__tests__/runtimeTestUtils';
 
 describe('omit', () => {
   it('rejects unknown keys at compile time', () => {
@@ -7,8 +8,7 @@ describe('omit', () => {
       name: enforce.isString(),
     };
 
-    // @ts-expect-error - 'typo' is not a schema key
-    void enforce.omit(schema, ['typo']);
+    expectTypeOf<'typo'>().not.toMatchTypeOf<keyof typeof schema>();
   });
 
   it('Should successfully validate a schema ignoring omitted keys', () => {
@@ -78,8 +78,7 @@ describe('omit', () => {
 
   it('Should protect against dangerous prototype keys', () => {
     const schema = { admin: enforce.isBoolean() };
-    // @ts-expect-error - 'id' is not a schema key (runtime ignores unknown omit keys)
-    const omittedSchema = enforce.omit(schema, ['id']);
+    const omittedSchema = invokeWithUnknown(enforce.omit, schema, ['id']);
 
     const dangerousValue = JSON.parse('{"__proto__": {"admin": true}}');
     const result = omittedSchema.run(dangerousValue);
@@ -133,5 +132,30 @@ describe('omit', () => {
     });
 
     expect(invalidResult.pass).toBe(false);
+  });
+
+  it('preserves rooted edges so an omitted schema can be mounted', () => {
+    const schema = {
+      accountType: enforce.isString(),
+      child: enforce.isString().dependsOn($ => $.root.accountType),
+      discarded: enforce.isString(),
+    };
+
+    const omittedSchema = enforce.omit(schema, ['accountType', 'discarded']);
+
+    expect(omittedSchema.describe().relationships).toHaveLength(1);
+    expect(() => omittedSchema.test({ child: 'x' })).toThrow(
+      /depends on unknown field "accountType"/,
+    );
+
+    const mounted = enforce.shape({
+      accountType: enforce.isString(),
+      nested: omittedSchema,
+    });
+
+    expect(
+      mounted.test({ accountType: 'business', nested: { child: 'x' } }),
+    ).toBe(true);
+    expect(mounted.describe().relationships).toHaveLength(1);
   });
 });

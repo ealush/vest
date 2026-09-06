@@ -1,4 +1,4 @@
-import { assertSchemaRootPathsValid } from 'n4s';
+import { assertSchemaRootPathsValid } from 'n4s/exports/internal';
 import { CB, makeResult, Result } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 

@@ -15,21 +15,22 @@ import type {
 } from '../../schema/SchemaRelationship';
 import type { RuleInstance, ScopeHandle } from '../../utils/RuleInstance';
 import { cloneRelationship, groupDependencies } from '../../utils/RuleInstance';
+import { assertRuleRootedPathsValid } from '../../schema/dependencyResolver';
 import {
   CHAIN_BASELINE,
   CHAIN_INFO,
+  COMPOSITION_CHILDREN,
   ITEM_SCHEMA,
   RESOLVED_RELATIONSHIPS,
-  assertRuleRootedPathsValid,
-} from '../../schema/dependencyResolver';
-import type { ChainBaseline, ChainInfo } from '../../schema/dependencyResolver';
+  UNRESOLVED_DEPS,
+} from '../../schema/schemaSlots';
+import type { ChainBaseline, ChainInfo } from '../../schema/schemaSlots';
 import { isSchemaExecutionProjection } from '../../schema/projectionContext';
 import { MAP_VALUE } from '../../schema/mapWithoutValidation';
+import { isRuleNode } from '../../schema/ruleNode';
 
 import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
-
-const COMPOSITION_CHILDREN = Symbol.for('vest:compositionChildren');
 
 export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
   keyof Omit<
@@ -50,7 +51,6 @@ type LazyMessage = DynamicValue<
   [value: unknown, originalMessage?: Stringable]
 >;
 
-type ObjectLike = object | ((...args: any[]) => unknown);
 type BoundaryFrame = {
   members: WeakSet<object>;
 };
@@ -65,10 +65,8 @@ const activeBoundaryFrames: BoundaryFrame[] = [];
 // receive their underlying targets.
 const proxyToTarget = new WeakMap<object, object>();
 
-function isObjectNode(node: unknown): node is ObjectLike {
-  return (
-    node !== null && (typeof node === 'object' || typeof node === 'function')
-  );
+function isObjectNode(node: unknown): node is object {
+  return isRuleNode(node);
 }
 
 function resolveBoundaryNode(node: unknown): object | null {
@@ -284,23 +282,17 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
 
   const dependsOn = (resolver: (scope: ScopeHandle) => unknown): T => {
     unresolvedDeps.push({ resolver });
-    (target as unknown as Record<symbol, unknown>)[
-      Symbol.for('vest:unresolvedDeps')
-    ] = unresolvedDeps;
-    (proxy as unknown as Record<symbol, unknown>)[
-      Symbol.for('vest:unresolvedDeps')
-    ] = unresolvedDeps;
+    (target as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] =
+      unresolvedDeps;
+    (proxy as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] =
+      unresolvedDeps;
     return proxy;
   };
 
   const describe = (): ReturnType<T['describe']> => {
     const raw =
-      (target as unknown as Record<symbol, unknown>)[
-        Symbol.for('vest:resolvedRelationships')
-      ] ||
-      (proxy as unknown as Record<symbol, unknown>)[
-        Symbol.for('vest:resolvedRelationships')
-      ] ||
+      (target as unknown as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS] ||
+      (proxy as unknown as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS] ||
       [];
     const rawArray = raw as InternalRelationship[];
     const resolved: SchemaRelationship[] = rawArray.map(cloneRelationship);
@@ -347,9 +339,8 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
     }),
   );
 
-  (proxy as unknown as Record<symbol, unknown>)[
-    Symbol.for('vest:unresolvedDeps')
-  ] = unresolvedDeps;
+  (proxy as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] =
+    unresolvedDeps;
   const mapValue = (value: unknown): ReturnType<typeof executeChain> =>
     executeChain(mappingChain, value);
   (target as unknown as Record<symbol, unknown>)[MAP_VALUE] = mapValue;

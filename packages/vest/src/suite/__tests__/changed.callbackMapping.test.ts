@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { enforce } from 'n4s';
+import { compose, enforce } from 'n4s';
 
 import { create } from '../../vest';
 
@@ -7,12 +7,42 @@ declare global {
   namespace n4s {
     interface EnforceMatchers {
       focusedToNumber: (value: unknown) => { pass: boolean; type: number };
+      focusedAppend: (value: string) => { pass: boolean; type: string };
       focusedValidator: (value: unknown) => boolean;
     }
   }
 }
 
 describe('focused schema callback mapping', () => {
+  it('maps a composed structural parser exactly once', async () => {
+    enforce.extend(
+      {
+        focusedAppend: (value: string) => ({
+          pass: true,
+          type: `${value}!`,
+        }),
+      },
+      { parsers: ['focusedAppend'] },
+    );
+    const seen: string[] = [];
+    const suite = create(
+      data => {
+        seen.push(data.profile.label);
+      },
+      enforce.shape({
+        profile: compose(enforce.shape({ label: enforce.focusedAppend() })),
+        note: enforce.isString(),
+      }),
+    );
+
+    await suite.changed('note').run({
+      profile: { label: 'value' },
+      note: 'changed',
+    });
+
+    expect(seen).toEqual(['value!']);
+  });
+
   it('maps untouched fields before the first-ever focused callback without validating them', async () => {
     const validationCalls: unknown[] = [];
     const seenAges: number[] = [];

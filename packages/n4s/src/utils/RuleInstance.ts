@@ -2,6 +2,7 @@ import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import type { FIELD } from '../schema/scopeProxy';
 import type { SchemaPath } from '../schema/SchemaPath';
+import { RESOLVED_RELATIONSHIPS, UNRESOLVED_DEPS } from '../schema/schemaSlots';
 import type {
   InternalRelationship,
   SchemaDependency,
@@ -10,14 +11,6 @@ import type {
 
 import { RuleRunReturn } from './RuleRunReturn';
 
-/**
- * Represents a lazy validation rule that can be executed with a value.
- * RuleInstances support chaining and can be reused across multiple validations.
- * Implements StandardSchemaV1 for interoperability with other schema libraries.
- *
- * @template T - The output type this rule produces (may differ from input when parsers are used)
- * @template Args - The argument types for this rule (Args[0] is the input type)
- */
 export interface ScopeHandle {
   readonly root: ScopeHandle;
   [FIELD]: (fieldName: string) => ScopeHandle;
@@ -64,15 +57,56 @@ export function groupDependencies(
   return Array.from(depMap.values());
 }
 
+/**
+ * Represents a lazy validation rule that can be executed with a value.
+ * RuleInstances support chaining and can be reused across multiple validations.
+ * Implements StandardSchemaV1 for interoperability with other schema libraries.
+ *
+ * @template T - The output type this rule produces (may differ from input when parsers are used)
+ * @template Args - The argument types for this rule (Args[0] is the input type)
+ *
+ * @example
+ * ```typescript
+ * const stringRule = enforce.isString();
+ *
+ * // Test returns boolean
+ * stringRule.test('hello'); // true
+ * stringRule.test(123); // false
+ *
+ * // StandardSchema validate method
+ * const schemaResult = stringRule.validate('hello');
+ * console.log(schemaResult.value); // 'hello'
+ * ```
+ */
 export class RuleInstance<T, Args extends any[] = any[]> {
+  // The runtime object produced by create() supports dynamic chaining.
+
   [key: string]: any;
 
+  // Type-only property for inference of rule return type
+  // (not used at runtime, assigned in create())
   infer!: T;
+
+  // Type-only declaration for the test function shape (returns boolean)
   test!: (...args: Args) => boolean;
+
+  // Internal compatibility method - returns RuleRunReturn format
   run!: (...args: Args) => RuleRunReturn<T>;
+
+  // Type-only declaration for the StandardSchema validate method
   validate!: (...args: Args) => StandardSchemaV1.Result<T>;
+
+  // Type-only declaration for parse helper that throws on issues
   parse!: (...args: Args) => T;
 
+  // Type-only declaration for StandardSchema property.
+  // The intersection with `{ readonly types: ... }` narrows `types` from optional
+  // (as declared in StandardSchemaV1.Props) to required. This is safe because
+  // RuleInstance.create() always sets `types` at runtime, and it enables
+  // TypeScript's conditional type inference in `InferSchemaData<S>` and
+  // `InferSchemaOutput<S>` to correctly extract `input` (Args[0]) vs `output` (T)
+  // — which is critical for parser chains where input and output types differ
+  // (e.g., isNumeric().toNumber(): input = string | number, output = number).
   '~standard'!: StandardSchemaV1.Props<Args[0], T> & {
     readonly types: StandardSchemaV1.Types<Args[0], T>;
   };
@@ -82,6 +116,14 @@ export class RuleInstance<T, Args extends any[] = any[]> {
 
   private constructor() {}
 
+  /**
+   * Creates a new RuleInstance from a validation function.
+   * The created instance provides `test()`, `validate()` methods
+   * and the `~standard` property for StandardSchema compliance.
+   *
+   * @param rule - Validation function that returns a RuleRunReturn
+   * @returns A new RuleInstance that can be executed with values
+   */
   static create<R extends RuleInstance<T, Args>, T, Args extends any[]>(
     rule: (...args: Args) => RuleRunReturn<T>,
   ): R {
@@ -135,16 +177,15 @@ export class RuleInstance<T, Args extends any[] = any[]> {
 
     const dependsOn = (resolver: (scope: ScopeHandle) => unknown): R => {
       unresolvedDeps.push({ resolver });
-      (instance as unknown as Record<symbol, unknown>)[
-        Symbol.for('vest:unresolvedDeps')
-      ] = unresolvedDeps;
+      (instance as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] =
+        unresolvedDeps;
       return instance as unknown as R;
     };
 
     const describe = (): DescribeResult => {
       const raw =
         ((instance as unknown as Record<symbol, unknown>)[
-          Symbol.for('vest:resolvedRelationships')
+          RESOLVED_RELATIONSHIPS
         ] as InternalRelationship[]) || [];
       const resolved: SchemaRelationship[] = raw.map(cloneRelationship);
       return {
@@ -155,9 +196,8 @@ export class RuleInstance<T, Args extends any[] = any[]> {
 
     (instance as unknown as Record<string, unknown>).dependsOn = dependsOn;
     (instance as unknown as Record<string, unknown>).describe = describe;
-    (instance as unknown as Record<symbol, unknown>)[
-      Symbol.for('vest:unresolvedDeps')
-    ] = unresolvedDeps;
+    (instance as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] =
+      unresolvedDeps;
 
     return instance as unknown as R;
   }

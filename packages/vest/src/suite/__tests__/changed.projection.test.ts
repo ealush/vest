@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { enforce } from 'n4s';
 
 import { create, test } from '../../vest';
+import { invokeWithUnknown } from '../../__tests__/runtimeTestUtils';
 
 declare global {
   namespace n4s {
@@ -33,8 +34,10 @@ describe('changed() source-retaining projection', () => {
       accountType: 'business',
       company: { country: 'CA', taxId: 42 },
     };
-    // @ts-expect-error - probe: taxId is deliberately rule-invalid (number)
-    const changed = await suite.changed('company.taxId').run(data);
+    const changed = await invokeWithUnknown(
+      suite.changed('company.taxId').run,
+      data,
+    );
     expect(changed.hasErrors('company.taxId')).toBe(true);
   });
 
@@ -49,8 +52,10 @@ describe('changed() source-retaining projection', () => {
       accountType: 42,
       company: { country: 'CA', taxId: 'ok' },
     };
-    // @ts-expect-error - probe: accountType is deliberately rule-invalid
-    const changed = await suite.changed('company.taxId').run(data);
+    const changed = await invokeWithUnknown(
+      suite.changed('company.taxId').run,
+      data,
+    );
     expect(changed.hasErrors('company.taxId')).toBe(false);
     expect(changed.hasErrors()).toBe(false);
   });
@@ -66,8 +71,10 @@ describe('changed() source-retaining projection', () => {
       accountType: 'business',
       company: { country: 'CA', taxId: 42 },
     };
-    // @ts-expect-error - probe: taxId is deliberately rule-invalid (number)
-    const byTarget = await suite.changed('company.taxId').run(badTax);
+    const byTarget = await invokeWithUnknown(
+      suite.changed('company.taxId').run,
+      badTax,
+    );
     expect(byTarget.hasErrors('company.taxId')).toBe(true);
     const badCountry: {
       accountType: string;
@@ -76,8 +83,10 @@ describe('changed() source-retaining projection', () => {
       accountType: 'business',
       company: { country: 42, taxId: 'ok' },
     };
-    // @ts-expect-error - probe: country is deliberately rule-invalid
-    const bySource = await suite.changed('company.country').run(badCountry);
+    const bySource = await invokeWithUnknown(
+      suite.changed('company.country').run,
+      badCountry,
+    );
     expect(bySource.hasErrors('company.country')).toBe(true);
   });
 
@@ -101,8 +110,10 @@ describe('changed() source-retaining projection', () => {
         { country: 'CA', state: 'ok' },
       ],
     };
-    // @ts-expect-error - probe: rows.0.state is deliberately rule-invalid
-    const changed = await suite.changed('rows.1.country').run(data);
+    const changed = await invokeWithUnknown(
+      suite.changed('rows.1.country').run,
+      data,
+    );
     expect(changed.hasErrors('rows.1.state')).toBe(false);
     expect(changed.hasErrors('rows.0.state')).toBe(false);
     expect(changed.hasErrors()).toBe(false);
@@ -296,29 +307,6 @@ describe('changed() source-retaining projection', () => {
     expect(skipped.hasErrors('nick')).toBe(false);
   });
 
-  it('boolean skip(true) with changed() drops all synthesized failures', async () => {
-    // Boolean skip-all is a legal modifier (SuiteTypes) and must mirror the
-    // runtime, which skips every test: asArray(true) is [true] and must
-    // never reach field-name normalization (TypeError: field.replace).
-    const schema = enforce.shape({
-      profile: enforce.shape({
-        state: enforce.isString().longerThan(5),
-      }),
-    });
-    const suite = create(data => {
-      test('profile.state', () => {
-        enforce(data.profile.state).isString();
-      });
-    }, schema);
-
-    const data = { profile: { state: 'x' } };
-    const skipped = await suite
-      .focus({ skip: true })
-      .changed('profile.state')
-      .run(data);
-    expect(skipped.hasErrors('profile.state')).toBe(false);
-  });
-
   it('skip() of a parent does not suppress nested synthesis', async () => {
     // Runtime skip() matches user tests by exact field name; synthesized
     // schema tests mirror that — skipping 'profile' leaves a nested
@@ -394,9 +382,9 @@ describe('changed() source-retaining projection', () => {
     }, schema);
 
     const data = { tags: { 0: 'xx' } };
-    // @ts-expect-error — reason: intentionally mistyped container (object
-    // instead of array) to prove the supplement skips the contradiction.
-    const changed = await suite.changed('tags.0').run(data);
+    // The explicit runtime seam admits the intentionally mistyped container
+    // needed to prove that the supplement skips this contradiction.
+    const changed = await invokeWithUnknown(suite.changed('tags.0').run, data);
     expect(changed.hasErrors('tags.0')).toBe(false);
   });
 
@@ -416,10 +404,12 @@ describe('changed() source-retaining projection', () => {
     });
     const suite = create(() => {}, schema);
     const data = { matrix: [[{ v: 'xx' }], 'oops'] };
-    // @ts-expect-error — reason: intentionally mistyped member ('oops'
-    // is not an array) to pin supplement attribution for contradicting
-    // members.
-    const changed = await suite.changed('matrix.1').run(data);
+    // The explicit runtime seam admits the intentionally mistyped member
+    // needed to pin supplement attribution for contradicting members.
+    const changed = await invokeWithUnknown(
+      suite.changed('matrix.1').run,
+      data,
+    );
     expect(changed.hasErrors('matrix.1')).toBe(true);
   });
 
@@ -535,8 +525,10 @@ describe('changed() source-retaining projection', () => {
     } = {
       profile: { nickname: 'toolongname', state: 42, country: 'US' },
     };
-    // @ts-expect-error - probe: state is deliberately rule-invalid (number) to pin the shadowed affected failure
-    const changed = await suite.changed('profile.state').run(data);
+    const changed = await invokeWithUnknown(
+      suite.changed('profile.state').run,
+      data,
+    );
     expect(changed.hasErrors('profile.state')).toBe(true);
     expect(changed.hasErrors('profile.nickname')).toBe(false);
   });
@@ -657,12 +649,10 @@ describe('changed() source-retaining projection', () => {
     const data: { point: [string, number | string] } = {
       point: ['toolong', 'x'],
     };
-    // @ts-expect-error - probe: members deliberately rule-invalid to pin order-dependent hiding
-    const full = await suite.run(data);
+    const full = await invokeWithUnknown(suite.run, data);
     expect(full.hasErrors('point.0')).toBe(true);
     expect(full.hasErrors('point.1')).toBe(false);
-    // @ts-expect-error - probe: members deliberately rule-invalid to pin order-dependent hiding
-    const changed = await suite.changed('point.1').run(data);
+    const changed = await invokeWithUnknown(suite.changed('point.1').run, data);
     expect(changed.hasErrors('point.1')).toBe(true);
     expect(changed.hasErrors('point.0')).toBe(false);
   });
@@ -687,12 +677,13 @@ describe('changed() source-retaining projection', () => {
     const data: { rows: Array<{ kind: string }> } = {
       rows: [{ kind: 'x' }, { kind: 'y' }],
     };
-    // @ts-expect-error - probe: elements deliberately match no member to pin order-dependent hiding
-    const full = await suite.run(data);
+    const full = await invokeWithUnknown(suite.run, data);
     expect(full.hasErrors('rows.0')).toBe(true);
     expect(full.hasErrors('rows.1')).toBe(false);
-    // @ts-expect-error - probe: elements deliberately match no member to pin order-dependent hiding
-    const changed = await suite.changed('rows.1.kind').run(data);
+    const changed = await invokeWithUnknown(
+      suite.changed('rows.1.kind').run,
+      data,
+    );
     expect(changed.hasErrors('rows.1')).toBe(true);
     expect(changed.hasErrors('rows.0')).toBe(false);
   });

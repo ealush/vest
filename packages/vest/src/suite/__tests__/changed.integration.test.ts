@@ -1,4 +1,5 @@
-import { enforce, runSchemaPaths } from 'n4s';
+import { enforce } from 'n4s';
+import { runSchemaPaths } from 'n4s/exports/internal';
 import { describe, it, expect } from 'vitest';
 
 import {
@@ -12,6 +13,7 @@ import {
   include,
 } from '../../vest';
 import { each } from '../../isolates/each';
+import { invokeWithUnknown } from '../../__tests__/runtimeTestUtils';
 
 type Deferred = {
   promise: Promise<void>;
@@ -79,15 +81,13 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       schema,
     );
 
-    await suite.run({
-      // @ts-expect-error - integration probe: data carries non-schema field 'email'
+    await invokeWithUnknown(suite.run, {
       email: 'a@b.com',
       password: 'abcdefgh',
       confirmPassword: 'abcdefgh',
     });
     log.reset();
-    const result = await suite.changed('password').run({
-      // @ts-expect-error - integration probe: data carries non-schema field 'email'
+    const result = await invokeWithUnknown(suite.changed('password').run, {
       email: 'a@b.com',
       password: 'abcdefgh2',
       confirmPassword: 'abcdefgh',
@@ -747,13 +747,13 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       });
     }, schema);
 
-    // @ts-expect-error - integration probe: data carries non-schema field 'other'
-    await suite.run({ a: { b: { c: 'x', d: 'y', other: 'z' } } });
+    await invokeWithUnknown(suite.run, {
+      a: { b: { c: 'x', d: 'y', other: 'z' } },
+    });
     log.reset();
-    await suite
-      .changed('a.b.c')
-      // @ts-expect-error - integration probe: data carries non-schema field 'other'
-      .run({ a: { b: { c: 'xx', d: 'y', other: 'z' } } });
+    await invokeWithUnknown(suite.changed('a.b.c').run, {
+      a: { b: { c: 'xx', d: 'y', other: 'z' } },
+    });
     expect(log.get()).toEqual(['a.b.c', 'a.b.d']);
     expect(log.get()).not.toContain('a.b.other');
   });
@@ -829,11 +829,13 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       });
     }, schema);
 
-    // @ts-expect-error - integration probe: data carries non-schema field 'c'
-    await suite.run({ a: '1', b: '2', c: '3' });
+    await invokeWithUnknown(suite.run, { a: '1', b: '2', c: '3' });
     log.reset();
-    // @ts-expect-error - integration probe: data carries non-schema field 'c'
-    await suite.changed('a').run({ a: 'x', b: '2', c: '3' });
+    await invokeWithUnknown(suite.changed('a').run, {
+      a: 'x',
+      b: '2',
+      c: '3',
+    });
     // Non-transitive + deduped: a changes -> b reruns, but b's change does not loop back to a again or to c
     const got = log.get();
     expect(got).toContain('a');
@@ -843,8 +845,11 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(got.filter(f => f === 'b')).toHaveLength(1);
 
     log.reset();
-    // @ts-expect-error - integration probe: data carries non-schema field 'c'
-    await suite.changed('b').run({ a: 'x', b: 'y', c: '3' });
+    await invokeWithUnknown(suite.changed('b').run, {
+      a: 'x',
+      b: 'y',
+      c: '3',
+    });
     const got2 = log.get();
     expect(got2).toContain('a');
     expect(got2).toContain('b');
@@ -1058,42 +1063,12 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     // Suite level: the same narrowing is observable through changed().
     const suite = create(() => {}, schema);
     const affected = await suite.changed('1.state').run(data);
-    // @ts-expect-error - integration probe: array-element paths ('1.state')
-    // are runtime failure names the type-level field vocabulary cannot name.
-    expect(affected.hasErrors('1.state')).toBe(true);
-    // @ts-expect-error - integration probe: see above.
-    expect(affected.hasErrors('0.state')).toBe(false);
+    // Array-element paths are runtime failure names that the type-level field
+    // vocabulary cannot name, so probe them through the explicit runtime seam.
+    expect(invokeWithUnknown(affected.hasErrors, '1.state')).toBe(true);
+    expect(invokeWithUnknown(affected.hasErrors, '0.state')).toBe(false);
     const unaffected = await suite.changed('0.state').run(data);
-    // @ts-expect-error - integration probe: see above.
-    expect(unaffected.hasErrors('1.state')).toBe(false);
+    expect(invokeWithUnknown(unaffected.hasErrors, '1.state')).toBe(false);
     expect(Object.keys(unaffected.tests)).not.toContain('1.state');
-  });
-
-  // 30. AbortSignal overload throws the documented V1 error (exact
-  // message). Context restoration is covered independently by context.run.
-  it('30. suite.changed(field, { signal }) throws deferred-to-v2 in V1', () => {
-    const schema = enforce.shape({
-      a: enforce.isString(),
-    });
-    const suite = create(() => {}, schema);
-    const controller = new AbortController();
-    expect(() =>
-      suite.changed('a', { signal: controller.signal }),
-    ).toThrowError(
-      new Error('suite.changed({ signal: AbortSignal }) deferred to v2'),
-    );
-  });
-
-  /** @deferred v2 — suite.changed with AbortSignal */
-  it('deferred v2 — suite.changed(field, { signal: AbortSignal }) throws in V1', () => {
-    const suite = create(() => {
-      test('username', () => {});
-    });
-    const controller = new AbortController();
-    expect(() =>
-      suite.changed('username', { signal: controller.signal }),
-    ).toThrowError(
-      new Error('suite.changed({ signal: AbortSignal }) deferred to v2'),
-    );
   });
 });

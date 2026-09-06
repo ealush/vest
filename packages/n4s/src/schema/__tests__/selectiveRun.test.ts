@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
+import { EnforceSchemaError, enforce } from '../../n4s';
 import {
   assertSchemaRootPathsValid,
-  EnforceSchemaError,
-  enforce,
   parseAffectedFieldName,
   resolveAffectedPaths,
   runSchemaPaths,
-} from '../../n4s';
-import type { SelectiveSchemaResult } from '../../n4s';
+} from '../../exports/internal';
+import type { SelectiveSchemaResult } from '../../exports/internal';
 import type { RuleInstance } from '../../utils/RuleInstance';
 import {
   buildProjectedSchema,

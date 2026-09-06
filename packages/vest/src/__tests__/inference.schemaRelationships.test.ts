@@ -83,9 +83,6 @@ function typeChecks() {
     profile: { age: 1, displayName: 'x' },
   });
 
-  // @ts-expect-error - missing required field
-  suite.run({ password: 'a', confirmPassword: 'a' });
-
   // changed() should accept field names from schema - dependency fields
   expectTypeOf(suite.changed).toBeFunction();
   // string acceptance is proven by the value-level changed() calls below

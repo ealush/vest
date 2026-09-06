@@ -1,10 +1,9 @@
-import { CB } from 'vest-utils';
+import { CB, type DropFirst } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { Subscribe } from '../core/VestBus/VestBus';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { FieldExclusion } from '../hooks/focused/focused';
-import type { ChangedOptions } from './changed';
 import {
   SuiteResult,
   TFieldName,
@@ -17,12 +16,23 @@ import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
 import { TTypedMethods } from './getTypedMethods';
 
+type CallbackTail<T extends CB> =
+  DropFirst<Parameters<T>> extends never ? [] : DropFirst<Parameters<T>>;
+
+export type SuiteRunArguments<
+  S extends TSchema,
+  T extends CB,
+  Data = InferSchemaData<S>,
+> = S extends undefined
+  ? Parameters<T>
+  : [data: Data, ...args: CallbackTail<T>];
+
 export type SuiteCallbackWithSchema<
   S extends TSchema,
   T extends CB,
 > = S extends undefined
   ? T
-  : (data: InferSchemaOutput<S>, ...args: any[]) => void;
+  : (data: InferSchemaOutput<S>, ...args: CallbackTail<T>) => void;
 
 export type Suite<
   F extends TFieldName,
@@ -47,26 +57,11 @@ type SuiteMethods<
   resetField: CB<void, [fieldName: F]>;
   changed: CB<
     FocusedMethods<F, G, T, S>,
-    [
-      changedField: FieldExclusion<F> | string | string[],
-      options?: ChangedOptions,
-    ]
+    [changedField: FieldExclusion<F> | string | string[]]
   >;
-  run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
-  runStatic: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
-  validate: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
+  run: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
+  runStatic: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
+  validate: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
   subscribe: Subscribe;
 } & AfterMethods<F, G, T, S> &
   TTypedMethods<F, G> &
@@ -82,19 +77,14 @@ type FocusedMethods<
   afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   changed: CB<
     FocusedMethods<F, G, T, S>,
-    [
-      changedField: FieldExclusion<F> | string | string[],
-      options?: ChangedOptions,
-    ]
+    [changedField: FieldExclusion<F> | string | string[]]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
   run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: Partial<InferSchemaData<S>>, ...args: any[]]
+    ...args: SuiteRunArguments<S, T, Partial<InferSchemaData<S>>>
   ) => SuiteResult<F, G, S>;
 };
 
@@ -106,21 +96,13 @@ type AfterMethods<
 > = {
   afterEach: CB<AfterMethods<F, G, T, S>, [callback: CB]>;
   afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
-  /** @deferred v2 — signal abort deferred */
   changed: CB<
     FocusedMethods<F, G, T, S>,
-    [
-      changedField: FieldExclusion<F> | string | string[],
-      options?: ChangedOptions,
-    ]
+    [changedField: FieldExclusion<F> | string | string[]]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
-  run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
+  run: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
 };
 
 /**
@@ -143,11 +125,15 @@ export type SuiteModifiers<
 > = {
   only?: FieldExclusion<F>;
   onlyGroup?: G | G[];
-  // boolean is legal: skip(true) skips everything (used by changed([]) to
-  // carry zero-field focus to the runtime; the schema side resolves it via
-  // an empty pick before boolean skip can reach name matching).
-  skip?: FieldExclusion<F> | boolean;
+  skip?: FieldExclusion<F>;
   skipGroup?: G | G[];
-  /** @internal — deferred changed() expansion */
+};
+
+/** @internal Runtime-only state that must not leak into focus()'s public API. */
+export type InternalSuiteModifiers<
+  F extends TFieldName,
+  G extends TGroupName = TGroupName,
+> = SuiteModifiers<F, G> & {
   __changed?: string[];
+  __skipAll?: boolean;
 };

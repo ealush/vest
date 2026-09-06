@@ -1,8 +1,10 @@
-import { isArray, isObject } from 'vest-utils';
+import { hasOwnProperty, isArray, isObject } from 'vest-utils';
 
-import { ITEM_CONTAINER, ITEM_SCHEMA } from './dependencyResolver';
+import { ITEM_CONTAINER, ITEM_SCHEMA } from './schemaSlots';
+import { isRuleNode } from './ruleNode';
 
 export const MAP_VALUE = Symbol.for('vest:mapValue');
+export const MAP_FULL_VALUE = Symbol.for('vest:mapFullValue');
 
 type MappingResult = { pass: boolean; type: unknown };
 type InternalRule = Record<PropertyKey, unknown>;
@@ -16,9 +18,15 @@ type InternalRule = Record<PropertyKey, unknown>;
  *
  * @internal
  */
+// eslint-disable-next-line complexity -- mapping dispatch follows the independent structural and parser slots
 export function mapWithoutValidation(rule: unknown, value: unknown): unknown {
-  if (!isObject(rule)) return value;
+  if (!isRuleNode(rule)) return value;
   const slots = rule as InternalRule;
+  const mapFullValue = slots[MAP_FULL_VALUE];
+  if (typeof mapFullValue === 'function') {
+    const result = (mapFullValue as (input: unknown) => MappingResult)(value);
+    return result.pass ? result.type : value;
+  }
   const mapped = mapStructuredValue(slots, value);
   const mapValue = slots[MAP_VALUE];
   if (typeof mapValue !== 'function') return mapped;
@@ -67,7 +75,7 @@ function mapShape(
 ): Record<string, unknown> {
   const output = { ...value } as Record<string, unknown>;
   for (const key of Object.keys(shape)) {
-    if (Object.prototype.hasOwnProperty.call(output, key)) {
+    if (hasOwnProperty(output, key)) {
       output[key] = mapWithoutValidation(shape[key], output[key]);
     }
   }

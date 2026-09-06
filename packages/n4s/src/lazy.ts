@@ -16,9 +16,10 @@ import * as schemaRules from './rules/schemaRules/schemaRules';
 import { lazy as lazyRule } from './rules/schemaRules/lazy';
 import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
 import { type RuleInstance } from './utils/RuleInstance';
-import { asArray, isNullish, isObject } from 'vest-utils';
+import { asArray, isNullish } from 'vest-utils';
 import { ctx } from './enforceContext';
 import { RuleRunReturn } from './utils/RuleRunReturn';
+import { resolveInlineDeps } from './schema/dependencyResolver';
 import {
   ITEM_CONTAINER,
   ITEM_SCHEMA,
@@ -26,15 +27,15 @@ import {
   PARTIAL_LIKE,
   RESOLVED_RELATIONSHIPS,
   UNRESOLVED_DEPS,
-  resolveInlineDeps,
-} from './schema/dependencyResolver';
+} from './schema/schemaSlots';
 import { isSchemaExecutionProjection } from './schema/projectionContext';
-import type { ItemContainerKind } from './schema/dependencyResolver';
+import type { ItemContainerKind } from './schema/schemaSlots';
 import { snapshotChainBaseline } from './rules/chainBuilder/chainBuilder';
 import { rebaseRelationships } from './schema/rebase';
 import type { SchemaPath } from './schema/SchemaPath';
 import type { InternalRelationship } from './schema/SchemaRelationship';
-import { MAP_VALUE } from './schema/mapWithoutValidation';
+import { MAP_FULL_VALUE, MAP_VALUE } from './schema/mapWithoutValidation';
+import { isRuleNode } from './schema/ruleNode';
 
 /**
  * Extracts the output type from a custom matcher function.
@@ -73,7 +74,7 @@ function collectSchemaRelationships(
     schema as Record<string, RuleInstance<unknown, unknown[]>>,
     [],
     schema,
-  ) as unknown as InternalRelationship[];
+  );
   for (const key of Object.keys(schema)) {
     if (keyFilter && !keyFilter(key)) continue;
     const fieldRule: unknown = schema[key];
@@ -177,7 +178,7 @@ function normalizeItemSchemas(item: unknown): Record<PropertyKey, unknown>[] {
   const entries = Array.isArray(item) ? item : [item];
   const out: Record<PropertyKey, unknown>[] = [];
   for (const entry of entries) {
-    if (!entry || typeof entry !== 'object') continue;
+    if (!isRuleNode(entry)) continue;
     if (!out.includes(entry as Record<PropertyKey, unknown>)) {
       out.push(entry as Record<PropertyKey, unknown>);
     }
@@ -207,7 +208,7 @@ function createRecordWrapper(): (
     // without resolved relationships simply contribute no edges.
     // (Lazy RuleInstances are always objects — chain proxies — so the
     // object gate cannot silently drop a real member rule.)
-    if (isObject(valueRule)) {
+    if (isRuleNode(valueRule)) {
       const slots = slotsOf(rule);
       slots[ITEM_SCHEMA] = valueRule;
       slots[ITEM_CONTAINER] = 'record' as ItemContainerKind;
@@ -258,6 +259,9 @@ function wrapOptional(
     }
     if (innerSlots[MAP_VALUE] && !slots[MAP_VALUE]) {
       slots[MAP_VALUE] = innerSlots[MAP_VALUE];
+    }
+    if (innerSlots[MAP_FULL_VALUE] && !slots[MAP_FULL_VALUE]) {
+      slots[MAP_FULL_VALUE] = innerSlots[MAP_FULL_VALUE];
     }
     // The wrapper validates through the inner rule, so the rebuild
     // baseline is the inner rule's current chain state — not the fresh
@@ -310,34 +314,6 @@ function createPartialWrapper(): (
   };
 }
 
-function rootedTopKey(
-  path: Array<{ type?: unknown; key?: unknown }>,
-): string | null {
-  const [first] = path;
-  return first && first.type === 'property' ? String(first.key) : null;
-}
-
-// Every rooted endpoint of a projected edge must resolve inside the
-// projection: `isKept` answers whether a top-level key survived pick/omit.
-function rootedEndpointsKept(
-  rel: InternalRelationship,
-  isKept: (top: string) => boolean,
-): boolean {
-  if ((rel as { __isRootSource?: boolean }).__isRootSource === true) {
-    const top = rootedTopKey(
-      rel.source as Array<{ type?: unknown; key?: unknown }>,
-    );
-    if (top && !isKept(top)) return false;
-  }
-  if ((rel as { __isRootTarget?: boolean }).__isRootTarget === true) {
-    const top = rootedTopKey(
-      rel.target as Array<{ type?: unknown; key?: unknown }>,
-    );
-    if (top && !isKept(top)) return false;
-  }
-  return true;
-}
-
 function createPickWrapper(): (
   schema: Record<PropertyKey, unknown>,
   keys: PropertyKey | PropertyKey[],
@@ -381,13 +357,6 @@ function createPickWrapper(): (
         const tKept = tTop ? keysSet.has(tTop) : true;
         return sKept && tKept;
       },
-    );
-    // A projection only carries edges fully resolvable within itself: drop
-    // rooted edges whose provider was picked away. Dependent expansion
-    // already ran on the full graph, and the run-time rooted boundary would
-    // otherwise reject the focused run.
-    relationships = relationships.filter(rel =>
-      rootedEndpointsKept(rel, top => keysSet.has(top)),
     );
     const base = adaptDynamicRules<
       RuleInstance<unknown, [unknown]>,
@@ -453,11 +422,6 @@ function createOmitWrapper(): (
         const tKept = tTop ? !keysSet.has(tTop) : true;
         return sKept && tKept;
       },
-    );
-    // Same projection rule as pick: drop rooted edges whose provider was
-    // omitted so focused runs stay self-contained.
-    relationships = relationships.filter(rel =>
-      rootedEndpointsKept(rel, top => !keysSet.has(top)),
     );
     const base = adaptDynamicRules<
       RuleInstance<unknown, [unknown]>,
@@ -549,7 +513,7 @@ const schemaRulesWithArrayChaining = {
     // (Lazy RuleInstances are always objects — chain proxies — so the
     // object gate cannot silently drop a real member rule.)
     const slots = rule as unknown as Record<symbol, unknown>;
-    if (rules.length === 1 && isObject(rules[0])) {
+    if (rules.length === 1 && isRuleNode(rules[0])) {
       slots[ITEM_SCHEMA] = rules[0];
       slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
     } else if (rules.length > 1) {
@@ -562,7 +526,7 @@ const schemaRulesWithArrayChaining = {
       // over-approximates (an edge fires for indices whose element matched
       // a different member), but that is the invalidation-safe direction —
       // and never a silent empty graph.
-      const schemas = rules.filter(isObject);
+      const schemas = rules.filter(isRuleNode);
       if (schemas.length > 0) {
         slots[ITEM_SCHEMA] = schemas;
         slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
@@ -584,14 +548,14 @@ const schemaRulesWithArrayChaining = {
       },
     );
     const slots = rule as unknown as Record<symbol, unknown>;
-    if (rules.length === 1 && isObject(rules[0])) {
+    if (rules.length === 1 && isRuleNode(rules[0])) {
       slots[ITEM_SCHEMA] = rules[0];
       slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
     } else if (rules.length > 1) {
       // Same union semantics as isArrayOf above: keep every object member
       // (graph-carrying or primitive) so per-member execution reaches
       // primitive members too; describe() output is unchanged.
-      const schemas = rules.filter(isObject);
+      const schemas = rules.filter(isRuleNode);
       if (schemas.length > 0) {
         slots[ITEM_SCHEMA] = schemas;
         slots[ITEM_CONTAINER] = 'array' as ItemContainerKind;
@@ -618,7 +582,7 @@ const schemaRulesWithArrayChaining = {
     // or primitive — so per-member execution reaches primitive positions
     // too; describe() output is unchanged (members without resolved
     // relationships contribute no edges).
-    const schemas = rules.filter(isObject);
+    const schemas = rules.filter(isRuleNode);
     if (schemas.length > 0) {
       // No ITEM_CONTAINER here: tuple members are positional, and vest
       // readers discriminate list slots with Array.isArray without ever

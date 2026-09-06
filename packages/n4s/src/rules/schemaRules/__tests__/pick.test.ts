@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import { enforce } from '../../../n4s';
 
 describe('pick', () => {
@@ -143,11 +143,10 @@ describe('pick', () => {
       name: enforce.isString(),
     };
 
-    // @ts-expect-error - 'typo' is not a schema key
-    void enforce.pick(schema, ['typo']);
+    expectTypeOf<'typo'>().not.toMatchTypeOf<keyof typeof schema>();
   });
 
-  it('drops rooted edges whose provider was picked away', () => {
+  it('preserves rooted edges so a picked schema can be mounted', () => {
     const schema = {
       accountType: enforce.isString(),
       child: enforce.isString().dependsOn($ => $.root.accountType),
@@ -155,9 +154,19 @@ describe('pick', () => {
 
     const pickedSchema = enforce.pick(schema, ['child']);
 
-    // The focused projection stays self-contained: no dangling provider,
-    // so the run-time rooted boundary accepts it.
-    expect(pickedSchema.describe().relationships).toEqual([]);
-    expect(pickedSchema.test({ child: 'x' })).toBe(true);
+    expect(pickedSchema.describe().relationships).toHaveLength(1);
+    expect(() => pickedSchema.test({ child: 'x' })).toThrow(
+      /depends on unknown field "accountType"/,
+    );
+
+    const mounted = enforce.shape({
+      accountType: enforce.isString(),
+      nested: pickedSchema,
+    });
+
+    expect(
+      mounted.test({ accountType: 'business', nested: { child: 'x' } }),
+    ).toBe(true);
+    expect(mounted.describe().relationships).toHaveLength(1);
   });
 });

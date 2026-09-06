@@ -68,4 +68,36 @@ describe('superseded suite.run() ownership', () => {
     secondGate.release();
     expect((await secondRun).hasErrors('tag')).toBe(false);
   });
+
+  it('keeps a pending run owned by itself when its successor throws synchronously', async () => {
+    const gate = createDeferred();
+    const firstDone = createDeferred();
+    const suite = create((data: { explode?: boolean; tag: string }) => {
+      if (data.explode) throw new Error('boom');
+      test('tag', async () => {
+        try {
+          await gate.promise;
+          enforce(data.tag).isNotBlank();
+        } finally {
+          firstDone.release();
+        }
+      });
+    });
+
+    const first = suite.run({ tag: 'first' });
+    expect(() => suite.run({ explode: true, tag: 'second' })).toThrow('boom');
+
+    gate.release();
+    await firstDone.promise;
+    await flushAsyncWork();
+
+    const outcome = await Promise.race([
+      Promise.resolve(first),
+      new Promise<'timeout'>(resolve => setImmediate(() => resolve('timeout'))),
+    ]);
+    expect(outcome).not.toBe('timeout');
+    if (outcome !== 'timeout') {
+      expect(outcome.hasErrors('tag')).toBe(false);
+    }
+  });
 });

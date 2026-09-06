@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 
 import { compose, enforce } from '../../../n4s';
+import type { SchemaMemberRule } from '../../../n4s';
 import { EnforceSchemaError } from '../../../errors/EnforceSchemaError';
-import { RESOLVED_RELATIONSHIPS } from '../../../schema/dependencyResolver';
+import { RESOLVED_RELATIONSHIPS } from '../../../schema/schemaSlots';
 import type { SchemaRelationship } from '../../../schema/SchemaRelationship';
 
 type PathSegment = {
@@ -241,6 +242,48 @@ describe('item relationships', () => {
     expect(sourcesFor(schema.describe(), 'm.m.$item.state')).toEqual([
       'm.m.$item.country',
     ]);
+  });
+
+  it.each([
+    ['array', (rule: SchemaMemberRule) => enforce.isArrayOf(rule)],
+    ['tuple', (rule: SchemaMemberRule) => enforce.tuple(rule)],
+    ['record', (rule: SchemaMemberRule) => enforce.record(rule)],
+  ])('keeps a composed inner edge in a %s container', (_name, container) => {
+    const inner = compose(
+      enforce.shape({
+        country: enforce.isString(),
+        state: enforce.isString().dependsOn($ => $.country),
+      }),
+    );
+    const schema = enforce.shape({ rows: container(inner) });
+
+    expect(
+      schema
+        .describe()
+        .relationships.map(relationship => [
+          pathString(relationship.source),
+          pathString(relationship.target),
+        ]),
+    ).toEqual([['rows.rows.$item.country', 'rows.rows.$item.state']]);
+  });
+
+  it('unions relationship graphs from every composed rule', () => {
+    const first = enforce.shape({
+      w: enforce.isString(),
+      x: enforce.isString().dependsOn($ => $.y),
+      y: enforce.isString(),
+      z: enforce.isString(),
+    });
+    const second = enforce.shape({
+      w: enforce.isString(),
+      x: enforce.isString(),
+      y: enforce.isString(),
+      z: enforce.isString().dependsOn($ => $.w),
+    });
+    const schema = enforce.shape({ block: compose(first, second) });
+
+    expect(sourcesFor(schema.describe(), 'block.x')).toEqual(['block.y']);
+    expect(sourcesFor(schema.describe(), 'block.z')).toEqual(['block.w']);
   });
 
   it('non-invalidate effects throw the deferred-to-v2 error at composition', () => {

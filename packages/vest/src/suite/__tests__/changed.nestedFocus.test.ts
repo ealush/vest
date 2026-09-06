@@ -2,6 +2,7 @@ import { enforce } from 'n4s';
 import { describe, it, expect } from 'vitest';
 
 import { create, test } from '../../vest';
+import { invokeWithUnknown } from '../../__tests__/runtimeTestUtils';
 import { getAffectedFields } from '../changed';
 
 describe('changed() nested schema focus and empty changed', () => {
@@ -54,8 +55,10 @@ describe('changed() nested schema focus and empty changed', () => {
     const data: { profile: { country: string; state: string | number } } = {
       profile: { country: 'US', state: 42 },
     };
-    // @ts-expect-error - probe: state is deliberately rule-invalid (number) to pin the changed() schema failure
-    const result = await suite.changed('profile.country').run(data);
+    const result = await invokeWithUnknown(
+      suite.changed('profile.country').run,
+      data,
+    );
     expect(result.hasErrors('profile.state')).toBe(true);
   });
 
@@ -70,8 +73,7 @@ describe('changed() nested schema focus and empty changed', () => {
     const data: { profile: { country: string; state: string | number } } = {
       profile: { country: 'US', state: 42 },
     };
-    // @ts-expect-error - probe: state is deliberately rule-invalid (number) for the full-run control
-    const result = await suite.run(data);
+    const result = await invokeWithUnknown(suite.run, data);
     expect(result.hasErrors('profile.state')).toBe(true);
   });
 
@@ -106,8 +108,10 @@ describe('changed() nested schema focus and empty changed', () => {
       profile: { country: 'US', state: 42 },
       nickname: 7,
     };
-    // @ts-expect-error - probe: deliberately rule-invalid values to pin affected-set filtering
-    const result = await suite.changed('profile.country').run(data);
+    const result = await invokeWithUnknown(
+      suite.changed('profile.country').run,
+      data,
+    );
     expect(result.hasErrors('profile.state')).toBe(true);
     expect(result.hasErrors('nickname')).toBe(false);
   });
@@ -127,8 +131,7 @@ describe('changed() nested schema focus and empty changed', () => {
       });
     }, schema);
     const data: { username: string | number } = { username: 42 };
-    // @ts-expect-error - probe: username is deliberately rule-invalid (number) to pin the empty-changed no-op
-    const result = await suite.changed([]).run(data);
+    const result = await invokeWithUnknown(suite.changed([]).run, data);
     expect(executed).toEqual([]);
     expect(result.hasErrors('username')).toBe(false);
     expect(result.hasErrors()).toBe(false);
@@ -145,8 +148,7 @@ describe('changed() nested schema focus and empty changed', () => {
     const data: { profile: { country: string; state: string | number } } = {
       profile: { country: 'US', state: 42 },
     };
-    // @ts-expect-error - probe: state is deliberately rule-invalid (number) to pin fresh-suite nested failure
-    const result = await suite.changed('profile').run(data);
+    const result = await invokeWithUnknown(suite.changed('profile').run, data);
     expect(result.hasErrors('profile.state')).toBe(true);
     expect(result.getErrors()).not.toEqual({});
   });
@@ -168,8 +170,10 @@ describe('changed() nested schema focus and empty changed', () => {
         { country: 'IL', passportNumber: 42 },
       ],
     };
-    // @ts-expect-error - probe: passportNumber is deliberately rule-invalid (number) to pin array expansion
-    const result = await suite.changed('travelers').run(data);
+    const result = await invokeWithUnknown(
+      suite.changed('travelers').run,
+      data,
+    );
     expect(result.hasErrors('travelers.1.passportNumber')).toBe(true);
   });
 
@@ -189,8 +193,10 @@ describe('changed() nested schema focus and empty changed', () => {
       unrelated: 42,
       profile: { country: 'US', state: 42 },
     };
-    // @ts-expect-error - probe: deliberately rule-invalid values to pin order-sensitivity of the affected set
-    const result = await suite.changed('profile.country').run(data);
+    const result = await invokeWithUnknown(
+      suite.changed('profile.country').run,
+      data,
+    );
     expect(result.hasErrors('profile.state')).toBe(true);
     expect(result.hasErrors('unrelated')).toBe(false);
   });
@@ -206,8 +212,7 @@ describe('changed() nested schema focus and empty changed', () => {
     const data: { profile: { country: string; state: string | number } } = {
       profile: { country: 'US', state: 42 },
     };
-    // @ts-expect-error - probe: state is deliberately rule-invalid (number) to pin the undefined-changed no-op
-    const result = await suite.changed(undefined).run(data);
+    const result = await invokeWithUnknown(suite.changed(undefined).run, data);
     expect(result.hasErrors('profile.state')).toBe(true);
   });
 
@@ -239,8 +244,7 @@ describe('changed() nested schema focus and empty changed', () => {
       });
     }, schema);
     const data: { username: string | number } = { username: 42 };
-    // @ts-expect-error - probe: username is deliberately rule-invalid (number) for the full-run control
-    const result = await suite.run(data);
+    const result = await invokeWithUnknown(suite.run, data);
     expect(executed).toEqual(['username']);
     expect(result.hasErrors('username')).toBe(true);
   });

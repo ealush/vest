@@ -19,8 +19,8 @@ import {
   PARTIAL_LIKE,
   chainBaselineMatches,
   hasChainBaseline,
-} from './dependencyResolver';
-import type { ItemContainerKind } from './dependencyResolver';
+} from './schemaSlots';
+import type { ItemContainerKind } from './schemaSlots';
 import type { ItemSegment, PropertySegment, SchemaPath } from './SchemaPath';
 import { isPropertySegment } from './SchemaPath';
 import { withSchemaExecutionProjection } from './projectionContext';
@@ -113,6 +113,7 @@ type FocusModifiers = {
  * EnforceSchemaError on a nullish schema — schemaless runs never silently
  * pass here (the suite runner guards those before calling).
  */
+// eslint-disable-next-line complexity -- this is the orchestration boundary for all selective-run modes
 export function runSchemaPaths(
   schema: unknown,
   data: unknown,
@@ -137,9 +138,13 @@ export function runSchemaPaths(
       { only: focus.onlyList, skip: focus.skip },
       focus.effectiveAffected,
     );
-  return focus.effectiveAffected === null
-    ? execute()
-    : withSchemaExecutionProjection(execute);
+  const createsExecutionFragment =
+    focus.effectiveAffected !== null ||
+    focus.onlyList !== null ||
+    !isNullish(focus.skip);
+  return createsExecutionFragment
+    ? withSchemaExecutionProjection(execute)
+    : execute();
 }
 
 /**

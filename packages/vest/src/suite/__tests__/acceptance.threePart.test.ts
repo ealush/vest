@@ -15,6 +15,7 @@ import {
   warn,
 } from '../../vest';
 import { each } from '../../isolates/each';
+import { invokeWithUnknown } from '../../__tests__/runtimeTestUtils';
 
 type SuiteLog = {
   record: (field: string) => void;
@@ -71,14 +72,13 @@ describe('Acceptance — Sanity', (): void => {
     const dataValid = { password: 'abcdefgh', email: 'a@b.com' };
     const dataInvalid = { password: '123', email: '' };
     const r1 = await withoutSchema.run(dataValid);
-    // @ts-expect-error - acceptance probe: data carries non-schema field 'email'
-    const _r2 = await withSchema.run(dataValid);
+    const _r2 = await invokeWithUnknown(withSchema.run, dataValid);
     expect(r1.hasErrors('password')).toBe(_r2.hasErrors('password'));
-    // @ts-expect-error - acceptance probe: 'email' is a tested field outside the schema
-    expect(r1.hasErrors('email')).toBe(_r2.hasErrors('email'));
+    expect(r1.hasErrors('email')).toBe(
+      invokeWithUnknown(_r2.hasErrors, 'email'),
+    );
     const r3 = await withoutSchema.run(dataInvalid);
-    // @ts-expect-error - acceptance probe: data carries non-schema field 'email'
-    const r4 = await withSchema.run(dataInvalid);
+    const r4 = await invokeWithUnknown(withSchema.run, dataInvalid);
     expect(r3.getErrors('password')).toEqual(r4.getErrors('password'));
   });
 
@@ -348,8 +348,7 @@ describe('Acceptance — No regression', (): void => {
       },
       schema,
     );
-    // @ts-expect-error - acceptance probe: data outside the attached schema
-    await suite2.run({ a: '1', b: '2' });
+    await invokeWithUnknown(suite2.run, { a: '1', b: '2' });
     expect(log.get()).toEqual(['a', 'b']);
   });
 
@@ -495,10 +494,8 @@ describe('Acceptance — No regression', (): void => {
       },
       schema,
     );
-    // @ts-expect-error - acceptance probe: data outside the attached schema
-    const r3 = await suiteWithSchema.run({ a: '1', b: '' });
-    // @ts-expect-error - acceptance probe: 'b' is a tested field outside the schema
-    expect(r3.hasErrors('b')).toBe(false);
+    const r3 = await invokeWithUnknown(suiteWithSchema.run, { a: '1', b: '' });
+    expect(invokeWithUnknown(r3.hasErrors, 'b')).toBe(false);
   });
 
   it('omitWhen() unchanged', async (): Promise<void> => {
@@ -617,12 +614,9 @@ describe('Acceptance — No regression', (): void => {
       },
       schema,
     );
-    // @ts-expect-error - acceptance probe: data outside the attached schema
-    const _r2 = await suiteWithSchema.run({ a: '', b: '' });
-    // @ts-expect-error - acceptance probe: 'a' is a tested field outside the schema
-    expect(_r2.hasErrors('a')).toBe(true);
-    // @ts-expect-error - acceptance probe: 'b' is a tested field outside the schema
-    expect(_r2.hasErrors('b')).toBe(true);
+    const _r2 = await invokeWithUnknown(suiteWithSchema.run, { a: '', b: '' });
+    expect(invokeWithUnknown(_r2.hasErrors, 'a')).toBe(true);
+    expect(invokeWithUnknown(_r2.hasErrors, 'b')).toBe(true);
   });
 
   it('each() unchanged — no relationships', async (): Promise<void> => {
@@ -650,10 +644,10 @@ describe('Acceptance — No regression', (): void => {
       },
       schema,
     );
-    // @ts-expect-error - acceptance probe: data outside the attached schema
-    const _r2 = await suiteWithSchema.run({ items: ['a', '', 'c'] });
-    // @ts-expect-error - acceptance probe: 'items' is a tested field outside the schema
-    expect(_r2.hasErrors('items.1')).toBe(true);
+    const _r2 = await invokeWithUnknown(suiteWithSchema.run, {
+      items: ['a', '', 'c'],
+    });
+    expect(invokeWithUnknown(_r2.hasErrors, 'items.1')).toBe(true);
   });
 });
 

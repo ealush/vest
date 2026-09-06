@@ -1,4 +1,7 @@
-let projectionDepth = 0;
+import { createContext } from 'context';
+import { invariant, isPromise } from 'vest-utils';
+
+const projectionContext = createContext(false);
 
 /**
  * Runs an internal selective-validation fragment after the relationship graph
@@ -13,15 +16,15 @@ let projectionDepth = 0;
  * @internal
  */
 export function withSchemaExecutionProjection<T>(fn: () => T): T {
-  projectionDepth += 1;
-  try {
-    return fn();
-  } finally {
-    projectionDepth -= 1;
-  }
+  const result = projectionContext.run(true, fn);
+  invariant(
+    !isPromise(result),
+    'Schema execution projection must remain synchronous.',
+  );
+  return result;
 }
 
 /** @internal */
 export function isSchemaExecutionProjection(): boolean {
-  return projectionDepth > 0;
+  return projectionContext.use();
 }

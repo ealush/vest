@@ -15,10 +15,13 @@ import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { FieldExclusion } from '../hooks/focused/focused';
-import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
+import {
+  InternalSuiteModifiers,
+  SuiteModifiers,
+  SuiteCallbackWithSchema,
+  SuiteRunArguments,
+} from './SuiteTypes';
 import { useDeferDoneCallback } from './after/deferDoneCallback';
-import { assertNoAbortSignal } from './changed';
-import type { ChangedOptions } from './changed';
 import { createSuite } from './createSuite';
 import { getStandardSchema } from './getStandardSchema';
 import { getTypedMethods } from './getTypedMethods';
@@ -39,7 +42,7 @@ export function useCreateSuiteMethods<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {
@@ -67,7 +70,7 @@ function useCreateSuiteMethodsHelper<
   S extends TSchema = undefined,
 >(ctx: {
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  modifiers: SuiteModifiers<F, G>;
+  modifiers: InternalSuiteModifiers<F, G>;
   subscribe: Subscribe;
   schema?: S;
   persistedRun: any;
@@ -90,7 +93,7 @@ function useGetSuiteMethods<
   S extends TSchema = undefined,
 >(ctx: {
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  modifiers: SuiteModifiers<F, G>;
+  modifiers: InternalSuiteModifiers<F, G>;
   subscribe: Subscribe;
   schema?: S;
   persistedRun: any;
@@ -125,7 +128,7 @@ function useGetLifecycleMethods<
   S extends TSchema = undefined,
 >(ctx: {
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  modifiers: SuiteModifiers<F, G>;
+  modifiers: InternalSuiteModifiers<F, G>;
   subscribe: Subscribe;
   schema?: S;
   persistedRun: any;
@@ -167,7 +170,7 @@ function useAddAfterHelper<
 >(
   ctx: {
     suiteCallback: SuiteCallbackWithSchema<S, T>;
-    modifiers: SuiteModifiers<F, G>;
+    modifiers: InternalSuiteModifiers<F, G>;
     subscribe: Subscribe;
     schema?: S;
     persistedRun: any;
@@ -219,7 +222,7 @@ function useCreateFocus<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {
@@ -250,7 +253,7 @@ function useCreateOnly<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {
@@ -272,7 +275,7 @@ function useCreateChanged<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {
@@ -280,12 +283,7 @@ function useCreateChanged<
   // can be expanded using the actual runtime data (rows.length).
   // Without deferral, changed('global') with target rows[$item].tax would
   // produce the unusable field 'rows.rows.$item.tax' and nothing would run.
-  return function changed(
-    changedField: string | string[] | FieldExclusion<F>,
-    options?: ChangedOptions,
-  ) {
-    /** @deferred v2 — AbortSignal abort deferred */
-    assertNoAbortSignal(options);
+  return function changed(changedField: string | string[] | FieldExclusion<F>) {
     if (changedField === undefined) {
       // Mirror only(undefined): a legal no-op — run without changed focus.
       return useCreateSuiteMethods<F, G, T, S>(
@@ -303,7 +301,7 @@ function useCreateChanged<
     // is handled by runner; here we just create a focused suite with deferred modifier.
     return useCreateSuiteMethods<F, G, T, S>(
       suiteCallback,
-      { ...modifiers, __changed: changedArray } as SuiteModifiers<F, G>,
+      { ...modifiers, __changed: changedArray },
       subscribe,
       schema,
     );
@@ -323,11 +321,7 @@ function createStaticRunner<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(suiteCallback: SuiteCallbackWithSchema<S, T>, schema?: S) {
-  return function runStatic(
-    ...runArgs: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) {
+  return function runStatic(...runArgs: SuiteRunArguments<S, T>) {
     const suite = createSuite<F, G, T, S>(suiteCallback, schema);
     return suite.run(...(runArgs as Parameters<typeof suite.run>));
   };

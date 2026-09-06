@@ -90,4 +90,23 @@ describe('standalone boundary validation context', () => {
       middle.test({ company: { taxId: 'x' }, note: 'n' }),
     ).toThrowError(/"taxId" depends on unknown field "accountType"/);
   });
+
+  it('resolves a rooted path through a composed provider schema', () => {
+    const account = compose(
+      enforce.shape({
+        kind: enforce.isString(),
+      }),
+    );
+    const child = enforce.shape({
+      taxId: enforce.isString().dependsOn($ => $.root.account.kind),
+    });
+    const outer = enforce.shape({ account, child });
+
+    expect(
+      outer.test({
+        account: { kind: 'business' },
+        child: { taxId: '123' },
+      }),
+    ).toBe(true);
+  });
 });

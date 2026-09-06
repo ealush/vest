@@ -134,7 +134,7 @@ output assembled for the suite.
 
 With `create(callback, schema)`, TypeScript narrows:
 
-- callback data (`data`) to the schema input shape.
+- callback data (`data`) to the schema output shape.
 - `suite.run(...)` / `suite.runStatic(...)` first argument to the schema input shape.
 - the Standard Schema `~standard.validate(...)` input and output types.
 - field-oriented happy-path APIs (`test`, `optional`, `include`) to schema keys.
@@ -206,7 +206,7 @@ The suite result includes typed properties for accessing validated and parsed da
 - `result.value` — The parsed output when the suite is valid. Typed as the schema's output type. `undefined` when invalid.
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
 - `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
-- `result.run.data.raw` — The current run data passed into the suite callback (parsed when schema validation succeeds; original input when it fails).
+- `result.run.data.raw` — The current run's parsed chunk when schema validation succeeds, or its original input when validation fails. A focused callback may receive a fuller retained mapped output than this per-run metadata.
 - `result.run.data.parsed` — Parsed data for the current run.
 
 ```typescript

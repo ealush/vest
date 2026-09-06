@@ -1,4 +1,4 @@
-import { hasOwnProperty } from 'vest-utils';
+import { hasOwnProperty, type Stringable } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import {
@@ -28,7 +28,7 @@ export function createChainProxyHandlers<T extends RuleInstance<any, any>>(
     add: (p: Predicate, mapsValue?: boolean) => T;
     dependsOn: (resolver: (scope: ScopeHandle) => unknown) => T;
     describe: () => DescribeResult;
-    message: (msg: any) => T;
+    message: (msg: Stringable) => T;
     parse: T['parse'];
     prepend: (p: Predicate, mapsValue?: boolean) => T;
     run: T['run'];

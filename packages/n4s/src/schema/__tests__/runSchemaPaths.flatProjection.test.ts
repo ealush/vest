@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { enforce, runSchemaPaths } from '../../n4s';
+import { runSchemaPaths } from '../../exports/internal';
+import { enforce } from '../../n4s';
 
 describe('runSchemaPaths flat execution projection', () => {
   it('does not execute a dependency source when only the target changed', () => {

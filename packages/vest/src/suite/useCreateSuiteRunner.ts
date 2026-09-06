@@ -2,8 +2,8 @@ import {
   mapWithoutValidation,
   parseAffectedFieldName,
   runSchemaPaths,
-} from 'n4s';
-import type { SelectiveSchemaResult } from 'n4s';
+} from 'n4s/exports/internal';
+import type { SelectiveSchemaResult } from 'n4s/exports/internal';
 import {
   assign,
   asArray,
@@ -26,7 +26,6 @@ import {
   SuiteResult,
   TFieldName,
   TGroupName,
-  InferSchemaData,
   TSchema,
   InferSchemaOutput,
 } from '../suiteResult/SuiteResultTypes';
@@ -34,7 +33,12 @@ import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { getAffectedFields } from './changed';
 import type { FieldExclusion } from '../hooks/focused/focused';
-import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
+import {
+  InternalSuiteModifiers,
+  SuiteModifiers,
+  SuiteCallbackWithSchema,
+  SuiteRunArguments,
+} from './SuiteTypes';
 
 /**
  * Schema run outcome. Deliberately aliased to the n4s-owned
@@ -51,11 +55,9 @@ export type SchemaRunResult = SelectiveSchemaResult;
  * The callback is threaded unchanged through every focus/only/changed
  * chain of a suite, so all of a suite's runners share it; the state
  * identity (see `useCreateVestState`) keeps suites apart. Either dimension
- * alone misattributes: ambient-context state identity stays poisoned after
- * any throw inside a persisted wrapper (the context primitive restores
- * nothing on throw), while the callback alone aliases suites built from
- * one shared callback and runStatic calls. The composite key is correct in
- * all three cases.
+ * alone misattributes: state identity can be reused by persisted wrappers,
+ * while the callback alone aliases suites built from one shared callback and
+ * runStatic calls. The composite key is correct in all three cases.
  *
  * Ownership-chaining guarantee: when a newer run of the same suite starts
  * while older runs are still pending, each older run's promise adopts the
@@ -123,6 +125,9 @@ function chainSupersededRuns<
   }
   return () => {
     current.delete(ownResolve);
+    if (current.size === 0 && byState.get(state) === current) {
+      byState.delete(state);
+    }
   };
 }
 
@@ -139,7 +144,7 @@ export function useCreateSuiteRunner<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
   schema?: S,
 ) {
   // Defer changed() expansion: if __changed is present, compute affected
@@ -150,9 +155,7 @@ export function useCreateSuiteRunner<
 
   // eslint-disable-next-line complexity -- orchestration branches mirror suite modifiers
   return function runSuite(
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
+    ...args: SuiteRunArguments<S, T>
   ): SuiteResult<F, G, S> {
     const runTime = new Date();
     const { resolve: rawResolve, promise } =
@@ -164,12 +167,10 @@ export function useCreateSuiteRunner<
     // successor's promise when it starts, so awaiting a stale run settles
     // with the latest outcome instead of hanging forever. First settlement
     // wins over any later completion of the stale run.
-    const forgetPendingRun = chainSupersededRuns(
-      suiteCallback,
-      suiteState,
-      promise,
-      rawResolve,
-    );
+    // Registration is deliberately deferred until all synchronous schema and
+    // suite setup has completed. If setup throws, an older pending run must
+    // remain owned by itself instead of adopting an unreachable promise.
+    let forgetPendingRun = (): void => {};
     const resolve = (
       result: SuiteResult<F, G, S> | PromiseLike<SuiteResult<F, G, S>>,
     ): void => {
@@ -204,7 +205,7 @@ export function useCreateSuiteRunner<
       ? runSchemaPaths(schema, schemaInput, {
           resolvedAffected: changedAffected,
           only: transformedModifiers.only,
-          skip: transformedModifiers.skip,
+          skip: transformedModifiers.__skipAll || transformedModifiers.skip,
         })
       : undefined;
 
@@ -227,6 +228,14 @@ export function useCreateSuiteRunner<
       schema && schemaRunResult?.every(result => result.pass)
         ? parsedDataChunk
         : schemaInput;
+    // Schema-mapped callback data, public output, and the retained cache must
+    // never share mutable containers. Preserve the established raw-input
+    // identity for schema failures and schema-less suites.
+    const resultOutput = schema ? cloneDataTree(callbackInput) : callbackInput;
+    const runDataSnapshot =
+      schema && schemaRunResult?.every(result => result.pass)
+        ? cloneDataTree(runData)
+        : runData;
 
     const suiteResult = SuiteContext.run(
       {
@@ -240,8 +249,8 @@ export function useCreateSuiteRunner<
         const useResolver = () => {
           const result = useCreateSuiteResult<F, G, S>(
             schema,
-            callbackInput,
-            runData,
+            resultOutput,
+            runDataSnapshot,
             runTime,
             parsedData,
             snapshotFocus(transformedModifiers),
@@ -268,7 +277,20 @@ export function useCreateSuiteRunner<
       },
     );
 
-    return bindSuiteResultMethods(promise, suiteResult, runData, runTime);
+    const boundResult = bindSuiteResultMethods(
+      promise,
+      suiteResult,
+      runDataSnapshot,
+      runTime,
+    );
+    forgetPendingRun = chainSupersededRuns(
+      suiteCallback,
+      suiteState,
+      promise,
+      rawResolve,
+    );
+    if (!suiteResult.isPending()) forgetPendingRun();
+    return boundResult;
   };
 }
 
@@ -284,7 +306,7 @@ export function useCreateSuiteRunner<
  */
 function useChangedRunFocus<F extends TFieldName, G extends TGroupName>(
   changedFields: string[],
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
   schema: unknown,
   schemaInput: unknown,
 ): {
@@ -301,7 +323,7 @@ function useChangedRunFocus<F extends TFieldName, G extends TGroupName>(
   // mergedOnly carries dynamic dotted names (e.g. 'profile.state')
   // that escape the suite's static field vocabulary F by design —
   // changed() affected paths are runtime data, like hasErrors() names.
-  const withAffected: SuiteModifiers<F, G> = {
+  const withAffected: InternalSuiteModifiers<F, G> = {
     ...modifiers,
     only: mergedOnly as FieldExclusion<F>,
   };
@@ -316,7 +338,7 @@ function useChangedRunFocus<F extends TFieldName, G extends TGroupName>(
     // Note this branch only fires when no base `only` exists either:
     // an explicit only('a') combined with changed([]) intentionally
     // still runs 'a'.
-    withAffected.skip = true;
+    withAffected.__skipAll = true;
   }
   delete withAffected.__changed;
   return {
@@ -329,7 +351,7 @@ function useChangedRunFocus<F extends TFieldName, G extends TGroupName>(
 // Non-string entries (e.g. a runtime boolean) never reach field-name
 // normalization, which would throw on them — same guard as skip-all.
 function baseOnlyListOf<F extends TFieldName, G extends TGroupName>(
-  only: SuiteModifiers<F, G>['only'],
+  only: InternalSuiteModifiers<F, G>['only'],
 ): string[] {
   if (!only) return [];
   return asArray(only).filter(entry => typeof entry === 'string');
@@ -340,9 +362,9 @@ function baseOnlyListOf<F extends TFieldName, G extends TGroupName>(
  * retained callback mapping. null means an unfocused full schema run.
  */
 function mappedFocusPaths<F extends TFieldName, G extends TGroupName>(
-  modifiers: Pick<SuiteModifiers<F, G>, 'only' | 'skip'>,
+  modifiers: Pick<InternalSuiteModifiers<F, G>, 'only' | 'skip' | '__skipAll'>,
 ): string[] | null {
-  if (modifiers.skip === true) return [];
+  if (modifiers.__skipAll) return [];
   if (modifiers.only == null) return null;
   const skipped = new Set(
     modifiers.skip
@@ -375,13 +397,68 @@ function getParsedDataChunk(
  * in the suite callback from affecting the result object.
  */
 function snapshotParsedData(data: unknown): unknown {
-  if (isArray(data)) {
-    return Object.freeze([...(data as unknown[])]);
+  return cloneDataTree(data, true);
+}
+
+/**
+ * Copies data containers without relying on JSON serialization, preserving
+ * undefined values, symbols, cycles, prototypes, and property descriptors.
+ * Parsed-data snapshots freeze every copied container; callback/result copies
+ * stay mutable but isolated from one another.
+ */
+// eslint-disable-next-line complexity -- preserves the semantics of each supported JavaScript container type
+function cloneDataTree(
+  data: unknown,
+  freeze = false,
+  seen = new WeakMap<object, unknown>(),
+): unknown {
+  if (!isObject(data)) return data;
+
+  const existing = seen.get(data);
+  if (existing !== undefined) return existing;
+
+  if (data instanceof Date) {
+    const copy = new Date(data.getTime());
+    seen.set(data, copy);
+    return freeze ? Object.freeze(copy) : copy;
   }
-  if (isObject(data)) {
-    return freezeAssign({}, data as object);
+  if (data instanceof RegExp) {
+    const copy = new RegExp(data.source, data.flags);
+    copy.lastIndex = data.lastIndex;
+    seen.set(data, copy);
+    return freeze ? Object.freeze(copy) : copy;
   }
-  return data;
+  if (data instanceof Map) {
+    const copy = new Map<unknown, unknown>();
+    seen.set(data, copy);
+    for (const [key, value] of data) {
+      copy.set(
+        cloneDataTree(key, freeze, seen),
+        cloneDataTree(value, freeze, seen),
+      );
+    }
+    return freeze ? Object.freeze(copy) : copy;
+  }
+  if (data instanceof Set) {
+    const copy = new Set<unknown>();
+    seen.set(data, copy);
+    for (const value of data) copy.add(cloneDataTree(value, freeze, seen));
+    return freeze ? Object.freeze(copy) : copy;
+  }
+
+  const copy: Record<PropertyKey, unknown> | unknown[] = isArray(data)
+    ? []
+    : Object.create(Object.getPrototypeOf(data));
+  seen.set(data, copy);
+  for (const key of Reflect.ownKeys(data)) {
+    const descriptor = Object.getOwnPropertyDescriptor(data, key);
+    if (descriptor === undefined) continue;
+    if ('value' in descriptor) {
+      descriptor.value = cloneDataTree(descriptor.value, freeze, seen);
+    }
+    Object.defineProperty(copy, key, descriptor);
+  }
+  return freeze ? Object.freeze(copy) : copy;
 }
 
 type CallbackInputParams = {
@@ -407,30 +484,34 @@ type CallbackInputParams = {
 function getCallbackInput(params: CallbackInputParams): unknown {
   const { affected, fallback, schema, schemaRunResult, state, suiteCallback } =
     params;
+  if (!schema) return fallback;
   const cache = mappedDataFor(suiteCallback);
   if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
     if (affected === null) cache.delete(state);
-    return fallback;
+    return cloneDataTree(fallback);
   }
 
   const [firstResult] = schemaRunResult;
   const current = firstResult?.type ?? fallback;
   if (affected === null) {
-    cache.set(state, current);
-    return current;
+    const retained = cloneDataTree(current);
+    cache.set(state, retained);
+    return cloneDataTree(retained);
   }
 
   const previous = cache.get(state);
   if (previous === undefined) {
     const initial = mapWithoutValidation(schema, fallback);
     const merged = mergeMappedPaths(initial, current, affected);
-    cache.set(state, merged);
-    return merged;
+    const retained = cloneDataTree(merged);
+    cache.set(state, retained);
+    return cloneDataTree(retained);
   }
 
   const merged = mergeMappedPaths(previous, current, affected);
-  cache.set(state, merged);
-  return merged;
+  const retained = cloneDataTree(merged);
+  cache.set(state, retained);
+  return cloneDataTree(retained);
 }
 
 function mergeMappedPaths(
@@ -530,7 +611,7 @@ function useRunSuiteCallback<
     // Focused modifiers are applied before user callback so every test in this run
     // observes the same focus context.
     only(withSchemaFailureFocus(modifiers.only, schemaRunResult));
-    skip(modifiers.skip);
+    skip(modifiers.__skipAll || modifiers.skip);
     (suiteCallback as CB)(...args);
 
     IsolateReorderable(
@@ -550,7 +631,7 @@ function useRunSuiteCallback<
  * Normalizes user-provided modifiers into deterministic sets for O(1) membership checks.
  */
 function useTransformedModifiers<F extends TFieldName, G extends TGroupName>(
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
 ) {
   return {
     ...modifiers,

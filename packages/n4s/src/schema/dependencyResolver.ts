@@ -4,10 +4,14 @@ import { EnforceSchemaError } from '../errors/EnforceSchemaError';
 import type { RuleInstance } from '../utils/RuleInstance';
 import type { ItemSegment, PropertySegment, SchemaPath } from './SchemaPath';
 import { propertySegment } from './SchemaPath';
-import type {
-  InternalRelationship,
-  SchemaRelationship,
-} from './SchemaRelationship';
+import { isRuleNode } from './ruleNode';
+import {
+  COMPOSITION_CHILDREN,
+  ITEM_SCHEMA,
+  RESOLVED_RELATIONSHIPS,
+  UNRESOLVED_DEPS,
+} from './schemaSlots';
+import type { InternalRelationship } from './SchemaRelationship';
 import {
   createScopeProxy,
   getRefPath,
@@ -16,93 +20,6 @@ import {
 } from './scopeProxy';
 import type { Scope } from './scopeProxy';
 
-// Symbols for storing unresolved deps on RuleInstance — must use Symbol.for to match chainBuilder
-export const UNRESOLVED_DEPS = Symbol.for('vest:unresolvedDeps');
-export const RESOLVED_RELATIONSHIPS = Symbol.for('vest:resolvedRelationships');
-export const ITEM_SCHEMA = Symbol.for('vest:itemSchema');
-/**
- * Describes how a rule was built, so dependency-aware consumers (e.g.
- * suite.changed() fragment projection) can prove a rebuild preserves
- * behavior. The chain predicate list itself is closure-private; this is
- * the only observable trace of it.
- */
-export type ChainInfo = {
-  /** Predicates in this rule's own chain at last sync. */
-  readonly length: number;
-  /** Whether a custom message was set (affects failure text). */
-  readonly hasMessage: boolean;
-};
-export const CHAIN_INFO = Symbol.for('vest:chainInfo');
-/**
- * Frozen at combinator-construction time: the chain state a rebuild must
- * reproduce. Delegating wrappers (optional) snapshot the inner rule's
- * state; fresh-validation combinators snapshot their own.
- */
-export const CHAIN_BASELINE = Symbol.for('vest:chainBaseline');
-/**
- * Frozen construction-time chain state a rebuild must reproduce. For
- * delegating wrappers (optional) `inner` captures the wrapped rule so
- * drift checks recurse: mutating the wrapped rule after wrapping breaks
- * rebuild parity exactly like chaining the wrapper itself.
- */
-export type ChainBaseline = {
-  /** Chain length at snapshot time. */
-  readonly length: number;
-  /** Whether a custom message was set at snapshot time. */
-  readonly hasMessage: boolean;
-  /** The wrapped rule for delegating wrappers; absent otherwise. */
-  readonly inner?: unknown;
-};
-
-function slotOf(rule: unknown, slot: symbol): unknown {
-  if (rule === null) return undefined;
-  const kind = typeof rule;
-  if (kind !== 'object' && kind !== 'function') return undefined;
-  return (rule as Record<symbol, unknown>)[slot];
-}
-
-/** Whether the rule carries a construction-time chain baseline. */
-export function hasChainBaseline(rule: unknown): boolean {
-  return slotOf(rule, CHAIN_BASELINE) !== undefined;
-}
-
-/**
- * Whether the rule's chain still matches its construction-time baseline.
- * A mismatch means predicates (or a custom message) were added after the
- * combinator built the rule, so rebuilding through the bare combinator
- * would silently drop validators. Recurses into delegating wrappers via
- * the captured inner rule. Missing slots mean unknown provenance — never
- * a match, so consumers retain the original rule (full-run parity).
- */
-export function chainBaselineMatches(rule: unknown): boolean {
-  const baseline = slotOf(rule, CHAIN_BASELINE) as ChainBaseline | undefined;
-  const current = slotOf(rule, CHAIN_INFO) as ChainInfo | undefined;
-  if (baseline === undefined || current === undefined) return false;
-  if (!sameChainState(current, baseline)) return false;
-  if (baseline.inner === undefined) return true;
-  return chainBaselineMatches(baseline.inner);
-}
-
-function sameChainState(current: ChainInfo, baseline: ChainBaseline): boolean {
-  return (
-    current.length === baseline.length &&
-    current.hasMessage === baseline.hasMessage
-  );
-}
-/** Marks containers that skip missing keys (partial), unlike loose. */
-export const PARTIAL_LIKE = Symbol.for('vest:partialLike');
-/** Marks nullish-passing optional() wrappers. */
-export const OPTIONAL_RULE = Symbol.for('vest:optionalRule');
-/**
- * Marks which container flavor owns an ITEM_SCHEMA slot: single-rule
- * arrays/lists narrow with `isArrayOf`, records narrow with `record`.
- * Suffixes alone cannot tell them apart (numeric record keys look like
- * indices), and rebuilding through the wrong combinator changes
- * validation semantics — so the kind travels with the slot.
- */
-export const ITEM_CONTAINER = Symbol.for('vest:itemContainer');
-export type ItemContainerKind = 'array' | 'record';
-
 export type UnresolvedDep = {
   resolver: (scope: Scope) => unknown;
 };
@@ -110,7 +27,7 @@ export type UnresolvedDep = {
 /**
  * Collects unresolved deps from a field RuleInstance.
  */
-export function getUnresolvedDeps(
+function getUnresolvedDeps(
   rule: RuleInstance<unknown, unknown[]>,
 ): UnresolvedDep[] {
   return (
@@ -118,32 +35,6 @@ export function getUnresolvedDeps(
       UNRESOLVED_DEPS
     ] as UnresolvedDep[]) || []
   );
-}
-
-export function setUnresolvedDeps(
-  rule: RuleInstance<unknown, unknown[]>,
-  deps: UnresolvedDep[],
-): void {
-  (rule as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] =
-    deps as unknown;
-}
-
-export function getResolvedRelationships(
-  rule: RuleInstance<unknown, unknown[]>,
-): SchemaRelationship[] {
-  return (
-    ((rule as unknown as Record<symbol, unknown>)[
-      RESOLVED_RELATIONSHIPS
-    ] as SchemaRelationship[]) || []
-  );
-}
-
-export function setResolvedRelationships(
-  rule: RuleInstance<unknown, unknown[]>,
-  rels: SchemaRelationship[],
-): void {
-  (rule as unknown as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS] =
-    rels as unknown;
 }
 
 /**
@@ -155,8 +46,8 @@ export function resolveInlineDeps(
   shape: Record<string, RuleInstance<unknown, unknown[]>>,
   scopePath: SchemaPath,
   rootShape: Record<PropertyKey, unknown>,
-): SchemaRelationship[] {
-  const relationships: SchemaRelationship[] = [];
+): InternalRelationship[] {
+  const relationships: InternalRelationship[] = [];
   const scopeProxy = createScopeProxy(scopePath);
 
   for (const fieldKey of Object.keys(shape)) {
@@ -231,7 +122,7 @@ export function resolveInlineDeps(
           if (
             sourcePath.length === scopePath.length + 1 &&
             isPathPrefixedBy(sourcePath.slice(0, -1), scopePath) &&
-            !Object.prototype.hasOwnProperty.call(shape, 'self')
+            !hasOwnProperty(shape, 'self')
           ) {
             sourcePath = targetPath;
           } else {
@@ -288,7 +179,7 @@ export function resolveInlineDeps(
  * Rules without rooted relationships (the common case) return immediately.
  */
 export function assertRuleRootedPathsValid(rule: unknown): void {
-  if (!rule || typeof rule !== 'object') return;
+  if (!isRuleNode(rule)) return;
   const rels = checkableRootedRels(rule);
   if (!rels) return;
   const rootShape = rootShapeOf(rule);
@@ -405,7 +296,7 @@ function assertRootKeyExists(
   if (
     !current ||
     typeof current !== 'object' ||
-    !Object.prototype.hasOwnProperty.call(current, key)
+    !hasOwnProperty(current, key)
   ) {
     throw new EnforceSchemaError(
       `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${unknownField}"`,
@@ -414,19 +305,32 @@ function assertRootKeyExists(
 }
 
 function childShape(rule: unknown): unknown {
-  if (!rule || typeof rule !== 'object') return {};
+  if (!isRuleNode(rule)) return {};
   const candidate = rule as {
     __schema?: Record<PropertyKey, unknown>;
     [key: symbol]: unknown;
   };
   if (candidate.__schema) return candidate.__schema;
+  const compositionChildren = candidate[COMPOSITION_CHILDREN];
+  if (Array.isArray(compositionChildren)) {
+    return mergedChildShapes(compositionChildren);
+  }
   return itemChildShape(candidate[ITEM_SCHEMA]);
 }
 
 function itemChildShape(item: unknown): unknown {
-  if (!item || typeof item !== 'object') return {};
+  if (!isRuleNode(item)) return {};
   if (Array.isArray(item)) return mergedItemShape(item);
-  return (item as { __schema?: Record<PropertyKey, unknown> }).__schema ?? {};
+  return childShape(item);
+}
+
+function mergedChildShapes(children: unknown[]): Record<PropertyKey, unknown> {
+  const merged: Record<PropertyKey, unknown> = {};
+  for (const child of children) {
+    const shape = childShape(child);
+    if (isObject(shape)) Object.assign(merged, shape);
+  }
+  return merged;
 }
 
 /**
@@ -443,10 +347,8 @@ function mergedItemShape(itemSchemas: unknown[]): Record<PropertyKey, unknown> {
 }
 
 function itemEntryShape(entry: unknown): Record<PropertyKey, unknown> {
-  if (!entry || typeof entry !== 'object') return {};
-  const inner = (entry as { __schema?: unknown }).__schema;
-  if (!inner || typeof inner !== 'object') return {};
-  return inner as Record<PropertyKey, unknown>;
+  const inner = childShape(entry);
+  return isObject(inner) ? recordOf(inner) : {};
 }
 
 // eslint-disable-next-line complexity
@@ -466,15 +368,11 @@ function validateSourceExists(
       const next = (current as Record<PropertyKey, unknown>)[
         seg.key as PropertyKey
       ];
-      if (
-        next &&
-        typeof next === 'object' &&
-        Object.prototype.hasOwnProperty.call(next as object, '__schema')
-      ) {
+      if (isRuleNode(next) && hasOwnProperty(next, '__schema')) {
         current = (
           next as unknown as { __schema: Record<PropertyKey, unknown> }
         ).__schema;
-      } else if (next && typeof next === 'object') {
+      } else if (isRuleNode(next)) {
         current = next as Record<PropertyKey, unknown>;
       } else {
         return;
@@ -486,7 +384,7 @@ function validateSourceExists(
       const itemSchema = (current as unknown as Record<symbol, unknown>)[
         ITEM_SCHEMA
       ];
-      if (itemSchema && typeof itemSchema === 'object') {
+      if (isRuleNode(itemSchema)) {
         current = (
           Array.isArray(itemSchema)
             ? mergedItemShape(itemSchema)
@@ -524,11 +422,10 @@ function validateSourceExists(
     ];
     if (!rule) continue;
     const isShapeLike =
-      rule &&
-      typeof rule === 'object' &&
-      (Object.prototype.hasOwnProperty.call(rule, '__schema') ||
-        Object.prototype.hasOwnProperty.call(rule, RESOLVED_RELATIONSHIPS) ||
-        Object.prototype.hasOwnProperty.call(rule, ITEM_SCHEMA));
+      isRuleNode(rule) &&
+      (hasOwnProperty(rule, '__schema') ||
+        hasOwnProperty(rule, RESOLVED_RELATIONSHIPS) ||
+        hasOwnProperty(rule, ITEM_SCHEMA));
     if (!isShapeLike) {
       // This segment is scalar but has a descendant — invalid
       const descendant = String(
@@ -627,10 +524,7 @@ function validateSourceExists(
     PropertyKey,
     unknown
   >;
-  const exists = Object.prototype.hasOwnProperty.call(
-    checkShape,
-    keyToCheck.key as string,
-  );
+  const exists = hasOwnProperty(checkShape, keyToCheck.key as string);
   if (!exists) {
     const suggestion = findClosestKey(
       String(keyToCheck.key),
@@ -718,18 +612,9 @@ function recordOf(value: unknown): Record<PropertyKey, unknown> {
   return value as unknown as Record<PropertyKey, unknown>;
 }
 
-// eslint-disable-next-line complexity -- moved suite finalizer, branchy by nature
 function nestedShapeOf(rule: unknown): Record<PropertyKey, unknown> {
-  const child: unknown = isObject(rule) ? recordOf(rule).__schema : undefined;
-  if (isObject(child)) return recordOf(child);
-  const item: unknown = isObject(rule)
-    ? recordOf(rule)[ITEM_SCHEMA]
-    : undefined;
-  const itemChild: unknown = isObject(item)
-    ? recordOf(item).__schema
-    : undefined;
-  if (isObject(itemChild)) return recordOf(itemChild);
-  return {};
+  const nested = childShape(rule);
+  return isObject(nested) ? recordOf(nested) : {};
 }
 
 function lastPropertyKeyOf(path: SchemaPath): string {
@@ -747,7 +632,7 @@ function lastPropertyKeyOf(path: SchemaPath): string {
  * as a valid graph.
  */
 export function assertSchemaRootPathsValid(schema: unknown): void {
-  if (!isObject(schema)) return;
+  if (!isRuleNode(schema)) return;
   assertSchemaRootPathsValidInner(schema);
 }
 
@@ -757,7 +642,7 @@ function assertSchemaRootPathsValidInner(schema: unknown): void {
   const seen = new WeakSet<object>();
   // eslint-disable-next-line complexity -- moved suite finalizer, branchy by nature
   const collect = (node: unknown): void => {
-    if (!node || typeof node !== 'object' || seen.has(node)) return;
+    if (!isRuleNode(node) || seen.has(node)) return;
     seen.add(node);
     const rels = recordOf(node)[RESOLVED_RELATIONSHIPS] as
       | InternalRelationship[]
@@ -786,9 +671,7 @@ function assertSchemaRootPathsValidInner(schema: unknown): void {
         vals.length &&
         vals.some(
           (v: unknown): boolean =>
-            !isNullish(v) &&
-            typeof v === 'object' &&
-            recordOf(v).__schema !== undefined,
+            isRuleNode(v) && recordOf(v).__schema !== undefined,
         )
       ) {
         for (const v of vals) collect(v);
@@ -796,9 +679,7 @@ function assertSchemaRootPathsValidInner(schema: unknown): void {
         vals.length &&
         vals.some(
           (v: unknown): boolean =>
-            !isNullish(v) &&
-            typeof v === 'object' &&
-            recordOf(v)[RESOLVED_RELATIONSHIPS] !== undefined,
+            isRuleNode(v) && recordOf(v)[RESOLVED_RELATIONSHIPS] !== undefined,
         )
       ) {
         for (const v of vals) collect(v);

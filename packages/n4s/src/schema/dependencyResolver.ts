@@ -708,7 +708,7 @@ function assertSchemaRootPathsValidInner(schema: unknown): void {
     // to catch missing descendant like $.root.account.missing
 
     const checkPath = (path: SchemaPath, fieldForMsg: string): void => {
-      const rootShape: unknown = recordOf(schema).__schema;
+      const rootShape: unknown = rootShapeOf(schema as object);
       const unknownField = dottedSchemaPath(path);
       let current: Record<PropertyKey, unknown> = isObject(rootShape)
         ? recordOf(rootShape)

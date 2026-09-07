@@ -59,6 +59,20 @@ Combine `suite.only()` with `isTested()` for the best UX:
 - Use `isTested(fieldName)` when rendering to decide whether to show errors
   :::
 
+:::tip Related fields
+`suite.only()` runs exactly the field you name. When fields depend on each other through a schema [`dependsOn()`](./schema_relationships) relationship (e.g. `confirmPassword` depends on `password`), prefer `suite.changed()` in the handler — it revalidates the blurred field **plus its dependents**, so related errors refresh together:
+
+```javascript
+function handleBlur(fieldName, formData) {
+  // Re-runs the blurred field and anything that depends on it
+  const res = suite.changed(fieldName).run(formData);
+  setResult(res);
+}
+```
+
+Without a schema, `changed()` simply behaves like `only()` for that run.
+:::
+
 ## Complete Example
 
 ```javascript
@@ -113,10 +127,12 @@ function Form() {
 | :--------------------------- | :---------------------------- | :----------------------------------- |
 | **Did the user touch this?** | Check `field.isDirty`         | Check `result.isTested('field')`     |
 | **Validate on Blur**         | Call `validateField('field')` | Call `suite.only('field').run(data)` |
+| **Revalidate dependents**    | Manually track field links    | `suite.changed('field').run(data)`   |
 
 By combining `isTested()` (to hide premature errors) and `suite.only()` (to update specific fields), you get precise control over the user experience without tightly coupling your validation to the DOM.
 
 ## Related
 
+- [Schema Relationships](./schema_relationships.md) - `dependsOn()` and dependency-aware revalidation with `suite.changed()`
 - [Focused Updates](./focused_updates.md) - Deep dive into `suite.only()` and `suite.focus()`
 - [Accessing the Result](./accessing_the_result.md) - Learn about `isTested()` and other result methods

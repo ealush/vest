@@ -396,6 +396,81 @@ describe('Schema Runtime Validation', () => {
       expect(result.run.data.parsed).toEqual({ score: 42 });
       expect(Object.isFrozen(result.run.data.parsed)).toBe(true);
     });
+
+    it('isolates nested callback mutations from results and future focused runs', () => {
+      const nestedSchema = enforce.shape({
+        profile: enforce.shape({ name: enforce.isString() }),
+        score: enforce.isNumeric().toNumber(),
+      });
+      const callbackNames: string[] = [];
+      let runCount = 0;
+      const suite = create(data => {
+        callbackNames.push(data.profile.name);
+        if (runCount++ === 0) data.profile.name = 'callback-mutated';
+      }, nestedSchema);
+
+      const first = suite.run({
+        profile: { name: 'original' },
+        score: '1',
+      });
+
+      expect(first.types?.output).toEqual({
+        profile: { name: 'original' },
+        score: 1,
+      });
+      expect(first.run.data.parsed).toEqual(first.types?.output);
+      expect(Object.isFrozen(first.run.data.parsed?.profile)).toBe(true);
+
+      const second = suite.changed('score').run({
+        profile: { name: 'new-raw-value' },
+        score: '2',
+      });
+
+      // The focused run retains the last successfully mapped untouched field,
+      // but never the callback's mutation of that field.
+      expect(callbackNames).toEqual(['original', 'original']);
+      expect(second.types?.output).toEqual({
+        profile: { name: 'original' },
+        score: 2,
+      });
+      expect(second.run.data.parsed).toEqual({
+        profile: { name: 'new-raw-value' },
+        score: 2,
+      });
+    });
+
+    it('prevents mutation through Map, Set, and Date parsed snapshots', () => {
+      const originalDate = new Date('2026-01-02T00:00:00.000Z');
+      const containerSchema = enforce.shape({
+        date: enforce.condition(
+          (value: Date): boolean => value instanceof Date,
+        ),
+        map: enforce.condition(
+          (value: Map<string, number>): boolean => value instanceof Map,
+        ),
+        set: enforce.condition(
+          (value: Set<string>): boolean => value instanceof Set,
+        ),
+      });
+      const containerSuite = create(() => {}, containerSchema);
+
+      const result = containerSuite.run({
+        date: originalDate,
+        map: new Map([['a', 1]]),
+        set: new Set(['a']),
+      });
+      const parsed = result.run.data.parsed;
+      if (parsed === undefined) {
+        throw new Error('Expected a parsed container snapshot');
+      }
+
+      expect(() => parsed.map.set('b', 2)).toThrow(TypeError);
+      expect(() => parsed.set.add('b')).toThrow(TypeError);
+      expect(() => parsed.date.setUTCFullYear(2030)).toThrow(TypeError);
+      expect([...parsed.map]).toEqual([['a', 1]]);
+      expect([...parsed.set]).toEqual(['a']);
+      expect(parsed.date.toISOString()).toBe('2026-01-02T00:00:00.000Z');
+    });
   });
 
   describe('Stateful behavior', () => {

@@ -84,6 +84,21 @@ const config = {
 
   projectName: 'vest', // Usually your repo name.
 
+  plugins: [
+    () => ({
+      name: 'exclude-node-module',
+      configureWebpack() {
+        return {
+          resolve: {
+            fallback: {
+              'node:module': false,
+            },
+          },
+        };
+      },
+    }),
+  ],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({

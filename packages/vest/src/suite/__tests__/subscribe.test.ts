@@ -76,6 +76,65 @@ describe('suite.subscribe', () => {
       expect(testStarted).toHaveBeenCalledTimes(3);
       expect(suiteStart).toHaveBeenCalledTimes(1);
     });
+
+    it('emits one completion for each executed user or schema test in a changed run', async () => {
+      const schema = enforce.shape({
+        source: enforce.isString(),
+        dependent: enforce.isString().dependsOn($ => $.source),
+        unrelated: enforce.isString(),
+      });
+      const sourceRun = vi.fn();
+      const dependentRun = vi.fn();
+      const suite = vest.create(data => {
+        vest.test('source', () => {
+          sourceRun();
+          enforce(data.source).isNotBlank();
+        });
+        vest.test('dependent', () => {
+          dependentRun();
+          enforce(data.dependent).isNotBlank();
+        });
+        vest.test('unrelated', () => {
+          enforce(data.unrelated).isNotBlank();
+        });
+      }, schema);
+      await suite.run({ source: 'a', dependent: 'b', unrelated: 'c' });
+      sourceRun.mockClear();
+      dependentRun.mockClear();
+      const completed = vi.fn();
+      const suiteStarted = vi.fn();
+      const events: string[] = [];
+      suite.subscribe('TEST_COMPLETED', () => {
+        completed();
+        events.push('test-completed');
+      });
+      suite.subscribe('SUITE_RUN_STARTED', () => {
+        suiteStarted();
+        events.push('suite-started');
+      });
+      suite.subscribe('ALL_RUNNING_TESTS_FINISHED', () => {
+        events.push('all-finished');
+      });
+
+      await suite.changed('source').run({
+        source: 'next',
+        dependent: 42 as unknown as string,
+        unrelated: 'c',
+      });
+
+      // Two affected user tests and the synthesized dependent schema failure.
+      expect(sourceRun).toHaveBeenCalledTimes(1);
+      expect(dependentRun).toHaveBeenCalledTimes(1);
+      expect(completed).toHaveBeenCalledTimes(3);
+      expect(suiteStarted).toHaveBeenCalledTimes(1);
+      expect(events).toEqual([
+        'suite-started',
+        'test-completed',
+        'test-completed',
+        'test-completed',
+        'all-finished',
+      ]);
+    });
   });
 
   describe('unsubscribe', () => {

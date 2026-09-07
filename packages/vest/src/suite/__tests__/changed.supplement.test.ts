@@ -1,0 +1,469 @@
+import { describe, expect, it } from 'vitest';
+import { enforce } from 'n4s';
+
+import { create } from '../../vest';
+
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      countSupplementValue: (value: unknown) => boolean;
+      countFallbackState: (value: unknown) => boolean;
+      hasFallbackFlag: (value: { flag?: unknown }) => boolean;
+      countKeyedValue: (value: unknown) => boolean;
+      countFlatMember: (value: unknown) => boolean;
+    }
+  }
+}
+
+describe('changed() supplement exactly-once execution', () => {
+  it('validates an affected array element whose value is undefined', async () => {
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.condition(
+          (value: unknown): boolean => typeof value === 'string',
+        ),
+      ),
+    });
+    const data = { rows: ['ok', undefined] };
+
+    expect(schema.run(data).path).toEqual(['rows', '1']);
+    const changed = await create((): void => {}, schema)
+      .changed('rows.1')
+      .run(data);
+
+    expect(changed.hasErrors('rows.1')).toBe(true);
+  });
+
+  it('validates an affected record entry whose value is undefined', async () => {
+    const valueRule = enforce.condition(
+      (value: unknown): boolean => typeof value === 'string',
+    );
+    const schema = enforce.shape({ dict: enforce.record(valueRule) });
+    const data = { dict: { first: 42, selected: undefined } };
+
+    expect(schema.run(data).path).toEqual(['dict', 'first']);
+    const changed = await create((): void => {}, schema)
+      .changed('dict.selected')
+      .run(data);
+
+    expect(changed.hasErrors('dict.first')).toBe(false);
+    expect(changed.hasErrors('dict.selected')).toBe(true);
+  });
+
+  it('record per-key: the affected member validator fires exactly once', async () => {
+    // F3: the projection keeps records whole (key-rule parity), so the
+    // main run already executes every key. The supplement must not re-run
+    // affected keys on top: a once-only stateful validator false-fails on
+    // its second call.
+    const calls: unknown[] = [];
+    enforce.extend({
+      countSupplementValue: (value: unknown): boolean => {
+        calls.push(value);
+        return (
+          calls.filter(seen => seen === value).length === 1 &&
+          typeof value === 'string'
+        );
+      },
+    });
+    const schema = enforce.shape({
+      dict: enforce.record(enforce.isString().countSupplementValue()),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { dict: { a: 'x', b: 'y' } };
+
+    const changed = await suite.changed('dict.a').run(data);
+    expect(changed.hasErrors()).toBe(false);
+    // The affected key ran once (in the kept-whole main run, never again
+    // in the supplement); the whole-record main run covers both keys once.
+    expect(calls.filter(value => value === 'x')).toHaveLength(1);
+    expect(calls).toHaveLength(2);
+  });
+
+  it('record per-key: a failing affected key is still reported', async () => {
+    // Guard against over-skipping: the exactly-once skip applies only when
+    // the main run passed the container, never to real failures.
+    const schema = enforce.shape({
+      dict: enforce.record(enforce.isString().longerThan(5)),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { dict: { a: 'x', b: 'yyyyyy' } };
+
+    const changed = await suite.changed('dict.a').run(data);
+    expect(changed.hasErrors('dict.a')).toBe(true);
+    expect(changed.hasErrors('dict.b')).toBe(false);
+  });
+
+  it('record per-key: an affected key-rule violation surfaces', async () => {
+    // W1: two-arg records close over a key rule no slot exposes. The
+    // whole-record main run reports only the first failing key and the
+    // supplement ran only the value rule, so changed('dict.a') stayed
+    // clean though 'a' itself violates the key rule.
+    const schema = enforce.shape({
+      dict: enforce.record(
+        enforce.isString().longerThan(2),
+        enforce.isNumber(),
+      ),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { dict: { ab: 1, a: 2 } };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('dict.ab')).toBe(true);
+
+    const changedA = await suite.changed('dict.a').run(data);
+    expect(changedA.hasErrors('dict.a')).toBe(true);
+
+    const changedAb = await suite.changed('dict.ab').run(data);
+    expect(changedAb.hasErrors('dict.ab')).toBe(true);
+  });
+
+  it('record per-key: passing two-arg entries still execute exactly once', async () => {
+    // The single-entry run replaces the value-only run (never adds to
+    // it), so a stateful value validator fires once total.
+    const calls: unknown[] = [];
+    enforce.extend({
+      countKeyedValue: (value: unknown): boolean => {
+        calls.push(value);
+        return typeof value === 'number';
+      },
+    });
+    const schema = enforce.shape({
+      dict: enforce.record(
+        enforce.isString().longerThan(2),
+        enforce.isNumber().countKeyedValue(),
+      ),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { dict: { abc: 1, def: 2 } };
+
+    const changed = await suite.changed('dict.abc').run(data);
+    expect(changed.hasErrors()).toBe(false);
+    expect(calls.filter(value => value === 1)).toHaveLength(1);
+    expect(calls).toHaveLength(2);
+  });
+
+  it('flat changed() surfaces an affected member hidden by first-failure order', async () => {
+    // W2: the flat path filtered a first-failure-only full run with no
+    // per-member supplement, so changed('b') stayed clean though 'b' is
+    // invalid — the full run only ever reported 'a'.
+    const schema = enforce.shape({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString().longerThan(5),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'y' };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('a')).toBe(true);
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(true);
+    expect(changed.hasErrors('a')).toBe(false);
+  });
+
+  it('only()+changed() merge honors the affected member too', async () => {
+    // W3: the merged base-only + affected set filters reporting, but the
+    // affected failure never made it into the merged results at all.
+    const schema = enforce.shape({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString().longerThan(5),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'y' };
+
+    const changed = await suite.focus({ only: 'a' }).changed('b').run(data);
+    expect(changed.hasErrors('a')).toBe(true);
+    expect(changed.hasErrors('b')).toBe(true);
+  });
+
+  it('flat supplement runs each shadowed member through one execution unit', async () => {
+    // Members the main run reached (up to and including the failure) run
+    // there; members after it run once in the supplement — never both. One
+    // unit is parse-then-run: a failing member fires twice inside it (the
+    // engine's own duality, identical in full runs), a passing member once.
+    const calls: unknown[] = [];
+    enforce.extend({
+      countFlatMember: (value: unknown): boolean => {
+        calls.push(value);
+        return typeof value === 'string' && value.length > 5;
+      },
+    });
+    const schema = enforce.shape({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString().countFlatMember(),
+      c: enforce.isString().countFlatMember(),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'y', c: 'ok-ok-ok' };
+
+    const changed = await suite.changed(['b', 'c']).run(data);
+    expect(changed.hasErrors('b')).toBe(true);
+    expect(changed.hasErrors('c')).toBe(false);
+    expect(calls.filter(value => value === 'y')).toHaveLength(2);
+    expect(calls.filter(value => value === 'ok-ok-ok')).toHaveLength(1);
+  });
+
+  it('union supplement rejection mirrors the full-run failure exactly', async () => {
+    // W4: an all-rejected union element fails generically on both sides
+    // (n4s returns a message-less failure for multi-rule rejection). The
+    // supplement must not invent a message the full run does not report —
+    // identical keys dedupe correctly, differing messages would diverge.
+    // Contract-pinning (green before and after): guards future drift.
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.shape({
+          kind: enforce.isString(),
+          v: enforce.isNumber(),
+        }),
+        enforce.isString().longerThan(5),
+      ),
+    });
+    const suite = create((): void => {}, schema);
+    // Type-valid inputs: 'xx' is a string, but too short for the string
+    // member and not an object for the shape member — rejected by all.
+    const data = { rows: ['long-enough', 'xx'] };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('rows.1')).toBe(true);
+
+    const changed = await suite.changed('rows.1').run(data);
+    expect(changed.hasErrors('rows.1')).toBe(true);
+    expect(changed.getErrors()['rows.1']).toEqual(full.getErrors()['rows.1']);
+  });
+
+  it('flat supplement skips absent members of partial-like tops', async () => {
+    // Wave-3 F1: partial({a: fail, b}) with b absent — b is valid-absent,
+    // but past the failure boundary the supplement ran it standalone and
+    // invented a failure the full run never reports.
+    const schema = enforce.partial({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x' };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('a')).toBe(true);
+    expect(full.hasErrors('b')).toBe(false);
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(false);
+  });
+
+  it('flat supplement still fails absent required members of loose tops', async () => {
+    // Discriminator: loose requires presence, so an absent affected member
+    // past the boundary is genuinely invalid — the supplement must run it.
+    const schema = enforce.loose({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'present-for-type-inference' };
+    Reflect.deleteProperty(data, 'b');
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('a')).toBe(true);
+
+    // The failure is latent, not invented: unshadowed, the full run
+    // reports the absent required member too.
+    const unshadowedData = { a: 'ok-ok-ok', b: 'present-for-type-inference' };
+    Reflect.deleteProperty(unshadowedData, 'b');
+    const unshadowed = await suite.run(unshadowedData);
+    expect(unshadowed.hasErrors('b')).toBe(true);
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(true);
+  });
+
+  it('flat supplement still fails absent required members of strict shapes', async () => {
+    // Control: absent-required under shape() is invalid in the full run,
+    // so the supplement must surface it past the boundary too.
+    const schema = enforce.shape({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'present-for-type-inference' };
+    Reflect.deleteProperty(data, 'b');
+
+    // The failure is latent, not invented: unshadowed, the full run
+    // reports the absent required member too.
+    const unshadowedData = { a: 'ok-ok-ok', b: 'present-for-type-inference' };
+    Reflect.deleteProperty(unshadowedData, 'b');
+    const unshadowed = await suite.run(unshadowedData);
+    expect(unshadowed.hasErrors('b')).toBe(true);
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(true);
+  });
+
+  it('nested supplement skips absent members of partial containers', async () => {
+    // Wave-3 F2: shape({profile: partial({u: fail, b})}) with b absent —
+    // b is valid-absent, but past the nested boundary the supplement ran
+    // the raw member rule against undefined and invented profile.b.
+    const schema = enforce.shape({
+      profile: enforce.partial({
+        u: enforce.isString().longerThan(5),
+        b: enforce.isString(),
+      }),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { profile: { u: 'x' } };
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('profile.u')).toBe(true);
+
+    const changed = await suite.changed(['profile.u', 'profile.b']).run(data);
+    expect(changed.hasErrors('profile.u')).toBe(true);
+    expect(changed.hasErrors('profile.b')).toBe(false);
+  });
+
+  it('flat supplement evaluates explicit-undefined members', async () => {
+    // Presence, not value, decides absence: container iteration evaluates
+    // an explicit undefined in the full run, so the supplement must run it
+    // too — even under a partial-like top.
+    const schema = enforce.partial({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+
+    const unshadowed = await suite.run({ a: 'ok-ok-ok', b: undefined });
+    expect(unshadowed.hasErrors('b')).toBe(true);
+
+    const changed = await suite.changed('b').run({ a: 'x', b: undefined });
+    expect(changed.hasErrors('b')).toBe(true);
+  });
+
+  it('flat supplement ignores non-enumerable members of partial tops', async () => {
+    const schema = enforce.partial({
+      a: enforce.isString().longerThan(5),
+      b: enforce.isString(),
+    });
+    const suite = create((): void => {}, schema);
+    const data = { a: 'x', b: 'present-for-type-inference' };
+    Object.defineProperty(data, 'b', {
+      enumerable: false,
+      value: undefined,
+    });
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('a')).toBe(true);
+    expect(full.hasErrors('b')).toBe(false);
+
+    const changed = await suite.changed('b').run(data);
+    expect(changed.hasErrors('b')).toBe(false);
+  });
+
+  it('nested supplement ignores non-enumerable members of partial containers', async () => {
+    const schema = enforce.shape({
+      profile: enforce.partial({
+        a: enforce.isString().longerThan(5),
+        b: enforce.isString(),
+      }),
+    });
+    const suite = create((): void => {}, schema);
+    const data = {
+      profile: { a: 'x', b: 'present-for-type-inference' },
+    };
+    Object.defineProperty(data.profile, 'b', {
+      enumerable: false,
+      value: undefined,
+    });
+
+    const full = await suite.run(data);
+    expect(full.hasErrors('profile.a')).toBe(true);
+    expect(full.hasErrors('profile.b')).toBe(false);
+
+    const changed = await suite.changed(['profile.a', 'profile.b']).run(data);
+    expect(changed.hasErrors('profile.a')).toBe(true);
+    expect(changed.hasErrors('profile.b')).toBe(false);
+  });
+
+  it('full-fallback path executes each member validator at most once', async () => {
+    // F4: a validator chained after the top container moves the baseline,
+    // so the projection falls back to a full-schema main run. The
+    // per-member supplement must not run on top of it.
+    const calls: unknown[] = [];
+    enforce.extend({
+      countFallbackState: (value: unknown): boolean => {
+        calls.push(value);
+        return typeof value === 'string';
+      },
+    });
+    enforce.extend({
+      hasFallbackFlag: (value: { flag?: unknown }): boolean =>
+        value.flag === true,
+    });
+    const schema = enforce
+      .loose({
+        rows: enforce.isArrayOf(
+          enforce.shape({
+            country: enforce.isString(),
+            state: enforce.isString().countFallbackState(),
+          }),
+        ),
+        flag: enforce.isBoolean(),
+      })
+      .hasFallbackFlag();
+    const suite = create((): void => {}, schema);
+    const data = {
+      rows: [
+        { country: 'US', state: 'CA' },
+        { country: 'CA', state: 'NY' },
+      ],
+      flag: true,
+    };
+
+    const changed = await suite.changed('rows.1.state').run(data);
+    expect(changed.hasErrors()).toBe(false);
+    expect(calls.filter(value => value === 'NY')).toHaveLength(1);
+    expect(calls.filter(value => value === 'CA')).toHaveLength(1);
+  });
+
+  it('full-fallback supplement does not revisit array members before the failure', async () => {
+    const calls: unknown[] = [];
+    enforce.extend({
+      countFallbackState: (value: unknown): boolean => {
+        calls.push(value);
+        return typeof value === 'string' && value.length > 5;
+      },
+    });
+    enforce.extend({
+      hasFallbackFlag: (value: { flag?: unknown }): boolean =>
+        value.flag === true,
+    });
+    const schema = enforce
+      .loose({
+        rows: enforce.isArrayOf(enforce.isString().countFallbackState()),
+        flag: enforce.isBoolean(),
+      })
+      .hasFallbackFlag();
+    const data = {
+      rows: ['first-ok', 'x', 'third-ok'],
+      flag: true,
+    };
+
+    schema.run(data);
+    const baselineFirst = calls.filter(value => value === 'first-ok').length;
+    const baselineFailure = calls.filter(value => value === 'x').length;
+    expect(calls).not.toContain('third-ok');
+    calls.length = 0;
+
+    const changed = await create((): void => {}, schema)
+      .changed(['rows.0', 'rows.2'])
+      .run(data);
+
+    expect(changed.hasErrors()).toBe(false);
+    // Invalid changed() runs use n4s's normal parse-then-run fallback, so
+    // members reached by the main execution unit match two direct runs.
+    // The supplement must not add a third visit to an earlier member.
+    expect(calls.filter(value => value === 'first-ok')).toHaveLength(
+      baselineFirst * 2,
+    );
+    expect(calls.filter(value => value === 'x')).toHaveLength(
+      baselineFailure * 2,
+    );
+    expect(calls.filter(value => value === 'third-ok')).toHaveLength(1);
+  });
+});

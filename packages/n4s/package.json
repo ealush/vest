@@ -43,6 +43,11 @@
       "require": "./dist/exports/email.cjs",
       "import": "./dist/exports/email.mjs"
     },
+    "./exports/internal": {
+      "types": "./types/exports/internal.d.cts",
+      "require": "./dist/exports/internal.cjs",
+      "import": "./dist/exports/internal.mjs"
+    },
     "./exports/isURL": {
       "types": "./types/exports/isURL.d.cts",
       "require": "./dist/exports/isURL.cjs",
@@ -72,6 +77,11 @@
       "types": "./types/exports/email.d.cts",
       "require": "./dist/exports/email.cjs",
       "import": "./dist/exports/email.mjs"
+    },
+    "./internal": {
+      "types": "./types/exports/internal.d.cts",
+      "require": "./dist/exports/internal.cjs",
+      "import": "./dist/exports/internal.mjs"
     },
     "./isURL": {
       "types": "./types/exports/isURL.d.cts",

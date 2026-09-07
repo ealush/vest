@@ -7,8 +7,10 @@
  */
 
 import { enforce } from 'n4s';
+import type { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { create, test } from '../../vest';
+import type { Suite } from '../../vest';
 
 // ✅ CORRECT: Data matches schema
 const userSchema = enforce.shape({
@@ -94,7 +96,18 @@ const personSchema = enforce.shape({
   address: addressSchema,
 });
 
-const nestedSuite = create(data => {
+type Person = {
+  name: string;
+  address: { street: string; city: string; zipCode: string };
+};
+type PersonSuite = Suite<
+  Extract<keyof Person, string>,
+  string,
+  (data: Person) => void,
+  StandardSchemaV1<Person, Person>
+>;
+
+const nestedSuite: PersonSuite = create(data => {
   // TypeScript knows the full nested structure
   // data.name: string
   // data.address.street: string

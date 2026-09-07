@@ -17,6 +17,11 @@ import {
 } from '../VestIsolateType';
 
 export type TIsolateSuite = TVestIsolate<{
+  /**
+   * Last successful full callback value. Root ownership makes it follow the
+   * same reset, replacement, serialization, and hydration lifecycle as tests.
+   */
+  mappedSchemaOutput?: MappedSchemaOutput;
   optional: OptionalFields;
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>;
   // Registry indices (populated by IsolateRegistry)
@@ -30,11 +35,18 @@ export type TIsolateSuite = TVestIsolate<{
   registry_warning?: RegistryIndex;
 }>;
 
+export type MappedSchemaOutput = {
+  hasValue: true;
+  value: unknown;
+};
+
 export function IsolateSuite<Callback extends CB = CB>(
   callback: Callback,
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>,
+  mappedSchemaOutput?: MappedSchemaOutput,
 ): TIsolateSuite {
   return createVestIsolate(VestIsolateType.Suite, callback, {
+    ...(mappedSchemaOutput === undefined ? {} : { mappedSchemaOutput }),
     optional: {},
     resolver,
   });

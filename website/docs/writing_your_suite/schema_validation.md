@@ -99,11 +99,50 @@ result.value; // typed as { age: number; name: string }
 
 The first rule in a chain determines the input type, and the last parser in the chain determines the output type. This means you never need `@ts-expect-error` or `as any` for valid parser coercion inputs.
 
+Focused runs still pass the complete parsed output to the suite callback. On a
+first focused run, Vest applies parser steps to untouched fields without
+running their validation predicates. Parser transforms should therefore be
+pure and must return their declared output type even when their `pass` verdict
+is false. The mapped output keeps the callback type sound; an untouched
+parser's failure does not become part of that focused run's validation result.
+If a custom `enforce.extend` rule is a parser, register it explicitly so
+focused mapping can recognize it:
+
+```typescript
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      normalizeId: (value: string) => { pass: boolean; type: string };
+    }
+  }
+}
+
+enforce.extend(
+  {
+    normalizeId: (value: string) => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Custom extension rules are treated as validators unless they are listed in
+`parsers`. The per-run `result.run.data.parsed` value still reflects only the
+schema work performed by that run; the callback receives the complete mapped
+output assembled for the suite.
+
+When a focused path enters an array, Vest refreshes that containing array from
+the current input. Array positions are not identities, so this prevents an
+insert, removal, or reorder from combining the current item with a stale array
+layout retained from an earlier run.
+
 ### What becomes typed from the schema
 
 With `create(callback, schema)`, TypeScript narrows:
 
-- callback data (`data`) to the schema input shape.
+- callback data (`data`) to the schema output shape.
 - `suite.run(...)` / `suite.runStatic(...)` first argument to the schema input shape.
 - the Standard Schema `~standard.validate(...)` input and output types.
 - field-oriented happy-path APIs (`test`, `optional`, `include`) to schema keys.
@@ -128,6 +167,7 @@ When using `create(callback, schema)`, the current TypeScript standard is:
   - `suite.remove(fieldName)`
   - `suite.resetField(fieldName)`
   - `suite.only(fieldName)`
+  - `suite.changed(fieldName)` (single name, array, or `undefined`; see [Schema Relationships](./schema_relationships#suitechanged-reference))
   - `suite.afterField(fieldName, callback)`
   - `only(fieldName)` / `skip(fieldName)` hooks
 
@@ -156,6 +196,8 @@ suite.only('username').run({
 });
 ```
 
+For interaction-driven revalidation that also refreshes dependent fields, use `suite.changed()` instead — see [Schema Relationships](./schema_relationships).
+
 :::
 
 ## Schema Types
@@ -172,7 +214,7 @@ The suite result includes typed properties for accessing validated and parsed da
 - `result.value` — The parsed output when the suite is valid. Typed as the schema's output type. `undefined` when invalid.
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
 - `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
-- `result.run.data.raw` — The current run data passed into the suite callback (parsed when schema validation succeeds; original input when it fails).
+- `result.run.data.raw` — The current run's parsed chunk when schema validation succeeds, or its original input when validation fails. A focused callback may receive a fuller retained mapped output than this per-run metadata.
 - `result.run.data.parsed` — Parsed data for the current run.
 
 ```typescript

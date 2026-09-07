@@ -1,5 +1,5 @@
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
-import { CHAIN_PREPEND } from './parserUtils';
+import { CHAIN_PREPEND, registerParserRules } from './parserUtils';
 import { toBoolean } from './toBoolean';
 
 export function defaultTo<TValue>(
@@ -28,3 +28,5 @@ export const generalParsers = {
   parseJSON,
   toBoolean,
 } as const;
+
+registerParserRules(generalParsers);

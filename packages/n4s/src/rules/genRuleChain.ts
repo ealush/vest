@@ -15,8 +15,9 @@ export { registerLazyRule };
 export function addToChain<T extends RuleInstance<any, any>>(
   rules: RuleFunctions<T> | Record<string, (...args: any[]) => any>,
   predicate: Predicate,
+  mapsValue = false,
 ): T {
   const { add, proxy } = createChainBuilder<T>(rules);
-  add(predicate);
+  add(predicate, mapsValue);
   return proxy as T;
 }

@@ -20,6 +20,10 @@ import { useEmit } from '../core/VestBus/VestBus';
 import { SuiteContext } from '../core/context/SuiteContext';
 import { IsolateReorderable, VestRuntime } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import type {
+  MappedSchemaOutput,
+  TIsolateSuite,
+} from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
 import { only, skip } from '../hooks/focused/focused';
 import {
@@ -39,6 +43,7 @@ import {
   SuiteCallbackWithSchema,
   SuiteRunArguments,
 } from './SuiteTypes';
+import { cloneDataTree } from './cloneDataTree';
 
 /**
  * Schema run outcome. Deliberately aliased to the n4s-owned
@@ -72,16 +77,6 @@ export type SchemaRunResult = SelectiveSchemaResult;
  */
 const pendingRuns = new WeakMap<CB, WeakMap<object, Set<unknown>>>();
 
-/**
- * Last successfully mapped callback input per concrete suite state.
- *
- * This is intentionally distinct from SuiteResult.run.data.parsed. Parsed
- * result metadata stays per-run (the v6 contract); this cache exists only so
- * a focused schema run does not violate the callback's full schema-output
- * type by replacing untouched transformed fields with raw input values.
- */
-const mappedCallbackData = new WeakMap<CB, WeakMap<object, unknown>>();
-
 function pendingRunsFor(suiteCallback: CB): WeakMap<object, Set<unknown>> {
   const existing = pendingRuns.get(suiteCallback);
   if (existing !== undefined) {
@@ -89,14 +84,6 @@ function pendingRunsFor(suiteCallback: CB): WeakMap<object, Set<unknown>> {
   }
   const created = new WeakMap<object, Set<unknown>>();
   pendingRuns.set(suiteCallback, created);
-  return created;
-}
-
-function mappedDataFor(suiteCallback: CB): WeakMap<object, unknown> {
-  const existing = mappedCallbackData.get(suiteCallback);
-  if (existing !== undefined) return existing;
-  const created = new WeakMap<object, unknown>();
-  mappedCallbackData.set(suiteCallback, created);
   return created;
 }
 
@@ -215,14 +202,14 @@ export function useCreateSuiteRunner<
       schema ? snapshotParsedData(parsedDataChunk) : undefined
     ) as Partial<InferSchemaOutput<S>> | undefined;
 
-    const callbackInput = getCallbackInput({
+    const callbackMapping = getCallbackMapping({
       affected: mappedAffected,
       fallback: schemaInput,
+      previous: usePreviousMappedSchemaOutput(),
       schema,
       schemaRunResult,
-      state: suiteState,
-      suiteCallback,
     });
+    const callbackInput = callbackMapping.input;
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
     const runData =
       schema && schemaRunResult?.every(result => result.pass)
@@ -273,6 +260,7 @@ export function useCreateSuiteRunner<
             useResolver,
           }),
           useResolver,
+          callbackMapping.retained,
         ).output;
       },
     );
@@ -400,74 +388,17 @@ function snapshotParsedData(data: unknown): unknown {
   return cloneDataTree(data, true);
 }
 
-/**
- * Copies data containers without relying on JSON serialization, preserving
- * undefined values, symbols, cycles, prototypes, and property descriptors.
- * Parsed-data snapshots freeze every copied container; callback/result copies
- * stay mutable but isolated from one another.
- */
-// eslint-disable-next-line complexity -- preserves the semantics of each supported JavaScript container type
-function cloneDataTree(
-  data: unknown,
-  freeze = false,
-  seen = new WeakMap<object, unknown>(),
-): unknown {
-  if (!isObject(data)) return data;
-
-  const existing = seen.get(data);
-  if (existing !== undefined) return existing;
-
-  if (data instanceof Date) {
-    const copy = new Date(data.getTime());
-    seen.set(data, copy);
-    return freeze ? Object.freeze(copy) : copy;
-  }
-  if (data instanceof RegExp) {
-    const copy = new RegExp(data.source, data.flags);
-    copy.lastIndex = data.lastIndex;
-    seen.set(data, copy);
-    return freeze ? Object.freeze(copy) : copy;
-  }
-  if (data instanceof Map) {
-    const copy = new Map<unknown, unknown>();
-    seen.set(data, copy);
-    for (const [key, value] of data) {
-      copy.set(
-        cloneDataTree(key, freeze, seen),
-        cloneDataTree(value, freeze, seen),
-      );
-    }
-    return freeze ? Object.freeze(copy) : copy;
-  }
-  if (data instanceof Set) {
-    const copy = new Set<unknown>();
-    seen.set(data, copy);
-    for (const value of data) copy.add(cloneDataTree(value, freeze, seen));
-    return freeze ? Object.freeze(copy) : copy;
-  }
-
-  const copy: Record<PropertyKey, unknown> | unknown[] = isArray(data)
-    ? []
-    : Object.create(Object.getPrototypeOf(data));
-  seen.set(data, copy);
-  for (const key of Reflect.ownKeys(data)) {
-    const descriptor = Object.getOwnPropertyDescriptor(data, key);
-    if (descriptor === undefined) continue;
-    if ('value' in descriptor) {
-      descriptor.value = cloneDataTree(descriptor.value, freeze, seen);
-    }
-    Object.defineProperty(copy, key, descriptor);
-  }
-  return freeze ? Object.freeze(copy) : copy;
-}
-
 type CallbackInputParams = {
   affected: string[] | null;
   fallback: unknown;
+  previous: MappedSchemaOutput | undefined;
   schema: unknown;
   schemaRunResult: SchemaRunResult[] | undefined;
-  state: object;
-  suiteCallback: CB;
+};
+
+type CallbackMapping = {
+  input: unknown;
+  retained?: MappedSchemaOutput;
 };
 
 /**
@@ -480,38 +411,77 @@ type CallbackInputParams = {
  * Validation failures keep the established raw-input fallback and do not
  * poison the last successful mapped value.
  */
-// eslint-disable-next-line complexity -- full, failed, initial, and retained snapshots
-function getCallbackInput(params: CallbackInputParams): unknown {
-  const { affected, fallback, schema, schemaRunResult, state, suiteCallback } =
-    params;
-  if (!schema) return fallback;
-  const cache = mappedDataFor(suiteCallback);
-  if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
-    if (affected === null) cache.delete(state);
-    return cloneDataTree(fallback);
+function getCallbackMapping(params: CallbackInputParams): CallbackMapping {
+  const { affected, fallback, previous, schema, schemaRunResult } = params;
+  if (!schema) return { input: fallback };
+  const successfulResult = successfulSchemaResult(schemaRunResult);
+  if (successfulResult === null) {
+    return failedCallbackMapping(affected, fallback, previous);
   }
+  return successfulCallbackMapping({
+    affected,
+    fallback,
+    previous,
+    schema,
+    schemaRunResult: successfulResult,
+  });
+}
 
+function successfulSchemaResult(
+  schemaRunResult: SchemaRunResult[] | undefined,
+): SchemaRunResult[] | null {
+  return schemaRunResult?.every(result => result.pass) ? schemaRunResult : null;
+}
+
+function failedCallbackMapping(
+  affected: string[] | null,
+  fallback: unknown,
+  previous: MappedSchemaOutput | undefined,
+): CallbackMapping {
+  return {
+    input: cloneDataTree(fallback),
+    ...(affected === null || previous === undefined
+      ? {}
+      : { retained: previous }),
+  };
+}
+
+function successfulCallbackMapping(
+  params: Omit<CallbackInputParams, 'schemaRunResult'> & {
+    schemaRunResult: SchemaRunResult[];
+  },
+): CallbackMapping {
+  const { affected, fallback, previous, schema, schemaRunResult } = params;
   const [firstResult] = schemaRunResult;
   const current = firstResult?.type ?? fallback;
   if (affected === null) {
     const retained = cloneDataTree(current);
-    cache.set(state, retained);
-    return cloneDataTree(retained);
+    return mappedCallbackResult(retained);
   }
 
-  const previous = cache.get(state);
   if (previous === undefined) {
     const initial = mapWithoutValidation(schema, fallback);
     const merged = mergeMappedPaths(initial, current, affected);
-    const retained = cloneDataTree(merged);
-    cache.set(state, retained);
-    return cloneDataTree(retained);
+    return mappedCallbackResult(merged);
   }
 
-  const merged = mergeMappedPaths(previous, current, affected);
-  const retained = cloneDataTree(merged);
-  cache.set(state, retained);
-  return cloneDataTree(retained);
+  return mappedCallbackResult(
+    mergeMappedPaths(previous.value, current, affected),
+  );
+}
+
+function mappedCallbackResult(value: unknown): CallbackMapping {
+  const retained = cloneDataTree(value);
+  return {
+    input: cloneDataTree(retained),
+    retained: { hasValue: true, value: retained },
+  };
+}
+
+function usePreviousMappedSchemaOutput(): MappedSchemaOutput | undefined {
+  const previous =
+    VestRuntime.useAvailableRoot<TIsolateSuite>()?.data.mappedSchemaOutput;
+  return previous?.hasValue === true ? previous : undefined;
 }
 
 function mergeMappedPaths(
@@ -522,11 +492,25 @@ function mergeMappedPaths(
   if (affected.length === 0) return previous;
   let merged = previous;
   for (const field of affected) {
-    const path = concreteFieldPath(field);
-    if (path.length === 0 || path.some(isUnsafePathSegment)) continue;
+    const path = retainedMergePath(concreteFieldPath(field));
+    if (path.length === 0) return current;
+    if (path.some(isUnsafePathSegment)) continue;
     merged = setPathValue(merged, current, path, 0);
   }
   return merged;
+}
+
+/**
+ * Array indices describe positions, not stable identities. When a focused
+ * path enters an array, replace the containing array from the current mapped
+ * input so reorder/insert/remove operations cannot leave the callback with a
+ * stale structure assembled from the previous run.
+ */
+function retainedMergePath(
+  path: readonly ConcretePathSegment[],
+): ConcretePathSegment[] {
+  const firstIndex = path.findIndex(segment => typeof segment === 'number');
+  return firstIndex === -1 ? [...path] : path.slice(0, firstIndex);
 }
 
 type ConcretePathSegment = string | number;

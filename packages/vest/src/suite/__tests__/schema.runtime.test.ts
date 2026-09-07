@@ -438,6 +438,39 @@ describe('Schema Runtime Validation', () => {
         score: 2,
       });
     });
+
+    it('prevents mutation through Map, Set, and Date parsed snapshots', () => {
+      const originalDate = new Date('2026-01-02T00:00:00.000Z');
+      const containerSchema = enforce.shape({
+        date: enforce.condition(
+          (value: Date): boolean => value instanceof Date,
+        ),
+        map: enforce.condition(
+          (value: Map<string, number>): boolean => value instanceof Map,
+        ),
+        set: enforce.condition(
+          (value: Set<string>): boolean => value instanceof Set,
+        ),
+      });
+      const containerSuite = create(() => {}, containerSchema);
+
+      const result = containerSuite.run({
+        date: originalDate,
+        map: new Map([['a', 1]]),
+        set: new Set(['a']),
+      });
+      const parsed = result.run.data.parsed;
+      if (parsed === undefined) {
+        throw new Error('Expected a parsed container snapshot');
+      }
+
+      expect(() => parsed.map.set('b', 2)).toThrow(TypeError);
+      expect(() => parsed.set.add('b')).toThrow(TypeError);
+      expect(() => parsed.date.setUTCFullYear(2030)).toThrow(TypeError);
+      expect([...parsed.map]).toEqual([['a', 1]]);
+      expect([...parsed.set]).toEqual(['a']);
+      expect(parsed.date.toISOString()).toBe('2026-01-02T00:00:00.000Z');
+    });
   });
 
   describe('Stateful behavior', () => {

@@ -662,6 +662,58 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(log.get()).toEqual(['travelers.0.country', 'travelers.0.passport']);
   });
 
+  it('15b. keyed array reorder retains failures under the moved item path', async () => {
+    const itemSchema = enforce.shape({
+      id: enforce.isString(),
+      country: enforce.isString(),
+      passport: enforce.isString().dependsOn($ => $.country),
+    });
+    const suite = create(
+      data => {
+        each(data.travelers, (traveler, index) => {
+          test(
+            `travelers.${index}.country`,
+            () => {
+              enforce(traveler.country).isNotBlank();
+            },
+            `${traveler.id}:country`,
+          );
+          test(
+            `travelers.${index}.passport`,
+            () => {
+              enforce(traveler.passport).isNotBlank();
+            },
+            `${traveler.id}:passport`,
+          );
+        });
+      },
+      enforce.shape({ travelers: enforce.isArrayOf(itemSchema) }),
+    );
+    const original = {
+      travelers: [
+        { id: 'a', country: '', passport: '' },
+        { id: 'b', country: 'IL', passport: 'P2' },
+      ],
+    };
+    const reordered = {
+      travelers: [
+        { id: 'b', country: 'IL', passport: 'P2' },
+        { id: 'a', country: '', passport: '' },
+      ],
+    };
+
+    const initial = await suite.run(original);
+    expect(initial.hasErrors('travelers.0.country')).toBe(true);
+    expect(initial.hasErrors('travelers.0.passport')).toBe(true);
+
+    const focused = await suite.changed('travelers.0.country').run(reordered);
+
+    expect(focused.hasErrors('travelers.0.country')).toBe(false);
+    expect(focused.hasErrors('travelers.0.passport')).toBe(false);
+    expect(focused.hasErrors('travelers.1.country')).toBe(true);
+    expect(focused.hasErrors('travelers.1.passport')).toBe(true);
+  });
+
   it('16. nested arrays orders[$item].items[$item] depth 4', async () => {
     const item = enforce.shape({
       name: enforce.isString(),
@@ -981,6 +1033,35 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     log.reset();
     await suite.changed('country').run({ country: 'US', state: 'CA' });
     expect(log.get()).toEqual(['country', 'state']);
+  });
+
+  it('25b. treats synthesized schema failures as top-level tests for group focus', async () => {
+    const schema = enforce.shape({
+      source: enforce.isString(),
+      dependent: enforce.isString().dependsOn($ => $.source),
+    });
+    const suite = create(data => {
+      group('dependent-group', () => {
+        test('dependent', () => Boolean(data.dependent));
+      });
+    }, schema);
+    const invalid = {
+      source: 'changed',
+      dependent: 42 as unknown as string,
+    };
+
+    const skippedGroup = await suite
+      .focus({ skipGroup: 'dependent-group' })
+      .changed('source')
+      .run(invalid);
+    expect(skippedGroup.hasErrors('dependent')).toBe(true);
+
+    suite.reset();
+    const onlyGroup = await suite
+      .focus({ onlyGroup: 'dependent-group' })
+      .changed('source')
+      .run(invalid);
+    expect(onlyGroup.hasErrors('dependent')).toBe(false);
   });
 
   // 26. include().when() under changed() — both the included branch

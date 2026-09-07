@@ -202,6 +202,51 @@ describe('focused schema callback mapping', () => {
     ]);
   });
 
+  it('discards retained mapped callback data when the suite is reset', async () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push(data);
+      },
+      enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+        note: enforce.isString(),
+      }),
+    );
+
+    await suite.run({ age: '10', note: 'before' });
+    suite.reset();
+    await suite.changed('note').run({ age: '99', note: 'after' });
+
+    expect(seen).toEqual([
+      { age: 10, note: 'before' },
+      { age: 99, note: 'after' },
+    ]);
+  });
+
+  it('preserves the declared output type when an untouched parser fails during initial focused mapping', async () => {
+    const seen: number[] = [];
+    const suite = create(
+      data => {
+        seen.push(data.age);
+        // The schema contract promises a number here even when the focused
+        // field is elsewhere. This must never throw because raw input leaked
+        // through the parser-only mapping path.
+        data.age.toFixed();
+      },
+      enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+        note: enforce.isString(),
+      }),
+    );
+
+    await expect(
+      suite.changed('note').run({ age: 'not-numeric', note: 'ok' }),
+    ).resolves.toBeDefined();
+    expect(seen).toHaveLength(1);
+    expect(Number.isNaN(seen[0])).toBe(true);
+  });
+
   it('keeps only() exact while retaining untouched successful mappings', async () => {
     const seen: unknown[] = [];
     const schema = enforce.shape({

@@ -102,7 +102,10 @@ The first rule in a chain determines the input type, and the last parser in the 
 Focused runs still pass the complete parsed output to the suite callback. On a
 first focused run, Vest applies parser steps to untouched fields without
 running their validation predicates. Parser transforms should therefore be
-pure. If a custom `enforce.extend` rule is a parser, register it explicitly so
+pure and must return their declared output type even when their `pass` verdict
+is false. The mapped output keeps the callback type sound; an untouched
+parser's failure does not become part of that focused run's validation result.
+If a custom `enforce.extend` rule is a parser, register it explicitly so
 focused mapping can recognize it:
 
 ```typescript
@@ -129,6 +132,11 @@ Custom extension rules are treated as validators unless they are listed in
 `parsers`. The per-run `result.run.data.parsed` value still reflects only the
 schema work performed by that run; the callback receives the complete mapped
 output assembled for the suite.
+
+When a focused path enters an array, Vest refreshes that containing array from
+the current input. Array positions are not identities, so this prevents an
+insert, removal, or reorder from combining the current item with a stale array
+layout retained from an earlier run.
 
 ### What becomes typed from the schema
 

@@ -146,6 +146,29 @@ describe('pick', () => {
     expectTypeOf<'typo'>().not.toMatchTypeOf<keyof typeof schema>();
   });
 
+  it('ignores dangling local dependencies on excluded fields', () => {
+    const schema = {
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.missing),
+    };
+
+    const pickedSchema = enforce.pick(schema, ['a']);
+
+    expect(pickedSchema.describe().relationships).toHaveLength(0);
+    expect(pickedSchema.test({ a: 'x' })).toBe(true);
+  });
+
+  it('still rejects dangling local dependencies on included fields', () => {
+    const schema = {
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.missing),
+    };
+
+    expect(() => enforce.pick(schema, ['a', 'b'])).toThrow(
+      /depends on unknown field "missing"/,
+    );
+  });
+
   it('preserves rooted edges so a picked schema can be mounted', () => {
     const schema = {
       accountType: enforce.isString(),

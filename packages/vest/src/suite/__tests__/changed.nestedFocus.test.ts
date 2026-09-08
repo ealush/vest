@@ -216,6 +216,26 @@ describe('changed() nested schema focus and empty changed', () => {
     expect(result.hasErrors('profile.state')).toBe(true);
   });
 
+  it('treats falsy scalar changed() args as a no-op, preserving changed([])', async () => {
+    const schema = enforce.shape({
+      first: enforce.isString(),
+      second: enforce.isString(),
+    });
+    const suite = create(() => {}, schema);
+    const data = { first: 'valid', second: 42 };
+
+    const falsy = await invokeWithUnknown(
+      suite.changed(false as unknown as string).run,
+      data,
+    );
+    // No-op: runs without changed focus, so the invalid field still errors.
+    expect(falsy.hasErrors('second')).toBe(true);
+
+    const empty = await invokeWithUnknown(suite.changed([]).run, data);
+    // Explicit zero-field focus: runs no tests, so nothing errors.
+    expect(empty.hasErrors('second')).toBe(false);
+  });
+
   it('clears changed focus when chained after an earlier changed field', async () => {
     const schema = enforce.shape({
       first: enforce.isString(),

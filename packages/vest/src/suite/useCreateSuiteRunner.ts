@@ -208,6 +208,7 @@ export function useCreateSuiteRunner<
       previous: usePreviousMappedSchemaOutput(),
       schema,
       schemaRunResult,
+      skipped: skippedFocusPaths(transformedModifiers.skip),
     });
     const callbackInput = callbackMapping.input;
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
@@ -345,6 +346,17 @@ function baseOnlyListOf<F extends TFieldName, G extends TGroupName>(
   return asArray(only).filter(entry => typeof entry === 'string');
 }
 
+// String entries of the `skip` modifier for callback mapping. A skip-only run
+// (no `only`) is still a focused run: the schema output is omit-projected, so
+// a null affected set must not be mistaken for a full run downstream.
+function skippedFocusPaths<F extends TFieldName, G extends TGroupName>(
+  skip: InternalSuiteModifiers<F, G>['skip'],
+): string[] | null {
+  if (!skip) return null;
+  const entries = asArray(skip).filter(entry => typeof entry === 'string');
+  return entries.length > 0 ? entries : null;
+}
+
 /**
  * Focus paths whose parsed values this run is allowed to replace in the
  * retained callback mapping. null means an unfocused full schema run.
@@ -394,6 +406,7 @@ type CallbackInputParams = {
   previous: MappedSchemaOutput | undefined;
   schema: unknown;
   schemaRunResult: SchemaRunResult[] | undefined;
+  skipped: readonly string[] | null;
 };
 
 type CallbackMapping = {
@@ -412,7 +425,8 @@ type CallbackMapping = {
  * poison the last successful mapped value.
  */
 function getCallbackMapping(params: CallbackInputParams): CallbackMapping {
-  const { affected, fallback, previous, schema, schemaRunResult } = params;
+  const { affected, fallback, previous, schema, schemaRunResult, skipped } =
+    params;
   if (!schema) return { input: fallback };
   const successfulResult = successfulSchemaResult(schemaRunResult);
   if (successfulResult === null) {
@@ -424,6 +438,7 @@ function getCallbackMapping(params: CallbackInputParams): CallbackMapping {
     previous,
     schema,
     schemaRunResult: successfulResult,
+    skipped,
   });
 }
 
@@ -431,6 +446,27 @@ function successfulSchemaResult(
   schemaRunResult: SchemaRunResult[] | undefined,
 ): SchemaRunResult[] | null {
   return schemaRunResult?.every(result => result.pass) ? schemaRunResult : null;
+}
+
+/**
+ * Installs a successful output as the complete callback mapping. Skip-only
+ * runs omit skipped paths from schema execution, so their projected output
+ * holds raw input at those paths: restore parsed values from the retained
+ * mapping (or a validation-free parser mapping on first runs) first.
+ */
+function fullCallbackMapping(params: {
+  current: unknown;
+  fallback: unknown;
+  previous: MappedSchemaOutput | undefined;
+  schema: unknown;
+  skipped: readonly string[] | null;
+}): CallbackMapping {
+  const { current, fallback, previous, schema, skipped } = params;
+  if (skipped !== null) {
+    const base = previous?.value ?? mapWithoutValidation(schema, fallback);
+    return mappedCallbackResult(repairSkippedPaths(current, base, skipped));
+  }
+  return mappedCallbackResult(cloneDataTree(current));
 }
 
 function failedCallbackMapping(
@@ -451,12 +487,20 @@ function successfulCallbackMapping(
     schemaRunResult: SchemaRunResult[];
   },
 ): CallbackMapping {
-  const { affected, fallback, previous, schema, schemaRunResult } = params;
+  const { affected, fallback, previous, schema, schemaRunResult, skipped } =
+    params;
   const [firstResult] = schemaRunResult;
   const current = firstResult?.type ?? fallback;
   if (affected === null) {
-    const retained = cloneDataTree(current);
-    return mappedCallbackResult(retained);
+    // A null affected set is either a true full run or a skip-only run; the
+    // latter carries an omit-projected output that must be repaired first.
+    return fullCallbackMapping({
+      current,
+      fallback,
+      previous,
+      schema,
+      skipped,
+    });
   }
 
   if (previous === undefined) {
@@ -498,6 +542,38 @@ function mergeMappedPaths(
     merged = setPathValue(merged, current, path, 0);
   }
   return merged;
+}
+
+/**
+ * Restores parsed values at skipped paths from a complete mapping. Paths the
+ * base cannot supply keep the projected output's value rather than being
+ * clobbered with undefined.
+ */
+function repairSkippedPaths(
+  current: unknown,
+  base: unknown,
+  skipped: readonly string[],
+): unknown {
+  let repaired = cloneDataTree(current);
+  for (const field of skipped) {
+    const path = retainedMergePath(concreteFieldPath(field));
+    if (path.length === 0 || path.some(isUnsafePathSegment)) continue;
+    if (readPathDeep(base, path) === undefined) continue;
+    repaired = setPathValue(repaired, base, path, 0);
+  }
+  return repaired;
+}
+
+function readPathDeep(
+  value: unknown,
+  path: readonly ConcretePathSegment[],
+): unknown {
+  let node = value;
+  for (const key of path) {
+    node = readPathValue(node, key);
+    if (node === undefined) return undefined;
+  }
+  return node;
 }
 
 /**

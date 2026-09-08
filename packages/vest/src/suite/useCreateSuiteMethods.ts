@@ -15,6 +15,8 @@ import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { FieldExclusion } from '../hooks/focused/focused';
+import { assertNoAbortSignal } from './changed';
+import type { ChangedOptions } from './changed';
 import {
   InternalSuiteModifiers,
   SuiteModifiers,
@@ -283,8 +285,16 @@ function useCreateChanged<
   // can be expanded using the actual runtime data (rows.length).
   // Without deferral, changed('global') with target rows[$item].tax would
   // produce the unusable field 'rows.rows.$item.tax' and nothing would run.
-  return function changed(changedField: string | string[] | FieldExclusion<F>) {
-    if (changedField === undefined) {
+  return function changed(
+    changedField: string | string[] | FieldExclusion<F>,
+    options?: ChangedOptions,
+  ) {
+    /** @deferred v2 — AbortSignal abort deferred */
+    assertNoAbortSignal(options);
+    // Falsy scalars (undefined, null, false, '') are a legal no-op — run
+    // without changed focus. Only changed([]) is an explicit zero-field
+    // focus that runs no tests.
+    if (!Array.isArray(changedField) && !changedField) {
       // Mirror only(undefined): a legal no-op — run without changed focus.
       const nextModifiers = { ...modifiers };
       delete nextModifiers.__changed;

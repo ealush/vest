@@ -265,4 +265,44 @@ describe('focused schema callback mapping', () => {
       { age: 42, quantity: 2 },
     ]);
   });
+
+  it('maps skipped parser fields on a first-ever skip-only run', async () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push({ ...data });
+      },
+      enforce.shape({
+        a: enforce.isNumeric().toNumber(),
+        b: enforce.isNumeric().toNumber(),
+      }),
+    );
+
+    await suite.focus({ skip: 'b' }).run({ a: '1', b: '2' });
+
+    // `b` was omitted from schema execution: the callback must still observe
+    // the parsed value, never the raw input string.
+    expect(seen).toEqual([{ a: 1, b: 2 }]);
+  });
+
+  it('retains parsed skipped values across skip-only runs', async () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push({ ...data });
+      },
+      enforce.shape({
+        a: enforce.isNumeric().toNumber(),
+        b: enforce.isNumeric().toNumber(),
+      }),
+    );
+
+    await suite.focus({ skip: 'b' }).run({ a: '1', b: '2' });
+    await suite.focus({ skip: 'b' }).run({ a: '3', b: '4' });
+
+    expect(seen).toEqual([
+      { a: 1, b: 2 },
+      { a: 3, b: 2 },
+    ]);
+  });
 });

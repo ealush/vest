@@ -234,6 +234,22 @@ describe('executable documentation examples', () => {
     expect(changed.hasErrors('confirmPassword')).toBe(true);
   });
 
+  it('executes the agent guide relationship example verbatim', () => {
+    const { relationshipSuite } = executeCodeBlock('AI_USAGE_GUIDE.md', {
+      containing: 'export const relationshipSuite',
+    }) as { relationshipSuite: ReturnType<typeof vest.create> };
+    expect(relationshipSuite.get().hasErrors('confirmPassword')).toBe(true);
+    expect(
+      relationshipSuite
+        .changed('confirmPassword')
+        .run({
+          password: 'second',
+          confirmPassword: 'second',
+        })
+        .hasErrors(),
+    ).toBe(false);
+  });
+
   it('reconciles documented dynamic-list tests by stable key', () => {
     const { tripSuite } = executeCodeBlock(
       'website/docs/guides/dynamic-lists.md',

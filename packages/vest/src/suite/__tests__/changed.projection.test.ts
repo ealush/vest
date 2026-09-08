@@ -654,7 +654,7 @@ describe('changed() source-retaining projection', () => {
     expect(full.hasErrors('point.1')).toBe(false);
     const changed = await invokeWithUnknown(suite.changed('point.1').run, data);
     expect(changed.hasErrors('point.1')).toBe(true);
-    expect(changed.hasErrors('point.0')).toBe(false);
+    expect(changed.hasErrors('point.0')).toBe(true);
   });
 
   it('P1-3b: changed() surfaces an affected union element hidden by first-failure', async () => {
@@ -685,7 +685,7 @@ describe('changed() source-retaining projection', () => {
       data,
     );
     expect(changed.hasErrors('rows.1')).toBe(true);
-    expect(changed.hasErrors('rows.0')).toBe(false);
+    expect(changed.hasErrors('rows.0')).toBe(true);
   });
 
   it('P1-4: focused array validation runs affected members exactly once', async () => {

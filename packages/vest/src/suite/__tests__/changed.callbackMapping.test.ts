@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { compose, enforce } from 'n4s';
 
-import { create } from '../../vest';
+import { create, test } from '../../vest';
 
 declare global {
   namespace n4s {
@@ -41,6 +41,32 @@ describe('focused schema callback mapping', () => {
     });
 
     expect(seen).toEqual(['value!']);
+  });
+
+  it('refreshes array mapping from raw input without applying parsers to parsed values', () => {
+    enforce.extend(
+      {
+        focusedAppend: (value: string) => ({ pass: true, type: `${value}!` }),
+      },
+      { parsers: ['focusedAppend'] },
+    );
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push(data);
+        test('rows.0', () => {
+          enforce(data.rows[0]).equals('c!');
+        });
+      },
+      enforce.shape({
+        rows: enforce.isArrayOf(enforce.focusedAppend()),
+      }),
+    );
+    suite.run({ rows: ['a', 'b'] });
+    const changed = suite.changed('rows.0').run({ rows: ['c', 'b'] });
+    expect(seen[1]).toEqual({ rows: ['c!', 'b!'] });
+    expect(changed.isValid()).toBe(true);
+    expect(changed.value).toEqual({ rows: ['c!', 'b!'] });
   });
 
   it('maps untouched fields before the first-ever focused callback without validating them', async () => {

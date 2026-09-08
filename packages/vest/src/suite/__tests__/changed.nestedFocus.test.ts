@@ -232,8 +232,8 @@ describe('changed() nested schema focus and empty changed', () => {
     expect(falsy.hasErrors('second')).toBe(true);
 
     const empty = await invokeWithUnknown(suite.changed([]).run, data);
-    // Explicit zero-field focus: runs no tests, so nothing errors.
-    expect(empty.hasErrors('second')).toBe(false);
+    // Explicit zero-field focus revalidates nothing and retains prior failures.
+    expect(empty.hasErrors('second')).toBe(true);
   });
 
   it('clears changed focus when chained after an earlier changed field', async () => {

@@ -140,18 +140,53 @@ function immutableBuiltin<T extends object>(
   const rejectMutation = (): never => {
     throw new TypeError('Cannot mutate a parsed-data snapshot');
   };
-  return new Proxy(target, {
+  const snapshot = new Proxy(target, {
     defineProperty: rejectMutation,
     deleteProperty: rejectMutation,
     get(current, property) {
       if (mutators.has(property)) return rejectMutation;
-      const value = Reflect.get(current, property, current);
-      if (hasOwnProperty(current, property)) return value;
-      return typeof value === 'function' && property !== 'constructor'
-        ? value.bind(current)
-        : value;
+      return readSnapshotProperty(current, property, snapshot);
     },
     set: rejectMutation,
     setPrototypeOf: rejectMutation,
   });
+  return snapshot;
+}
+
+function readSnapshotProperty<T extends object>(
+  current: T,
+  property: PropertyKey,
+  snapshot: T,
+): unknown {
+  const value = Reflect.get(current, property, current);
+  if (
+    hasOwnProperty(current, property) ||
+    typeof value !== 'function' ||
+    property === 'constructor'
+  ) {
+    return value;
+  }
+  if (isCollectionForEach(current, property)) {
+    return (
+      callback: (value: unknown, key: unknown, collection: T) => void,
+      thisArg?: unknown,
+    ) => {
+      if (typeof callback !== 'function')
+        return value.call(current, callback, thisArg);
+      return value.call(current, (entry: unknown, key: unknown) =>
+        callback.call(thisArg, entry, key, snapshot),
+      );
+    };
+  }
+  // Object.valueOf returns its receiver. Never expose the mutable backing object.
+  return (...args: unknown[]) => {
+    const result = value.apply(current, args);
+    return result === current ? snapshot : result;
+  };
+}
+
+function isCollectionForEach(value: object, property: PropertyKey): boolean {
+  return (
+    property === 'forEach' && (value instanceof Map || value instanceof Set)
+  );
 }

@@ -99,12 +99,15 @@ result.value; // typed as { age: number; name: string }
 
 The first rule in a chain determines the input type, and the last parser in the chain determines the output type. This means you never need `@ts-expect-error` or `as any` for valid parser coercion inputs.
 
-Focused runs still pass the complete parsed output to the suite callback. On a
+Successful focused schema runs assemble mapped output for the suite callback. On a
 first focused run, Vest applies parser steps to untouched fields without
 running their validation predicates. Parser transforms should therefore be
 pure and must return their declared output type even when their `pass` verdict
-is false. The mapped output keeps the callback type sound; an untouched
-parser's failure does not become part of that focused run's validation result.
+is false. An untouched parser's failure does not become part of that focused
+run's validation result. Mapping is not validation: missing or invalid untouched
+input is not proven to satisfy the schema. If schema validation fails, the
+callback can receive raw input at the failing paths. Guard values before using
+output-only operations, and use a full successful run before submission.
 If a custom `enforce.extend` rule is a parser, register it explicitly so
 focused mapping can recognize it:
 
@@ -136,7 +139,9 @@ output assembled for the suite.
 When a focused path enters an array, Vest refreshes that containing array from
 the current input. Array positions are not identities, so this prevents an
 insert, removal, or reorder from combining the current item with a stale array
-layout retained from an earlier run.
+layout retained from an earlier run. Untouched members of that array are mapped
+from raw input without running their validation predicates. Parsers can run
+again to refresh this mapping and must be pure.
 
 ### What becomes typed from the schema
 
@@ -187,7 +192,7 @@ suite.focus({ onlyGroup: 'account' }); // typed group name
 ```
 
 :::note Focused runs
-When you focus the suite with `suite.only()`, `suite.skip()`, or `suite.focus()`, Vest intelligently subsets your validation schema under the hood using `enforce.pick` and `enforce.omit`. This ensures that schema validation still runs securely for the fields in focus—and provides correct types in the test callback!—while safely ignoring un-focused fields and allowing you to validate partial payloads effectively.
+Suite-level `only`, `skip`, and `focus` select schema fields as well as suite tests. Structural schemas can be narrowed using their metadata; rules with container validators may require a full-schema fallback. Focused validation does not establish the validity or presence of untouched input. Supply complete form data when the callback reads untouched fields.
 
 ```javascript
 // Validate only the username field, enforcing the schema for 'username' while ignoring 'age'

@@ -1149,8 +1149,9 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(invokeWithUnknown(affected.hasErrors, '1.state')).toBe(true);
     expect(invokeWithUnknown(affected.hasErrors, '0.state')).toBe(false);
     const unaffected = await suite.changed('0.state').run(data);
-    expect(invokeWithUnknown(unaffected.hasErrors, '1.state')).toBe(false);
-    expect(Object.keys(unaffected.tests)).not.toContain('1.state');
+    // Vest retains the prior failure until that field is revalidated.
+    expect(invokeWithUnknown(unaffected.hasErrors, '1.state')).toBe(true);
+    expect(Object.keys(unaffected.tests)).toContain('1.state');
   });
 
   /** @deferred v2 — suite.changed with AbortSignal */

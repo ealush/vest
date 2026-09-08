@@ -9,6 +9,7 @@ import {
   asArray,
   CB,
   freezeAssign,
+  hasOwnProperty,
   isArray,
   isObject,
   isUnsafeKey,
@@ -44,6 +45,11 @@ import {
   SuiteRunArguments,
 } from './SuiteTypes';
 import { cloneDataTree } from './cloneDataTree';
+import {
+  schemaFailureField,
+  schemaFailureKey,
+  useRetainedSchemaFailures,
+} from './schemaValidation';
 
 /**
  * Schema run outcome. Deliberately aliased to the n4s-owned
@@ -197,6 +203,7 @@ export function useCreateSuiteRunner<
       : undefined;
 
     const parsedDataChunk = getParsedDataChunk(schemaRunResult);
+    const retainedSchemaFailures = useRetainedSchemaFailures(changedAffected);
 
     const parsedData = (
       schema ? snapshotParsedData(parsedDataChunk) : undefined
@@ -255,6 +262,7 @@ export function useCreateSuiteRunner<
           useRunSuiteCallback<F, T, S, G>({
             args: callbackArgs,
             modifiers: transformedModifiers,
+            retainedSchemaFailures,
             schema,
             schemaRunResult,
             suiteCallback,
@@ -503,14 +511,42 @@ function successfulCallbackMapping(
     });
   }
 
-  if (previous === undefined) {
-    const initial = mapWithoutValidation(schema, fallback);
-    const merged = mergeMappedPaths(initial, current, affected);
-    return mappedCallbackResult(merged);
-  }
+  return focusedCallbackMapping({
+    affected,
+    current,
+    fallback,
+    previous,
+    schema,
+  });
+}
 
+function focusedCallbackMapping(params: {
+  affected: string[];
+  current: unknown;
+  fallback: unknown;
+  previous: MappedSchemaOutput | undefined;
+  schema: unknown;
+}): CallbackMapping {
+  const { affected, current, fallback, previous, schema } = params;
+  const replacesArray = affected.some(field =>
+    concreteFieldPath(field).some(segment => typeof segment === 'number'),
+  );
+  const fresh =
+    previous === undefined || replacesArray
+      ? mapWithoutValidation(schema, fallback)
+      : undefined;
+  // Replacing a positional collection requires a complete mapping of its
+  // current members. Overlay only the executed leaves onto raw-input parser
+  // mapping before replacing the array in retained state.
+  const mappedCurrent = replacesArray
+    ? mergeMappedPaths(fresh, current, affected, false)
+    : current;
   return mappedCallbackResult(
-    mergeMappedPaths(previous.value, current, affected),
+    mergeMappedPaths(
+      previous ? previous.value : fresh,
+      mappedCurrent,
+      affected,
+    ),
   );
 }
 
@@ -532,16 +568,24 @@ function mergeMappedPaths(
   previous: unknown,
   current: unknown,
   affected: readonly string[],
+  replaceArrays = true,
 ): unknown {
-  if (affected.length === 0) return previous;
   let merged = previous;
   for (const field of affected) {
-    const path = retainedMergePath(concreteFieldPath(field));
+    const path = mappedMergePath(field, replaceArrays);
     if (path.length === 0) return current;
     if (path.some(isUnsafePathSegment)) continue;
     merged = setPathValue(merged, current, path, 0);
   }
   return merged;
+}
+
+function mappedMergePath(
+  field: string,
+  replaceArrays: boolean,
+): ConcretePathSegment[] {
+  const path = concreteFieldPath(field);
+  return replaceArrays ? retainedMergePath(path) : path;
 }
 
 /**
@@ -613,10 +657,26 @@ function setPathValue(
   const key = path[index];
   if (key === undefined) return previous;
 
+  if (index === path.length - 1 && isMissingOwnKey(current, key)) {
+    return copyWithoutKey(previous, key);
+  }
+
   const previousChild = readPathValue(previous, key);
   const currentChild = readPathValue(current, key);
   const nextChild = setPathValue(previousChild, currentChild, path, index + 1);
   return writePathValue(previous, key, nextChild);
+}
+
+function isMissingOwnKey(value: unknown, key: ConcretePathSegment): boolean {
+  return !isObject(value) || !hasOwnProperty(value, key);
+}
+
+function copyWithoutKey(value: unknown, key: ConcretePathSegment): unknown {
+  const copy = isArray(value)
+    ? [...value]
+    : { ...(isObject(value) ? value : {}) };
+  Reflect.deleteProperty(copy, key);
+  return copy;
 }
 
 function readPathValue(value: unknown, key: ConcretePathSegment): unknown {
@@ -655,6 +715,7 @@ function useRunSuiteCallback<
   modifiers: ReturnType<typeof useTransformedModifiers<F, G>>;
   schema: S | undefined;
   schemaRunResult?: SchemaRunResult[];
+  retainedSchemaFailures: SchemaRunResult[];
   suiteCallback: SuiteCallbackWithSchema<S, T>;
   useResolver: () => SuiteResult<F, G, S, D>;
 }) {
@@ -663,6 +724,7 @@ function useRunSuiteCallback<
     modifiers,
     schema,
     schemaRunResult,
+    retainedSchemaFailures,
     suiteCallback,
     useResolver,
   } = params;
@@ -670,14 +732,20 @@ function useRunSuiteCallback<
   return () => {
     // Focused modifiers are applied before user callback so every test in this run
     // observes the same focus context.
-    only(withSchemaFailureFocus(modifiers.only, schemaRunResult));
+    only(modifiers.only);
     skip(modifiers.__skipAll || modifiers.skip);
     (suiteCallback as CB)(...args);
 
     IsolateReorderable(
-      runSchemaValidation(schema, schemaRunResult),
+      runSchemaValidation(
+        schema,
+        schemaRunResult,
+        retainedSchemaFailures,
+        modifiers,
+      ),
       undefined,
       {
+        ...(schema ? { schemaValidation: true } : {}),
         tests: [],
       },
     );
@@ -738,87 +806,17 @@ function snapshotGroup<F extends TFieldName, G extends TGroupName>(
 }
 
 /**
- * Widens execution focus to cover already-narrowed schema failures reported
- * above the affected leaves (e.g. a union element failure at 'rows.1' for
- * changed('rows.1.kind')). The post-filter keeps failures parent-either-way,
- * but suite focus matches test names exactly, so a coarser attribution would
- * be emitted and then excluded — reported nowhere. Only strict parents of
- * focused names are added: leaf failures already match exactly, and child
- * failures keep their existing behavior, so user-test execution is otherwise
- * unchanged.
- */
-function withSchemaFailureFocus<F extends TFieldName>(
-  only: FieldExclusion<F>,
-  schemaRunResult: readonly SchemaRunResult[] | undefined,
-): FieldExclusion<F> {
-  if (schemaRunResult === undefined) {
-    return only;
-  }
-  const base = focusBaseNames(only);
-  if (base === null) {
-    return only;
-  }
-  const additions = parentFocusAdditions<F>(base.map(String), schemaRunResult);
-  if (additions.length === 0) {
-    return only;
-  }
-  return [...base, ...additions];
-}
-
-function focusBaseNames<F extends TFieldName>(
-  only: FieldExclusion<F>,
-): F[] | null {
-  if (only === undefined || only === null) return null;
-  const base = asArray(only);
-  return base.length === 0 ? null : base;
-}
-
-/**
- * Failure paths that are strict parents of a focused name. A coarser schema
- * attribution (e.g. 'rows.1' for changed('rows.1.kind')) would otherwise be
- * emitted and then excluded by exact focus matching — reported nowhere.
- */
-function parentFocusAdditions<F extends TFieldName>(
-  baseNames: string[],
-  schemaRunResult: readonly SchemaRunResult[],
-): F[] {
-  const seen = new Set<string>(baseNames);
-  const additions: F[] = [];
-  for (const result of schemaRunResult) {
-    const failureName = schemaFailureName(result);
-    if (failureName === '' || seen.has(failureName)) {
-      continue;
-    }
-    if (isParentOfFocusedName(baseNames, failureName)) {
-      seen.add(failureName);
-      additions.push(failureName as unknown as F);
-    }
-  }
-  return additions;
-}
-
-function schemaFailureName(result: SchemaRunResult): string {
-  if (result.pass) {
-    return '';
-  }
-  return (result.path ?? []).map(String).join('.');
-}
-
-function isParentOfFocusedName(
-  baseNames: readonly string[],
-  failureName: string,
-): boolean {
-  return baseNames.some((baseName: string): boolean =>
-    baseName.startsWith(`${failureName}.`),
-  );
-}
-
-/**
  * Emits schema failures into vest test tree.
  */
 function runSchemaValidation<S extends TSchema = undefined>(
   schema: S | undefined,
   schemaRunResult?: SchemaRunResult[],
+  retained: SchemaRunResult[] = [],
+  modifiers?: {
+    only?: FieldExclusion<string>;
+    skip?: FieldExclusion<string>;
+    __skipAll?: boolean;
+  },
 ) {
   // eslint-disable-next-line complexity
   return () => {
@@ -826,14 +824,20 @@ function runSchemaValidation<S extends TSchema = undefined>(
       return;
     }
 
-    for (let i = 0; i < schemaRunResult.length; i++) {
-      const error = schemaRunResult[i];
+    // n4s already narrowed these failures. Include their actual attribution
+    // only inside this isolate, so parent/root errors remain visible without
+    // widening execution of the user's tests.
+    only(
+      schemaRunResult.filter(result => !result.pass).map(schemaFailureField),
+    );
+    skip(modifiers?.__skipAll || modifiers?.skip);
+    for (const error of [...schemaRunResult, ...retained]) {
       if (error.pass) {
         continue;
       }
 
-      const fieldName = error.path?.length ? error.path.join('.') : '__root__';
-      const testKey = `${fieldName}_${i}`;
+      const fieldName = schemaFailureField(error);
+      const testKey = schemaFailureKey(error);
       test(fieldName, error.message, () => false, testKey);
     }
   };

@@ -158,7 +158,7 @@ describe('changed() supplement exactly-once execution', () => {
 
     const changed = await suite.changed('b').run(data);
     expect(changed.hasErrors('b')).toBe(true);
-    expect(changed.hasErrors('a')).toBe(false);
+    expect(changed.hasErrors('a')).toBe(true);
   });
 
   it('only()+changed() merge honors the affected member too', async () => {
@@ -178,9 +178,8 @@ describe('changed() supplement exactly-once execution', () => {
 
   it('flat supplement runs each shadowed member through one execution unit', async () => {
     // Members the main run reached (up to and including the failure) run
-    // there; members after it run once in the supplement — never both. One
-    // unit is parse-then-run: a failing member fires twice inside it (the
-    // engine's own duality, identical in full runs), a passing member once.
+    // there; members after it run once in the supplement. Failed predicates
+    // are not retried through another validation entry point.
     const calls: unknown[] = [];
     enforce.extend({
       countFlatMember: (value: unknown): boolean => {
@@ -199,7 +198,7 @@ describe('changed() supplement exactly-once execution', () => {
     const changed = await suite.changed(['b', 'c']).run(data);
     expect(changed.hasErrors('b')).toBe(true);
     expect(changed.hasErrors('c')).toBe(false);
-    expect(calls.filter(value => value === 'y')).toHaveLength(2);
+    expect(calls.filter(value => value === 'y')).toHaveLength(1);
     expect(calls.filter(value => value === 'ok-ok-ok')).toHaveLength(1);
   });
 
@@ -335,7 +334,7 @@ describe('changed() supplement exactly-once execution', () => {
     expect(changed.hasErrors('b')).toBe(true);
   });
 
-  it('flat supplement ignores non-enumerable members of partial tops', async () => {
+  it('flat supplement validates declared non-enumerable members of partial tops', async () => {
     const schema = enforce.partial({
       a: enforce.isString().longerThan(5),
       b: enforce.isString(),
@@ -351,11 +350,14 @@ describe('changed() supplement exactly-once execution', () => {
     expect(full.hasErrors('a')).toBe(true);
     expect(full.hasErrors('b')).toBe(false);
 
+    data.a = 'ok-ok-ok';
+    expect(schema.run(data).path).toEqual(['b']);
+    data.a = 'x';
     const changed = await suite.changed('b').run(data);
-    expect(changed.hasErrors('b')).toBe(false);
+    expect(changed.hasErrors('b')).toBe(true);
   });
 
-  it('nested supplement ignores non-enumerable members of partial containers', async () => {
+  it('nested supplement validates declared non-enumerable members of partial containers', async () => {
     const schema = enforce.shape({
       profile: enforce.partial({
         a: enforce.isString().longerThan(5),
@@ -375,9 +377,12 @@ describe('changed() supplement exactly-once execution', () => {
     expect(full.hasErrors('profile.a')).toBe(true);
     expect(full.hasErrors('profile.b')).toBe(false);
 
+    data.profile.a = 'ok-ok-ok';
+    expect(schema.run(data).path).toEqual(['profile', 'b']);
+    data.profile.a = 'x';
     const changed = await suite.changed(['profile.a', 'profile.b']).run(data);
     expect(changed.hasErrors('profile.a')).toBe(true);
-    expect(changed.hasErrors('profile.b')).toBe(false);
+    expect(changed.hasErrors('profile.b')).toBe(true);
   });
 
   it('full-fallback path executes each member validator at most once', async () => {
@@ -455,15 +460,12 @@ describe('changed() supplement exactly-once execution', () => {
       .run(data);
 
     expect(changed.hasErrors()).toBe(false);
-    // Invalid changed() runs use n4s's normal parse-then-run fallback, so
-    // members reached by the main execution unit match two direct runs.
-    // The supplement must not add a third visit to an earlier member.
+    // A full fallback has the same call count as one direct run.
+    // The supplement must not revisit an earlier member.
     expect(calls.filter(value => value === 'first-ok')).toHaveLength(
-      baselineFirst * 2,
+      baselineFirst,
     );
-    expect(calls.filter(value => value === 'x')).toHaveLength(
-      baselineFailure * 2,
-    );
+    expect(calls.filter(value => value === 'x')).toHaveLength(baselineFailure);
     expect(calls.filter(value => value === 'third-ok')).toHaveLength(1);
   });
 });

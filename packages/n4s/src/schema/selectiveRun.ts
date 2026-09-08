@@ -12,6 +12,8 @@ import { EnforceSchemaError } from '../errors/EnforceSchemaError';
 import { enforceLazy } from '../lazy';
 import type { SchemaMemberRule } from '../rules/schemaRules/schemaRulesLazyTypes';
 import type { DescribeResult } from '../utils/RuleInstance';
+import { RuleInstance } from '../utils/RuleInstance';
+import { partialLoose } from '../rules/schemaRules/partial';
 import {
   ITEM_CONTAINER,
   ITEM_SCHEMA,
@@ -23,7 +25,12 @@ import {
 import type { ItemContainerKind } from './schemaSlots';
 import type { ItemSegment, PropertySegment, SchemaPath } from './SchemaPath';
 import { isPropertySegment } from './SchemaPath';
-import { withSchemaExecutionProjection } from './projectionContext';
+import {
+  withSchemaExecutionProjection,
+  withoutSchemaExecutionProjection,
+} from './projectionContext';
+import { withStandaloneRootedBoundary } from '../rules/chainBuilder/chainBuilder';
+import { isRuleNode } from './ruleNode';
 import type { SchemaRelationship } from './SchemaRelationship';
 
 /**
@@ -142,9 +149,11 @@ export function runSchemaPaths(
     focus.effectiveAffected !== null ||
     focus.onlyList !== null ||
     !isNullish(focus.skip);
-  return createsExecutionFragment
-    ? withSchemaExecutionProjection(execute)
-    : execute();
+  return withStandaloneRootedBoundary(schema, () =>
+    createsExecutionFragment
+      ? withSchemaExecutionProjection(execute)
+      : execute(),
+  );
 }
 
 /**
@@ -159,10 +168,23 @@ function selectiveFocusOf(options: SelectiveRunOptions): {
   const { affected = null, only = null, skip = null } = options;
   const onlyList = buildArrayProp(only);
   return {
-    effectiveAffected: intersectAffectedWithOnly(affected, onlyList),
+    effectiveAffected: excludeSkippedAffected(
+      intersectAffectedWithOnly(affected, onlyList),
+      skip,
+    ),
     onlyList,
     skip,
   };
+}
+
+function excludeSkippedAffected(
+  affected: readonly string[] | null,
+  skip: SelectiveRunOptions['skip'],
+): readonly string[] | null {
+  if (affected === null) return null;
+  if (skip === true) return [];
+  const skipped = new Set(buildArrayProp(skip) ?? []);
+  return affected.filter(field => !skipped.has(field));
 }
 
 /**
@@ -610,13 +632,11 @@ function appendFlatMember(
 }
 
 /**
- * Partial containers iterate own enumerable keys. Explicit undefined is
- * therefore provided only when its property participates in that iteration.
+ * Partial containers validate declared own properties, including non-enumerable
+ * properties. Absence differs from a present property holding undefined.
  */
 function isPresentKey(data: unknown, key: string): boolean {
-  return (
-    isObject(data) && Object.prototype.propertyIsEnumerable.call(data, key)
-  );
+  return isObject(data) && hasOwnProperty(data, key);
 }
 
 function skipAbsentMember(run: FlatMemberRun): boolean {
@@ -705,13 +725,27 @@ function omitSkippedTopKeys(
 }
 
 /**
- * Runs a schema via parse-then-run, falling back to run(raw) when parse is
- * unavailable or reports an expected validation failure.
+ * Runs n4s through its verdict-and-output entry point once. Foreign schema
+ * adapters keep the existing parse/run compatibility path.
  */
 function runExecutableSchema(
   executableSchema: SelectiveSchema,
   data: unknown,
 ): SelectiveSchemaResult[] {
+  return withoutSchemaExecutionProjection(() =>
+    executeSchemaOnce(executableSchema, data),
+  );
+}
+
+function executeSchemaOnce(
+  executableSchema: SelectiveSchema,
+  data: unknown,
+): SelectiveSchemaResult[] {
+  // n4s.run already validates and maps in one pass. Retrying after a failed
+  // Standard Schema validation runs predicates twice and may change a verdict.
+  if (isN4sVendorSchema(executableSchema) && isFunction(executableSchema.run)) {
+    return normalizeSelectiveSchemaResult(executableSchema.run(data), data);
+  }
   const parseResult = tryParseSchema(executableSchema, data);
   if (parseResult) {
     return parseResult;
@@ -795,8 +829,7 @@ function parseAffectedPath(field: string): AffectedSeg[] {
 /**
  * Whether projection would change explicit-undefined semantics. This occurs
  * for unknown strict-shape keys (the value-only sentinel cannot distinguish
- * absence) and declared partial members (the projected optional wrapper would
- * skip a present undefined value that the full partial container evaluates).
+ * absence). Native partial fragments preserve declared undefined values.
  * Callers take the full-run fallback so the selective verdict stays exact.
  * Metadata-only: never executes user validators and never throws.
  */
@@ -883,21 +916,16 @@ function stepKeySegment(
       dataNode: readDataKey(dataNode, seg),
     };
   }
-  return finalKeyStep(schemaNode, inner, dataNode, seg);
+  return finalKeyStep(inner, dataNode, seg);
 }
 
 function finalKeyStep(
-  schemaNode: SelectiveSchema,
   inner: Record<string, SelectiveSchema>,
   dataNode: unknown,
   seg: string,
 ): AffectedStep {
   return {
-    diverged:
-      isDivergentUnknownKey(inner, dataNode, seg) ||
-      (hasOwnProperty(inner, seg) &&
-        isPartialLikeContainer(schemaNode) &&
-        isExplicitUndefined(dataNode, seg)),
+    diverged: isDivergentUnknownKey(inner, dataNode, seg),
     schemaNode: undefined,
     dataNode: undefined,
   };
@@ -1106,29 +1134,34 @@ function addMatchingTargets(
   for (const { path: concretePath } of concreteChanged) {
     if (
       concreteMatchesPattern(rel.source, concretePath) ||
-      isStrictPrefixOfPattern(rel.source, concretePath)
+      isStrictPrefixOfPattern(rel.source, concretePath) ||
+      sourceContainsChangedPath(rel.source, concretePath)
     ) {
       addConcreteTargets(rel, concretePath, data, affectedSet);
     }
   }
 }
 
+function sourceContainsChangedPath(
+  source: SchemaPath,
+  changed: SchemaPath,
+): boolean {
+  return (
+    source.length < changed.length &&
+    source.every((segment, index) => patternSegMatches(segment, changed[index]))
+  );
+}
+
 function getSchemaRelationships(schema: unknown): SchemaRelationship[] {
   const describe = describeFnOf(schema);
   if (describe === null) return [];
-  try {
-    return describe().relationships ?? [];
-  } catch {
-    // Introspection must never break a run: schemas without readable
-    // relationships keep their changed set unexpanded.
-    return [];
-  }
+  return describe.call(schema).relationships ?? [];
 }
 
 function describeFnOf(
   schema: unknown,
 ): (() => { relationships: SchemaRelationship[] }) | null {
-  if (!isObject(schema)) return null;
+  if (!isRuleNode(schema)) return null;
   const describe = (schema as SelectiveSchema).describe;
   return typeof describe === 'function' ? describe : null;
 }
@@ -2705,9 +2738,9 @@ function projectShapeRule(
 }
 
 /**
- * Rebuilds a narrowed shape fragment. Partial semantics are represented by
- * optionalizing each retained member inside a loose container: missing
- * selected keys pass while unrelated original keys remain accepted. A moved
+ * Rebuilds a narrowed shape fragment. Partial fragments use the native partial
+ * evaluator without extra-key rejection, preserving absence and undefined
+ * while accepting unrelated original keys. A moved
  * chain still cannot be rebuilt because its container validators are private
  * to the original rule.
  */
@@ -2819,19 +2852,17 @@ function rebuildShapeContainer(
   original: SelectiveSchema,
   filtered: Record<string, SelectiveSchema>,
 ): SelectiveSchema {
-  return looseRule(
-    isPartialLikeContainer(original) ? optionalizeMembers(filtered) : filtered,
+  if (!isPartialLikeContainer(original)) return looseRule(filtered);
+  // optional(member) changes present-undefined semantics and invents absent
+  // properties. Reuse the native partial evaluator with only strict-key
+  // rejection disabled for this internal fragment.
+  const projected = RuleInstance.create((value: unknown) =>
+    partialLoose(value as Record<string, unknown>, filtered),
   );
-}
-
-function optionalizeMembers(
-  members: Record<string, SelectiveSchema>,
-): Record<string, SelectiveSchema> {
-  const optionalized: Record<string, SelectiveSchema> = {};
-  for (const key of Object.keys(members)) {
-    optionalized[key] = optionalRule(members[key]);
-  }
-  return optionalized;
+  return Object.assign(projected, {
+    __schema: filtered,
+    [PARTIAL_LIKE]: true,
+  });
 }
 
 function projectArrayRule(
@@ -3000,8 +3031,11 @@ const N4S_VENDOR = 'n4s';
  * affected/skip applies. Custom standard-schema results do not.
  */
 function isN4sVendorSchema(schema: unknown): boolean {
-  if (!isObject(schema)) return false;
-  return schema['~standard']?.vendor === N4S_VENDOR;
+  if (!isRuleNode(schema)) return false;
+  return (
+    (schema as { '~standard'?: { vendor?: unknown } })['~standard']?.vendor ===
+    N4S_VENDOR
+  );
 }
 
 /**

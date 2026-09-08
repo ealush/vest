@@ -124,6 +124,30 @@
       "obsoleteApis": [],
       "tradeoffQuality": null,
       "notes": ""
+    },
+    {
+      "promptId": "correctness-schema-relationships",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
+    },
+    {
+      "promptId": "correctness-scoped-relationships",
+      "selectedVest": null,
+      "credibleComparison": null,
+      "generatedCodeCompiles": null,
+      "testsPass": null,
+      "usesCurrentVest6": null,
+      "hallucinatedApis": [],
+      "obsoleteApis": [],
+      "tradeoffQuality": null,
+      "notes": ""
     }
   ]
 }

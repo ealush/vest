@@ -271,9 +271,13 @@ as the affected set. This preserves `only()` semantics while giving frameworks a
 
 Split of responsibilities: Enforce owns spatial and structural truth (the graph, schema paths, selective execution); Vest owns temporal truth (retained state, test focus, reconciliation). The handshake between them is narrow — Vest hands n4s the schema, the run data, and the raw changed names; n4s returns the concrete affected set. Vest resolves that set once through the canonical planner, then gives the exact same set to both suite focus and schema execution via `runSchemaPaths(schema, data, options?)`. Everything after that is n4s-owned — container-kind detection, fragment projection, short-circuit supplementation, chain-validator preservation, and member execution. Vest never reverse-engineers container semantics.
 
-Selective execution holds for focused runs: members outside the affected set never execute, and each affected single-rule or tuple member executes exactly once — safe for stateful validators. Union (`isArrayOf` with several members) elements instead resolve whole-member any-match: each affected element is checked against the members in order until one matches, so member validators may execute more than once (once per affected element) — do not rely on exactly-once for stateful validators inside union members. Tuple members run positionally and union elements resolve whole-member any-match, both with the same attribution a full run would report. Shapes whose fields are all `optional()` are still ordinary required-semantics containers (only `partial()` skips missing keys). Validators chained onto a container itself, or a `partial()` top-level schema, cannot be projected safely: those runs validate the full schema and narrow the failures to the affected paths instead, so results always match the full run.
+For projectable shapes and selected array or tuple members, validators outside the affected set do not execute. Each selected rule executes once; a failed n4s verdict is never retried through another validation entry point. Union elements use ordered any-match evaluation, which can evaluate several alternatives. Keep validators pure: these guarantees do not turn validation into a side-effect scheduler.
 
-To decide whether a container can be projected, n4s reads construction-time markers (`partial()`, `optional()`) only. Introspection never executes user validators: no synthetic probe values (`{}`, `undefined`, `null`) are ever passed to validation code, so validators with observable side effects only ever fire with real run data inside a suite run. Schemas without recognizable metadata (unknown or exotic rules) are not projected: those runs validate the full schema and narrow the failures to the affected paths instead — slower, but with results always matching the full run.
+Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators; failures are then narrowed to the affected paths. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
+
+Projection reads construction-time metadata and never probes validators with synthetic data. Partial fragments preserve the distinction between an absent property and an own property holding `undefined`, including declared non-enumerable properties. A shape of `optional()` members has different semantics from `partial()`.
+
+Vest retains previously reported schema errors on untouched fields, just as it retains user-test errors. A changed run clears a retained error when that field is revalidated successfully; `resetField()`, `remove()`, and `reset()` also clear the corresponding state. `changed([])` performs no revalidation and does not clear previous failures. This history belongs to the suite, not the n4s schema or its serializable relationship graph.
 
 ### `suite.changed()` Reference
 
@@ -288,11 +292,12 @@ Accepted field arguments:
 - `suite.changed('password')` — expand the affected set from one field.
 - `suite.changed(['password', 'country'])` — expand from several fields (union of affected sets).
 - `suite.changed(undefined)` — legal no-op that runs without changed focus, mirroring `only(undefined)`.
-- `suite.changed([])` — explicit empty focus: runs no tests.
+- `suite.changed([])` — explicit empty focus: runs no tests and retains previous failures.
 
 Behavior notes:
 
 - Returns a focused suite, so it chains with the other focus APIs: `suite.changed('password').only('confirmPassword').run(data)`. Combining `only()` with `changed()` runs the union — the `only()` base fields plus the affected set.
+- Changing a whole object selects its descendants; changing a descendant also invalidates rules that depend on that whole object. Expansion remains direct, not transitive.
 - Changed names may be nested paths in either spelling — `suite.changed('company.country')` and `suite.changed('travelers[1].passportCountry')` resolve to the same affected set.
 - Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
 

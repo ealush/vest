@@ -191,6 +191,25 @@ describe('schema contracts: parsed output matrix', () => {
     expect(Object.hasOwn(seen[2] as object, 'a')).toBe(true);
   });
 
+  it('[SC-PRESENCE] first skip-only mapping preserves a present undefined parser output', () => {
+    let seen: { a: string; b: undefined } | undefined;
+    const suite = create(
+      data => {
+        seen = data;
+        test('a', () => true);
+      },
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.contractEmit(undefined),
+      }),
+    );
+
+    suite.focus({ skip: 'b' }).run({ a: 'ok', b: 'input' });
+
+    expect(seen).toEqual({ a: 'ok', b: undefined });
+    expect(Object.hasOwn(seen as object, 'b')).toBe(true);
+  });
+
   it('[SC-FAILURE-MAP] failed focused validation cannot poison the retained successful parser mapping', () => {
     const seen: unknown[] = [];
     const suite = create(

@@ -39,7 +39,50 @@ export { ctx } from './enforceContext';
  */
 export { compose } from './compose';
 
-type ExtendFn = (rules: Record<string, (...args: any[]) => any>) => void;
+/**
+ * Public schema relationship introspection types.
+ * Returned by `describe()` on schema rules.
+ */
+export type {
+  ItemSegment,
+  PropertySegment,
+  SchemaPath,
+} from './schema/SchemaPath';
+export { isItemSegment, isPropertySegment } from './schema/SchemaPath';
+export type {
+  SchemaDependency,
+  SchemaRelationship,
+} from './schema/SchemaRelationship';
+export type { DescribeResult } from './utils/RuleInstance';
+
+/**
+ * Escape hatch for referencing a literal field whose name collides with a
+ * JavaScript internal (`then` is never chainable so refs stay non-thenable).
+ *
+ * @example
+ * ```typescript
+ * dependsOn($ => $[FIELD]('then'))
+ * ```
+ */
+export { FIELD } from './schema/scopeProxy';
+
+/**
+ * Error thrown for schema composition and boundary violations (unknown
+ * dependency fields, orphaned fragment sources). Public so consumers can
+ * catch it by identity regardless of which entry built the schema.
+ */
+export { EnforceSchemaError } from './errors/EnforceSchemaError';
+export type { ScopeHandle } from './utils/RuleInstance';
+export type { SchemaMemberRule } from './rules/schemaRules/schemaRulesLazyTypes';
+
+type ExtendOptions<Rules> = {
+  parsers?: readonly (keyof Rules & string)[];
+};
+type ExtensionRule = (...args: never[]) => unknown;
+type ExtendFn = <Rules extends Record<string, ExtensionRule>>(
+  rules: Rules,
+  options?: ExtendOptions<Rules>,
+) => void;
 type ContextFn = () => EnforceContext;
 type Enforce = typeof enforceEager &
   typeof enforceLazy & { extend: ExtendFn; context: ContextFn };
@@ -101,6 +144,9 @@ enforce.context = function context(): EnforceContext {
  * Custom rules become available on both eager and lazy APIs.
  *
  * @param rules - Object mapping rule names to validation functions
+ * @param options.parsers - Custom rules that are safe to execute as pure
+ * transformations when mapping an unfocused value. Rules are validators by
+ * default and are never speculatively executed.
  *
  * @example
  * ```typescript
@@ -125,8 +171,13 @@ enforce.context = function context(): EnforceContext {
  * }
  * ```
  */
-enforce.extend = function extend(
-  rules: Record<string, (...args: any[]) => any>,
+enforce.extend = function extend<Rules extends Record<string, ExtensionRule>>(
+  rules: Rules,
+  options?: ExtendOptions<Rules>,
 ) {
-  extendEnforce(enforce, rules);
+  extendEnforce(
+    enforce as unknown as Record<string, unknown>,
+    rules,
+    new Set(options?.parsers),
+  );
 };

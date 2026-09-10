@@ -22,8 +22,11 @@ import { arrayParsers } from '../rules/parsers/arrayParsers';
 import { generalParsers } from '../rules/parsers/generalParsers';
 import { numberParsers } from '../rules/parsers/numberParsers';
 import { stringParsers } from '../rules/parsers/stringParsers';
+import { registerParserRules } from '../rules/parsers/parserUtils';
 import { isString } from '../rules/stringRules';
 import * as stringRules from '../rules/stringRules';
+
+registerParserRules({ toNumber: numberRules.toNumber });
 
 const lazyArrayRules = {
   ...arrayRules,

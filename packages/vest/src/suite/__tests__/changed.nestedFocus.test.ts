@@ -216,6 +216,26 @@ describe('changed() nested schema focus and empty changed', () => {
     expect(result.hasErrors('profile.state')).toBe(true);
   });
 
+  it('treats falsy scalar changed() args as a no-op, preserving changed([])', async () => {
+    const schema = enforce.shape({
+      first: enforce.isString(),
+      second: enforce.isString(),
+    });
+    const suite = create(() => {}, schema);
+    const data = { first: 'valid', second: 42 };
+
+    const falsy = await invokeWithUnknown(
+      suite.changed(false as unknown as string).run,
+      data,
+    );
+    // No-op: runs without changed focus, so the invalid field still errors.
+    expect(falsy.hasErrors('second')).toBe(true);
+
+    const empty = await invokeWithUnknown(suite.changed([]).run, data);
+    // Explicit zero-field focus revalidates nothing and retains prior failures.
+    expect(empty.hasErrors('second')).toBe(true);
+  });
+
   it('clears changed focus when chained after an earlier changed field', async () => {
     const schema = enforce.shape({
       first: enforce.isString(),
@@ -262,5 +282,29 @@ describe('changed() nested schema focus and empty changed', () => {
     const result = await invokeWithUnknown(suite.run, data);
     expect(executed).toEqual(['username']);
     expect(result.hasErrors('username')).toBe(true);
+  });
+
+  it('executes descendant tests under every branch sharing one object', async () => {
+    const schema = enforce.shape({
+      p: enforce.shape({
+        left: enforce.shape({ x: enforce.isString() }),
+        right: enforce.shape({ x: enforce.isString() }),
+      }),
+    });
+    const executed: string[] = [];
+    const suite = create(() => {
+      test('p.left.x', () => {
+        executed.push('p.left.x');
+      });
+      test('p.right.x', () => {
+        executed.push('p.right.x');
+      });
+    }, schema);
+    const shared = { x: 'v' };
+    await invokeWithUnknown(suite.changed('p').run, {
+      p: { left: shared, right: shared },
+    });
+    expect(executed).toContain('p.left.x');
+    expect(executed).toContain('p.right.x');
   });
 });

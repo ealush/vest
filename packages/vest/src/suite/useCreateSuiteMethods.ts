@@ -15,6 +15,8 @@ import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { FieldExclusion } from '../hooks/focused/focused';
+import { assertNoAbortSignal } from './changed';
+import type { ChangedOptions } from './changed';
 import {
   InternalSuiteModifiers,
   SuiteModifiers,
@@ -229,11 +231,27 @@ function useCreateFocus<
   return function focus(config: SuiteModifiers<F, G>) {
     return useCreateSuiteMethods<F, G, T, S>(
       suiteCallback,
-      { ...modifiers, ...config },
+      { ...modifiers, ...copyFieldLists(config) },
       subscribe,
       schema,
     );
   };
+}
+
+// A focus builder captures its configuration when called: caller-owned
+// field lists are copied at the public boundary so a later caller mutation
+// cannot reselect a previously derived runner. Groups are already captured
+// downstream as Sets; this gives field lists the same boundary. The
+// caller's own array is never frozen. Downstream spreads share the
+// builder-owned copy read-only (no in-place mutation exists on these
+// lists), which keeps derived runners independent.
+function copyFieldLists<F extends TFieldName, G extends TGroupName>(
+  config: SuiteModifiers<F, G>,
+): SuiteModifiers<F, G> {
+  const copied = { ...config };
+  if (Array.isArray(copied.only)) copied.only = [...copied.only];
+  if (Array.isArray(copied.skip)) copied.skip = [...copied.skip];
+  return copied;
 }
 
 /**
@@ -283,8 +301,16 @@ function useCreateChanged<
   // can be expanded using the actual runtime data (rows.length).
   // Without deferral, changed('global') with target rows[$item].tax would
   // produce the unusable field 'rows.rows.$item.tax' and nothing would run.
-  return function changed(changedField: string | string[] | FieldExclusion<F>) {
-    if (changedField === undefined) {
+  return function changed(
+    changedField: string | string[] | FieldExclusion<F>,
+    options?: ChangedOptions,
+  ) {
+    /** @deferred v2 — AbortSignal abort deferred */
+    assertNoAbortSignal(options);
+    // Falsy scalars (undefined, null, false, '') are a legal no-op — run
+    // without changed focus. Only changed([]) is an explicit zero-field
+    // focus that runs no tests.
+    if (!Array.isArray(changedField) && !changedField) {
       // Mirror only(undefined): a legal no-op — run without changed focus.
       const nextModifiers = { ...modifiers };
       delete nextModifiers.__changed;
@@ -295,8 +321,11 @@ function useCreateChanged<
         schema,
       );
     }
+    // Copy caller-owned lists at the builder boundary (see copyFieldLists):
+    // the derived runner must keep selecting these fields even if the
+    // caller later mutates their array.
     const changedArray = Array.isArray(changedField)
-      ? (changedField as string[])
+      ? [...(changedField as string[])]
       : [changedField as string];
     // Store raw changed fields; useCreateSuiteRunner will expand using run data
     // Fallback to immediate expansion for pre-run inspection (e.g., suite.get)

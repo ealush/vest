@@ -234,6 +234,22 @@ describe('executable documentation examples', () => {
     expect(changed.hasErrors('confirmPassword')).toBe(true);
   });
 
+  it('executes the agent guide relationship example verbatim', () => {
+    const { relationshipSuite } = executeCodeBlock('AI_USAGE_GUIDE.md', {
+      containing: 'export const relationshipSuite',
+    }) as { relationshipSuite: ReturnType<typeof vest.create> };
+    expect(relationshipSuite.get().hasErrors('confirmPassword')).toBe(true);
+    expect(
+      relationshipSuite
+        .changed('confirmPassword')
+        .run({
+          password: 'second',
+          confirmPassword: 'second',
+        })
+        .hasErrors(),
+    ).toBe(false);
+  });
+
   it('reconciles documented dynamic-list tests by stable key', () => {
     const { tripSuite } = executeCodeBlock(
       'website/docs/guides/dynamic-lists.md',
@@ -386,5 +402,23 @@ describe('executable documentation examples', () => {
     expect(
       suite.runStatic({ password: 'secret', confirm: 'different' }).hasErrors(),
     ).toBe(true);
+  });
+  it('[SC-DOCS] runs the schema relationships acceptance example verbatim', () => {
+    const { registrationAcceptance } = executeCodeBlock(
+      'website/docs/writing_your_suite/schema_relationships_acceptance.md',
+      { containing: 'export function registrationAcceptance' },
+    ) as {
+      registrationAcceptance: () => {
+        errorsAfterChange: Record<string, string[]>;
+        value: unknown;
+      };
+    };
+    expect(registrationAcceptance()).toEqual({
+      errorsAfterChange: {
+        confirm: ['Passwords must match'],
+        note: ['Note required'],
+      },
+      value: { password: 'new', confirm: 'new', note: 'ready' },
+    });
   });
 });

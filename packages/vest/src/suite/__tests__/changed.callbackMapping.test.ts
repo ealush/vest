@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { compose, enforce } from 'n4s';
 
-import { create } from '../../vest';
+import { create, test } from '../../vest';
 
 declare global {
   namespace n4s {
@@ -41,6 +41,32 @@ describe('focused schema callback mapping', () => {
     });
 
     expect(seen).toEqual(['value!']);
+  });
+
+  it('refreshes array mapping from raw input without applying parsers to parsed values', () => {
+    enforce.extend(
+      {
+        focusedAppend: (value: string) => ({ pass: true, type: `${value}!` }),
+      },
+      { parsers: ['focusedAppend'] },
+    );
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push(data);
+        test('rows.0', () => {
+          enforce(data.rows[0]).equals('c!');
+        });
+      },
+      enforce.shape({
+        rows: enforce.isArrayOf(enforce.focusedAppend()),
+      }),
+    );
+    suite.run({ rows: ['a', 'b'] });
+    const changed = suite.changed('rows.0').run({ rows: ['c', 'b'] });
+    expect(seen[1]).toEqual({ rows: ['c!', 'b!'] });
+    expect(changed.isValid()).toBe(true);
+    expect(changed.value).toEqual({ rows: ['c!', 'b!'] });
   });
 
   it('maps untouched fields before the first-ever focused callback without validating them', async () => {
@@ -169,12 +195,13 @@ describe('focused schema callback mapping', () => {
 
     await suite.changed('note').run({ age: '42', note: 'recovered' });
 
-    // Failed validation keeps the established raw-input callback fallback.
-    // The next successful focused run must still recover the previously
-    // transformed age rather than inheriting raw state from the failure.
+    // A failing run still delivers parser mapping (the callback type
+    // promises schema output): age maps even though note failed. The next
+    // successful focused run must still recover the previously transformed
+    // age rather than inheriting state from the failure.
     expect(seen).toEqual([
       { age: 42, note: 'good' },
-      { age: '42', note: 123 },
+      { age: 42, note: 123 },
       { age: 42, note: 'recovered' },
     ]);
   });
@@ -195,9 +222,11 @@ describe('focused schema callback mapping', () => {
     await suite.run({ age: '99', state: 123 as unknown as string });
     await suite.changed('state').run({ age: '99', state: 'NY' });
 
+    // The failed full run still maps what its parsers can: age is 99, not
+    // the raw '99'. Retention keeps the previous mapping object itself.
     expect(seen).toEqual([
       { age: 42, state: 'CA' },
-      { age: '99', state: 123 },
+      { age: 99, state: 123 },
       { age: 99, state: 'NY' },
     ]);
   });
@@ -264,5 +293,84 @@ describe('focused schema callback mapping', () => {
       { age: 42, quantity: 1 },
       { age: 42, quantity: 2 },
     ]);
+  });
+
+  it('maps skipped parser fields on a first-ever skip-only run', async () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push({ ...data });
+      },
+      enforce.shape({
+        a: enforce.isNumeric().toNumber(),
+        b: enforce.isNumeric().toNumber(),
+      }),
+    );
+
+    await suite.focus({ skip: 'b' }).run({ a: '1', b: '2' });
+
+    // `b` was omitted from schema execution: the callback must still observe
+    // the parsed value, never the raw input string.
+    expect(seen).toEqual([{ a: 1, b: 2 }]);
+  });
+
+  it('retains parsed skipped values across skip-only runs', async () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push({ ...data });
+      },
+      enforce.shape({
+        a: enforce.isNumeric().toNumber(),
+        b: enforce.isNumeric().toNumber(),
+      }),
+    );
+
+    await suite.focus({ skip: 'b' }).run({ a: '1', b: '2' });
+    await suite.focus({ skip: 'b' }).run({ a: '3', b: '4' });
+
+    expect(seen).toEqual([
+      { a: 1, b: 2 },
+      { a: 3, b: 2 },
+    ]);
+  });
+
+  it('prefers current-run parser output over stale retention for idempotent members', async () => {
+    // A parser-mapped member is indistinguishable from raw input by value
+    // alone (trim('new') === 'new'), so mapping provenance decides: the
+    // current run parsed index 1, and its output wins over the previous
+    // run's mapping of different input.
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(enforce.isString().trim()),
+    });
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+      test('x', () => true);
+    }, schema);
+    await suite.run({ rows: ['a', ' old '] });
+    const result = await suite.changed('rows.0').run({ rows: ['b', 'new'] });
+
+    expect(result.isValid()).toBe(true);
+    expect(seen[seen.length - 1]).toEqual({ rows: ['b', 'new'] });
+  });
+
+  it('does not resurrect a removed optional parent from descendant merges', async () => {
+    // An affected ancestor subsumes its descendant merge paths: merging
+    // 'profile' deletes it, and a later 'profile.name' merge must not
+    // recreate it as an empty object.
+    const schema = enforce.partial({
+      profile: enforce.shape({ name: enforce.isString() }),
+    });
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+      test('x', () => true);
+    }, schema);
+    await suite.run({ profile: { name: 'x' } });
+    const result = await suite.changed('profile').run({});
+
+    expect(result.isValid()).toBe(true);
+    expect(seen[seen.length - 1]).toEqual({});
   });
 });

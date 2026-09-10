@@ -667,7 +667,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     });
 
     bench(
-      'D11 realistic registration flow — 6-step sequence [email→password→org→country]',
+      'D11 realistic registration flow — 5-step sequence [email→password→confirm→org→country]',
       () => {
         // Single iteration does the whole realistic sequence (steady-state)
         regSuite.changed('email').run({
@@ -763,7 +763,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     };
     checkoutSuite.run(checkoutData);
     bench(
-      'D12 realistic checkout flow — billing+shipping+travelers [9 travelers total]',
+      'D12 realistic checkout flow — billing+shipping+travelers [5 travelers]',
       () => {
         checkoutSuite
           .changed('billing.country')

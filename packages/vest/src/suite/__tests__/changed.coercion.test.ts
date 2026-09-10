@@ -77,7 +77,7 @@ describe('changed() coercion parity for excluded array members', () => {
     expect(callbackInput).toEqual(full.run.data.parsed);
   });
 
-  it('failing run: raw-input fallback parity is preserved', async () => {
+  it('failing run: mapped-output parity is preserved', async () => {
     let fullInput: unknown;
     let changedInput: unknown;
     const fullSuite = create(data => {
@@ -94,7 +94,9 @@ describe('changed() coercion parity for excluded array members', () => {
     expect(full.isValid()).toBe(false);
     expect(changed.isValid()).toBe(false);
     expect(changed.run.data.parsed).toEqual(full.run.data.parsed);
-    expect(changedInput).toEqual(data);
+    // The parser maps 'nope' to NaN (a number, keeping the output type
+    // truthful); both runs agree on the mapped output.
+    expect(changedInput).toEqual({ rows: [NaN] });
     expect(changedInput).toEqual(fullInput);
   });
 });

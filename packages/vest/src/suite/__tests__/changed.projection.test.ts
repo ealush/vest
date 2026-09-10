@@ -17,6 +17,17 @@ enforce.extend({
   hasAllowedFlag: (value: { flag?: unknown }): boolean => value.flag === true,
 });
 
+type DumpNode = { key?: unknown; children?: DumpNode[] | null };
+
+function countDumpKey(node: DumpNode, key: string): number {
+  const self = node.key === key ? 1 : 0;
+  const children = node.children ?? [];
+  return children.reduce(
+    (total, child) => total + countDumpKey(child, key),
+    self,
+  );
+}
+
 const rootSchema = enforce.shape({
   accountType: enforce.isString(),
   company: enforce.shape({
@@ -507,6 +518,28 @@ describe('changed() source-retaining projection', () => {
     expect(changed.hasErrors()).toBe(true);
   });
 
+  it('synthesizes a retained root failure reported again by the fresh run only once', async () => {
+    // A warm suite retains the message-less root failure from the full run;
+    // the changed run freshly reports the same verdict. Both carry the
+    // identical issue identity, so only one test node may exist — creating
+    // both throws a duplicate-key error.
+    const schema = enforce
+      .loose({
+        profile: enforce.shape({ country: enforce.isString() }),
+        flag: enforce.isBoolean(),
+      })
+      .hasAllowedFlag();
+    const suite = create((): void => {}, schema);
+    const bad: { profile: { country: string }; flag: boolean } = {
+      profile: { country: 'US' },
+      flag: false,
+    };
+    expect(suite.run(bad).hasErrors()).toBe(true);
+    const changed = await suite.changed('profile.country').run(bad);
+    expect(changed.hasErrors()).toBe(true);
+    expect(countDumpKey(changed.dump(), '[[],null]')).toBe(1);
+  });
+
   it('P1-2: changed() narrows an all-optional shape instead of retaining it', async () => {
     // Every member is optional, so the container accepts {} — but it is an
     // ordinary loose() shape, not partial(). Retaining the whole subtree
@@ -654,7 +687,7 @@ describe('changed() source-retaining projection', () => {
     expect(full.hasErrors('point.1')).toBe(false);
     const changed = await invokeWithUnknown(suite.changed('point.1').run, data);
     expect(changed.hasErrors('point.1')).toBe(true);
-    expect(changed.hasErrors('point.0')).toBe(false);
+    expect(changed.hasErrors('point.0')).toBe(true);
   });
 
   it('P1-3b: changed() surfaces an affected union element hidden by first-failure', async () => {
@@ -685,7 +718,7 @@ describe('changed() source-retaining projection', () => {
       data,
     );
     expect(changed.hasErrors('rows.1')).toBe(true);
-    expect(changed.hasErrors('rows.0')).toBe(false);
+    expect(changed.hasErrors('rows.0')).toBe(true);
   });
 
   it('P1-4: focused array validation runs affected members exactly once', async () => {

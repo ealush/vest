@@ -23,7 +23,13 @@ import { SummaryFailure } from '../SummaryFailure';
 
 import { gatherFailures } from './collectFailures';
 
-type InputFieldName<F extends TFieldName> = F;
+/**
+ * Selectors accept top-level field names plus `${field}.${string}` dotted
+ * paths so nested schema failures (e.g. 'profile.state') are queryable.
+ * Deliberate tradeoff: an unknown dotted path also typechecks and, because
+ * runtime matching is exact, reports no errors instead of failing to compile.
+ */
+type InputFieldName<F extends TFieldName> = F | `${F}.${string}`;
 type InputGroupName<G extends TGroupName> = G;
 
 export function bindSuiteSelectors<

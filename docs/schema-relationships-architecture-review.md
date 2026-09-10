@@ -1,15 +1,29 @@
-# Schema relationships: architecture review and implementation handoff
+# Schema relationships: historical review and follow-up targets
 
 Reviewed PR #1324 at `23eaa3bcff0bd43056cff4bc1aca9570896f3b46`.
-This follow-up reviews design and correctness, not just test quantity. Production
-code is unchanged. The companion `schemaContracts.architecture.test.ts` records
-new failing requirements and passing regression controls.
+This document records the adversarial findings from that historical baseline and
+the remaining architectural direction. Statements labeled "observed" or
+"required" below describe that baseline, not the current PR head.
 
-## Verdict
+## Current status
+
+All correctness blockers from this review are resolved and covered by the current
+contract suite. A1 parser mapping, A2 builder ownership, opaque-union handling,
+newly declared descendants, getter-free planning, async reset authority, buffer
+aliasing, and accessor snapshots are green. The original merge blocker is
+satisfied.
+
+A3's explicit n4s execution outcome, A4's transfer of mapping interpretation from
+Vest to n4s, and the complete selection-region representation from A5 remain
+incremental internal refactors. They do not describe known failing behavior on
+the current head. Preserve the contract suite while doing them.
+
+## Historical verdict
 
 Keep the public `dependsOn` plus `changed` model and the spatial/temporal domain
-split. Do not merge the implementation merely because the previous twelve
-failures become green. The execution and output contracts need tightening.
+split. At the reviewed baseline, the implementation was not ready merely because
+the previous twelve failures had become green; the execution and output contracts
+still needed tightening.
 
 The chief architectural problem is multiple interpretations of the same schema:
 ordinary validation, rebuilt selective fragments with supplemental execution,
@@ -23,9 +37,9 @@ acceptable. Functional design requires explicit inputs, stable ownership, and
 predictable outputs at the boundaries. Replacing every local array push with a
 spread would not fix these issues.
 
-## Confirmed additional defects
+## Historical defects, now resolved
 
-### A1. Parser-only mapping executes validation semantics (P1)
+### A1. Parser-only mapping executed validation semantics (P1, resolved)
 
 Locations:
 
@@ -54,7 +68,7 @@ payload normalization. The new selected-failure control guards that distinction.
 
 Evidence: two failing ARCH-MAPPING tests and one passing selected-failure control.
 
-### A2. Focus builders retain caller-owned mutable lists (P2)
+### A2. Focus builders retained caller-owned mutable lists (P2, resolved)
 
 Locations:
 
@@ -76,7 +90,7 @@ Evidence: three failing field-list ownership tests and two passing group control
 This is an existing focus API weakness exposed alongside the new changed API,
 not a claim that all three variants were introduced by this PR.
 
-## Blocking contract decision: fresh union mapping
+## Resolved contract decision: fresh union mapping
 
 The previous acceptance page's complete-output promise was too broad for arbitrary
 unions. This is a correction to the design requirement, not permission to replace
@@ -116,7 +130,7 @@ before shipping. If product policy instead requires every first focused run to
 succeed, explicitly permit branch validation and update the no-untouched-predicate
 contract and its call-count tests. Those policies must not be conflated.
 
-## Architectural simplification targets
+## Remaining architectural simplification targets
 
 ### A3. Replace inferred execution coverage with an explicit outcome
 
@@ -170,13 +184,17 @@ an explicit policy, without deciding which parser or union branch was responsibl
 Its cache must be an optimization with an invalidation contract, not the authority
 that makes a schema-output type appear true. Do not move test history into n4s.
 
-### A5. Preserve subtree intent instead of enumerating it into exact field names
+### A5. Preserve subtree intent explicitly (behavior fixed; representation deferred)
 
-`resolveAffectedPaths` expands descendants by walking both schema and live data.
+At the reviewed baseline, `resolveAffectedPaths` expanded descendants by walking
+both schema and live data.
 Vest then feeds the resulting string list to exact-name focus matching. A user
 test introduced inside keyed `each` can have a valid descendant name absent from
-that precomputed enumeration, which is what the failing SC-SUBTREE test exposes.
-The traversal also reads scalar getters, another previously failing contract.
+that precomputed enumeration, which the original SC-SUBTREE test exposed.
+
+The current implementation passes newly declared descendant and getter-free
+planning contracts. A future region representation can simplify how it achieves
+that behavior; it must not alter ordinary `only()` semantics or one-hop expansion.
 
 Return explicit selection regions: exact field versus subtree. `changed('p')`
 conveys subtree intent; ordinary `only('p')` must retain its established explicit
@@ -194,8 +212,9 @@ collections, and container predicates when introducing the region representation
 
 Keep the existing tree as the authority for retained schema failures. That is a
 good design: reset/remove/resume do not need to synchronize another error cache.
-The resetField late-failure case still needs cancellation/generation handling in
-the owner of pending tests. Do not solve it with a schema-specific blacklist.
+The resetField late-failure case now uses cancellation/generation handling in the
+owner of pending tests. Keep that ownership and do not replace it with a
+schema-specific blacklist.
 
 The suite runner clones several representations per successful run: parsed
 snapshot, retained mapping, callback copy, result output, and run metadata. Do not
@@ -227,33 +246,22 @@ rename as API cleanup, not a newly discovered data corruption bug. Likewise,
 changing every existing mutable fluent rule into a persistent immutable builder
 would be a broad compatibility project, not a targeted hardening fix.
 
-## Implementation order and acceptance
+## Resolution status and follow-up order
 
-1. Fix A2 at the builder boundary. Run ownership tests plus existing focus/groups
-   and changed tests. Verify caller arrays remain mutable and inherited runners
-   keep independent stable configurations.
-2. Fix A1 with a genuine transform execution path. Keep normal validation failure
-   behavior, output presence, custom registration, and non-idempotent parser tests.
-3. Add explicit mapping completeness and the opaque-union error boundary. Remove
-   unsafe success paths; document supported first-run mapping capabilities.
-4. Introduce selection regions and fix the missing newly declared descendant.
-   Preserve skip/group/include and one-hop graph behavior.
-5. Introduce the execution outcome and migrate coverage consumers incrementally.
+1. **Completed:** A2 builder ownership, A1 transform execution, explicit union
+   incompleteness, newly declared descendant selection, pending lifecycle, and
+   snapshot ownership.
+2. Introduce the execution outcome and migrate coverage consumers incrementally.
    Keep a characterization case for every removed fallback/supplement branch.
    Compare verdicts, executed predicates, and outputs, not just error lists.
-6. Fix pending lifecycle and snapshot ownership defects in their existing owners.
-   Audit serialization/resume of mapping witnesses if any new cache data is added.
-7. Thin Vest's runner once the n4s contract carries enough information. Evaluate
+3. Move mapping patch interpretation into n4s while keeping history in Vest.
+4. Replace descendant enumeration with explicit selection regions where it makes
+   the engine smaller, preserving every current subtree and accessor contract.
+5. Thin Vest's runner once the n4s contract carries enough information. Evaluate
    full/focused call counts and allocation; do not trade correctness for fewer lines.
 
-The added architecture file contains twelve tests: six passing controls and six
-failing requirements against the reviewed implementation. It is picked up by
-`yarn test:schema-relationships` and the existing full test workflow. Five failures
-reproduce A1/A2; one specifies the new safe opaque-union boundary. Keep the earlier
-acceptance gates in `website/docs/writing_your_suite/schema_relationships_acceptance.md`.
-This review does not claim new failures for transactional successor throws or
-numeric-record mappings: those new probes pass.
-
-Do not merge until failing contracts are fixed or a documented contract revision
-includes paired tests for the replacement behavior. Do not count pending tests,
-expected-failure annotations, or an all-green historical commit as acceptance.
+The architecture file's original twelve cases and the later acceptance suites are
+all active tests under `yarn test:schema-relationships`; none are skipped, todo,
+or expected failures. The authoritative current gates and counts live in
+`website/docs/writing_your_suite/schema_relationships_acceptance.md` and the PR
+description. Future refactors must keep those gates green on their own tip.

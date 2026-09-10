@@ -12,11 +12,14 @@ keywords:
     suite.remove,
     suite.reset,
     suite.resetField,
+    suite.changed,
     test,
     warn,
     useWarn,
     enforce,
     enforce.extend,
+    dependsOn,
+    describe,
     compose,
     debounce,
     only,
@@ -120,6 +123,19 @@ Shorthand for `suite.focus({ only: fieldName })`. Restricts the next run to the 
 - Returns a chainable suite with `run`, `afterEach`, `afterField`, `focus`, and `only`.
 - [Read more about Focused Updates](./writing_your_suite/focused_updates.md#running-only-specific-fields)
 
+#### `suite.changed(fieldName)`
+
+Creates a focused run for the named changed field and its direct schema dependents. It consumes relationships declared with `dependsOn()`; it does not change ordinary `only()` behavior.
+
+- `fieldName`: `string | string[] | undefined`
+- Nested inputs accept dotted or bracket notation and normalize to canonical dotted paths: `rows[1].name` becomes `rows.1.name`.
+- `changed(undefined)` runs without changed focus. `changed([])` is an explicit empty focus and runs no tests.
+- Chaining combines the explicit and dependency-derived fields: `suite.changed('password').only('confirmPassword').run(data)` runs their union.
+- Expansion is one hop. If `total` depends on both `amount` and `tax`, declare both sources explicitly.
+- **Returns**: A chainable focused suite.
+
+[Read the complete `changed()` behavior and interaction contract](./writing_your_suite/schema_relationships.md#suitechanged-reference).
+
 #### `suite.afterEach(callback)`
 
 Registers a callback to run after each test completes (including the initial sync run and every async completion). The callback receives **no arguments**; you should access the result using `suite.get()`.
@@ -200,6 +216,20 @@ A single validation test inside your suite.
 Asserts that a value matches your desired result.
 
 - [Read more about `enforce`](./enforce/enforce.md)
+
+#### `rule.dependsOn(selector)`
+
+Declares which schema fields can make this rule's retained result stale. The selector receives a typed schema scope, for example `confirmPassword: enforce.isString().dependsOn($ => $.password)`.
+
+`dependsOn()` adds invalidation metadata only. It does not compare fields, add a validation rule, or impose execution order. Keep the matching cross-field assertion in `test()` or in an Enforce rule. Dependencies are direct and may be local, rooted, nested, or item-scoped.
+
+[Read more about schema relationships](./writing_your_suite/schema_relationships.md#cross-field-dependencies).
+
+#### `schema.describe()`
+
+Returns detached, JSON-serializable schema metadata, including resolved `relationships`. Calling it does not execute validators, parsers, or input accessors. Nested reusable schemas are rebased to their mounted paths.
+
+[Read more about relationship introspection](./writing_your_suite/schema_relationships.md#introspection).
 
 #### `warn()`
 

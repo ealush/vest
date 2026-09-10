@@ -70,6 +70,19 @@ Shorthand for `suite.focus({ only: fieldName })`. Restricts the next run to the 
 - Returns a chainable suite with `run`, `afterEach`, `afterField`, `focus`, and `only`.
 - [Read more about Focused Updates](https://vestjs.dev/docs/writing_your_suite/focused_updates#running-only-specific-fields)
 
+#### `suite.changed(fieldName)`
+
+Creates a focused run for the named changed field and its direct schema dependents. It consumes relationships declared with `dependsOn()`; it does not change ordinary `only()` behavior.
+
+- `fieldName`: `string | string[] | undefined`
+- Nested inputs accept dotted or bracket notation and normalize to canonical dotted paths: `rows[1].name` becomes `rows.1.name`.
+- `changed(undefined)` runs without changed focus. `changed([])` is an explicit empty focus and runs no tests.
+- Chaining combines the explicit and dependency-derived fields: `suite.changed('password').only('confirmPassword').run(data)` runs their union.
+- Expansion is one hop. If `total` depends on both `amount` and `tax`, declare both sources explicitly.
+- **Returns**: A chainable focused suite.
+
+[Read the complete `changed()` behavior and interaction contract](https://vestjs.dev/docs/writing_your_suite/schema_relationships#suitechanged-reference).
+
 #### `suite.afterEach(callback)`
 
 Registers a callback to run after each test completes (including the initial sync run and every async completion). The callback receives **no arguments**; you should access the result using `suite.get()`.
@@ -150,6 +163,20 @@ A single validation test inside your suite.
 Asserts that a value matches your desired result.
 
 - [Read more about `enforce`](https://vestjs.dev/docs/enforce/enforce)
+
+#### `rule.dependsOn(selector)`
+
+Declares which schema fields can make this rule's retained result stale. The selector receives a typed schema scope, for example `confirmPassword: enforce.isString().dependsOn($ => $.password)`.
+
+`dependsOn()` adds invalidation metadata only. It does not compare fields, add a validation rule, or impose execution order. Keep the matching cross-field assertion in `test()` or in an Enforce rule. Dependencies are direct and may be local, rooted, nested, or item-scoped.
+
+[Read more about schema relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships#cross-field-dependencies).
+
+#### `schema.describe()`
+
+Returns detached, JSON-serializable schema metadata, including resolved `relationships`. Calling it does not execute validators, parsers, or input accessors. Nested reusable schemas are rebased to their mounted paths.
+
+[Read more about relationship introspection](https://vestjs.dev/docs/writing_your_suite/schema_relationships#introspection).
 
 #### `warn()`
 
@@ -9776,7 +9803,7 @@ Behavior notes:
 
 - Returns a focused suite, so it chains with the other focus APIs: `suite.changed('password').only('confirmPassword').run(data)`. Combining `only()` with `changed()` runs the union — the `only()` base fields plus the affected set.
 - Changing a whole object selects its descendants; changing a descendant also invalidates rules that depend on that whole object. Expansion remains direct, not transitive.
-- Changed names may be nested paths in either spelling — `suite.changed('company.country')` and `suite.changed('travelers[1].passportCountry')` resolve to the same affected set.
+- Changed names accept dotted or bracket spelling. Vest normalizes `travelers[1].passportCountry` to the canonical dotted form `travelers.1.passportCountry` before planning and reporting focus. Literal property names containing dots and all-numeric record keys are ambiguous in this string API and cannot be targeted as single segments.
 - Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
 
 ### End-to-End: Revalidating a Form on Change
@@ -9985,6 +10012,24 @@ V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set exp
 >
 > No behavior change for current V1 usage `suite.changed(field).run(data)` — only the signal overload is deferred.
 
+## Parsed Callback Snapshot Ownership
+
+Schema-backed runs keep the caller's input, Vest's retained mapping, callback data, and published result as separate ownership boundaries. For supported data containers:
+
+- callback and result mutations do not mutate the caller's input;
+- repeated references remain aliases within each copy;
+- `ArrayBuffer` and `SharedArrayBuffer` storage is copied; typed views retain their offsets, lengths, shared copied buffer, and buffer/view backreferences;
+- immutable `Date`, `Map`, and `Set` snapshots reject their mutating methods;
+- immutable snapshot getters are read once and their return values are detached; a throwing getter fails snapshot creation explicitly;
+- setter-only properties become read-only `undefined` and never call the foreign setter;
+- opaque class instances retain their identity because visible properties cannot reproduce private fields or internal slots.
+
+These are ownership guarantees, not a promise that every copied JavaScript value is deeply immutable. Typed-array bytes and detached accessor results remain usable mutable working data without aliasing caller-owned state.
+
+## Performance Expectations
+
+`changed()` is a correctness and interaction primitive. It often does less validation work on large forms, but it is not guaranteed to beat `run()` on a small schema: planning, projection, supplementation, and snapshot copies have fixed costs. Use the relationship benchmarks for representative workloads and choose `changed()` when retained-field behavior and dependent invalidation match the interaction. Submission and other trust boundaries should still perform a full validation run.
+
 ## Related
 
 - [Schema Validation](https://vestjs.dev/docs/writing_your_suite/schema_validation) — passing a schema to `create()`, parsed data, and registering custom `parsers`.
@@ -10006,8 +10051,10 @@ This is the correctness gate for PR #1324, based on implementation commit
 `261199ae03ba72ff096c146e159c226264f9ba7c`. It supplements
 [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships) and
 [Schema Validation](https://vestjs.dev/docs/writing_your_suite/schema_validation). These are required outcomes;
-some acceptance tests intentionally fail on that implementation. A passing
-focused run is not proof that an entire untrusted payload has been validated.
+some acceptance tests intentionally failed on that historical implementation.
+On the current PR head every contract is an active passing test; none are
+skipped, todo, inverted, or marked as expected failures. A passing focused run
+is not proof that an entire untrusted payload has been validated.
 
 The original RFC proposed `schema`, `string`, and `array` shorthand and
 `revalidates`. The implemented API uses `shape`, `isString`, `isArrayOf`,
@@ -10043,23 +10090,23 @@ first success, and keep that success's output without rerunning its validator.
 `SC-*` markers occur in test names. Files below are under
 `packages/vest/src/suite/__tests__/` unless otherwise stated.
 
-| Contract                              | Required behavior                                                                                                                                                                     | Executable coverage                                                                                                                                                                    |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SC-GRAPH                              | One-hop directed invalidation, cycles terminate, no duplicate executions; descriptions stay detached                                                                                  | `schemaContracts.featureMatrix.test.ts`: all 64 directed three-node graphs without self-edges × all 7 nonempty changed sets (448 combinations), plus duplicates and metadata isolation |
-| SC-SCOPE                              | Local item binding, root fan-out, aggregate-source invalidation; no ambient projection privilege leaks into user-created schemas                                                      | `packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts`: array and record items, nested schema construction, getter-free scalar planning                                 |
-| SC-COVERAGE / SC-ONCE                 | Every selected member gets a verdict even after an unrelated first failure; no predicate retries                                                                                      | `schemaContracts.execution.test.ts`: shape/loose/partial/compose × passing/failing selected predicate                                                                                  |
-| SC-PATH / SC-EXCLUDE                  | Numeric record keys keep exact identity; explicitly skipped child predicates do not execute under an affected parent                                                                  | `schemaContracts.execution.test.ts`: `01`, `1`, and an integer beyond safe JS precision; parent/child exclusion                                                                        |
-| SC-RETAIN                             | Inclusion focus retains untouched schema errors and does not evaluate their predicates                                                                                                | `schemaContracts.focus.test.ts`: shape/loose/partial × only/focus/changed/only plus empty changed (12 combinations)                                                                    |
-| SC-EMPTY / SC-SKIP / SC-GROUP         | Empty changed retains history without schema predicates; explicit skip discards that field's history; group focus excludes top-level synthetic schema errors                          | `schemaContracts.focus.test.ts`                                                                                                                                                        |
-| SC-LIFECYCLE / SC-STATIC              | Reset, remove, and resetField clear authoritative history; resume restores it; runStatic discards suite state                                                                         | `schemaContracts.focus.test.ts`                                                                                                                                                        |
-| SC-SUBTREE                            | A parent edit refreshes descendant user tests, including children newly declared through keyed `each`                                                                                 | `schemaContracts.focus.test.ts`: both pass→fail and fail→pass, unrelated field isolation, newly added child                                                                            |
-| SC-OUTPUT / SC-PRESENCE               | Preserve successful falsy outputs and own-property presence                                                                                                                           | `schemaContracts.output.test.ts`: null/undefined/false/0/empty string × root/shape/array/tuple/compose (25 combinations); deletion versus explicit undefined                           |
-| SC-UNION / SC-PARSER / SC-FAILURE-MAP | Complete parsed callback data on fresh and warm focus; preserve branch output across reorder/insert/remove; failure cannot poison later mapping                                       | `schemaContracts.output.test.ts`                                                                                                                                                       |
-| SC-ASYNC                              | Superseded work cannot win in either verdict direction; unrelated edits retain pending work; schema reuse cannot share async state                                                    | `schemaContracts.async.test.ts`: manually released promises; pending result has no value                                                                                               |
-| SC-ASYNC-LIFECYCLE                    | reset/remove/resetField must prevent late work from resurrecting a failure or pending state                                                                                           | `schemaContracts.async.test.ts`                                                                                                                                                        |
-| SC-ALIAS / SC-ACCESSOR                | Detached copies preserve supported alias topology and never retain live snapshot setters                                                                                              | `schemaContracts.snapshots.test.ts`: buffers/views, shared Map/Set/symbol references, getter and setter boundaries                                                                     |
-| SC-FORM                               | Source changes reach dependent form errors; unrelated errors survive; repair enables submit; fresh focused success cannot bypass full submit validation; form instances stay isolated | `integrations/tanstack-form/src/schemaContracts.integration.test.ts`: mounted TanStack Form instances with event adapter and Standard Schema submit                                    |
-| SC-DOCS                               | The example below actually invalidates confirmation, retains an unrelated error, and recovers                                                                                         | `docsExamples.test.ts` executes the exact Markdown code block                                                                                                                          |
+| Contract                              | Required behavior                                                                                                                                                                     | Executable coverage                                                                                                                                                                                        |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SC-GRAPH                              | One-hop directed invalidation, cycles terminate, no duplicate executions; descriptions stay detached                                                                                  | `schemaContracts.featureMatrix.test.ts`: all 64 directed three-node graphs without self-edges × all 7 nonempty changed sets (448 combinations), plus duplicates and metadata isolation                     |
+| SC-SCOPE                              | Local item binding, root fan-out, aggregate-source invalidation; no ambient projection privilege leaks into user-created schemas                                                      | `packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts`: array and record items, nested schema construction, getter-free scalar planning                                                     |
+| SC-COVERAGE / SC-ONCE                 | Every selected member gets a verdict even after an unrelated first failure; no predicate retries                                                                                      | `schemaContracts.execution.test.ts`: shape/loose/partial/compose × passing/failing selected predicate                                                                                                      |
+| SC-PATH / SC-EXCLUDE                  | Numeric record keys keep exact identity; explicitly skipped child predicates do not execute under an affected parent                                                                  | `schemaContracts.execution.test.ts`: `01`, `1`, and an integer beyond safe JS precision; parent/child exclusion                                                                                            |
+| SC-RETAIN                             | Inclusion focus retains untouched schema errors and does not evaluate their predicates                                                                                                | `schemaContracts.focus.test.ts`: shape/loose/partial × only/focus/changed/only plus empty changed (12 combinations)                                                                                        |
+| SC-EMPTY / SC-SKIP / SC-GROUP         | Empty changed retains history without schema predicates; explicit skip discards that field's history; group focus excludes top-level synthetic schema errors                          | `schemaContracts.focus.test.ts`                                                                                                                                                                            |
+| SC-LIFECYCLE / SC-STATIC              | Reset, remove, and resetField clear authoritative history; resume restores it; runStatic discards suite state                                                                         | `schemaContracts.focus.test.ts`                                                                                                                                                                            |
+| SC-SUBTREE                            | A parent edit refreshes descendant user tests, including children newly declared through keyed `each`                                                                                 | `schemaContracts.focus.test.ts`: both pass→fail and fail→pass, unrelated field isolation, newly added child                                                                                                |
+| SC-OUTPUT / SC-PRESENCE               | Preserve successful falsy outputs and own-property presence                                                                                                                           | `schemaContracts.output.test.ts`: null/undefined/false/0/empty string × root/shape/array/tuple/compose (25 combinations); deletion versus explicit undefined; first skip-only mapping to present undefined |
+| SC-UNION / SC-PARSER / SC-FAILURE-MAP | Complete parsed callback data on fresh and warm focus; preserve branch output across reorder/insert/remove; failure cannot poison later mapping                                       | `schemaContracts.output.test.ts`                                                                                                                                                                           |
+| SC-ASYNC                              | Superseded work cannot win in either verdict direction; unrelated edits retain pending work; schema reuse cannot share async state                                                    | `schemaContracts.async.test.ts`: manually released promises; pending result has no value                                                                                                                   |
+| SC-ASYNC-LIFECYCLE                    | reset/remove/resetField must prevent late work from resurrecting a failure or pending state                                                                                           | `schemaContracts.async.test.ts`                                                                                                                                                                            |
+| SC-ALIAS / SC-ACCESSOR                | Detached copies preserve supported alias topology and never retain live snapshot setters                                                                                              | `schemaContracts.snapshots.test.ts`: buffers/views, shared Map/Set/symbol references, getter and setter boundaries                                                                                         |
+| SC-FORM                               | Source changes reach dependent form errors; unrelated errors survive; repair enables submit; fresh focused success cannot bypass full submit validation; form instances stay isolated | `integrations/tanstack-form/src/schemaContracts.integration.test.ts`: mounted TanStack Form instances with event adapter and Standard Schema submit                                                        |
+| SC-DOCS                               | The example below actually invalidates confirmation, retains an unrelated error, and recovers                                                                                         | `docsExamples.test.ts` executes the exact Markdown code block                                                                                                                                              |
 
 Additional boundary coverage lives in `schemaContracts.boundaries.test.ts`
 (16 cases): concrete-index accessor planning, shared-memory detachment,
@@ -10289,6 +10336,8 @@ const suite = create(data => {
   });
 }, userSchema);
 ```
+
+`dependsOn()` declarations are invalidation metadata. They do not compare field values or create validation failures. A relationship such as `confirmPassword.dependsOn($ => $.password)` still needs a `test('confirmPassword', ...)` or Enforce rule that checks whether the values match. See [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships).
 
 ## How it works
 

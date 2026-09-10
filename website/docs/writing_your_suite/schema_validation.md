@@ -41,6 +41,8 @@ const suite = create(data => {
 }, userSchema);
 ```
 
+`dependsOn()` declarations are invalidation metadata. They do not compare field values or create validation failures. A relationship such as `confirmPassword.dependsOn($ => $.password)` still needs a `test('confirmPassword', ...)` or Enforce rule that checks whether the values match. See [Schema Relationships](./schema_relationships).
+
 ## How it works
 
 When you pass a schema to `create`:

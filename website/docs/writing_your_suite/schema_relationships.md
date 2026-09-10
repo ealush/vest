@@ -304,7 +304,7 @@ Behavior notes:
 
 - Returns a focused suite, so it chains with the other focus APIs: `suite.changed('password').only('confirmPassword').run(data)`. Combining `only()` with `changed()` runs the union — the `only()` base fields plus the affected set.
 - Changing a whole object selects its descendants; changing a descendant also invalidates rules that depend on that whole object. Expansion remains direct, not transitive.
-- Changed names may be nested paths in either spelling — `suite.changed('company.country')` and `suite.changed('travelers[1].passportCountry')` resolve to the same affected set.
+- Changed names accept dotted or bracket spelling. Vest normalizes `travelers[1].passportCountry` to the canonical dotted form `travelers.1.passportCountry` before planning and reporting focus. Literal property names containing dots and all-numeric record keys are ambiguous in this string API and cannot be targeted as single segments.
 - Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
 
 ### End-to-End: Revalidating a Form on Change
@@ -512,6 +512,24 @@ V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set exp
 > ```
 >
 > No behavior change for current V1 usage `suite.changed(field).run(data)` — only the signal overload is deferred.
+
+## Parsed Callback Snapshot Ownership
+
+Schema-backed runs keep the caller's input, Vest's retained mapping, callback data, and published result as separate ownership boundaries. For supported data containers:
+
+- callback and result mutations do not mutate the caller's input;
+- repeated references remain aliases within each copy;
+- `ArrayBuffer` and `SharedArrayBuffer` storage is copied; typed views retain their offsets, lengths, shared copied buffer, and buffer/view backreferences;
+- immutable `Date`, `Map`, and `Set` snapshots reject their mutating methods;
+- immutable snapshot getters are read once and their return values are detached; a throwing getter fails snapshot creation explicitly;
+- setter-only properties become read-only `undefined` and never call the foreign setter;
+- opaque class instances retain their identity because visible properties cannot reproduce private fields or internal slots.
+
+These are ownership guarantees, not a promise that every copied JavaScript value is deeply immutable. Typed-array bytes and detached accessor results remain usable mutable working data without aliasing caller-owned state.
+
+## Performance Expectations
+
+`changed()` is a correctness and interaction primitive. It often does less validation work on large forms, but it is not guaranteed to beat `run()` on a small schema: planning, projection, supplementation, and snapshot copies have fixed costs. Use the relationship benchmarks for representative workloads and choose `changed()` when retained-field behavior and dependent invalidation match the interaction. Submission and other trust boundaries should still perform a full validation run.
 
 ## Related
 

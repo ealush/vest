@@ -192,7 +192,7 @@ describe('schema contracts: parsed output matrix', () => {
   });
 
   it('[SC-PRESENCE] first skip-only mapping preserves a present undefined parser output', () => {
-    let seen: { a: string; b: undefined } | undefined;
+    let seen: unknown;
     const suite = create(
       data => {
         seen = data;

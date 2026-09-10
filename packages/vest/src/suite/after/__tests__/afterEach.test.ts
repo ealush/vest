@@ -32,17 +32,32 @@ describe('afterEach', () => {
 
   describe('When both sync and async tests', () => {
     it('should call the `afterEach` callback once when the sync tests are done and again for each async test', async () => {
-      const afterCallback = vi.fn();
+      const gates = [0, 1].map(() => {
+        let reject!: (reason?: unknown) => void;
+        const promise = new Promise<void>((_resolve, rejectPromise) => {
+          reject = rejectPromise;
+        });
+        return { promise, reject };
+      });
+      let firstSettled!: () => void;
+      const afterFirst = new Promise<void>(resolve => {
+        firstSettled = resolve;
+      });
+      const afterCallback = vi.fn(() => {
+        if (afterCallback.mock.calls.length === 2) firstSettled();
+      });
       const suite = vest.create(() => {
         dummyTest.passing();
-        dummyTest.failingAsync('field_1', { time: 10 });
-        dummyTest.failingAsync('field_2', { time: 15 });
+        vest.test('field_1', () => gates[0].promise);
+        vest.test('field_2', () => gates[1].promise);
       });
-      suite.afterEach(afterCallback).run();
+      const result = suite.afterEach(afterCallback).run();
       expect(afterCallback).toHaveBeenCalledTimes(1);
-      await wait(10);
+      gates[0].reject('first failure');
+      await afterFirst;
       expect(afterCallback).toHaveBeenCalledTimes(2);
-      await wait(10);
+      gates[1].reject('second failure');
+      await result;
       expect(afterCallback).toHaveBeenCalledTimes(3);
     });
   });

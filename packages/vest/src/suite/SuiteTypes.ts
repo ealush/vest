@@ -1,4 +1,4 @@
-import { CB } from 'vest-utils';
+import { CB, type DropFirst } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { Subscribe } from '../core/VestBus/VestBus';
@@ -16,12 +16,23 @@ import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
 import { TTypedMethods } from './getTypedMethods';
 
+type CallbackTail<T extends CB> =
+  DropFirst<Parameters<T>> extends never ? [] : DropFirst<Parameters<T>>;
+
+export type SuiteRunArguments<
+  S extends TSchema,
+  T extends CB,
+  Data = InferSchemaData<S>,
+> = S extends undefined
+  ? Parameters<T>
+  : [data: Data, ...args: CallbackTail<T>];
+
 export type SuiteCallbackWithSchema<
   S extends TSchema,
   T extends CB,
 > = S extends undefined
   ? T
-  : (data: InferSchemaOutput<S>, ...args: any[]) => void;
+  : (data: InferSchemaOutput<S>, ...args: CallbackTail<T>) => void;
 
 export type Suite<
   F extends TFieldName,
@@ -44,21 +55,13 @@ type SuiteMethods<
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
   resetField: CB<void, [fieldName: F]>;
-  run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
-  runStatic: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
-  validate: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
+  changed: CB<
+    FocusedMethods<F, G, T, S>,
+    [changedField: FieldExclusion<F> | string | string[]]
+  >;
+  run: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
+  runStatic: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
+  validate: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
   subscribe: Subscribe;
 } & AfterMethods<F, G, T, S> &
   TTypedMethods<F, G> &
@@ -72,14 +75,16 @@ type FocusedMethods<
 > = {
   afterEach: CB<FocusedMethods<F, G, T, S>, [callback: CB]>;
   afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  changed: CB<
+    FocusedMethods<F, G, T, S>,
+    [changedField: FieldExclusion<F> | string | string[]]
+  >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
   run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: Partial<InferSchemaData<S>>, ...args: any[]]
+    ...args: SuiteRunArguments<S, T, Partial<InferSchemaData<S>>>
   ) => SuiteResult<F, G, S>;
 };
 
@@ -91,13 +96,13 @@ type AfterMethods<
 > = {
   afterEach: CB<AfterMethods<F, G, T, S>, [callback: CB]>;
   afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  changed: CB<
+    FocusedMethods<F, G, T, S>,
+    [changedField: FieldExclusion<F> | string | string[]]
+  >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
-  run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
+  run: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
 };
 
 /**
@@ -122,4 +127,13 @@ export type SuiteModifiers<
   onlyGroup?: G | G[];
   skip?: FieldExclusion<F>;
   skipGroup?: G | G[];
+};
+
+/** @internal Runtime-only state that must not leak into focus()'s public API. */
+export type InternalSuiteModifiers<
+  F extends TFieldName,
+  G extends TGroupName = TGroupName,
+> = SuiteModifiers<F, G> & {
+  __changed?: string[];
+  __skipAll?: boolean;
 };

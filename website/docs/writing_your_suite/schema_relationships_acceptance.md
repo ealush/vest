@@ -9,9 +9,15 @@ This is the correctness gate for PR #1324, based on implementation commit
 [Schema Relationships](./schema_relationships.md) and
 [Schema Validation](./schema_validation.md). These are required outcomes;
 some acceptance tests intentionally failed on that historical implementation.
-On the current PR head every contract is an active passing test; none are
-skipped, todo, inverted, or marked as expected failures. A passing focused run
-is not proof that an entire untrusted payload has been validated.
+The 2026-09-10 readiness review of `a923f2f4` adds 87 active tests: 77 pass and
+10 fail, while all 186 pre-existing contracts still pass. None are skipped,
+todo, inverted, or marked as expected failures. The failures cover field-skip
+precedence, composed fallback execution, and public accessor ownership.
+See the [release-readiness plan](https://github.com/ealush/vest/blob/codex/schema-relationships-ready/docs/schema-relationships-release-readiness.md)
+for exact findings, distinctions between existing promises and strengthened
+contracts, and the required implementation sequence. Do not merge while these
+contracts are red. A passing focused run is not proof that an entire untrusted
+payload has been validated.
 
 The original RFC proposed `schema`, `string`, and `array` shorthand and
 `revalidates`. The implemented API uses `shape`, `isString`, `isArrayOf`,
@@ -76,6 +82,12 @@ and predicate-free union incompleteness reporting.
 The graph matrix uses an independent edge-list oracle, not the implementation's
 resolver to calculate expected results. It exhausts the stated finite graph
 space, not arbitrary graph sizes or all Cartesian products of Vest features.
+The additional `schemaContracts.readiness.test.ts` files exercise actual n4s
+predicate calls across 64 graphs × 7 changed sets × 4 validity assignments
+(1,792 executions), local/rooted dependent focus, 13 retained-state composition
+cases, schema/no-schema skip collisions, composed fallback skips, and accessor
+ownership through public callback and result boundaries. Predicate locality is
+measured here; internal fallback counts and production latency are not.
 Existing `changed.integration`, `changed.adversarial`, `changed.round2`,
 `changed.supplement`, coercion, security, typing, and schema-domain tests remain
 part of the regression gate. Their coverage includes nested arrays, reusable
@@ -128,8 +140,14 @@ keyed reorder, hostile paths, and deferred API rejection.
    Setter-only properties are represented as read-only undefined values, so
    writes cannot call a foreign setter. These two choices intentionally replace
    the current fallback behavior: silently retaining a live accessor violates
-   the snapshot ownership boundary. Mutable working clones and opaque class
-   instances retain their existing documented limitations.
+   the snapshot ownership boundary. The readiness review strengthens this at
+   public schema-backed callback and result boundaries: plain-object accessor
+   results must also detach there, and writes must not invoke caller-owned
+   setters. This deliberately resolves the old mutable-working-clone exception
+   versus the public ownership promise; it is not a regression in the immutable
+   helper's existing accessor tests. Internal mutable cloning can retain its
+   semantics where no public ownership boundary is crossed. Opaque class
+   instances retain their documented identity limitation.
 7. **Submit.** A form change event supplies an explicit changed name. A submit
    event validates the complete current payload through the Standard Schema
    surface. A fresh focused success cannot be reused as full-submit approval.

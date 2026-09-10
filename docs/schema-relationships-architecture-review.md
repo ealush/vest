@@ -7,6 +7,11 @@ the remaining architectural direction. Statements labeled "observed" or
 
 ## Current status
 
+This section tracks the original findings only. The later
+[2026-09-10 release-readiness review](./schema-relationships-release-readiness.md)
+adds ten failing contracts at `a923f2f4`; it supersedes any interpretation of
+this historical review as a current merge approval.
+
 All correctness blockers from this review are resolved and covered by the current
 contract suite. A1 parser mapping, A2 builder ownership, opaque-union handling,
 newly declared descendants, getter-free planning, async reset authority, buffer

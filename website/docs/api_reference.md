@@ -219,7 +219,7 @@ Asserts that a value matches your desired result.
 
 #### `rule.dependsOn(selector)`
 
-Declares which schema fields can make this rule's retained result stale. The selector receives a typed schema scope, for example `confirmPassword: enforce.isString().dependsOn($ => $.password)`.
+Declares which schema fields can make this rule's retained result stale. The selector receives a schema-path scope, for example `confirmPassword: enforce.isString().dependsOn($ => $.password)`. The scope is not statically restricted to the schema's keys: misspelled paths are diagnosed at runtime during composition or resolution, not necessarily by TypeScript.
 
 `dependsOn()` adds invalidation metadata only. It does not compare fields, add a validation rule, or impose execution order. Keep the matching cross-field assertion in `test()` or in an Enforce rule. Dependencies are direct and may be local, rooted, nested, or item-scoped.
 

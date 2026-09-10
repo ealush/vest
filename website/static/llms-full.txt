@@ -166,7 +166,7 @@ Asserts that a value matches your desired result.
 
 #### `rule.dependsOn(selector)`
 
-Declares which schema fields can make this rule's retained result stale. The selector receives a typed schema scope, for example `confirmPassword: enforce.isString().dependsOn($ => $.password)`.
+Declares which schema fields can make this rule's retained result stale. The selector receives a schema-path scope, for example `confirmPassword: enforce.isString().dependsOn($ => $.password)`. The scope is not statically restricted to the schema's keys: misspelled paths are diagnosed at runtime during composition or resolution, not necessarily by TypeScript.
 
 `dependsOn()` adds invalidation metadata only. It does not compare fields, add a validation rule, or impose execution order. Keep the matching cross-field assertion in `test()` or in an Enforce rule. Dependencies are direct and may be local, rooted, nested, or item-scoped.
 
@@ -9778,7 +9778,7 @@ This boundary also applies through `compose()` and to unions excluded by `focus(
 
 Affected-path planning never invokes input accessors, including concrete array-index getters. Accessor-backed subtrees expand from declared schema keys only; dynamic data keys behind an accessor cannot be enumerated without reading it.
 
-Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators; failures are then narrowed to the affected paths. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
+Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators; failures are then narrowed to the affected paths. An untouched dependency source does not, by itself, require full execution: ordinary object-schema projections can validate a dependent without revalidating its sources. Relationships describe invalidation, not execution prerequisites. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
 
 Projection reads construction-time metadata and never probes validators with synthetic data. Partial fragments preserve the distinction between an absent property and an own property holding `undefined`, including declared non-enumerable properties. A shape of `optional()` members has different semantics from `partial()`.
 
@@ -9805,6 +9805,24 @@ Behavior notes:
 - Changing a whole object selects its descendants; changing a descendant also invalidates rules that depend on that whole object. Expansion remains direct, not transitive.
 - Changed names accept dotted or bracket spelling. Vest normalizes `travelers[1].passportCountry` to the canonical dotted form `travelers.1.passportCountry` before planning and reporting focus. Literal property names containing dots and all-numeric record keys are ambiguous in this string API and cannot be targeted as single segments.
 - Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
+
+### Focus Composition
+
+The core composition contract is below. `affected(a)` is the named fields plus everything the graph marks stale. This is not an exhaustive Cartesian product of nested focus and group behavior. The [acceptance contract](https://vestjs.dev/docs/writing_your_suite/schema_relationships_acceptance) records open release-readiness failures; in particular, explicit skip precedence is required but not yet satisfied in all combinations.
+
+| Chain                                             | Result                                                                                                                                                                                                            |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `changed(a)`                                      | Runs `affected(a)`; schema failures narrowed to it.                                                                                                                                                               |
+| `changed(a).only(b)` or `only(b).changed(a)`      | Runs the union: `affected(a)` plus `b`, in either chain order.                                                                                                                                                    |
+| `changed([])`                                     | Runs nothing; previous failures are retained.                                                                                                                                                                     |
+| `only(b).changed([])`                             | Runs `b`; previous failures are retained.                                                                                                                                                                         |
+| `changed(undefined)`                              | Clears only changed focus. An existing `only`, skip, or group modifier remains; it is a plain run only when no other focus remains.                                                                               |
+| `changed(a).changed(b)` / `only(a).only(b)`       | The last value for that modifier wins. Other modifiers remain.                                                                                                                                                    |
+| `changed(a).only(undefined)`                      | Clears only explicit `only`; `affected(a)` still runs.                                                                                                                                                            |
+| `changed(a).focus({ onlyGroup: g })`              | Selected user tests must also belong to `g`; synthetic schema tests remain top-level.                                                                                                                             |
+| `changed(a).focus({ skipGroup: g })`              | User tests in `g` do not execute. Existing excluded group history is retained; this is not destructive field skip.                                                                                                |
+| `only(b)` without `changed()`                     | Runs exactly `b`; dependents are not expanded.                                                                                                                                                                    |
+| `focus({ skip: s })`, with or without `changed()` | `s` is excluded from execution and follows destructive skip semantics: its retained state is cleared, and mapping for skipped regions is restored from a prior complete run — or throws for an unwitnessed union. |
 
 ### End-to-End: Revalidating a Form on Change
 
@@ -10052,9 +10070,15 @@ This is the correctness gate for PR #1324, based on implementation commit
 [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships) and
 [Schema Validation](https://vestjs.dev/docs/writing_your_suite/schema_validation). These are required outcomes;
 some acceptance tests intentionally failed on that historical implementation.
-On the current PR head every contract is an active passing test; none are
-skipped, todo, inverted, or marked as expected failures. A passing focused run
-is not proof that an entire untrusted payload has been validated.
+The 2026-09-10 readiness review of `a923f2f4` adds 87 active tests: 77 pass and
+10 fail, while all 186 pre-existing contracts still pass. None are skipped,
+todo, inverted, or marked as expected failures. The failures cover field-skip
+precedence, composed fallback execution, and public accessor ownership.
+See the [release-readiness plan](https://github.com/ealush/vest/blob/codex/schema-relationships-ready/docs/schema-relationships-release-readiness.md)
+for exact findings, distinctions between existing promises and strengthened
+contracts, and the required implementation sequence. Do not merge while these
+contracts are red. A passing focused run is not proof that an entire untrusted
+payload has been validated.
 
 The original RFC proposed `schema`, `string`, and `array` shorthand and
 `revalidates`. The implemented API uses `shape`, `isString`, `isArrayOf`,
@@ -10119,6 +10143,12 @@ and predicate-free union incompleteness reporting.
 The graph matrix uses an independent edge-list oracle, not the implementation's
 resolver to calculate expected results. It exhausts the stated finite graph
 space, not arbitrary graph sizes or all Cartesian products of Vest features.
+The additional `schemaContracts.readiness.test.ts` files exercise actual n4s
+predicate calls across 64 graphs × 7 changed sets × 4 validity assignments
+(1,792 executions), local/rooted dependent focus, 13 retained-state composition
+cases, schema/no-schema skip collisions, composed fallback skips, and accessor
+ownership through public callback and result boundaries. Predicate locality is
+measured here; internal fallback counts and production latency are not.
 Existing `changed.integration`, `changed.adversarial`, `changed.round2`,
 `changed.supplement`, coercion, security, typing, and schema-domain tests remain
 part of the regression gate. Their coverage includes nested arrays, reusable
@@ -10171,8 +10201,14 @@ keyed reorder, hostile paths, and deferred API rejection.
    Setter-only properties are represented as read-only undefined values, so
    writes cannot call a foreign setter. These two choices intentionally replace
    the current fallback behavior: silently retaining a live accessor violates
-   the snapshot ownership boundary. Mutable working clones and opaque class
-   instances retain their existing documented limitations.
+   the snapshot ownership boundary. The readiness review strengthens this at
+   public schema-backed callback and result boundaries: plain-object accessor
+   results must also detach there, and writes must not invoke caller-owned
+   setters. This deliberately resolves the old mutable-working-clone exception
+   versus the public ownership promise; it is not a regression in the immutable
+   helper's existing accessor tests. Internal mutable cloning can retain its
+   semantics where no public ownership boundary is crossed. Opaque class
+   instances retain their documented identity limitation.
 7. **Submit.** A form change event supplies an explicit changed name. A submit
    event validates the complete current payload through the Standard Schema
    surface. A fresh focused success cannot be reused as full-submit approval.

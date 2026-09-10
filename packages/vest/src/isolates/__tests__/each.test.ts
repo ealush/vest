@@ -105,4 +105,36 @@ describe('each', () => {
     expect(suite.hasErrors('item.9' as TFieldName)).toBe(false);
     expect(suite.hasErrors('item.10' as TFieldName)).toBe(true);
   });
+
+  it('moves retained keyed results to their current field after a focused reorder', () => {
+    type Item = { id: string; value: string };
+    const suite = vest.create((items: Item[], focused: string | null) => {
+      if (focused !== null) vest.only(focused);
+      vest.each(items, (item, index) => {
+        vest.test(
+          `item.${index}` as TFieldName,
+          () => item.value.length > 0,
+          item.id,
+        );
+      });
+    });
+
+    suite.run(
+      [
+        { id: 'invalid', value: '' },
+        { id: 'valid', value: 'ok' },
+      ],
+      null,
+    );
+    const result = suite.run(
+      [
+        { id: 'valid', value: 'ok' },
+        { id: 'invalid', value: '' },
+      ],
+      'item.0',
+    );
+
+    expect(result.hasErrors('item.0' as TFieldName)).toBe(false);
+    expect(result.hasErrors('item.1' as TFieldName)).toBe(true);
+  });
 });

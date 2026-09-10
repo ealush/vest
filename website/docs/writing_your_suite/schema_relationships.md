@@ -279,7 +279,7 @@ This boundary also applies through `compose()` and to unions excluded by `focus(
 
 Affected-path planning never invokes input accessors, including concrete array-index getters. Accessor-backed subtrees expand from declared schema keys only; dynamic data keys behind an accessor cannot be enumerated without reading it.
 
-Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators; failures are then narrowed to the affected paths. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
+Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators; failures are then narrowed to the affected paths. Direction matters as well: changing a source projects the source plus its dependents, but changing a dependent whose sources are untouched can execute the full schema instead — a dependent cannot run without its sources. Either way, reported failures are narrowed to the affected paths. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
 
 Projection reads construction-time metadata and never probes validators with synthetic data. Partial fragments preserve the distinction between an absent property and an own property holding `undefined`, including declared non-enumerable properties. A shape of `optional()` members has different semantics from `partial()`.
 
@@ -306,6 +306,20 @@ Behavior notes:
 - Changing a whole object selects its descendants; changing a descendant also invalidates rules that depend on that whole object. Expansion remains direct, not transitive.
 - Changed names accept dotted or bracket spelling. Vest normalizes `travelers[1].passportCountry` to the canonical dotted form `travelers.1.passportCountry` before planning and reporting focus. Literal property names containing dots and all-numeric record keys are ambiguous in this string API and cannot be targeted as single segments.
 - Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
+
+### Focus Composition
+
+Every combination of the focus APIs resolves as follows. `affected(a)` is the named fields plus everything the graph marks stale:
+
+| Chain                                             | Result                                                                                                                                                                                                            |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `changed(a)`                                      | Runs `affected(a)`; schema failures narrowed to it.                                                                                                                                                               |
+| `changed(a).only(b)` or `only(b).changed(a)`      | Runs the union: `affected(a)` plus `b`, in either chain order.                                                                                                                                                    |
+| `changed([])`                                     | Runs nothing; previous failures are retained.                                                                                                                                                                     |
+| `only(b).changed([])`                             | Runs `b`; previous failures are retained.                                                                                                                                                                         |
+| `changed(undefined)`                              | No changed focus; a plain run, mirroring `only(undefined)`.                                                                                                                                                       |
+| `only(b)` without `changed()`                     | Runs exactly `b`; dependents are not expanded.                                                                                                                                                                    |
+| `focus({ skip: s })`, with or without `changed()` | `s` is excluded from execution and follows destructive skip semantics: its retained state is cleared, and mapping for skipped regions is restored from a prior complete run — or throws for an unwitnessed union. |
 
 ### End-to-End: Revalidating a Form on Change
 

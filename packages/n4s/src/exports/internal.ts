@@ -7,12 +7,14 @@
  */
 export { assertSchemaRootPathsValid } from '../schema/dependencyResolver';
 export { mapWithoutValidation } from '../schema/mapWithoutValidation';
+export type { MappingProvenance } from '../schema/mapWithoutValidation';
 export {
   parseAffectedFieldName,
   resolveAffectedPaths,
   runSchemaPaths,
 } from '../schema/selectiveRun';
 export type {
+  SelectiveExecutionCoverage,
   SelectiveRunOptions,
   SelectiveSchema,
   SelectiveSchemaResult,

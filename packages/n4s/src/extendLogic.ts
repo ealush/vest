@@ -1,6 +1,10 @@
 import { extendEager } from './eager';
 import { ctx } from './enforceContext';
 import { addToChain, registerLazyRule } from './rules/genRuleChain';
+import {
+  declaredTransformOf,
+  MAPPING_DECLARED_OUTPUT,
+} from './rules/chainBuilder/chainExecutor';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 
 type ExtensionRule = (...args: never[]) => unknown;
@@ -57,10 +61,27 @@ export function extendEnforce<Rules extends Record<string, ExtensionRule>>(
     ) => unknown;
     const ruleWrapper = (value: unknown, ...args: unknown[]) => {
       const res = ctx.run({ value }, () => callableRule(value, ...args));
-      return RuleRunReturn.create(
+      const normalized = RuleRunReturn.create(
         res as boolean | RuleRunReturn<unknown>,
         value,
       );
+      // A1: parser-only mapping consumes each step's declared transform
+      // output even when its validation verdict fails. The declaration
+      // rides alongside — never instead of — the legacy normalized failure
+      // payload, so validation verdicts, failure types, paths, and
+      // messages are unchanged.
+      if (mapsValue) {
+        const declared = declaredTransformOf(res);
+        if (declared.found) {
+          (
+            normalized as unknown as Record<
+              typeof MAPPING_DECLARED_OUTPUT,
+              { value: unknown }
+            >
+          )[MAPPING_DECLARED_OUTPUT] = { value: declared.value };
+        }
+      }
+      return normalized;
     };
 
     const mapsValue = parserNames.has(ruleName);

@@ -11,6 +11,7 @@ import {
 } from './schema/schemaSlots';
 import {
   MAP_FULL_VALUE,
+  FullValueMapper,
   mapWithoutValidation,
 } from './schema/mapWithoutValidation';
 import { RuleInstance } from './utils/RuleInstance';
@@ -197,13 +198,12 @@ function forwardCompositionSlots(
   }
 }
 
-function mapComposedValue(
-  sources: readonly ComposableRule[],
-): (value: unknown) => RuleRunReturn<unknown> {
-  return value =>
+function mapComposedValue(sources: readonly ComposableRule[]): FullValueMapper {
+  return (value, provenance, base) =>
     RuleRunReturn.Passing(
       sources.reduce(
-        (current, source) => mapWithoutValidation(source, current),
+        (current, source) =>
+          mapWithoutValidation(source, current, provenance, base),
         value,
       ),
     );

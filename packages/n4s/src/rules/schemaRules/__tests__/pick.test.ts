@@ -143,7 +143,35 @@ describe('pick', () => {
       name: enforce.isString(),
     };
 
+    // Exercising the call (not just the keyof relation): an unknown key
+    // is a compile-time error on the public lazy overload.
+    // @ts-expect-error - 'typo' is not a key of the schema
+    enforce.pick(schema, ['typo']);
+
     expectTypeOf<'typo'>().not.toMatchTypeOf<keyof typeof schema>();
+  });
+
+  it('ignores dangling local dependencies on excluded fields', () => {
+    const schema = {
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.missing),
+    };
+
+    const pickedSchema = enforce.pick(schema, ['a']);
+
+    expect(pickedSchema.describe().relationships).toHaveLength(0);
+    expect(pickedSchema.test({ a: 'x' })).toBe(true);
+  });
+
+  it('still rejects dangling local dependencies on included fields', () => {
+    const schema = {
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.missing),
+    };
+
+    expect(() => enforce.pick(schema, ['a', 'b'])).toThrow(
+      /depends on unknown field "missing"/,
+    );
   });
 
   it('preserves rooted edges so a picked schema can be mounted', () => {

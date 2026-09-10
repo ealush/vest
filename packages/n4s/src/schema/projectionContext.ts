@@ -28,3 +28,8 @@ export function withSchemaExecutionProjection<T>(fn: () => T): T {
 export function isSchemaExecutionProjection(): boolean {
   return projectionContext.use();
 }
+
+/** User validators must never inherit fragment-construction privileges. */
+export function withoutSchemaExecutionProjection<T>(fn: () => T): T {
+  return projectionContext.run(false, fn);
+}

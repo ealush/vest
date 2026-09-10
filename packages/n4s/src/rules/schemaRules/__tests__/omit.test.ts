@@ -158,4 +158,16 @@ describe('omit', () => {
     ).toBe(true);
     expect(mounted.describe().relationships).toHaveLength(1);
   });
+
+  it('ignores dangling local dependencies on omitted fields', () => {
+    const schema = {
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.missing),
+    };
+
+    const omittedSchema = enforce.omit(schema, ['b']);
+
+    expect(omittedSchema.describe().relationships).toHaveLength(0);
+    expect(omittedSchema.test({ a: 'x' })).toBe(true);
+  });
 });

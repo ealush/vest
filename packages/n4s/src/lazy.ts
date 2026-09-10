@@ -70,8 +70,17 @@ function collectSchemaRelationships(
   // graph has already produced the selective plan. Recompiling relationships
   // here would force dependency providers back into executable fragments.
   if (isSchemaExecutionProjection()) return [];
+  // Pick/omit combinators ignore validation constraints on excluded fields:
+  // resolve inline deps against the kept top-level keys only, so a dangling
+  // ref on a dropped field cannot throw. Edges touching excluded keys are
+  // still removed below by filterRelationshipsByTopKey.
+  const inlineShape = keyFilter
+    ? Object.fromEntries(
+        Object.entries(schema).filter(([key]) => keyFilter(key)),
+      )
+    : schema;
   const relationships: InternalRelationship[] = resolveInlineDeps(
-    schema as Record<string, RuleInstance<unknown, unknown[]>>,
+    inlineShape as Record<string, RuleInstance<unknown, unknown[]>>,
     [],
     schema,
   );
@@ -347,11 +356,19 @@ function createPickWrapper(): (
     };
     const rule = base.pick(schema, keys);
     slotsOf(rule)[RESOLVED_RELATIONSHIPS] = relationships;
-    // For pick, __schema is filtered shape
+    // For pick, __schema is filtered shape. defineProperty keeps an own
+    // enumerable `__proto__` key instead of invoking the prototype setter.
     const filtered: Record<string, unknown> = {};
     const set = new Set(asArray(keys));
     for (const k of Object.keys(schema))
-      if (set.has(k)) filtered[k] = schema[k];
+      if (set.has(k)) {
+        Object.defineProperty(filtered, k, {
+          configurable: true,
+          enumerable: true,
+          value: schema[k],
+          writable: true,
+        });
+      }
     slotsOf(rule).__schema = filtered;
     snapshotChainBaseline(rule);
     return rule;
@@ -392,7 +409,16 @@ function createOmitWrapper(): (
     const filtered: Record<string, unknown> = {};
     const set = new Set(asArray(keys));
     for (const k of Object.keys(schema as object))
-      if (!set.has(k)) filtered[k] = (schema as Record<string, unknown>)[k];
+      if (!set.has(k)) {
+        // defineProperty keeps an own enumerable `__proto__` key instead
+        // of invoking the prototype setter.
+        Object.defineProperty(filtered, k, {
+          configurable: true,
+          enumerable: true,
+          value: (schema as Record<string, unknown>)[k],
+          writable: true,
+        });
+      }
     (rule as unknown as { __schema: unknown }).__schema = filtered;
     snapshotChainBaseline(rule);
     return rule;

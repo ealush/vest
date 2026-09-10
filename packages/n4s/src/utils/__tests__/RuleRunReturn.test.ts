@@ -66,6 +66,20 @@ describe('RuleRunReturn', () => {
       expect(res.type).toBe('FALLBACK');
     });
 
+    it('keeps an explicit undefined type from a plain result object', () => {
+      // Presence decides: a parser returning an own 'type' of undefined
+      // produces undefined output, not the input fallback. Class instances
+      // always carry the key, so they keep the legacy value check above.
+      const plain = { pass: true, type: undefined };
+      const res = RuleRunReturn.create(
+        plain as RuleRunReturn<string | undefined>,
+        'FALLBACK',
+      );
+
+      expect(res.pass).toBe(true);
+      expect(res.type).toBe(undefined);
+    });
+
     it('invokes provided message function with provided type argument', () => {
       const inner = RuleRunReturn.Passing('INNER');
       const msgFn = vi.fn((t: string) => `outer:${t}`);

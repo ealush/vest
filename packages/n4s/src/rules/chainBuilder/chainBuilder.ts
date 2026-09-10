@@ -29,7 +29,11 @@ import { isSchemaExecutionProjection } from '../../schema/projectionContext';
 import { MAP_VALUE } from '../../schema/mapWithoutValidation';
 import { isRuleNode } from '../../schema/ruleNode';
 
-import { executeChain, type Predicate } from './chainExecutor';
+import {
+  executeChain,
+  executeMappingChain,
+  type Predicate,
+} from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 
 export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
@@ -341,8 +345,10 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
 
   (proxy as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] =
     unresolvedDeps;
+  // Parser-only mapping threads declared transforms without validation
+  // short-circuiting (A1); the shared validation executor is untouched.
   const mapValue = (value: unknown): ReturnType<typeof executeChain> =>
-    executeChain(mappingChain, value);
+    executeMappingChain(mappingChain, value);
   (target as unknown as Record<symbol, unknown>)[MAP_VALUE] = mapValue;
   (proxy as unknown as Record<symbol, unknown>)[MAP_VALUE] = mapValue;
   proxyToTarget.set(proxy as unknown as object, target as object);

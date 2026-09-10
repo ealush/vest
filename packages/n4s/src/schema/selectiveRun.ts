@@ -12,7 +12,10 @@ import { EnforceSchemaError } from '../errors/EnforceSchemaError';
 import { enforceLazy } from '../lazy';
 import type { SchemaMemberRule } from '../rules/schemaRules/schemaRulesLazyTypes';
 import type { DescribeResult } from '../utils/RuleInstance';
+import { RuleInstance } from '../utils/RuleInstance';
+import { partialLoose } from '../rules/schemaRules/partial';
 import {
+  COMPOSITION_CHILDREN,
   ITEM_CONTAINER,
   ITEM_SCHEMA,
   OPTIONAL_RULE,
@@ -23,7 +26,12 @@ import {
 import type { ItemContainerKind } from './schemaSlots';
 import type { ItemSegment, PropertySegment, SchemaPath } from './SchemaPath';
 import { isPropertySegment } from './SchemaPath';
-import { withSchemaExecutionProjection } from './projectionContext';
+import {
+  withSchemaExecutionProjection,
+  withoutSchemaExecutionProjection,
+} from './projectionContext';
+import { withStandaloneRootedBoundary } from '../rules/chainBuilder/chainBuilder';
+import { isRuleNode } from './ruleNode';
 import type { SchemaRelationship } from './SchemaRelationship';
 
 /**
@@ -60,6 +68,18 @@ export type SelectiveSchemaResult = {
   readonly type?: unknown;
 };
 
+/**
+ * Execution coverage for Vest integration. n4s sets `rootReevaluated`
+ * when a run executes the full schema and its unfiltered verdict passes —
+ * proving the root rule anew. Fragment runs never set it (a narrowed run
+ * cannot vouch for rules it never visited), nor do filtered verdicts (a
+ * pass fabricated after narrowing may hide unevaluated failures).
+ * Callers initialize it to `{ rootReevaluated: false }`.
+ */
+export type SelectiveExecutionCoverage = {
+  rootReevaluated: boolean;
+};
+
 export type SelectiveRunOptions = {
   /**
    * Raw changed fields in canonical dotted form (e.g. 'travelers.1.country',
@@ -90,6 +110,8 @@ export type SelectiveRunOptions = {
    * failure is dropped, mirroring the suite runtime).
    */
   readonly skip?: string | readonly string[] | boolean | null;
+  /** @internal Coverage collector for Vest integration (see above). */
+  readonly coverage?: SelectiveExecutionCoverage;
 };
 
 /**
@@ -100,6 +122,7 @@ export type SelectiveRunOptions = {
 type FocusModifiers = {
   readonly only?: readonly string[] | null;
   readonly skip?: string | readonly string[] | boolean | null;
+  readonly coverage?: SelectiveExecutionCoverage;
 };
 
 /**
@@ -135,16 +158,18 @@ export function runSchemaPaths(
     runSchemaWithParse(
       schema as SelectiveSchema,
       data,
-      { only: focus.onlyList, skip: focus.skip },
+      { coverage: options.coverage, only: focus.onlyList, skip: focus.skip },
       focus.effectiveAffected,
     );
   const createsExecutionFragment =
     focus.effectiveAffected !== null ||
     focus.onlyList !== null ||
     !isNullish(focus.skip);
-  return createsExecutionFragment
-    ? withSchemaExecutionProjection(execute)
-    : execute();
+  return withStandaloneRootedBoundary(schema, () =>
+    createsExecutionFragment
+      ? withSchemaExecutionProjection(execute)
+      : execute(),
+  );
 }
 
 /**
@@ -159,10 +184,94 @@ function selectiveFocusOf(options: SelectiveRunOptions): {
   const { affected = null, only = null, skip = null } = options;
   const onlyList = buildArrayProp(only);
   return {
-    effectiveAffected: intersectAffectedWithOnly(affected, onlyList),
+    effectiveAffected: excludeSkippedAffected(
+      intersectAffectedWithOnly(affected, onlyList),
+      skip,
+    ),
     onlyList,
     skip,
   };
+}
+
+function excludeSkippedAffected(
+  affected: readonly string[] | null,
+  skip: SelectiveRunOptions['skip'],
+): readonly string[] | null {
+  if (affected === null) return null;
+  if (skip === true) return [];
+  const skipped = new Set(buildArrayProp(skip) ?? []);
+  return affected.filter(field => !skipped.has(field));
+}
+
+/**
+ * Execution-side skip subtraction (W3 leaf exclusions). Drops an affected
+ * path when the skip names it exactly or nests under it, and splits an
+ * affected parent straddling a skip into its explicit non-skipped
+ * branches — a parent kept whole would execute the skipped child. A skip
+ * strictly above an affected path does NOT cascade: skip matches exact
+ * names, so nested synthesis under a skipped parent stays in place.
+ * Never throws: unparseable names pass through to narrowing untouched.
+ */
+function subtractSkippedPaths(
+  schema: SelectiveSchema,
+  data: unknown,
+  affected: readonly string[],
+  skip: string | readonly string[] | boolean | null | undefined,
+): string[] {
+  if (skip === true) return [];
+  const skipSegs = parsedSkipSegs(skip);
+  if (skipSegs.length === 0) return [...affected];
+  const expanded = [
+    ...affected,
+    ...collectSubtreeDescendants(schema, affected, data),
+  ];
+  return [
+    ...new Set(expanded.filter(field => !isSkipCovered(field, skipSegs))),
+  ];
+}
+
+function parsedSkipSegs(
+  skip: string | readonly string[] | boolean | null | undefined,
+): AffectedSeg[][] {
+  const skipNames = buildArrayProp(skip);
+  if (!skipNames) return [];
+  const skipSegs: AffectedSeg[][] = [];
+  for (const name of skipNames) {
+    const segs = safeAffectedSegs(name);
+    if (segs !== null) skipSegs.push(segs);
+  }
+  return skipSegs;
+}
+
+function isSkipCovered(field: string, skipSegs: AffectedSeg[][]): boolean {
+  const segs = safeAffectedSegs(field);
+  if (segs === null) return false;
+  return skipSegs.some(skipped => skipCoversField(skipped, segs));
+}
+
+function safeAffectedSegs(field: string): AffectedSeg[] | null {
+  try {
+    const segs = parseAffectedPath(field);
+    return segs.length === 0 ? null : segs;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * One-directional skip coverage: the skip names the field exactly, or the
+ * skip nests strictly under it (the field is a strict prefix of the skip).
+ * A skip strictly above the field never covers it.
+ */
+function skipCoversField(
+  skipped: readonly AffectedSeg[],
+  field: readonly AffectedSeg[],
+): boolean {
+  if (skipped.length < field.length) return false;
+  for (let index = 0; index < field.length; index += 1) {
+    if (String(skipped[index]) !== String(field[index])) return false;
+  }
+  return true;
 }
 
 /**
@@ -283,17 +392,28 @@ function runSchemaWithParse(
     return runFlatSchema(schema, modifiers, data, changedAffected);
   }
   if (changedAffected.length === 0) return [{ pass: true, type: data }];
+  // Leaf exclusions (W3): a skip nested under an affected parent splits
+  // the parent into its explicit non-skipped branches for execution, so a
+  // skipped predicate never runs. Narrowing keeps the original affected
+  // set: container-level failures at a split parent still report.
+  const executionAffected = subtractSkippedPaths(
+    schema,
+    data,
+    changedAffected,
+    modifiers.skip,
+  );
+  if (executionAffected.length === 0) return [{ pass: true, type: data }];
   const divergentFallback = runExplicitUndefinedFallback(
     schema,
     modifiers,
-    changedAffected,
+    executionAffected,
     data,
   );
   if (divergentFallback !== null) return divergentFallback;
   const { mainRun, supplement } = runProjectedMain(
     schema,
     modifiers,
-    [...changedAffected],
+    [...executionAffected],
     data,
   );
   return narrowProjectedResults({
@@ -374,6 +494,21 @@ type FullFilterRun = {
 /**
  * Full-schema run with post-filtering to the affected set.
  */
+/**
+ * Records root re-evaluation when a full-schema execution passes
+ * unfiltered. Fragment executions and filtered verdicts never qualify
+ * (see SelectiveExecutionCoverage).
+ */
+function markRootReevaluated(
+  modifiers: FocusModifiers,
+  rawResults: readonly SelectiveSchemaResult[],
+): void {
+  const coverage = modifiers.coverage;
+  if (coverage === undefined) return;
+  coverage.rootReevaluated =
+    rawResults.length > 0 && rawResults.every(result => result.pass);
+}
+
 function runFullWithAffectedFilter(
   run: FullFilterRun,
 ): SelectiveSchemaResult[] {
@@ -381,6 +516,7 @@ function runFullWithAffectedFilter(
     changedFallbackSchema(run.schema, run.modifiers),
     run.data,
   );
+  markRootReevaluated(run.modifiers, full);
   return filterSchemaResultsToAffected(full, run.affected, run.data, run.skip);
 }
 
@@ -437,6 +573,10 @@ function runFlatSchema(
     }
     return result;
   }
+  // The changed() flat path executes the full fallback schema: a passing
+  // raw verdict re-evaluates the root (supplement runs below only add
+  // member coverage, never revoke it).
+  markRootReevaluated(modifiers, result);
   const skip = buildSkipFilter(modifiers.skip);
   const memberResults = collectFlatMemberSupplement(
     schema,
@@ -610,13 +750,11 @@ function appendFlatMember(
 }
 
 /**
- * Partial containers iterate own enumerable keys. Explicit undefined is
- * therefore provided only when its property participates in that iteration.
+ * Partial containers validate declared own properties, including non-enumerable
+ * properties. Absence differs from a present property holding undefined.
  */
 function isPresentKey(data: unknown, key: string): boolean {
-  return (
-    isObject(data) && Object.prototype.propertyIsEnumerable.call(data, key)
-  );
+  return isObject(data) && hasOwnProperty(data, key);
 }
 
 function skipAbsentMember(run: FlatMemberRun): boolean {
@@ -644,25 +782,23 @@ function runProjectedOrFull(
   data: unknown,
 ): ProjectedMainRun {
   if (!projectedSchema) {
-    return {
-      full: true,
-      results: runExecutableSchema(
-        changedFallbackSchema(schema, modifiers),
-        data,
-      ),
-    };
+    const results = runExecutableSchema(
+      changedFallbackSchema(schema, modifiers),
+      data,
+    );
+    markRootReevaluated(modifiers, results);
+    return { full: true, results };
   }
   try {
     return { full: false, results: runExecutableSchema(projectedSchema, data) };
   } catch (error) {
     if (!isBoundaryError(error)) throw error;
-    return {
-      full: true,
-      results: runExecutableSchema(
-        changedFallbackSchema(schema, modifiers),
-        data,
-      ),
-    };
+    const results = runExecutableSchema(
+      changedFallbackSchema(schema, modifiers),
+      data,
+    );
+    markRootReevaluated(modifiers, results);
+    return { full: true, results };
   }
 }
 
@@ -705,13 +841,27 @@ function omitSkippedTopKeys(
 }
 
 /**
- * Runs a schema via parse-then-run, falling back to run(raw) when parse is
- * unavailable or reports an expected validation failure.
+ * Runs n4s through its verdict-and-output entry point once. Foreign schema
+ * adapters keep the existing parse/run compatibility path.
  */
 function runExecutableSchema(
   executableSchema: SelectiveSchema,
   data: unknown,
 ): SelectiveSchemaResult[] {
+  return withoutSchemaExecutionProjection(() =>
+    executeSchemaOnce(executableSchema, data),
+  );
+}
+
+function executeSchemaOnce(
+  executableSchema: SelectiveSchema,
+  data: unknown,
+): SelectiveSchemaResult[] {
+  // n4s.run already validates and maps in one pass. Retrying after a failed
+  // Standard Schema validation runs predicates twice and may change a verdict.
+  if (isN4sVendorSchema(executableSchema) && isFunction(executableSchema.run)) {
+    return normalizeSelectiveSchemaResult(executableSchema.run(data), data);
+  }
   const parseResult = tryParseSchema(executableSchema, data);
   if (parseResult) {
     return parseResult;
@@ -795,8 +945,7 @@ function parseAffectedPath(field: string): AffectedSeg[] {
 /**
  * Whether projection would change explicit-undefined semantics. This occurs
  * for unknown strict-shape keys (the value-only sentinel cannot distinguish
- * absence) and declared partial members (the projected optional wrapper would
- * skip a present undefined value that the full partial container evaluates).
+ * absence). Native partial fragments preserve declared undefined values.
  * Callers take the full-run fallback so the selective verdict stays exact.
  * Metadata-only: never executes user validators and never throws.
  */
@@ -883,21 +1032,16 @@ function stepKeySegment(
       dataNode: readDataKey(dataNode, seg),
     };
   }
-  return finalKeyStep(schemaNode, inner, dataNode, seg);
+  return finalKeyStep(inner, dataNode, seg);
 }
 
 function finalKeyStep(
-  schemaNode: SelectiveSchema,
   inner: Record<string, SelectiveSchema>,
   dataNode: unknown,
   seg: string,
 ): AffectedStep {
   return {
-    diverged:
-      isDivergentUnknownKey(inner, dataNode, seg) ||
-      (hasOwnProperty(inner, seg) &&
-        isPartialLikeContainer(schemaNode) &&
-        isExplicitUndefined(dataNode, seg)),
+    diverged: isDivergentUnknownKey(inner, dataNode, seg),
     schemaNode: undefined,
     dataNode: undefined,
   };
@@ -943,7 +1087,26 @@ function isExplicitUndefined(dataNode: unknown, key: string): boolean {
 
 function readDataKey(dataNode: unknown, key: string): unknown {
   if (!isObject(dataNode)) return undefined;
-  return (dataNode as Record<string, unknown>)[key];
+  return readOwnDataValue(dataNode, key);
+}
+
+/**
+ * Reads an own data property for planning without invoking accessors.
+ * Planning enumerates live data SHAPE (keys and indices); invoking an
+ * input getter would evaluate user code during a phase that must stay
+ * side-effect free (SC-SCOPE). Accessor-backed subtrees expand schema-side
+ * only. Data descriptors read identically to a direct access.
+ */
+function readOwnDataValue(dataNode: object, key: string | number): unknown {
+  const descriptor = Object.getOwnPropertyDescriptor(dataNode, key);
+  if (descriptor === undefined) return undefined;
+  if (
+    typeof descriptor.get === 'function' ||
+    typeof descriptor.set === 'function'
+  ) {
+    return undefined;
+  }
+  return descriptor.value;
 }
 
 function itemMemberOf(
@@ -1068,10 +1231,185 @@ export function resolveAffectedPaths(
   const changedArray = stringEntriesOf(entries).map(canonicalAffectedName);
   if (changedArray.length === 0) return [];
   const relationships = getSchemaRelationships(schema);
-  if (relationships.length === 0) {
-    return [...new Set(changedArray)];
+  const base =
+    relationships.length === 0
+      ? [...new Set(changedArray)]
+      : collectForwardTargets(changedArray, relationships, data);
+  // Changing a whole object selects its descendants: every affected path
+  // resolving to a container pulls the live subtree beneath it, so
+  // descendant tests execute and descendant failures narrow instead of the
+  // parent certifying a verdict its children never saw. Structural only —
+  // never relationship-transitive.
+  return [
+    ...new Set([...base, ...collectSubtreeDescendants(schema, base, data)]),
+  ];
+}
+
+/**
+ * Structural descendant expansion (W5). Walks each affected path through
+ * the schema and run data to its target, then enumerates every live path
+ * beneath it. Present data keys always expand; shape-declared members
+ * expand even when absent from data (a missing member is still a selected
+ * test target). Unions declare no members — no branch can be picked
+ * without executing — but their live data keys still expand. Never throws:
+ * an unresolvable path contributes nothing beyond itself.
+ */
+function collectSubtreeDescendants(
+  schema: unknown,
+  affected: readonly string[],
+  data: unknown,
+): string[] {
+  const out: string[] = [];
+  const root = asRuleNode(schema);
+  for (const field of affected) {
+    let segs: AffectedSeg[];
+    try {
+      segs = parseAffectedPath(field);
+    } catch {
+      continue;
+    }
+    if (segs.length === 0) continue;
+    appendDescendantPaths(root, data, segs, field, out, new Set());
   }
-  return collectForwardTargets(changedArray, relationships, data);
+  return out;
+}
+
+function asRuleNode(schema: unknown): SelectiveSchema | undefined {
+  if (typeof schema === 'function') return schema as SelectiveSchema;
+  return isObject(schema) ? (schema as SelectiveSchema) : undefined;
+}
+
+function appendDescendantPaths(
+  schemaNode: SelectiveSchema | undefined,
+  dataNode: unknown,
+  segs: readonly AffectedSeg[],
+  base: string,
+  out: string[],
+  ancestors: Set<unknown>,
+): void {
+  let schema = schemaNode;
+  let data = dataNode;
+  for (const seg of segs) {
+    if (typeof seg === 'number') {
+      data = isArray(data) ? readOwnDataValue(data, seg) : undefined;
+      schema = itemMemberOf(schema, seg);
+      continue;
+    }
+    data = readDataKey(data, seg);
+    schema = memberRuleOf(schema, seg);
+  }
+  appendChildPaths(schema, data, base, out, ancestors);
+}
+
+function memberRuleOf(
+  rule: SelectiveSchema | undefined,
+  key: string,
+): SelectiveSchema | undefined {
+  if (rule === undefined) return undefined;
+  const inner = shapeInnerOf(rule);
+  if (inner === null || inner === undefined) return undefined;
+  return hasOwnProperty(inner, key) ? inner[key] : undefined;
+}
+
+type ChildWalk = {
+  readonly schemaNode: SelectiveSchema | undefined;
+  readonly dataNode: unknown;
+  readonly base: string;
+  readonly out: string[];
+  readonly ancestors: Set<unknown>;
+};
+
+function appendChildPaths(
+  schemaNode: SelectiveSchema | undefined,
+  dataNode: unknown,
+  base: string,
+  out: string[],
+  ancestors: Set<unknown>,
+): void {
+  // The guard tracks the current recursion stack, not a global visited set:
+  // an aliased object reachable from two branches expands under both, while
+  // a genuine cycle on the current path still terminates.
+  if (typeof dataNode !== 'object' || dataNode === null) {
+    appendKeyChildren({ ancestors, base, dataNode, out, schemaNode });
+    return;
+  }
+  if (ancestors.has(dataNode)) return;
+  ancestors.add(dataNode);
+  try {
+    const walk: ChildWalk = { ancestors, base, dataNode, out, schemaNode };
+    if (isArray(dataNode)) {
+      appendIndexChildren(walk, dataNode);
+    } else {
+      appendKeyChildren(walk);
+    }
+  } finally {
+    ancestors.delete(dataNode);
+  }
+}
+
+function appendIndexChildren(
+  walk: ChildWalk,
+  dataNode: readonly unknown[],
+): void {
+  for (let index = 0; index < dataNode.length; index += 1) {
+    const name = `${walk.base}.${index}`;
+    walk.out.push(name);
+    appendChildPaths(
+      itemMemberOf(walk.schemaNode, index),
+      readOwnDataValue(dataNode, index),
+      name,
+      walk.out,
+      walk.ancestors,
+    );
+  }
+}
+
+function appendKeyChildren(walk: ChildWalk): void {
+  if (!isRecordValue(walk.dataNode) && !hasDeclaredMembers(walk.schemaNode)) {
+    return;
+  }
+  for (const key of childKeysOf(walk.schemaNode, walk.dataNode)) {
+    if (isUnsafeKey(key)) continue;
+    const name = `${walk.base}.${key}`;
+    walk.out.push(name);
+    appendChildPaths(
+      memberRuleOf(walk.schemaNode, key),
+      readDataKey(walk.dataNode, key),
+      name,
+      walk.out,
+      walk.ancestors,
+    );
+  }
+}
+
+function hasDeclaredMembers(rule: SelectiveSchema | undefined): boolean {
+  if (rule === undefined) return false;
+  const inner = shapeInnerOf(rule);
+  return inner !== null && inner !== undefined && Object.keys(inner).length > 0;
+}
+
+function childKeysOf(
+  schemaNode: SelectiveSchema | undefined,
+  dataNode: unknown,
+): string[] {
+  const keys = new Set<string>();
+  addDeclaredKeys(keys, schemaNode);
+  addDataKeys(keys, dataNode);
+  return [...keys];
+}
+
+function addDeclaredKeys(
+  keys: Set<string>,
+  schemaNode: SelectiveSchema | undefined,
+): void {
+  const inner = schemaNode === undefined ? null : shapeInnerOf(schemaNode);
+  if (inner === null || inner === undefined) return;
+  for (const key of Object.keys(inner)) keys.add(key);
+}
+
+function addDataKeys(keys: Set<string>, dataNode: unknown): void {
+  if (!isRecordValue(dataNode)) return;
+  for (const key of Object.keys(dataNode)) keys.add(key);
 }
 
 // Non-string entries (e.g. a runtime boolean) never reach field-name
@@ -1106,29 +1444,34 @@ function addMatchingTargets(
   for (const { path: concretePath } of concreteChanged) {
     if (
       concreteMatchesPattern(rel.source, concretePath) ||
-      isStrictPrefixOfPattern(rel.source, concretePath)
+      isStrictPrefixOfPattern(rel.source, concretePath) ||
+      sourceContainsChangedPath(rel.source, concretePath)
     ) {
       addConcreteTargets(rel, concretePath, data, affectedSet);
     }
   }
 }
 
+function sourceContainsChangedPath(
+  source: SchemaPath,
+  changed: SchemaPath,
+): boolean {
+  return (
+    source.length < changed.length &&
+    source.every((segment, index) => patternSegMatches(segment, changed[index]))
+  );
+}
+
 function getSchemaRelationships(schema: unknown): SchemaRelationship[] {
   const describe = describeFnOf(schema);
   if (describe === null) return [];
-  try {
-    return describe().relationships ?? [];
-  } catch {
-    // Introspection must never break a run: schemas without readable
-    // relationships keep their changed set unexpanded.
-    return [];
-  }
+  return describe.call(schema).relationships ?? [];
 }
 
 function describeFnOf(
   schema: unknown,
 ): (() => { relationships: SchemaRelationship[] }) | null {
-  if (!isObject(schema)) return null;
+  if (!isRuleNode(schema)) return null;
   const describe = (schema as SelectiveSchema).describe;
   return typeof describe === 'function' ? describe : null;
 }
@@ -1439,10 +1782,9 @@ function collectArraySupplementInner(
   data: unknown,
   context: ArraySupplementContext,
 ): SelectiveSchemaResult[] {
-  const topSchema = schema.__schema;
-  if (topSchema === undefined || !isObject(data) || isArray(data)) return [];
+  if (!isObject(data) || isArray(data)) return [];
   const out: SelectiveSchemaResult[] = [];
-  appendShapeDescendants(schema, data, {
+  const selection: IndexSelection = {
     suffixes: context.expanded.map(parseAffectedPath),
     sink: {
       basePath: [],
@@ -1451,8 +1793,38 @@ function collectArraySupplementInner(
       out,
     },
     main: context.main,
-  });
+  };
+  if (schema.__schema === undefined) {
+    appendCompositionDescendants(schema, data, selection);
+    return out;
+  }
+  appendShapeDescendants(schema, data, selection);
   return out;
+}
+
+/**
+ * Coverage supplement for composed chains (W3). A compose() top carries no
+ * __schema, so the full main run is authoritative — but it short-circuits
+ * at the first failing link or member, leaving requested affected siblings
+ * unvisited. Each composed child runs through the same walker, so the
+ * single-failure boundary rule applies per link: members past the boundary
+ * run standalone exactly once, members before it (and links without member
+ * vocabulary, like chained root conditions) stay untouched.
+ */
+function appendCompositionDescendants(
+  schema: SelectiveSchema,
+  value: Record<string, unknown>,
+  selection: IndexSelection,
+): void {
+  for (const child of compositionChildrenOf(schema)) {
+    appendSupplementalFailures(child, value, selection);
+  }
+}
+
+function compositionChildrenOf(rule: SelectiveSchema): SelectiveSchema[] {
+  const slot = symbolSlotOf(rule, COMPOSITION_CHILDREN);
+  if (!isArray(slot)) return [];
+  return slot.filter((entry): entry is SelectiveSchema => isObject(entry));
 }
 
 function childValue(data: unknown, top: string): unknown {
@@ -2078,23 +2450,40 @@ function appendUnionElement(
   // Union membership is whole-member by semantics: narrowing a member for
   // the verdict would admit elements the full run rejects. An element
   // matching no member reproduces the full run's generic element failure.
-  if (unionElementRejected(members, child, selection.sink)) {
+  const accepted = unionAcceptedResults(members, child, selection.sink);
+  if (accepted === null) {
     selection.sink.out.push({ pass: false, type: child, path: memberPath });
+    return;
   }
+  // Preserve the winning branch's actual parsed output at the concrete
+  // member path. The merger folds passing member types into the fragment's
+  // parsed output, so the branch is never rerun to obtain its output.
+  const [first] = accepted;
+  selection.sink.out.push({
+    pass: true,
+    type: first?.type,
+    path: memberPath,
+  });
 }
 
-function unionElementRejected(
+/**
+ * Runs union members in first-match order and returns the accepting
+ * branch's results, or null when no member accepts. An empty member run
+ * means the member hit a boundary gap (recorded on the sink for full
+ * fallback) — it must not count as acceptance.
+ */
+function unionAcceptedResults(
   members: SelectiveSchema[],
   child: unknown,
   sink: IndexRunSink,
-): boolean {
+): SelectiveSchemaResult[] | null {
   for (const member of members) {
     const results = safeRunItem(member, child, sink);
-    if (results.every(result => result.pass)) {
-      return false;
+    if (results.length > 0 && results.every(result => result.pass)) {
+      return results;
     }
   }
-  return true;
+  return null;
 }
 
 function indexHeads(suffixes: AffectedSeg[][]): number[] {
@@ -2705,9 +3094,9 @@ function projectShapeRule(
 }
 
 /**
- * Rebuilds a narrowed shape fragment. Partial semantics are represented by
- * optionalizing each retained member inside a loose container: missing
- * selected keys pass while unrelated original keys remain accepted. A moved
+ * Rebuilds a narrowed shape fragment. Partial fragments use the native partial
+ * evaluator without extra-key rejection, preserving absence and undefined
+ * while accepting unrelated original keys. A moved
  * chain still cannot be rebuilt because its container validators are private
  * to the original rule.
  */
@@ -2819,19 +3208,17 @@ function rebuildShapeContainer(
   original: SelectiveSchema,
   filtered: Record<string, SelectiveSchema>,
 ): SelectiveSchema {
-  return looseRule(
-    isPartialLikeContainer(original) ? optionalizeMembers(filtered) : filtered,
+  if (!isPartialLikeContainer(original)) return looseRule(filtered);
+  // optional(member) changes present-undefined semantics and invents absent
+  // properties. Reuse the native partial evaluator with only strict-key
+  // rejection disabled for this internal fragment.
+  const projected = RuleInstance.create((value: unknown) =>
+    partialLoose(value as Record<string, unknown>, filtered),
   );
-}
-
-function optionalizeMembers(
-  members: Record<string, SelectiveSchema>,
-): Record<string, SelectiveSchema> {
-  const optionalized: Record<string, SelectiveSchema> = {};
-  for (const key of Object.keys(members)) {
-    optionalized[key] = optionalRule(members[key]);
-  }
-  return optionalized;
+  return Object.assign(projected, {
+    __schema: filtered,
+    [PARTIAL_LIKE]: true,
+  });
 }
 
 function projectArrayRule(
@@ -2912,10 +3299,14 @@ function passThroughResult(
   // A fabricated pass carries the surviving parsed output — the first
   // passing entry's type — or the raw input when nothing passed. Reading
   // results[0] unconditionally would leak a filtered-out failure's
-  // partially-coerced type as if it were parsed output.
-  return [
-    { pass: true, type: results.find(result => result.pass)?.type ?? data },
-  ];
+  // partially-coerced type as if it were parsed output. Presence decides:
+  // an explicitly undefined surviving output stays undefined.
+  const surviving = results.find(result => result.pass);
+  const type =
+    surviving !== undefined && hasOwnProperty(surviving, 'type')
+      ? surviving.type
+      : data;
+  return [{ pass: true, type }];
 }
 
 function skipSetOf(skip: string[] | null): Set<string> {
@@ -3000,8 +3391,11 @@ const N4S_VENDOR = 'n4s';
  * affected/skip applies. Custom standard-schema results do not.
  */
 function isN4sVendorSchema(schema: unknown): boolean {
-  if (!isObject(schema)) return false;
-  return schema['~standard']?.vendor === N4S_VENDOR;
+  if (!isRuleNode(schema)) return false;
+  return (
+    (schema as { '~standard'?: { vendor?: unknown } })['~standard']?.vendor ===
+    N4S_VENDOR
+  );
 }
 
 /**
@@ -3145,6 +3539,10 @@ function normalizeSelectiveSchemaResult(
 
 /**
  * Converts a single unknown run payload into a safe result shape.
+ *
+ * Output presence is distinguished from output value: present null and
+ * present undefined are both valid parser outputs and survive, while a
+ * missing type key falls back to the input value.
  */
 function normalizeSingleSelectiveSchemaResult(
   candidate: unknown,
@@ -3161,7 +3559,7 @@ function normalizeSingleSelectiveSchemaResult(
     message: candidate.message,
     pass: candidate.pass,
     path: candidate.path,
-    type: candidate.type ?? fallbackType,
+    type: hasOwnProperty(candidate, 'type') ? candidate.type : fallbackType,
   };
 }
 

@@ -643,6 +643,23 @@ describe('runSchemaPaths single expansion', () => {
       c: enforce.isString().dependsOn($ => $.b),
     });
 
+  it('expands an aliased object under every branch that references it', () => {
+    // The cycle guard tracks the recursion stack, not a visited set: one
+    // shared object reachable from two branches expands under both.
+    const schema = enforce.shape({
+      p: enforce.shape({
+        left: enforce.shape({ x: enforce.isString() }),
+        right: enforce.shape({ x: enforce.isString() }),
+      }),
+    });
+    const shared = { x: 'v' };
+    const resolved = resolveAffectedPaths(schema, ['p'], {
+      p: { left: shared, right: shared },
+    });
+    expect(resolved).toContain('p.left.x');
+    expect(resolved).toContain('p.right.x');
+  });
+
   it('fans raw changed fields out to direct dependents without caller pre-expansion', () => {
     const failures = runSchemaPaths(
       chain(),

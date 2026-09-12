@@ -31,6 +31,7 @@ import {
   withoutSchemaExecutionProjection,
 } from './projectionContext';
 import { withStandaloneRootedBoundary } from '../rules/chainBuilder/chainBuilder';
+import { compose } from '../compose';
 import { isRuleNode } from './ruleNode';
 import type { SchemaRelationship } from './SchemaRelationship';
 
@@ -815,11 +816,106 @@ function changedFallbackSchema(
   schema: SelectiveSchema,
   modifiers: FocusModifiers,
 ): SelectiveSchema {
+  const composed = omitSkippedInComposedChain(schema, modifiers.skip);
+  if (composed !== schema) return composed;
   if (!isN4sSchema(schema)) return schema;
   if (isPartialLikeContainer(schema) || !chainBaselineMatches(schema)) {
     return schema;
   }
   return omitSkippedTopKeys(schema, modifiers.skip);
+}
+
+/**
+ * Exclusion-safe fallback for composed root chains (e.g.
+ * `compose(shape, condition)`). The plain path bails out for moved chains
+ * and runs the original schema unfocused — executing explicitly skipped
+ * child predicates and only filtering their errors afterward. Instead,
+ * omit skipped top-level keys inside the shape child and recompose with
+ * the untouched root chain preserved, so root/container validation still
+ * runs while skipped predicates never execute. Returns the original schema
+ * when no skip applies or no child can be safely rebuilt.
+ */
+function omitSkippedInComposedChain(
+  schema: SelectiveSchema,
+  skipProp: string | readonly string[] | boolean | null | undefined,
+): SelectiveSchema {
+  const parsed = parseComposedSkip(schema, skipProp);
+  if (!parsed) return schema;
+  const next = omitComposedChildren(parsed.children, skipProp, parsed.skipList);
+  if (!next.changed) return schema;
+  return recomposeSkippedChain(schema, next.children);
+}
+
+function parseComposedSkip(
+  schema: SelectiveSchema,
+  skipProp: string | readonly string[] | boolean | null | undefined,
+): { children: unknown[]; skipList: readonly string[] } | null {
+  const children = (schema as unknown as Record<symbol, unknown>)[
+    COMPOSITION_CHILDREN
+  ];
+  if (!Array.isArray(children) || children.length === 0) return null;
+  const skipList = buildArrayProp(skipProp);
+  if (!skipList || skipList.length === 0) return null;
+  return { children, skipList };
+}
+
+function recomposeSkippedChain(
+  schema: SelectiveSchema,
+  children: unknown[],
+): SelectiveSchema {
+  try {
+    return compose(
+      ...(children as unknown as Parameters<typeof compose>),
+    ) as unknown as SelectiveSchema;
+  } catch {
+    return schema;
+  }
+}
+
+function omitComposedChildren(
+  children: unknown[],
+  skipProp: string | readonly string[] | boolean | null | undefined,
+  skipList: readonly string[],
+): { changed: boolean; children: unknown[] } {
+  let changed = false;
+  const nextChildren = children.map(child => {
+    const next = omitComposedChild(child, skipProp, skipList);
+    if (next !== child) changed = true;
+    return next;
+  });
+  return { changed, children: nextChildren };
+}
+
+function omitComposedChild(
+  child: unknown,
+  skipProp: string | readonly string[] | boolean | null | undefined,
+  skipList: readonly string[],
+): unknown {
+  if (!isObject(child)) return child;
+  const childSchema = child as SelectiveSchema;
+  const nested = omitSkippedInComposedChain(childSchema, skipProp);
+  const target = nested !== childSchema ? nested : childSchema;
+  if (!isOmittableShape(target, skipList)) return target;
+  return omitSkippedTopKeys(target, skipProp);
+}
+
+function isOmittableShape(
+  target: SelectiveSchema,
+  skipList: readonly string[],
+): boolean {
+  if (target.__schema === undefined) return false;
+  if (isPartialLikeContainer(target)) return false;
+  if (!chainBaselineMatches(target)) return false;
+  return skipIntersectsTopKeys(target, skipList);
+}
+
+function skipIntersectsTopKeys(
+  target: SelectiveSchema,
+  skipList: readonly string[],
+): boolean {
+  const topKeys = target.__schema;
+  if (!topKeys || typeof topKeys !== 'object') return false;
+  return skipList.some(key => hasOwnProperty(topKeys, key));
 }
 
 function omitSkippedTopKeys(

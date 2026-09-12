@@ -1,0 +1,836 @@
+{
+  "generated": "2026-09-12",
+  "head": "64f13196",
+  "note": "Living manifest for docs/schema-relationships-production-acceptance-plan.md. Statuses: open, covered, blocked, unsupported-documented. verifiedSha is set only by an executed green run on that exact SHA. covered requires checking assertions, not file greenness.",
+  "rows": [
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.readiness.test.ts packages/vest/src/suite/__tests__/changed.adversarial.test.ts",
+      "id": "EX01",
+      "notes": "3 red at daef7a61: partial root-chain, nested root-chain (n4s readiness), nested public Vest (changed.adversarial). Fixed by deep kind-preserving omission; green at 64f13196.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/n4s/src/schema/__tests__/schemaContracts.readiness.test.ts",
+        "packages/vest/src/suite/__tests__/changed.adversarial.test.ts"
+      ],
+      "testNames": [
+        "[SC-SKIP-FALLBACK] partial root-chain fallback never executes an explicitly skipped predicate",
+        "[SC-SKIP-FALLBACK] nested root-chain fallback never executes an explicitly skipped predicate",
+        "does not execute a nested skipped schema predicate during composed fallback"
+      ],
+      "verifiedSha": "64f13196"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
+      "id": "EX02",
+      "notes": "Public partial-root counterpart with imperative tests and result state.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": [
+        "[SC-SKIP-FALLBACK] public partial-root counterpart executes selected work only"
+      ],
+      "verifiedSha": "64f13196"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
+      "id": "EX03",
+      "notes": "Covered by composition tests (changed+skip both orders) plus matrix parent/child cells; overlap/duplicate skips and root fan-out partially open. Core 108-case matrix green at 64f13196; extended interactions remain open.",
+      "result": "partial",
+      "status": "open",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.readiness.test.ts",
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": [
+        "[SC-COMPOSITION] skip source after/before expansion",
+        "[SC-EXCLUSION-MATRIX]"
+      ],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
+      "id": "EX04",
+      "notes": "Root pass/fail x skipped pass/fail/throw interaction assertions live in the matrix; attribution checks open. Core 108-case matrix green at 64f13196; extended interactions remain open.",
+      "result": "partial",
+      "status": "open",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": ["[SC-EXCLUSION-MATRIX]"],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
+      "id": "EX05",
+      "notes": "Compose-before/after-container and multiple/nested composition cases open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
+      "id": "EX06",
+      "notes": "Partial core-matrix dimension (missing child, own undefined, null, extra keys); strict/loose semantics assertions open. Core 108-case matrix green at 64f13196; extended interactions remain open.",
+      "result": "partial",
+      "status": "open",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": ["[SC-EXCLUSION-MATRIX]"],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
+      "id": "EX07",
+      "notes": "Concrete index/whole-item cases exist; wildcard, sparse, reorder-with-relationship cases open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [
+        "packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts"
+      ],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts",
+      "id": "EX08",
+      "notes": "Parsed-output honesty for excluded/selected siblings not yet asserted independently of mapping.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts",
+      "id": "EX09",
+      "notes": "Witnessed vs excluded union under composition open; unwitnessed error contract exists.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": ["C03"],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
+      "id": "EX10",
+      "notes": "Moved-chain (.message drift) skip throws SchemaExclusionError with zero excluded calls; unwitnessed union throws FocusedSchemaMappingError. Cause-preservation for injected throwing parsers/getters stays with C11/step 3.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": [
+        "[SC-EXCLUSION-OPAQUE] moved-chain fallback with intersecting skip fails closed",
+        "[SC-EXCLUSION-OPAQUE] unwitnessed union focus throws a stable mapping error"
+      ],
+      "verifiedSha": "64f13196"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.focus.test.ts",
+      "id": "EX11",
+      "notes": "Seeded error/warning/pending + skip clearing covered for fields; warning/pending variants open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.focus.test.ts"
+      ],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.focus.test.ts",
+      "id": "EX12",
+      "notes": "Valid-run recovery after fallback/root failure not explicitly asserted.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "GR01",
+      "notes": "64-graph x 7-change-set oracle green; simultaneous invalid fields + schema-predicate observations open.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/n4s/src/schema/__tests__/schemaContracts.readiness.test.ts",
+        "packages/vest/src/suite/__tests__/schemaContracts.featureMatrix.test.ts"
+      ],
+      "testNames": ["[SC-EXECUTION-MATRIX]", "[SC-GRAPH]"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "GR02",
+      "notes": "Transitive reporting, cycles, duplicates covered by oracle + resolver tests.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/n4s/src/schema/__tests__/schemaContracts.readiness.test.ts"
+      ],
+      "testNames": ["[SC-EXECUTION-MATRIX]"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "GR03",
+      "notes": "Nested/rooted scopes covered; two-suite isolation via async/reuse tests.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/n4s/src/schema/__tests__/schemaContracts.readiness.test.ts",
+        "packages/vest/src/suite/__tests__/schemaContracts.async.test.ts"
+      ],
+      "testNames": ["[SC-EXECUTION-ROOTED]"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "GR04",
+      "notes": "Parent/descendant overlap and numeric paths covered; unknown-path pinning open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [
+        "packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts"
+      ],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "GR05",
+      "notes": "Dangling pick/omit + partial/loose/compose relationship preservation covered.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": ["packages/n4s/src/schema/__tests__/selectiveRun.test.ts"],
+      "testNames": ["pick/omit dangling"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "GR06",
+      "notes": "New deterministic state-machine suite not yet written.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AP01",
+      "notes": "13-case composition matrix green; builder-reuse accumulation checks open.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.readiness.test.ts"
+      ],
+      "testNames": ["[SC-COMPOSITION]"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AP02",
+      "notes": "Only/skip collisions both orders + changed-source-skip green; nested imperative preserved.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.readiness.test.ts",
+        "packages/vest/src/__tests__/integration.exclusive.test.ts"
+      ],
+      "testNames": [
+        "[SC-SKIP-PRECEDENCE]",
+        "[SC-COMPOSITION] skip source",
+        "First declaration wins"
+      ],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AP03",
+      "notes": "skipWhen/omitWhen/optional/groups x changed cross-product open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AP04",
+      "notes": "Mode/memo/keyed x invalidation interactions open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": ["C10"],
+      "command": "yarn test:schema-relationships",
+      "id": "AP05",
+      "notes": "Requires C10 (remove signal overload) first.",
+      "result": "not-run",
+      "status": "blocked",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AP06",
+      "notes": "Parser/optional/nested fixtures exist; $ broad-string non-claim open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": ["C03"],
+      "command": "yarn test:schema-relationships",
+      "id": "AP07",
+      "notes": "SchemaExclusionError (SCHEMA_EXCLUSION_UNSUPPORTED) and FocusedSchemaMappingError (FOCUSED_SCHEMA_MAPPING_UNWITNESSED_UNION) exported from n4s; asserted by EX10 tests.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": [
+        "[SC-EXCLUSION-OPAQUE] moved-chain fallback with intersecting skip fails closed",
+        "[SC-EXCLUSION-OPAQUE] unwitnessed union focus throws a stable mapping error"
+      ],
+      "verifiedSha": "64f13196"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP01",
+      "notes": "Full-focused-full sequences with coercion covered by output/callbackMapping tests.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/changed.callbackMapping.test.ts",
+        "packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts"
+      ],
+      "testNames": [],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP02",
+      "notes": "Presence/delete-vs-undefined covered incl. skip-only present-undefined.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts"
+      ],
+      "testNames": [],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP03",
+      "notes": "Witness invalidation/excluded-union/first-focus cases open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP04",
+      "notes": "Parser ordering/counts partially covered; retry-prohibition covered by adversarial test.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/changed.adversarial.test.ts"
+      ],
+      "testNames": ["does not retry a failing validator"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP05",
+      "notes": "Buffer/view alias + detachment covered by snapshots/boundaries tests.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.snapshots.test.ts",
+        "packages/vest/src/suite/__tests__/schemaContracts.boundaries.test.ts"
+      ],
+      "testNames": ["[SC-ALIAS]", "[SC-ACCESSOR]"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP06",
+      "notes": "Cycles/symbols/descriptors covered; documented mutability preserved.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.snapshots.test.ts"
+      ],
+      "testNames": [],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP07",
+      "notes": "Getter/setter/self-alias detach green at callback+result boundaries.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.readiness.test.ts"
+      ],
+      "testNames": ["[SC-ACCESSOR-INTEGRATION]"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": ["C11", "C12"],
+      "command": "yarn test:schema-relationships",
+      "id": "MP08",
+      "notes": "New throwing/reentrant boundary-copy tests; requires C11/C12 semantics.",
+      "result": "not-run",
+      "status": "blocked",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP09",
+      "notes": "Cross-run/cross-copy isolation assertions open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "FP01",
+      "notes": "No-write-into-caller covered by ownership tests; freeze-repeat runs open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "FP02",
+      "notes": "Getter-free planning covered at n4s boundary; outer-run materialization split needs explicit test.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts"
+      ],
+      "testNames": ["getter-free"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "FP03",
+      "notes": "Context restoration covered; reentrant-validation cases extend existing.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": ["packages/context/src/__tests__"],
+      "testNames": [],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "FP04",
+      "notes": "New metamorphic suite not yet written.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AS01",
+      "notes": "Supersession ordering covered with controlled promises.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.async.test.ts"
+      ],
+      "testNames": ["[SC-ASYNC]"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AS02",
+      "notes": "Reset/remove/resetField/skip-while-pending covered.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.async.test.ts"
+      ],
+      "testNames": ["[SC-ASYNC-LIFECYCLE]"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AS03",
+      "notes": "Keyed ops while pending + two-forms-one-schema cases open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AS04",
+      "notes": "after/afterField/afterEach ordering covered incl. deterministic settlement.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/after/__tests__/afterEach.test.ts",
+        "packages/vest/src/suite/after/__tests__/afterEach.additional.test.ts"
+      ],
+      "testNames": [],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": ["C12"],
+      "command": "yarn test:schema-relationships",
+      "id": "AS05",
+      "notes": "New throw-during-copy + recovery tests; requires C12 semantics.",
+      "result": "not-run",
+      "status": "blocked",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn workspace @vest/integration-tanstack-form test",
+      "id": "IN01",
+      "notes": "Mounted-form contract suite green (9 tests).",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "integrations/tanstack-form/src/schemaContracts.integration.test.ts"
+      ],
+      "testNames": ["[SC-FORM]"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn workspace @vest/integration-tanstack-form test",
+      "id": "IN02",
+      "notes": "New two-forms-one-schema suite.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn integrations:verify",
+      "id": "IN03",
+      "notes": "Green on fix heads.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn example:production:test",
+      "id": "IN04",
+      "notes": "Green on fix heads; nested/async/submit extensions open.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "SE01",
+      "notes": "Hostile-path/prototype cases covered by boundaries tests.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.boundaries.test.ts"
+      ],
+      "testNames": [],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "SE02",
+      "notes": "Zero-invocation through projected routes covered; fallback-route coverage is EX01 (red).",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn bench (bounded fixtures)",
+      "id": "SE03",
+      "notes": "New bounded-resource fixtures.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-boundaries (new)",
+      "id": "PK01",
+      "notes": "New clean-consumer packaging smoke.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test + yarn integrations:verify",
+      "id": "PK02",
+      "notes": "No-schema/schema consumer behavior green except documented changes.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-boundaries (new)",
+      "id": "DD01",
+      "notes": "New resolved-import check n4s.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "manual inspection",
+      "id": "DD02",
+      "notes": "Two-suite isolation via existing async/reuse tests; n4s cache inspection open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-boundaries (new) + review",
+      "id": "DD03",
+      "notes": "New adapter import check + review.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "manual",
+      "id": "DD04",
+      "notes": "Context regressions green; FP03 cases extend.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": ["packages/context/src/__tests__"],
+      "testNames": [],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "review",
+      "id": "DD05",
+      "notes": "Single-normalization review per route against C01-C03; open until exclusion fix lands.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": ["C03", "C11"],
+      "command": "review + EX10/MP08",
+      "id": "DD06",
+      "notes": "Blocked on C03/C11 error-boundary work.",
+      "result": "not-run",
+      "status": "blocked",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "review",
+      "id": "DD07",
+      "notes": "Incremental extraction with contract preservation; tracked separately.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn lint",
+      "id": "DD08",
+      "notes": "0 errors; 80 warnings current (23 base claimed, unverified). Inventory vs base and fallback-path warnings open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-coverage (new)",
+      "id": "COV",
+      "notes": "New coverage gate incl. all contracts + unimported files; floors selectiveRun 85 / dependencyResolver 85 / useCreateSuiteRunner 90 / clone 95.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "mutation run (new)",
+      "id": "MUT",
+      "notes": "Targeted mutants: skip-filter removal, transitive expansion, accept stale generation, missing/undefined collapse, buffer reuse, rebuild-error swallow.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-performance (new)",
+      "id": "PF01",
+      "notes": "New end-to-end full-vs-changed harness.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-performance (new)",
+      "id": "PF02",
+      "notes": "Projection/fallback/parser/array/async split.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-performance (new)",
+      "id": "PF03",
+      "notes": "Paired C13/D13 ratios with nonzero-exit gate.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-performance (new)",
+      "id": "PF04",
+      "notes": "Base comparison + creation-regression blocker.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-performance (new)",
+      "id": "PF05",
+      "notes": "Size scaling + heap plateau.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-performance (new)",
+      "id": "PF06",
+      "notes": "Gate self-test with synthetic data.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
+    }
+  ]
+}

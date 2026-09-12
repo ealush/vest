@@ -93,6 +93,28 @@ describe('adversarial relationship contracts', () => {
     expect(skipped).not.toHaveBeenCalled();
   });
 
+  it('does not execute a nested skipped schema predicate during composed fallback', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const schema = compose(
+      enforce.shape({
+        profile: enforce.shape({
+          a: enforce.condition(skipped),
+          b: enforce.condition(selected),
+        }),
+      }),
+      enforce.condition(() => true),
+    );
+
+    create(() => {}, schema)
+      .changed('profile.b')
+      .focus({ skip: 'profile.a' })
+      .run({ profile: { a: 'a', b: 'b' } });
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+  });
+
   it('does not expose the mutable Map behind a snapshot through forEach', () => {
     const snapshot = cloneDataTree(new Map([['key', 1]]), true) as Map<
       string,

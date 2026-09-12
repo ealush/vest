@@ -121,4 +121,48 @@ describe('schema contracts: release-readiness execution audit', () => {
       expect(result.every(entry => entry.pass)).toBe(true);
     },
   );
+
+  it('[SC-SKIP-FALLBACK] partial root-chain fallback never executes an explicitly skipped predicate', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const schema = compose(
+      enforce.partial({
+        a: enforce.condition(skipped),
+        b: enforce.condition(selected),
+      }),
+      enforce.condition(() => true),
+    );
+
+    runSchemaPaths(
+      schema,
+      { a: 'a', b: 'b' },
+      { affected: ['b'], skip: ['a'] },
+    );
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+  });
+
+  it('[SC-SKIP-FALLBACK] nested root-chain fallback never executes an explicitly skipped predicate', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const schema = compose(
+      enforce.shape({
+        profile: enforce.shape({
+          a: enforce.condition(skipped),
+          b: enforce.condition(selected),
+        }),
+      }),
+      enforce.condition(() => true),
+    );
+
+    runSchemaPaths(
+      schema,
+      { profile: { a: 'a', b: 'b' } },
+      { affected: ['profile.b'], skip: ['profile.a'] },
+    );
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+  });
 });

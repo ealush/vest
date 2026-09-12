@@ -1,4 +1,5 @@
 import {
+  FocusedSchemaMappingError,
   mapWithoutValidation,
   parseAffectedFieldName,
   runSchemaPaths,
@@ -831,7 +832,7 @@ function assertUnionMembers(
   for (let index = 0; index < members.length; index++) {
     const member = [...union, index];
     if (isUnionMemberCovered(member, covering, previous)) continue;
-    throw new Error(
+    throw new FocusedSchemaMappingError(
       `Focused schema mapping cannot select a union branch at "${formatUnionPath(member)}" without running validation or reusing a prior mapped result. Run a full validation first to establish a branch witness, or include the union path in the focused fields.`,
     );
   }

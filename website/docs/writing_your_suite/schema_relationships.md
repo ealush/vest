@@ -25,6 +25,8 @@ The model is dependency-aware invalidation of retained validation state — not 
 
 `dependsOn` is the first relationship primitive. The internal representation is a single directed graph (`source → target`, `effect: 'invalidate'`) that can later host other effects without redesigning the schema API.
 
+> Migration rule: `only()` does not follow `dependsOn` — use `changed()` for invalidation. A passing focused run is not proof the whole payload is valid: full-validate on submit.
+
 A relationship declaration should be: ergonomic, runtime-validated during composition, composable through nested schemas, meaningful for repeated/array schemas (same-item scoped), machine-readable without parsing source, small enough that users are not maintaining a second copy of their form, colocated with the field it describes, useful to Vest itself (not just metadata), and extensible.
 
 ## Cross-field Dependencies
@@ -279,7 +281,7 @@ This boundary also applies through `compose()` and to unions excluded by `focus(
 
 Affected-path planning never invokes input accessors, including concrete array-index getters. Accessor-backed subtrees expand from declared schema keys only; dynamic data keys behind an accessor cannot be enumerated without reading it.
 
-Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators; failures are then narrowed to the affected paths. An untouched dependency source does not, by itself, require full execution: ordinary object-schema projections can validate a dependent without revalidating its sources. Relationships describe invalidation, not execution prerequisites. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
+Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators — explicitly skipped fields are still excluded (composed chains omit skipped top-level keys and keep the root chain) — and failures are then narrowed to the affected paths. An untouched dependency source does not, by itself, require full execution: ordinary object-schema projections can validate a dependent without revalidating its sources. Relationships describe invalidation, not execution prerequisites. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
 
 Projection reads construction-time metadata and never probes validators with synthetic data. Partial fragments preserve the distinction between an absent property and an own property holding `undefined`, including declared non-enumerable properties. A shape of `optional()` members has different semantics from `partial()`.
 

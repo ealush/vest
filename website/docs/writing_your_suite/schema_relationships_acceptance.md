@@ -5,19 +5,18 @@ sidebar_position: 13
 # Schema relationships: acceptance contract
 
 This is the correctness gate for PR #1324, based on implementation commit
-`261199ae03ba72ff096c146e159c226264f9ba7c`. It supplements
+`13dbe73317f8e5c9ac177a64ab3d9d5a38ea180a`. It supplements
 [Schema Relationships](./schema_relationships.md) and
-[Schema Validation](./schema_validation.md). These are required outcomes;
-some acceptance tests intentionally failed on that historical implementation.
-The 2026-09-10 readiness review of `a923f2f4` adds 87 active tests: 77 pass and
-10 fail, while all 186 pre-existing contracts still pass. None are skipped,
-todo, inverted, or marked as expected failures. The failures cover field-skip
-precedence, composed fallback execution, and public accessor ownership.
+[Schema Validation](./schema_validation.md). These are required outcomes.
+The 2026-09-10 readiness review of `a923f2f4` adds 87 active tests: all 87
+pass at the current head, while all 186 pre-existing contracts still pass.
+None are skipped, todo, inverted, or marked as expected failures. The
+readiness cases cover field-skip precedence, composed fallback execution,
+and public accessor ownership.
 See the [release-readiness plan](https://github.com/ealush/vest/blob/codex/schema-relationships-ready/docs/schema-relationships-release-readiness.md)
 for exact findings, distinctions between existing promises and strengthened
-contracts, and the required implementation sequence. Do not merge while these
-contracts are red. A passing focused run is not proof that an entire untrusted
-payload has been validated.
+contracts, and the required implementation sequence. A passing focused run
+is not proof that an entire untrusted payload has been validated.
 
 The original RFC proposed `schema`, `string`, and `array` shorthand and
 `revalidates`. The implemented API uses `shape`, `isString`, `isArrayOf`,
@@ -223,6 +222,28 @@ build have not been rerun for this tests-only change; they remain release gates.
 These are genuine assertion failures, not intentionally inverted assertions
 or expected-failure annotations. Preserve their expectations when implementing
 fixes. Counts describe the reviewed baseline and will change as fixes land.
+
+### Follow-up verification (2026-09-12, head `13dbe733`)
+
+The 10 readiness failures above are closed by four fix commits, verified on
+`13dbe73317f8e5c9ac177a64ab3d9d5a38ea180a`:
+
+- `13e11a77 fix(vest)`: builder field skip is authoritative and destructive
+  (R1, 4 tests).
+- `9436c381 fix(n4s)`: composed fallback chains omit skipped top-level keys
+  and recompose with the root chain preserved (R2, 2 tests).
+- `328a3dcb fix(vest)`: detached working copies at public schema boundaries
+  (R3, 4 tests).
+- `13dbe733 fix(n4s)`: composed skip rebuild failures propagate instead of
+  silently running the unfocused schema.
+
+Evidence on that head: readiness suites 87/87; full `yarn test` 331 files /
+3,295 tests with no type errors; `yarn gate:schema-relationships`,
+`yarn integrations:verify`, the canonical production example (test,
+typecheck, build), `yarn website:build`, `yarn build:llms` with a clean
+`git diff`, `yarn format`, and `yarn lint` (0 errors) all green. The
+Integration CI workflow is green on this head; the Performance Benchmark
+workflow posts its numbers to the PR when it lands.
 
 ## Acceptance gates and next-agent instructions
 

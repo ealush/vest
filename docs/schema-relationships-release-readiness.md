@@ -288,3 +288,39 @@ Release checklist:
       drift and mergeability after any further user update or reorganization.
 - [ ] PR summary records current evidence, known limits, and follow-up ownership.
 - [ ] Maintainer explicitly approves merge. This review does not merge the PR.
+
+## Addendum (2026-09-12): R1–R3 closed
+
+The historical verdict above stands as the record for `a923f2f4`. The ten
+failing contracts are closed by four production commits, verified on
+`13dbe73317f8e5c9ac177a64ab3d9d5a38ea180a`:
+
+- `13e11a77 fix(vest): make builder field skip authoritative and destructive`
+  (R1). The builder `skip` list is checked before closest-focus lookup, so it
+  wins independent of fluent order; the test reconciler treats explicit field
+  skip as destructive (clears retained verdicts) while group exclusion,
+  `skipWhen`, implicit `only`, and `__skipAll` keep history. Nested imperative
+  focus keeps its existing first-declaration-wins behavior.
+- `9436c381 fix(n4s): carry skip exclusions into composed fallback schemas`
+  (R2). Composed root chains omit skipped top-level keys inside the shape
+  child and recompose with the root chain preserved, so skipped predicates
+  never execute and root validation still runs.
+- `328a3dcb fix(vest): detach caller accessors at public schema boundaries`
+  (R3). New `cloneDetachedDataTree` materializes getters once, drops foreign
+  setters, and preserves cycles/symbols/descriptors without freezing; it is
+  used for callback input, retained mappings, and result output. Internal
+  clones and getter-free planning are unchanged.
+- `13dbe733 fix(n4s): fail loudly when composed skip rebuild fails`. A
+  rebuild failure propagates instead of silently running the unfocused schema.
+
+Evidence on `13dbe733`: readiness suites 87/87; full `yarn test` 331 files /
+3,295 tests with no type errors; `yarn gate:schema-relationships`,
+`yarn integrations:verify`, the canonical production example (test,
+typecheck, build), `yarn website:build`, `yarn build:llms` with a clean
+`git diff`, `yarn format`, and `yarn lint` (0 errors) all green. Integration
+CI is green on this head. Residual limits are unchanged from the tables
+above: nested skip × composed root × parsers, `include`/`skipWhen`/`omitWhen`
+× `changed`, duplicate cross-group field names, throwing/reentrant/cyclic
+getters, two-forms-one-schema pending reorder, machine-readable union error
+type, and compile-time path safety. The benchmark campaign distinguishing
+projection from fallback is still owed.

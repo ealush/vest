@@ -1,5 +1,11 @@
 # PR #1324: release-readiness review and implementation plan
 
+> Current acceptance plan: [2026-09-12 production acceptance plan](./schema-relationships-production-acceptance-plan.md).
+> The later review of `c881ebd6` found partial and nested composed-fallback
+> exclusions still executing skipped predicates. Three regression tests are
+> committed at `daef7a61`. The historical closure below does not close these
+> newly reproduced cases; use the linked plan for current merge gates.
+
 Reviewed on 2026-09-10 against `a923f2f405e228af743f610d60511972fc1d8bb8`,
 base `cb4c7e960199063a81659b3479ec048208b9586f` (`latest`).
 This supersedes earlier merge-readiness claims, not the historical record of

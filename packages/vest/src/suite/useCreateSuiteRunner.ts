@@ -48,7 +48,7 @@ import {
   SuiteCallbackWithSchema,
   SuiteRunArguments,
 } from './SuiteTypes';
-import { cloneDataTree } from './cloneDataTree';
+import { cloneDataTree, cloneDetachedDataTree } from './cloneDataTree';
 import {
   schemaFailureField,
   schemaFailureKey,
@@ -246,7 +246,9 @@ export function useCreateSuiteRunner<
     // Schema-mapped callback data, public output, and the retained cache must
     // never share mutable containers. Preserve the established raw-input
     // identity for schema failures and schema-less suites.
-    const resultOutput = schema ? cloneDataTree(callbackInput) : callbackInput;
+    const resultOutput = schema
+      ? cloneDetachedDataTree(callbackInput)
+      : callbackInput;
     const runDataSnapshot =
       schema && schemaRunResult?.every(result => result.pass)
         ? cloneDataTree(runData)
@@ -521,7 +523,7 @@ function fullCallbackMapping(params: {
     assertSkippedUnionCoverage({ base, fallback, previous, skipped, unions });
     return mappedCallbackResult(repairSkippedPaths(current, base, skipped));
   }
-  return mappedCallbackResult(cloneDataTree(current));
+  return mappedCallbackResult(cloneDetachedDataTree(current));
 }
 
 function failedCallbackMapping(
@@ -536,7 +538,7 @@ function failedCallbackMapping(
   // unmappable input falls back to raw rather than throwing the run.
   // Fields that failed parsing keep the values mapping produced for them.
   return {
-    input: cloneDataTree(mappedFailureInput(schema, fallback)),
+    input: cloneDetachedDataTree(mappedFailureInput(schema, fallback)),
     ...(affected === null || previous === undefined
       ? {}
       : { retained: previous }),
@@ -620,7 +622,7 @@ function focusedCallbackMapping(params: {
   // proof. Preserve history without promoting raw union passthrough to a
   // witness for the next nonempty run.
   if (affected.length === 0) {
-    return { input: cloneDataTree(value), retained: previous };
+    return { input: cloneDetachedDataTree(value), retained: previous };
   }
   return mappedCallbackResult(value);
 }
@@ -876,9 +878,9 @@ type ArrayMergeMapping = {
 };
 
 function mappedCallbackResult(value: unknown): CallbackMapping {
-  const retained = cloneDataTree(value);
+  const retained = cloneDetachedDataTree(value);
   return {
-    input: cloneDataTree(retained),
+    input: cloneDetachedDataTree(retained),
     retained: { hasValue: true, value: retained },
   };
 }
@@ -1101,7 +1103,7 @@ function repairSkippedPaths(
   base: unknown,
   skipped: readonly string[],
 ): unknown {
-  let repaired = cloneDataTree(current);
+  let repaired = cloneDetachedDataTree(current);
   for (const field of skipped) {
     const path = retainedMergePath(concreteFieldPath(field));
     if (path.length === 0 || path.some(isUnsafePathSegment)) continue;

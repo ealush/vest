@@ -16,6 +16,7 @@ export function cloneDataTree(
   data: unknown,
   immutable = false,
   seen = new WeakMap<object, unknown>(),
+  detachAccessors = false,
 ): unknown {
   if (!isObject(data)) return data;
 
@@ -26,7 +27,7 @@ export function cloneDataTree(
     const copy = new Date(data.getTime());
     const output = immutable ? immutableBuiltin(copy, DateMutators) : copy;
     seen.set(data, output);
-    copyOwnDescriptors(data, copy, immutable, seen);
+    copyOwnDescriptors(data, copy, immutable, seen, detachAccessors);
     if (immutable) Object.freeze(copy);
     return output;
   }
@@ -34,7 +35,7 @@ export function cloneDataTree(
     const copy = new RegExp(data.source, data.flags);
     copy.lastIndex = data.lastIndex;
     seen.set(data, copy);
-    copyOwnDescriptors(data, copy, immutable, seen);
+    copyOwnDescriptors(data, copy, immutable, seen, detachAccessors);
     return immutable ? Object.freeze(copy) : copy;
   }
   if (data instanceof Map) {
@@ -43,11 +44,11 @@ export function cloneDataTree(
     seen.set(data, output);
     for (const [key, value] of data) {
       copy.set(
-        cloneDataTree(key, immutable, seen),
-        cloneDataTree(value, immutable, seen),
+        cloneDataTree(key, immutable, seen, detachAccessors),
+        cloneDataTree(value, immutable, seen, detachAccessors),
       );
     }
-    copyOwnDescriptors(data, copy, immutable, seen);
+    copyOwnDescriptors(data, copy, immutable, seen, detachAccessors);
     if (immutable) Object.freeze(copy);
     return output;
   }
@@ -56,21 +57,21 @@ export function cloneDataTree(
     const output = immutable ? immutableBuiltin(copy, SetMutators) : copy;
     seen.set(data, output);
     for (const value of data) {
-      copy.add(cloneDataTree(value, immutable, seen));
+      copy.add(cloneDataTree(value, immutable, seen, detachAccessors));
     }
-    copyOwnDescriptors(data, copy, immutable, seen);
+    copyOwnDescriptors(data, copy, immutable, seen, detachAccessors);
     if (immutable) Object.freeze(copy);
     return output;
   }
   if (isBackingBuffer(data)) {
     const copy = data.slice(0);
     seen.set(data, copy);
-    copyOwnDescriptors(data, copy, immutable, seen);
+    copyOwnDescriptors(data, copy, immutable, seen, detachAccessors);
     return copy;
   }
   if (ArrayBuffer.isView(data)) {
-    const copy = cloneArrayBufferView(data, immutable, seen);
-    copyOwnDescriptors(data, copy, immutable, seen);
+    const copy = cloneArrayBufferView(data, immutable, seen, detachAccessors);
+    copyOwnDescriptors(data, copy, immutable, seen, detachAccessors);
     return copy;
   }
   if (!isArray(data) && !isPlainDataObject(data)) {
@@ -82,7 +83,7 @@ export function cloneDataTree(
     ? []
     : Object.create(Object.getPrototypeOf(data));
   seen.set(data, copy);
-  copyOwnDescriptors(data, copy, immutable, seen);
+  copyOwnDescriptors(data, copy, immutable, seen, detachAccessors);
   return immutable ? Object.freeze(copy) : copy;
 }
 
@@ -91,16 +92,30 @@ function copyOwnDescriptors(
   target: object,
   immutable: boolean,
   seen: WeakMap<object, unknown>,
+  detachAccessors: boolean,
 ): void {
   for (const key of Reflect.ownKeys(source)) {
     const descriptor = Object.getOwnPropertyDescriptor(source, key);
     if (descriptor === undefined) continue;
     if ('value' in descriptor) {
-      descriptor.value = cloneDataTree(descriptor.value, immutable, seen);
+      descriptor.value = cloneDataTree(
+        descriptor.value,
+        immutable,
+        seen,
+        detachAccessors,
+      );
       Object.defineProperty(target, key, descriptor);
       continue;
     }
-    copyAccessorDescriptor(source, target, key, descriptor, immutable, seen);
+    copyAccessorDescriptor(
+      source,
+      target,
+      key,
+      descriptor,
+      immutable,
+      seen,
+      detachAccessors,
+    );
   }
 }
 
@@ -111,8 +126,12 @@ function copyAccessorDescriptor(
   descriptor: PropertyDescriptor,
   immutable: boolean,
   seen: WeakMap<object, unknown>,
+  detachAccessors: boolean,
 ): void {
-  const detached = immutable ? detachAccessor(source, descriptor, seen) : null;
+  const detached =
+    immutable || detachAccessors
+      ? detachAccessor(source, descriptor, seen, detachAccessors)
+      : null;
   Object.defineProperty(target, key, detached ?? descriptor);
 }
 
@@ -131,6 +150,7 @@ function detachAccessor(
   source: object,
   descriptor: PropertyDescriptor,
   seen: WeakMap<object, unknown>,
+  detachAccessors: boolean,
 ): PropertyDescriptor | null {
   const getter = descriptor.get;
   if (isNullish(getter)) {
@@ -145,9 +165,23 @@ function detachAccessor(
   return {
     configurable: descriptor.configurable,
     enumerable: descriptor.enumerable,
-    value: cloneDataTree(value, false, seen),
+    value: cloneDataTree(value, false, seen, detachAccessors),
     writable: true,
   };
+}
+
+/**
+ * Detached working copy for public schema boundaries (suite callback data,
+ * retained mappings, result output). Materializes ordinary getters once and
+ * clones their values through the same reference memo, drops foreign
+ * setters (setter-only becomes read-only undefined), and preserves cycles,
+ * symbols, and descriptor presence — without freezing, so local mutation of
+ * the owned copy stays possible. Throwing getters propagate instead of
+ * retaining a live closure. Planning stays getter-free (see
+ * `resolveAffectedPaths`); this runs only at deliberate copy boundaries.
+ */
+export function cloneDetachedDataTree(data: unknown): unknown {
+  return cloneDataTree(data, false, new WeakMap(), true);
 }
 
 function isPlainDataObject(data: object): boolean {
@@ -159,6 +193,7 @@ function cloneArrayBufferView(
   view: ArrayBufferView,
   immutable: boolean,
   seen: WeakMap<object, unknown>,
+  detachAccessors: boolean,
 ): ArrayBufferView {
   // Allocate and register both ends before copying descriptors: the buffer
   // may itself point back to this view, including during view-first traversal.
@@ -168,7 +203,7 @@ function cloneArrayBufferView(
   const copy = constructBufferView(view, buffer);
   seen.set(view, copy);
   if (existing === undefined) {
-    copyOwnDescriptors(view.buffer, buffer, immutable, seen);
+    copyOwnDescriptors(view.buffer, buffer, immutable, seen, detachAccessors);
   }
   return copy;
 }

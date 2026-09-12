@@ -72,6 +72,8 @@ export { FIELD } from './schema/scopeProxy';
  * catch it by identity regardless of which entry built the schema.
  */
 export { EnforceSchemaError } from './errors/EnforceSchemaError';
+export { FocusedSchemaMappingError } from './errors/FocusedSchemaMappingError';
+export { SchemaExclusionError } from './errors/SchemaExclusionError';
 export type { ScopeHandle } from './utils/RuleInstance';
 export type { SchemaMemberRule } from './rules/schemaRules/schemaRulesLazyTypes';
 

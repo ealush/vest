@@ -32,6 +32,7 @@ import {
 } from './projectionContext';
 import { withStandaloneRootedBoundary } from '../rules/chainBuilder/chainBuilder';
 import { compose } from '../compose';
+import { SchemaExclusionError } from '../errors/SchemaExclusionError';
 import { isRuleNode } from './ruleNode';
 import type { SchemaRelationship } from './SchemaRelationship';
 
@@ -807,125 +808,207 @@ function runProjectedOrFull(
  * Schema for the changed() fallback path. The caller post-filters to the
  * only∫affected set, so `only` needs no further narrowing here (a pick()
  * over dotted names would silently drop subtrees and container
- * validators). Only top-level `skip` focus applies, and only when
- * rebuilding preserves behavior: a partial-like top would gain
- * requiredness and a moved chain would lose container validators, so those
- * run unfocused (post-filter narrows).
+ * validators). Skip exclusions apply at every supported depth: exact
+ * top-level keys are dropped, nested skips rebuild their parent chain
+ * with kind preserved (partial stays partial), and composed chains
+ * recompose with the root chain untouched. A recognizable container the
+ * rebuild cannot preserve (a moved chain whose validators would be lost)
+ * fails closed with SchemaExclusionError before any excluded predicate
+ * runs, instead of running unfocused and filtering afterward.
  */
 function changedFallbackSchema(
   schema: SelectiveSchema,
   modifiers: FocusModifiers,
 ): SelectiveSchema {
-  const composed = omitSkippedInComposedChain(schema, modifiers.skip);
-  if (composed !== schema) return composed;
-  if (!isN4sSchema(schema)) return schema;
-  if (isPartialLikeContainer(schema) || !chainBaselineMatches(schema)) {
-    return schema;
-  }
-  return omitSkippedTopKeys(schema, modifiers.skip);
+  return omitSkippedDeep(schema, modifiers.skip);
 }
 
 /**
- * Exclusion-safe fallback for composed root chains (e.g.
- * `compose(shape, condition)`). The plain path bails out for moved chains
- * and runs the original schema unfocused — executing explicitly skipped
- * child predicates and only filtering their errors afterward. Instead,
- * omit skipped top-level keys inside the shape child and recompose with
- * the untouched root chain preserved, so root/container validation still
- * runs while skipped predicates never execute. Returns the original schema
- * when no skip applies or no child can be safely rebuilt.
+ * Removes explicitly skipped fields from a schema without executing them.
+ * Returns the original schema when no skip intersects its structure.
+ * Throws SchemaExclusionError when a skip names fields inside a
+ * recognizable container that cannot be rebuilt faithfully.
  */
-function omitSkippedInComposedChain(
-  schema: SelectiveSchema,
+function omitSkippedDeep(
+  rule: SelectiveSchema,
   skipProp: string | readonly string[] | boolean | null | undefined,
 ): SelectiveSchema {
-  const parsed = parseComposedSkip(schema, skipProp);
-  if (!parsed) return schema;
-  const next = omitComposedChildren(parsed.children, skipProp, parsed.skipList);
-  if (!next.changed) return schema;
-  // Intentionally no catch: a rebuild failure is a programmer error, not a
-  // signal to silently run the original schema (which would execute skipped
-  // predicates and only filter their errors afterward).
+  const skipSegs = parsedSkipSegs(skipProp);
+  if (skipSegs.length === 0) return rule;
+  return omitSkippedSegs(rule, skipSegs);
+}
+
+function omitSkippedSegs(
+  rule: SelectiveSchema,
+  skipSegs: AffectedSeg[][],
+): SelectiveSchema {
+  const children = compositionChildrenOf(rule);
+  if (children.length > 0) {
+    return omitSkippedComposition(rule, children, skipSegs);
+  }
+  const members = containerMembersOf(rule);
+  if (members === null) return rule;
+  const plan = partitionSkips(members, skipSegs);
+  if (plan === null) return rule;
+  assertRebuildableContainer(rule, plan.exact);
+  const rebuilt = rebuildNestedMembers(members, plan.nested);
+  return rebuildContainer(rule, rebuilt, plan.exact);
+}
+
+function omitSkippedComposition(
+  rule: SelectiveSchema,
+  children: SelectiveSchema[],
+  skipSegs: AffectedSeg[][],
+): SelectiveSchema {
+  let changed = false;
+  const next = children.map(child => {
+    const omitted = omitSkippedSegs(child, skipSegs);
+    if (omitted !== child) changed = true;
+    return omitted;
+  });
+  if (!changed) return rule;
+  // Intentionally no catch: a rebuild failure is a programmer error, not
+  // a signal to silently run the original schema (which would execute
+  // skipped predicates and only filter their errors afterward).
   return compose(
-    ...(next.children as unknown as Parameters<typeof compose>),
+    ...(next as unknown as Parameters<typeof compose>),
   ) as unknown as SelectiveSchema;
 }
 
-function parseComposedSkip(
-  schema: SelectiveSchema,
-  skipProp: string | readonly string[] | boolean | null | undefined,
-): { children: unknown[]; skipList: readonly string[] } | null {
-  const children = (schema as unknown as Record<symbol, unknown>)[
-    COMPOSITION_CHILDREN
-  ];
-  if (!Array.isArray(children) || children.length === 0) return null;
-  const skipList = buildArrayProp(skipProp);
-  if (!skipList || skipList.length === 0) return null;
-  return { children, skipList };
+type SkipPlan = {
+  readonly exact: string[];
+  readonly nested: ReadonlyMap<string, AffectedSeg[][]>;
+};
+
+function partitionSkips(
+  members: Record<string, SelectiveSchema>,
+  skipSegs: AffectedSeg[][],
+): SkipPlan | null {
+  const exact: string[] = [];
+  const nested = new Map<string, AffectedSeg[][]>();
+  for (const segs of skipSegs) {
+    classifySkipSegs(members, segs, exact, nested);
+  }
+  if (exact.length === 0 && nested.size === 0) return null;
+  return { exact, nested };
 }
 
-function omitComposedChildren(
-  children: unknown[],
-  skipProp: string | readonly string[] | boolean | null | undefined,
-  skipList: readonly string[],
-): { changed: boolean; children: unknown[] } {
-  let changed = false;
-  const nextChildren = children.map(child => {
-    const next = omitComposedChild(child, skipProp, skipList);
-    if (next !== child) changed = true;
-    return next;
-  });
-  return { changed, children: nextChildren };
+function classifySkipSegs(
+  members: Record<string, SelectiveSchema>,
+  segs: AffectedSeg[],
+  exact: string[],
+  nested: Map<string, AffectedSeg[][]>,
+): void {
+  const [head, ...tail] = segs;
+  if (typeof head !== 'string' || !hasOwnProperty(members, head)) return;
+  if (tail.length === 0) {
+    if (!exact.includes(head)) exact.push(head);
+    return;
+  }
+  appendNestedSkip(nested, head, tail);
 }
 
-function omitComposedChild(
-  child: unknown,
-  skipProp: string | readonly string[] | boolean | null | undefined,
-  skipList: readonly string[],
-): unknown {
-  if (!isObject(child)) return child;
-  const childSchema = child as SelectiveSchema;
-  const nested = omitSkippedInComposedChain(childSchema, skipProp);
-  const target = nested !== childSchema ? nested : childSchema;
-  if (!isOmittableShape(target, skipList)) return target;
-  return omitSkippedTopKeys(target, skipProp);
+function appendNestedSkip(
+  nested: Map<string, AffectedSeg[][]>,
+  head: string,
+  tail: AffectedSeg[],
+): void {
+  const list = nested.get(head) ?? [];
+  list.push(tail);
+  nested.set(head, list);
 }
 
-function isOmittableShape(
-  target: SelectiveSchema,
-  skipList: readonly string[],
-): boolean {
-  if (target.__schema === undefined) return false;
-  if (isPartialLikeContainer(target)) return false;
-  if (!chainBaselineMatches(target)) return false;
-  return skipIntersectsTopKeys(target, skipList);
+function assertRebuildableContainer(
+  rule: SelectiveSchema,
+  exact: readonly string[],
+): void {
+  if (chainBaselineMatches(rule)) return;
+  throw new SchemaExclusionError(
+    `Selective execution cannot exclude [${exact.join(', ')}] without ` +
+      `executing excluded validators: the container cannot be rebuilt ` +
+      `without losing chained validators.`,
+  );
 }
 
-function skipIntersectsTopKeys(
-  target: SelectiveSchema,
-  skipList: readonly string[],
-): boolean {
-  const topKeys = target.__schema;
-  if (!topKeys || typeof topKeys !== 'object') return false;
-  return skipList.some(key => hasOwnProperty(topKeys, key));
+function rebuildNestedMembers(
+  members: Record<string, SelectiveSchema>,
+  nested: ReadonlyMap<string, AffectedSeg[][]>,
+): Record<string, SelectiveSchema> {
+  const rebuilt = copyMembers(members);
+  for (const [key, tails] of nested) {
+    const member = members[key] as SelectiveSchema;
+    if (!isObject(member)) continue;
+    const omitted = omitSkippedSegs(member, tails);
+    if (omitted === member) {
+      throw new SchemaExclusionError(
+        `Selective execution cannot exclude [${key}] children without ` +
+          `executing excluded validators: the nested container cannot ` +
+          `be rebuilt faithfully.`,
+      );
+    }
+    defineMember(rebuilt, key, omitted);
+  }
+  return rebuilt;
 }
 
-function omitSkippedTopKeys(
-  schema: SelectiveSchema,
-  skipProp: string | readonly string[] | boolean | null | undefined,
+/**
+ * Rebuilds a container around a new member set, preserving its validation
+ * kind: partial stays partial (missing keys remain allowed), every other
+ * container keeps the established omit-based fallback semantics. Optionality
+ * wrappers survive through preserveOptionality, as before.
+ */
+function rebuildContainer(
+  rule: SelectiveSchema,
+  members: Record<string, SelectiveSchema>,
+  exact: readonly string[],
 ): SelectiveSchema {
-  const skip = buildArrayProp(skipProp);
-  if (!skip || schema.__schema === undefined) return schema;
+  if (isPartialLikeContainer(rule)) {
+    const kept = copyMembers(members);
+    for (const key of exact) Reflect.deleteProperty(kept, key);
+    return preserveOptionality(rule, rebuildShapeContainer(rule, kept));
+  }
   // The interop view cannot name rule members; the values are the schema's
   // own member rules, so they satisfy the member constraint by construction.
-  const members = schema.__schema as unknown as Record<
-    string,
-    SchemaMemberRule
-  >;
   return preserveOptionality(
-    schema,
-    enforceLazy.omit(members, skip) as unknown as SelectiveSchema,
+    rule,
+    enforceLazy.omit(members as unknown as Record<string, SchemaMemberRule>, [
+      ...exact,
+    ]) as unknown as SelectiveSchema,
   );
+}
+
+function containerMembersOf(
+  rule: SelectiveSchema,
+): Record<string, SelectiveSchema> | null {
+  const top = rule.__schema;
+  return top !== undefined && typeof top === 'object'
+    ? (top as Record<string, SelectiveSchema>)
+    : null;
+}
+
+function defineMember(
+  members: Record<string, SelectiveSchema>,
+  key: string,
+  value: SelectiveSchema,
+): void {
+  // defineProperty keeps an own enumerable `__proto__` key instead of
+  // invoking the prototype setter.
+  Object.defineProperty(members, key, {
+    configurable: true,
+    enumerable: true,
+    value,
+    writable: true,
+  });
+}
+
+function copyMembers(
+  members: Record<string, SelectiveSchema>,
+): Record<string, SelectiveSchema> {
+  const copy: Record<string, SelectiveSchema> = {};
+  for (const key of Object.keys(members)) {
+    defineMember(copy, key, members[key] as SelectiveSchema);
+  }
+  return copy;
 }
 
 /**

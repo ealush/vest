@@ -6,6 +6,8 @@
  * these planner and mapping operations to implement focused suite execution.
  */
 export { assertSchemaRootPathsValid } from '../schema/dependencyResolver';
+export { FocusedSchemaMappingError } from '../errors/FocusedSchemaMappingError';
+export { SchemaExclusionError } from '../errors/SchemaExclusionError';
 export { mapWithoutValidation } from '../schema/mapWithoutValidation';
 export type { MappingProvenance } from '../schema/mapWithoutValidation';
 export {

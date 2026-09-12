@@ -843,7 +843,12 @@ function omitSkippedInComposedChain(
   if (!parsed) return schema;
   const next = omitComposedChildren(parsed.children, skipProp, parsed.skipList);
   if (!next.changed) return schema;
-  return recomposeSkippedChain(schema, next.children);
+  // Intentionally no catch: a rebuild failure is a programmer error, not a
+  // signal to silently run the original schema (which would execute skipped
+  // predicates and only filter their errors afterward).
+  return compose(
+    ...(next.children as unknown as Parameters<typeof compose>),
+  ) as unknown as SelectiveSchema;
 }
 
 function parseComposedSkip(
@@ -857,19 +862,6 @@ function parseComposedSkip(
   const skipList = buildArrayProp(skipProp);
   if (!skipList || skipList.length === 0) return null;
   return { children, skipList };
-}
-
-function recomposeSkippedChain(
-  schema: SelectiveSchema,
-  children: unknown[],
-): SelectiveSchema {
-  try {
-    return compose(
-      ...(children as unknown as Parameters<typeof compose>),
-    ) as unknown as SelectiveSchema;
-  } catch {
-    return schema;
-  }
 }
 
 function omitComposedChildren(

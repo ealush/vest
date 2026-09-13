@@ -28,6 +28,7 @@ Runs the suite. Passes arguments to the suite callback.
 - **Returns**: A `SuiteResult` object.
   - If the suite contains async tests, the result object **also implements the Promise interface**, allowing you to `await` it.
   - You can always access synchronous result data immediately (e.g., `result.hasErrors()`), even if the promise is pending.
+  - If another stateful `suite.run()` starts while an earlier run is pending, awaiting the earlier handle resolves to the newer run's result. This prevents obsolete async work from exposing stale state. `runStatic()` remains independent.
 - [Read more about `suite.run`](https://vestjs.dev/docs/writing_your_suite/vests_suite#running-validations)
 
 #### `suite.runStatic(...args)`
@@ -68,6 +69,19 @@ Shorthand for `suite.focus({ only: fieldName })`. Restricts the next run to the 
 - `fieldName`: `string | string[]`
 - Returns a chainable suite with `run`, `afterEach`, `afterField`, `focus`, and `only`.
 - [Read more about Focused Updates](https://vestjs.dev/docs/writing_your_suite/focused_updates#running-only-specific-fields)
+
+#### `suite.changed(fieldName)`
+
+Creates a focused run for the named changed field and its direct schema dependents. It consumes relationships declared with `dependsOn()`; it does not change ordinary `only()` behavior.
+
+- `fieldName`: `string | string[] | undefined`
+- Nested inputs accept dotted or bracket notation and normalize to canonical dotted paths: `rows[1].name` becomes `rows.1.name`.
+- `changed(undefined)` runs without changed focus. `changed([])` is an explicit empty focus and runs no tests.
+- Chaining combines the explicit and dependency-derived fields: `suite.changed('password').only('confirmPassword').run(data)` runs their union.
+- Expansion is one hop. If `total` depends on both `amount` and `tax`, declare both sources explicitly.
+- **Returns**: A chainable focused suite.
+
+[Read the complete `changed()` behavior and interaction contract](https://vestjs.dev/docs/writing_your_suite/schema_relationships#suitechanged-reference).
 
 #### `suite.afterEach(callback)`
 
@@ -149,6 +163,20 @@ A single validation test inside your suite.
 Asserts that a value matches your desired result.
 
 - [Read more about `enforce`](https://vestjs.dev/docs/enforce/enforce)
+
+#### `rule.dependsOn(selector)`
+
+Declares which schema fields can make this rule's retained result stale. The selector receives a schema-path scope, for example `confirmPassword: enforce.isString().dependsOn($ => $.password)`. The scope is not statically restricted to the schema's keys: misspelled paths are diagnosed at runtime during composition or resolution, not necessarily by TypeScript.
+
+`dependsOn()` adds invalidation metadata only. It does not compare fields, add a validation rule, or impose execution order. Keep the matching cross-field assertion in `test()` or in an Enforce rule. Dependencies are direct and may be local, rooted, nested, or item-scoped.
+
+[Read more about schema relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships#cross-field-dependencies).
+
+#### `schema.describe()`
+
+Returns detached, JSON-serializable schema metadata, including resolved `relationships`. Calling it does not execute validators, parsers, or input accessors. Nested reusable schemas are rebased to their mounted paths.
+
+[Read more about relationship introspection](https://vestjs.dev/docs/writing_your_suite/schema_relationships#introspection).
 
 #### `warn()`
 
@@ -1782,6 +1810,24 @@ enforce.extend({
 
 enforce(user.email).isValidEmail();
 ```
+
+### Parser-style custom rules and selective runs
+
+Custom rules are validators by default: Vest never executes them speculatively. That matters for dependency-aware runs — when `suite.changed()` revalidates an affected subset, untouched fields are mapped without running their validators. If your custom rule is really a **parser** (a pure transformation that cannot fail on its own, like upper-casing or trimming), declare it in `parsers` so selective runs can apply it to untouched fields:
+
+```js
+enforce.extend(
+  {
+    normalizeId: value => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Rules left out of `parsers` keep validator treatment. Field-level validators run when their field is in the affected set; validators attached to a retained container can also run when a descendant changes. See [Input vs output types with parsers](https://vestjs.dev/docs/writing_your_suite/schema_validation#input-vs-output-types-with-parsers) and [Custom Parsers and Selective Runs](https://vestjs.dev/docs/writing_your_suite/schema_relationships#custom-parsers-and-selective-runs).
 
 ## Custom rules return value
 
@@ -3553,7 +3599,11 @@ If you only need to parse an API payload once, an Enforce schema's `.parse()` me
 
 Async validation becomes incorrect when requests finish in a different order from the one in which they started. A slow response for an old value can otherwise replace the answer for the value currently on screen.
 
-Vest associates async work with the run that created it. When a newer focused run supersedes an older one, the older result cannot update the current suite state.
+Vest associates async work with the run that created it. When a newer stateful
+run supersedes an older one—focused or full—the older result cannot update the
+current suite state. Awaiting the older run handle resolves to the newer run's
+result, so callers cannot accidentally observe an obsolete result. Independent
+`runStatic()` calls do not share this ownership chain.
 
 ```ts
 import { create, enforce, skipWhen, test } from 'vest';
@@ -5263,6 +5313,12 @@ import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 ### `SuiteSerializer.serialize(result)`
 
 Takes a result object (for example, from `suite.runStatic(data)`) and returns a serializable string (safe for JSON transport).
+
+For schema-backed suites, the serialized state includes the last mapped schema
+output. This allows the first focused client run after `resume()` to retain
+untouched parsed fields exactly as a stateful run would. Treat the serialized
+string as application data: do not expose or log it where the validated values
+would be sensitive.
 
 ### `SuiteSerializer.resume(suite, serializedData)`
 
@@ -8210,6 +8266,20 @@ Combine `suite.only()` with `isTested()` for the best UX:
 - Use `isTested(fieldName)` when rendering to decide whether to show errors
   :::
 
+:::tip Related fields
+`suite.only()` runs exactly the field you name. When fields depend on each other through a schema [`dependsOn()`](https://vestjs.dev/docs/writing_your_suite/schema_relationships) relationship (e.g. `confirmPassword` depends on `password`), prefer `suite.changed()` in the handler — it revalidates the blurred field **plus its dependents**, so related errors refresh together:
+
+```javascript
+function handleBlur(fieldName, formData) {
+  // Re-runs the blurred field and anything that depends on it
+  const res = suite.changed(fieldName).run(formData);
+  setResult(res);
+}
+```
+
+Without a schema, `changed()` simply behaves like `only()` for that run.
+:::
+
 ## Complete Example
 
 ```javascript
@@ -8264,11 +8334,13 @@ function Form() {
 | :--------------------------- | :---------------------------- | :----------------------------------- |
 | **Did the user touch this?** | Check `field.isDirty`         | Check `result.isTested('field')`     |
 | **Validate on Blur**         | Call `validateField('field')` | Call `suite.only('field').run(data)` |
+| **Revalidate dependents**    | Manually track field links    | `suite.changed('field').run(data)`   |
 
 By combining `isTested()` (to hide premature errors) and `suite.only()` (to update specific fields), you get precise control over the user experience without tightly coupling your validation to the DOM.
 
 ## Related
 
+- [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships) - `dependsOn()` and dependency-aware revalidation with `suite.changed()`
 - [Focused Updates](https://vestjs.dev/docs/writing_your_suite/focused_updates) - Deep dive into `suite.only()` and `suite.focus()`
 - [Accessing the Result](https://vestjs.dev/docs/writing_your_suite/accessing_the_result) - Learn about `isTested()` and other result methods
 
@@ -8478,6 +8550,22 @@ When multiple modifiers are used, they are evaluated in the following order of p
 
 > **Note**: A test is run only if it passes _all_ active filters. For example, if you use `onlyGroup: 'A'` and `skip: 'field1'`, `field1` inside `Group A` will be skipped.
 
+### Dependency-Aware Focus with `suite.changed()`
+
+`only()` runs exactly the fields you name — nothing more. When your suite has a schema with [`dependsOn()`](https://vestjs.dev/docs/writing_your_suite/schema_relationships) relationships, `suite.changed()` goes one step further: it runs the named fields **plus every field the relationship graph marks as affected**, so dependents never go stale:
+
+```javascript
+// Re-runs `password` and, via dependsOn, `confirmPassword` too.
+suite.changed('password').run(formData);
+
+// Arrays, chaining, and nested paths all work.
+suite.changed(['password', 'country']).run(formData);
+suite.changed('password').only('confirmPassword').run(formData);
+suite.changed('travelers[1].passportCountry').run(formData);
+```
+
+Use `only()` for explicit execution selection and `changed()` for interaction-driven revalidation. See [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships) for the full reference, including the affected-set rules and end-to-end examples.
+
 ## Fluent Chain API
 
 `focus()` returns a "runnable" interface, allowing you to chain it with `afterEach`, `afterField`, or `run`.
@@ -8678,6 +8766,7 @@ suite.focus({ onlyGroup: 'groupA' }).run(formData); // ✅
 
 ## Related
 
+- [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships) - Dependency-aware revalidation with `suite.changed()` and `dependsOn()`
 - [Including and Excluding Fields](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/skip_and_only) - Using `only()` and `skip()` inside suites
 - [Include](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/include) - Link related fields to run together
 - [Test Groups](https://vestjs.dev/docs/writing_tests/advanced_test_features/grouping_tests) - Grouping tests together
@@ -9415,6 +9504,856 @@ Another notable distinction is that tests marked as warnings do not make the sui
 In some rare instances, you might have a field that is both optional and a warning. In these cases, you can combine the two options.
 
 
+# Schema Relationships
+
+Validation rules frequently depend on values outside the field they validate. A password confirmation depends on the password. A state depends on the selected country. A passport number may depend on the passport country of the same traveler.
+
+Vest can express these rules today because suites are arbitrary JavaScript:
+
+```js
+test('confirmPassword', 'Passwords must match', () => {
+  enforce(data.confirmPassword).equals(data.password);
+});
+```
+
+What Vest cannot know from this code is that the validity of `confirmPassword` depends on the value of `password` — that relationship exists only inside a closure.
+
+Schema Relationships make that relationship an optional, declarative part of an Enforce schema. The schema remains responsible for describing data **and relationships between data**. The suite remains responsible for execution, retained state, warnings, async work, groups, and interaction behavior.
+
+The model is dependency-aware invalidation of retained validation state — not dependency-driven execution. As an invariant: a validation result remains cached until its field changes or a value it depends on changes. `dependsOn()` declares the dependency half of that invariant; `suite.changed()` supplies the change event. The schema never says how to validate, in what order, or what the rule is — only which remembered results may have become stale.
+
+`dependsOn` is the first relationship primitive. The internal representation is a single directed graph (`source → target`, `effect: 'invalidate'`) that can later host other effects without redesigning the schema API.
+
+> Migration rule: `only()` does not follow `dependsOn` — use `changed()` for invalidation. A passing focused run is not proof the whole payload is valid: full-validate on submit.
+
+A relationship declaration should be: ergonomic, runtime-validated during composition, composable through nested schemas, meaningful for repeated/array schemas (same-item scoped), machine-readable without parsing source, small enough that users are not maintaining a second copy of their form, colocated with the field it describes, useful to Vest itself (not just metadata), and extensible.
+
+## Cross-field Dependencies
+
+Sometimes validating one field depends on another.
+
+For example, `confirmPassword` must be validated again whenever `password` changes.
+
+Declare that relationship **inline on the field schema** — references are resolved by the containing schema:
+
+```ts
+const registrationSchema = enforce.shape({
+  email: enforce.isString().isEmail(),
+  password: enforce.isString().longerThanOrEquals(8),
+  confirmPassword: enforce.isString().dependsOn($ => $.password),
+});
+```
+
+`$` does not contain your form values.
+
+It is an ergonomic symbolic reference to sibling fields in the **current schema scope**, runtime-validated during composition. TypeScript does not restrict property names to existing fields — any property access on `$` typechecks.
+
+This means:
+
+> The validation result for `confirmPassword` may become stale when the value of `password` changes.
+
+It does **not** add a validation rule by itself.
+
+Your suite still contains the actual business rule — and that may be arbitrary logic:
+
+```ts
+const suite = create(data => {
+  test('confirmPassword', 'Passwords must match', () => {
+    enforce(data.confirmPassword).equals(data.password);
+  });
+}, registrationSchema);
+```
+
+The schema says _that_ the two fields are related; the suite says _why and how_. This works equally for equality checks, conditional business rules, async API checks, feature-flagged validation, and warnings. The schema never encodes execution logic.
+
+So a field can declare a dependency even when its own Enforce rule is not the one reading the other field:
+
+```ts
+username: enforce.isString().dependsOn($ => $.organizationId);
+// suite:
+test('username', 'Username unavailable', async () => {
+  const available = await api.checkUsername({
+    organizationId: data.organizationId,
+    username: data.username,
+  });
+  enforce(available).isTruthy();
+});
+```
+
+> Schema: `username` validity depends on `organizationId`.
+> Suite: here is why and how.
+
+## Multiple Dependencies
+
+A field may depend on more than one value. Return an array:
+
+```ts
+const schema = enforce.shape({
+  quantity: enforce.isNumber(),
+  unitPrice: enforce.isNumber(),
+  currency: enforce.isString(),
+  total: enforce
+    .isNumber()
+    .dependsOn($ => [$.quantity, $.unitPrice, $.currency]),
+});
+```
+
+Changing any of `quantity`, `unitPrice`, or `currency` may make `total` stale. Always return refs — `($) => $.a` for one, `($) => [$.a, $.b]` for many — so the API has room to grow.
+
+## Nested Fields — Scoped Refs
+
+`$` is scoped to the **current schema**. References are local by default:
+
+```ts
+const accountSchema = enforce.shape({
+  password: enforce.isString(),
+  confirmPassword: enforce.isString().dependsOn($ => $.password),
+});
+```
+
+No dotted strings to keep synchronized. A misspelled or stale field name (e.g. renaming `password` without updating `$ => $.password`) throws `EnforceSchemaError` when the containing schema is composed — a runtime check during composition, not a TypeScript compile-time error. No ESLint rule for this exists in V1.
+
+## Reusable Nested Schemas
+
+Dependencies declared inside a nested schema are relative to that schema and **rebase automatically** when mounted:
+
+```ts
+const addressSchema = enforce.shape({
+  country: enforce.isString(),
+  state: enforce.isString().dependsOn($ => $.country),
+});
+
+const checkoutSchema = enforce.shape({
+  billingAddress: addressSchema,
+  shippingAddress: addressSchema,
+});
+```
+
+Conceptually:
+
+```text
+billingAddress.country  → billingAddress.state
+shippingAddress.country → shippingAddress.state
+```
+
+The reusable schema does not know where it will be mounted.
+
+## Arrays and Repeated Schemas
+
+Dependencies inside an item schema remain scoped to the **same item** — no array syntax needed:
+
+```ts
+const travelerSchema = enforce.shape({
+  passportCountry: enforce.isString(),
+  passportNumber: enforce.isString().dependsOn($ => $.passportCountry),
+});
+
+const bookingSchema = enforce.shape({
+  travelers: enforce.isArrayOf(travelerSchema),
+});
+```
+
+If `travelers[3].passportCountry` changes, only `travelers[3].passportNumber` is affected:
+
+```text
+travelers[3].passportCountry → travelers[3].passportNumber
+```
+
+Internally:
+
+```text
+travelers[$item].passportCountry → travelers[$item].passportNumber
+```
+
+The concrete index is bound at runtime. The binding is structural, not numeric.
+
+Records work the same way with dynamic keys: a dependency inside a record
+value stays scoped to the **same key** — no key syntax needed:
+
+```ts
+const schema = enforce.shape({
+  dictionary: enforce.record(
+    enforce.shape({
+      country: enforce.isString(),
+      state: enforce.isString().dependsOn($ => $.country),
+    }),
+  ),
+});
+```
+
+If `dictionary.home.country` changes, only `dictionary.home.state` is
+affected. Numeric record keys (`'0'`, `'1'`) are matched the same way;
+a key containing a dot cannot be addressed unambiguously with dotted
+`changed()` names — prefer non-dotted keys when using `suite.changed()`.
+
+## Dependencies Across Nesting Levels
+
+Most relationships are local. For the unusual case that must reference outside its scope, use `$.root`:
+
+```ts
+const schema = enforce.shape({
+  accountType: enforce.isString(),
+  company: enforce.shape({
+    country: enforce.isString(),
+    taxId: enforce.isString().dependsOn($ => [$.country, $.root.accountType]),
+  }),
+});
+```
+
+Semantics:
+
+- `$` — current schema scope
+- `$.root` — top-level schema scope
+
+`$.root` should be explicit and rare. Reusable locals should prefer local refs.
+
+> **Validation timing for `$.root` paths**
+>
+> Local references are validated when the containing schema is composed
+> (unknown siblings throw `EnforceSchemaError` immediately). Rooted paths are
+> validated lazily instead: composition and `describe()` stay lenient so
+> focused fragments keep composing, and an unknown `$.root` field throws on
+> the first `test` / `validate` / `run` — or at suite creation, which
+> finalizes the graph. `describe()` may therefore show a dangling rooted
+> edge until the schema is executed.
+
+> **Deferred to v2 — `$.parent`**
+>
+> `$.parent` (parent-scope escape) is **intentionally deferred** — add only if a real use case demands it.
+> In V1, a resolver that touches `$.parent` throws at schema composition time with `err.message` exactly `Failed to resolve dependency for "a": $.parent deferred to v2` (an `EnforceSchemaError`).
+>
+> ```ts
+> enforce.shape({
+>   a: enforce.isString().dependsOn($ => $.parent.sibling), // throws in V1
+> });
+> ```
+
+## Dependencies and Focused Validation
+
+A dependency does not change `only()`.
+
+```ts
+suite.only('password').run(data);
+```
+
+means exactly that — run only `password`.
+
+Dependencies answer a different question:
+
+> A field changed. Which validation results may now be stale?
+
+Use the available interaction API which consumes the relationship graph:
+
+```ts
+suite.changed('password').run(data);
+```
+
+Given:
+
+```ts
+confirmPassword: enforce.isString().dependsOn($ => $.password);
+```
+
+Vest derives:
+
+```text
+password
+confirmPassword
+```
+
+as the affected set. This preserves `only()` semantics while giving frameworks an interaction-aware operation. Keep them separate:
+
+- `only()` — explicit execution selection
+- `changed()` — dependency-aware affected-set selection
+
+`include()` then becomes a lower-level escape hatch, not the primary way to express cross-field behavior.
+
+`schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs. Selective schema execution additionally re-runs the projected rule per affected array index / record key, so an affected member failure hidden behind an earlier unaffected one is still surfaced.
+
+Split of responsibilities: Enforce owns spatial and structural truth (the graph, schema paths, selective execution); Vest owns temporal truth (retained state, test focus, reconciliation). The handshake between them is narrow — Vest hands n4s the schema, the run data, and the raw changed names; n4s returns the concrete affected set. Vest resolves that set once through the canonical planner, then gives the exact same set to both suite focus and schema execution via `runSchemaPaths(schema, data, options?)`. Everything after that is n4s-owned — container-kind detection, fragment projection, short-circuit supplementation, chain-validator preservation, and member execution. Vest never reverse-engineers container semantics.
+
+For projectable shapes and selected array or tuple members, validators outside the affected set do not execute. Each selected rule executes once; a failed n4s verdict is never retried through another validation entry point. Union elements use ordered any-match evaluation, which can evaluate several alternatives. Keep validators pure: these guarantees do not turn validation into a side-effect scheduler.
+
+First focused runs over untouched unions are an explicit error boundary in V1. Parser-only mapping cannot choose a union branch without validation, so when neither the focused fields cover the union member nor a prior mapped result witnesses it, the run throws a focused-mapping error naming the path instead of calling the callback with raw input. Run a full validation first — or focus the union path itself — to establish the witness that warm focused runs reuse.
+
+This boundary also applies through `compose()` and to unions excluded by `focus({ skip: ... })`. A skip-only run restores skipped regions from a prior complete mapping; without one, an unresolved skipped union throws before the callback runs. Skipping an unrelated field still permits the validated union output. A rejected mapping does not establish a witness for later runs. `changed([])` supplies best-effort declaration data without validating any fields and preserves the previous mapping history; it cannot establish or replace a branch witness.
+
+Affected-path planning never invokes input accessors, including concrete array-index getters. Accessor-backed subtrees expand from declared schema keys only; dynamic data keys behind an accessor cannot be enumerated without reading it.
+
+Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators — explicitly skipped fields are still excluded (composed chains omit skipped top-level keys and keep the root chain) — and failures are then narrowed to the affected paths. An untouched dependency source does not, by itself, require full execution: ordinary object-schema projections can validate a dependent without revalidating its sources. Relationships describe invalidation, not execution prerequisites. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
+
+Projection reads construction-time metadata and never probes validators with synthetic data. Partial fragments preserve the distinction between an absent property and an own property holding `undefined`, including declared non-enumerable properties. A shape of `optional()` members has different semantics from `partial()`.
+
+Vest retains previously reported schema errors on untouched fields, just as it retains user-test errors. A changed run clears a retained error when that field is revalidated successfully; `resetField()`, `remove()`, and `reset()` also clear the corresponding state. `changed([])` performs no revalidation and does not clear previous failures. This history belongs to the suite, not the n4s schema or its serializable relationship graph.
+
+### `suite.changed()` Reference
+
+`suite.changed()` is the interaction API that consumes the relationship graph. It takes the fields the user touched and runs them plus everything the graph marks as affected:
+
+```ts
+suite.changed('password').run(data);
+```
+
+Accepted field arguments:
+
+- `suite.changed('password')` — expand the affected set from one field.
+- `suite.changed(['password', 'country'])` — expand from several fields (union of affected sets).
+- `suite.changed(undefined)` — legal no-op that runs without changed focus, mirroring `only(undefined)`.
+- `suite.changed([])` — explicit empty focus: runs no tests and retains previous failures.
+
+Behavior notes:
+
+- Returns a focused suite, so it chains with the other focus APIs: `suite.changed('password').only('confirmPassword').run(data)`. Combining `only()` with `changed()` runs the union — the `only()` base fields plus the affected set.
+- Changing a whole object selects its descendants; changing a descendant also invalidates rules that depend on that whole object. Expansion remains direct, not transitive.
+- Changed names accept dotted or bracket spelling. Vest normalizes `travelers[1].passportCountry` to the canonical dotted form `travelers.1.passportCountry` before planning and reporting focus. Literal property names containing dots and all-numeric record keys are ambiguous in this string API and cannot be targeted as single segments.
+- Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
+
+### Focus Composition
+
+The core composition contract is below. `affected(a)` is the named fields plus everything the graph marks stale. This is not an exhaustive Cartesian product of nested focus and group behavior. The [acceptance contract](https://vestjs.dev/docs/writing_your_suite/schema_relationships_acceptance) records open release-readiness failures; in particular, explicit skip precedence is required but not yet satisfied in all combinations.
+
+| Chain                                             | Result                                                                                                                                                                                                            |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `changed(a)`                                      | Runs `affected(a)`; schema failures narrowed to it.                                                                                                                                                               |
+| `changed(a).only(b)` or `only(b).changed(a)`      | Runs the union: `affected(a)` plus `b`, in either chain order.                                                                                                                                                    |
+| `changed([])`                                     | Runs nothing; previous failures are retained.                                                                                                                                                                     |
+| `only(b).changed([])`                             | Runs `b`; previous failures are retained.                                                                                                                                                                         |
+| `changed(undefined)`                              | Clears only changed focus. An existing `only`, skip, or group modifier remains; it is a plain run only when no other focus remains.                                                                               |
+| `changed(a).changed(b)` / `only(a).only(b)`       | The last value for that modifier wins. Other modifiers remain.                                                                                                                                                    |
+| `changed(a).only(undefined)`                      | Clears only explicit `only`; `affected(a)` still runs.                                                                                                                                                            |
+| `changed(a).focus({ onlyGroup: g })`              | Selected user tests must also belong to `g`; synthetic schema tests remain top-level.                                                                                                                             |
+| `changed(a).focus({ skipGroup: g })`              | User tests in `g` do not execute. Existing excluded group history is retained; this is not destructive field skip.                                                                                                |
+| `only(b)` without `changed()`                     | Runs exactly `b`; dependents are not expanded.                                                                                                                                                                    |
+| `focus({ skip: s })`, with or without `changed()` | `s` is excluded from execution and follows destructive skip semantics: its retained state is cleared, and mapping for skipped regions is restored from a prior complete run — or throws for an unwitnessed union. |
+
+### End-to-End: Revalidating a Form on Change
+
+A complete blur-handler flow. The schema declares the relationship once; every keystroke handler stays the same shape:
+
+```ts
+import { create, test, enforce } from 'vest';
+
+const schema = enforce.shape({
+  password: enforce.isString().longerThanOrEquals(8),
+  confirmPassword: enforce.isString().dependsOn($ => $.password),
+});
+
+const suite = create(data => {
+  test('password', 'Password must be at least 8 characters', () => {
+    enforce(data.password).longerThanOrEquals(8);
+  });
+  test('confirmPassword', 'Passwords must match', () => {
+    enforce(data.confirmPassword).equals(data.password);
+  });
+}, schema);
+
+// Initial full run on submit or mount.
+let result = suite.run({ password: 'hunter22', confirmPassword: 'hunter22' });
+
+// The user edits the password field. Re-run for the changed field:
+// Vest re-runs `password` plus the affected `confirmPassword` test
+// and preserves every other result.
+result = suite.changed('password').run({
+  password: 'hunter2',
+  confirmPassword: 'hunter22',
+});
+
+result.hasErrors('confirmPassword'); // true — the stale dependent was re-evaluated
+```
+
+With several changed fields at once, pass an array — the affected set is the union:
+
+```ts
+result = suite.changed(['password', 'email']).run(nextData);
+```
+
+### Custom Parsers and Selective Runs
+
+Selective runs apply parser steps (built-in steps like `trim()` or `toNumber()`, which only transform data) to untouched fields without executing validation predicates — so those transforms must be pure. Custom rules added with `enforce.extend` are treated as validators by default and are never executed speculatively. If a custom rule is really a parser — a pure transformation that cannot fail on its own — register it explicitly so selective runs can apply it:
+
+```ts
+enforce.extend(
+  {
+    normalizeId: (value: string) => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Unlisted custom rules keep validator treatment: they run only when their own field is in the affected set, never as mapping helpers. See [Input vs output types with parsers](https://vestjs.dev/docs/writing_your_suite/schema_validation#input-vs-output-types-with-parsers) for the full typing story.
+
+## Dependencies Are Not Automatically Transitive
+
+```text
+A → B
+B → C
+```
+
+where `A → B` means "target `B` may be stale when `A` changes."
+
+If `A` changes, `B` must be reconsidered. `C` does not — `B`'s value didn't change. Expansion is on changed values, not transitive closure. If `C` also depends on `A`, declare it explicitly. Revalidation does not imply mutation: rerunning `B` because `A` changed does not mean `B` changed, so `B`'s dependents remain valid.
+
+## Circular Dependencies
+
+Cycles are valid.
+
+```ts
+const schema = enforce.shape({
+  startDate: enforce.isString().dependsOn($ => $.endDate),
+  endDate: enforce.isString().dependsOn($ => $.startDate),
+});
+```
+
+Changing `startDate` invalidates `endDate` and vice versa. No loop occurs because dependencies describe invalidation, not imperative calls.
+
+> **Deferred to v2 — `effect: 'revalidate'`**
+>
+> V1: only `effect: 'invalidate'` ("previous result is stale") is supported.
+> Supplying `effect: 'revalidate'` (immediately rerun vs stale) is **deferred to v2** and will throw with `err.message` exactly `effect:'revalidate' deferred to v2 — only 'invalidate' supported in V1`.
+> The assertion is at composition time (`enforce` + `lazy.ts`):
+>
+> ```ts
+> /** @deferred v2 — effect:'revalidate' deferred, only 'invalidate' supported in V1 */
+> if (effect !== 'invalidate')
+>   throw new Error(
+>     `effect:'${effect}' deferred to v2 — only 'invalidate' supported in V1`,
+>   );
+> ```
+>
+> Future `revalidate` vs `invalidate` distinction (immediately rerun vs stale) is deferred.
+>
+> `revalidates()` was removed before V1; use `.dependsOn()` for the same edge.
+
+## Introspection
+
+Dependency information is part of the Enforce schema and inspectable without running a suite:
+
+```ts
+schema.describe();
+```
+
+Serializable form:
+
+```json
+{
+  "dependencies": [
+    {
+      "target": [{ "type": "property", "key": "confirmPassword" }],
+      "sources": [[{ "type": "property", "key": "password" }]]
+    }
+  ],
+  "relationships": [
+    {
+      "source": [{ "type": "property", "key": "password" }],
+      "target": [{ "type": "property", "key": "confirmPassword" }],
+      "effect": "invalidate"
+    }
+  ]
+}
+```
+
+Array item (the item binding is `<arrayKey>.$item`):
+
+```json
+{
+  "target": [
+    { "type": "property", "key": "travelers" },
+    { "type": "item", "binding": "travelers.$item" },
+    { "type": "property", "key": "passportNumber" }
+  ],
+  "sources": [
+    [
+      { "type": "property", "key": "travelers" },
+      { "type": "item", "binding": "travelers.$item" },
+      { "type": "property", "key": "passportCountry" }
+    ]
+  ]
+}
+```
+
+The representation is:
+
+```ts
+type PropertySegment = { type: 'property'; key: PropertyKey };
+type ItemSegment = { type: 'item'; binding: string };
+type SchemaPath = readonly (PropertySegment | ItemSegment)[];
+interface SchemaRelationship {
+  source: SchemaPath;
+  target: SchemaPath;
+  effect: 'invalidate';
+  metadata?: { reason?: string };
+}
+interface SchemaDependency {
+  target: SchemaPath;
+  sources: readonly SchemaPath[];
+}
+```
+
+Consumable by Vest, framework adapters, devtools, docs, and agents. Relationships stay out of `~standard`.
+
+## What Dependencies Intentionally Do Not Do
+
+- Does not execute anything or impose validation order — purely invalidation metadata.
+- Does not inspect suite closures.
+- Does not make arbitrary JS declarative.
+- Does not replicate `test()`/`group()`/`warn()`/`only()`/`skipWhen`/async inside Enforce.
+- Does not require deps for every cross-field test.
+- Does not change Standard Schema.
+- Does not change `only()` — `changed()` is separate.
+
+## Interaction with Other Features
+
+Schema Relationships are **metadata + `suite.changed()` in V1**. `describe()` records the graph without running a suite; `suite.changed()` consumes it to select affected tests.
+
+| Feature                                     | Effect on `describe()`                                                                                                                  | Effect on suite `run()` / `suite.changed()` in V1                                                                                                                                   |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `skipWhen` (retains)                        | records                                                                                                                                 | `run()` unchanged; `changed()` treats dependent as candidate but Vest skips if `skipWhen` hides it                                                                                  |
+| `omitWhen` (removes)                        | records                                                                                                                                 | `run()` unchanged; `changed()` still records edge but omitted test never runs                                                                                                       |
+| `optional('field')`                         | records                                                                                                                                 | `run()` unchanged — edge exists even if optional field is absent; `changed()` includes it when source changes                                                                       |
+| `include().when()`                          | **does not record** — `include` is a Vest suite modifier, not an n4s schema relationship; `schema.describe()` has no `include` metadata | `changed()` remains the interaction-aware operation                                                                                                                                 |
+| `only` / `skip` / `onlyGroup` / `skipGroup` | records (expansion ignores focus: `only('password')` does not auto-include `confirmPassword`)                                           | `changed('password')` does include it; `only` merges into the affected set; synthesized failures are top-level tests, so field focus and the documented top-level group rules apply |
+| `group` / `each`                            | records (rebased)                                                                                                                       | `run()` unchanged; `changed()` respects rebasing and same-item scoping; keyed `each` results follow item identity across reordered array positions                                  |
+| `warn`                                      | records                                                                                                                                 | `run()` unchanged; `changed()` includes warn dependents as normal tests                                                                                                             |
+
+V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set expansion (flat, nested, reusable, array same-item, and root→array fan-out via run-time `data`). There is no options overload in V1:
+
+> `suite.changed()` takes only the changed fields. AbortSignal-based cancellation is not a V1 feature, so no typed option implies it. JavaScript callers passing any second argument fail explicitly — `{ signal }` with `Error('suite.changed({ signal: AbortSignal }) deferred to v2')`, anything else with `Error('suite.changed() accepts no options in V1')` — instead of being silently ignored. Async test callbacks still receive their own `AbortSignal`.
+>
+> No behavior change for current V1 usage `suite.changed(field).run(data)`.
+
+## Parsed Callback Snapshot Ownership
+
+Schema-backed runs keep the caller's input, Vest's retained mapping, callback data, and published result as separate ownership boundaries. For supported data containers:
+
+- callback and result mutations do not mutate the caller's input;
+- repeated references remain aliases within each copy;
+- `ArrayBuffer` and `SharedArrayBuffer` storage is copied; typed views retain their offsets, lengths, shared copied buffer, and buffer/view backreferences;
+- immutable `Date`, `Map`, and `Set` snapshots reject their mutating methods;
+- immutable snapshot getters are read once and their return values are detached; a throwing getter fails snapshot creation explicitly;
+- setter-only properties become read-only `undefined` and never call the foreign setter;
+- opaque class instances retain their identity because visible properties cannot reproduce private fields or internal slots.
+
+These are ownership guarantees, not a promise that every copied JavaScript value is deeply immutable. Typed-array bytes and detached accessor results remain usable mutable working data without aliasing caller-owned state.
+
+## Performance Expectations
+
+`changed()` is a correctness and interaction primitive. It often does less validation work on large forms, but it is not guaranteed to beat `run()` on a small schema: planning, projection, supplementation, and snapshot copies have fixed costs. Use the relationship benchmarks for representative workloads and choose `changed()` when retained-field behavior and dependent invalidation match the interaction. Submission and other trust boundaries should still perform a full validation run.
+
+## Related
+
+- [Schema Validation](https://vestjs.dev/docs/writing_your_suite/schema_validation) — passing a schema to `create()`, parsed data, and registering custom `parsers`.
+- [Focused Updates](https://vestjs.dev/docs/writing_your_suite/focused_updates) — the `only()` / `skip()` / `focus()` semantics that `changed()` builds on.
+- [Handling User Interaction](https://vestjs.dev/docs/writing_your_suite/dirty_checking) — the `onBlur` / `onChange` patterns where `changed()` fits.
+- [Creating Custom Rules](https://vestjs.dev/docs/enforce/creating_custom_rules) — `enforce.extend`, including parser-style rules.
+- [Data Parsers](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/data_parsers) — the built-in parser steps selective runs can apply safely.
+
+## Acceptance and interaction guarantees
+
+See the [acceptance contract and feature matrix](https://vestjs.dev/docs/writing_your_suite/schema_relationships_acceptance)
+for executable correctness gates, lifecycle interactions, and explicitly chosen
+behavior for cases the original RFC did not settle.
+
+
+# Schema relationships: acceptance contract
+
+This is the correctness gate for PR #1324, based on implementation commit
+`13dbe73317f8e5c9ac177a64ab3d9d5a38ea180a`. It supplements
+[Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships) and
+[Schema Validation](https://vestjs.dev/docs/writing_your_suite/schema_validation). These are required outcomes.
+The 2026-09-10 readiness review of `a923f2f4` adds 87 active tests: all 87
+pass at the current head, while all 186 pre-existing contracts still pass.
+None are skipped, todo, inverted, or marked as expected failures. The
+readiness cases cover field-skip precedence, composed fallback execution,
+and public accessor ownership.
+See the [release-readiness plan](https://github.com/ealush/vest/blob/codex/schema-relationships-ready/docs/schema-relationships-release-readiness.md)
+for exact findings, distinctions between existing promises and strengthened
+contracts, and the required implementation sequence. A passing focused run
+is not proof that an entire untrusted payload has been validated.
+
+The original RFC proposed `schema`, `string`, and `array` shorthand and
+`revalidates`. The implemented API uses `shape`, `isString`, `isArrayOf`,
+`dependsOn`, and `suite.changed`. This gate targets the implemented API;
+it does not introduce the deferred aliases, `$.parent`, transitive expansion,
+or an AbortSignal option.
+
+## Boundaries and functional behavior
+
+n4s owns schema composition, structural paths, relationship descriptions,
+projection, and parser output. Vest owns retained verdicts, focus, groups,
+warnings, async work, and lifecycle operations. Form adapters supply event
+names and translate results; they must not build another dependency graph.
+No relationship itself performs a cross-field comparison: that remains a
+rule or suite test.
+
+Descriptions and graph planning must be deterministic and must not modify a
+schema or caller data. Returned metadata is detached and JSON serializable.
+Dependency planning must not execute validators, parsers, or input accessors.
+Collection traversal reads own data descriptors to expand concrete item
+bindings; behind an accessor, only declared schema keys can expand. This
+includes concrete array-index paths and avoids turning introspection into
+arbitrary user code execution.
+
+Parsers must be pure; they need not be idempotent. Apply each parser stage to
+its raw input (or the preceding stage's output), never last run's parsed
+snapshot. A failing predicate cannot be retried until it happens to pass.
+For a projected union member, evaluate alternatives in order, stop at the
+first success, and keep that success's output without rerunning its validator.
+
+## Feature and interaction matrix
+
+`SC-*` markers occur in test names. Files below are under
+`packages/vest/src/suite/__tests__/` unless otherwise stated.
+
+| Contract                              | Required behavior                                                                                                                                                                     | Executable coverage                                                                                                                                                                                        |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SC-GRAPH                              | One-hop directed invalidation, cycles terminate, no duplicate executions; descriptions stay detached                                                                                  | `schemaContracts.featureMatrix.test.ts`: all 64 directed three-node graphs without self-edges × all 7 nonempty changed sets (448 combinations), plus duplicates and metadata isolation                     |
+| SC-SCOPE                              | Local item binding, root fan-out, aggregate-source invalidation; no ambient projection privilege leaks into user-created schemas                                                      | `packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts`: array and record items, nested schema construction, getter-free scalar planning                                                     |
+| SC-COVERAGE / SC-ONCE                 | Every selected member gets a verdict even after an unrelated first failure; no predicate retries                                                                                      | `schemaContracts.execution.test.ts`: shape/loose/partial/compose × passing/failing selected predicate                                                                                                      |
+| SC-PATH / SC-EXCLUDE                  | Numeric record keys keep exact identity; explicitly skipped child predicates do not execute under an affected parent                                                                  | `schemaContracts.execution.test.ts`: `01`, `1`, and an integer beyond safe JS precision; parent/child exclusion                                                                                            |
+| SC-RETAIN                             | Inclusion focus retains untouched schema errors and does not evaluate their predicates                                                                                                | `schemaContracts.focus.test.ts`: shape/loose/partial × only/focus/changed/only plus empty changed (12 combinations)                                                                                        |
+| SC-EMPTY / SC-SKIP / SC-GROUP         | Empty changed retains history without schema predicates; explicit skip discards that field's history; group focus excludes top-level synthetic schema errors                          | `schemaContracts.focus.test.ts`                                                                                                                                                                            |
+| SC-LIFECYCLE / SC-STATIC              | Reset, remove, and resetField clear authoritative history; resume restores it; runStatic discards suite state                                                                         | `schemaContracts.focus.test.ts`                                                                                                                                                                            |
+| SC-SUBTREE                            | A parent edit refreshes descendant user tests, including children newly declared through keyed `each`                                                                                 | `schemaContracts.focus.test.ts`: both pass→fail and fail→pass, unrelated field isolation, newly added child                                                                                                |
+| SC-OUTPUT / SC-PRESENCE               | Preserve successful falsy outputs and own-property presence                                                                                                                           | `schemaContracts.output.test.ts`: null/undefined/false/0/empty string × root/shape/array/tuple/compose (25 combinations); deletion versus explicit undefined; first skip-only mapping to present undefined |
+| SC-UNION / SC-PARSER / SC-FAILURE-MAP | Complete parsed callback data on fresh and warm focus; preserve branch output across reorder/insert/remove; failure cannot poison later mapping                                       | `schemaContracts.output.test.ts`                                                                                                                                                                           |
+| SC-ASYNC                              | Superseded work cannot win in either verdict direction; unrelated edits retain pending work; schema reuse cannot share async state                                                    | `schemaContracts.async.test.ts`: manually released promises; pending result has no value                                                                                                                   |
+| SC-ASYNC-LIFECYCLE                    | reset/remove/resetField must prevent late work from resurrecting a failure or pending state                                                                                           | `schemaContracts.async.test.ts`                                                                                                                                                                            |
+| SC-ALIAS / SC-ACCESSOR                | Detached copies preserve supported alias topology and never retain live snapshot setters                                                                                              | `schemaContracts.snapshots.test.ts`: buffers/views, shared Map/Set/symbol references, getter and setter boundaries                                                                                         |
+| SC-FORM                               | Source changes reach dependent form errors; unrelated errors survive; repair enables submit; fresh focused success cannot bypass full submit validation; form instances stay isolated | `integrations/tanstack-form/src/schemaContracts.integration.test.ts`: mounted TanStack Form instances with event adapter and Standard Schema submit                                                        |
+| SC-DOCS                               | The example below actually invalidates confirmation, retains an unrelated error, and recovers                                                                                         | `docsExamples.test.ts` executes the exact Markdown code block                                                                                                                                              |
+
+Additional boundary coverage lives in `schemaContracts.boundaries.test.ts`
+(16 cases): concrete-index accessor planning, shared-memory detachment,
+buffer/view cycles across both buffer types, both copy modes, and both traversal
+orders, composed union rejection, skip-only recovery, and empty-focus history.
+`packages/n4s/src/schema/__tests__/schemaContracts.mappingProvenance.test.ts`
+adds three direct/nested/optional composition cases for absolute mapping paths
+and predicate-free union incompleteness reporting.
+
+The graph matrix uses an independent edge-list oracle, not the implementation's
+resolver to calculate expected results. It exhausts the stated finite graph
+space, not arbitrary graph sizes or all Cartesian products of Vest features.
+The additional `schemaContracts.readiness.test.ts` files exercise actual n4s
+predicate calls across 64 graphs × 7 changed sets × 4 validity assignments
+(1,792 executions), local/rooted dependent focus, 13 retained-state composition
+cases, schema/no-schema skip collisions, composed fallback skips, and accessor
+ownership through public callback and result boundaries. Predicate locality is
+measured here; internal fallback counts and production latency are not.
+Existing `changed.integration`, `changed.adversarial`, `changed.round2`,
+`changed.supplement`, coercion, security, typing, and schema-domain tests remain
+part of the regression gate. Their coverage includes nested arrays, reusable
+schema rebasing, warnings, optional fields, omission, imperative inclusion,
+keyed reorder, hostile paths, and deferred API rejection.
+
+## Decisions for interactions the RFC did not settle
+
+1. **Retained state and focus.** `only` remains explicit and does not expand
+   dependencies. `changed(parent)` includes descendant schema and user tests;
+   this also covers tests newly declared inside keyed `each` during that run.
+   An unrelated edit preserves prior failures. Explicit skip removes its field's
+   failures, takes precedence over affected-parent inclusion, and never executes
+   that field's predicate. `onlyGroup` treats synthetic schema tests as top-level.
+   These rules extend invalidation without changing group or skip ownership.
+2. **Lifecycle while pending.** resetField is a cancellation boundary for the
+   field's current result, just as remove and reset are for their scope. Late
+   completion must not restore an error or pending state. This does not promise
+   cancellation of the application's network request. The dotted lifecycle
+   probe uses the repository's explicit runtime test seam because current
+   schema-derived lifecycle types expose only top-level keys.
+3. **Fresh focused output.** A first focused run over an untouched union with
+   no branch witness fails explicitly with a focused-mapping error naming the
+   path: it cannot advertise success with a mix of raw strings and parsed
+   numbers, run hidden predicates to choose a branch, or infer safety from
+   value shapes. A prior full run establishes the branch witness that warm
+   focused runs reuse; focusing the union path itself validates and maps it.
+   Non-union untouched fields map via pure parser transforms. Predicate-free
+   branch selection for built-ins is a deferred V1 capability, not a current
+   guarantee. Invalid unselected input is not certified by focused validation.
+   Composition must preserve unresolved union provenance at absolute paths.
+   Skip-only focus enforces the same boundary for skipped union regions.
+   Empty focus preserves mapping history but cannot create a branch witness;
+   a rejected focused mapping cannot seed one either.
+4. **Presence.** A success with a `type` property whose value is null or undefined
+   is still a successful output. Containers must preserve it. An absent optional
+   key stays absent; an own key containing undefined remains present. Neither
+   truthiness nor nullish coalescing can decide whether output exists.
+5. **Snapshots.** Supported built-in containers must detach from caller-owned
+   state while preserving shared references. Typed views that shared a backing
+   buffer must share the copied backing buffer with the same offsets and lengths.
+   Bytes may remain mutable in their detached copies, as already documented by
+   the clone tests; this does not claim universal deep immutability.
+   This includes SharedArrayBuffer-backed views. Copies preserve buffer/view
+   backreferences regardless of whether traversal encounters the buffer or
+   a view first, and never share backing memory with the caller's input.
+6. **Accessor failure.** Immutable snapshot getters are materialized once per
+   clone, with their returned object detached. If a getter throws, snapshot
+   creation must propagate that error instead of keeping a live descriptor.
+   Setter-only properties are represented as read-only undefined values, so
+   writes cannot call a foreign setter. These two choices intentionally replace
+   the current fallback behavior: silently retaining a live accessor violates
+   the snapshot ownership boundary. The readiness review strengthens this at
+   public schema-backed callback and result boundaries: plain-object accessor
+   results must also detach there, and writes must not invoke caller-owned
+   setters. This deliberately resolves the old mutable-working-clone exception
+   versus the public ownership promise; it is not a regression in the immutable
+   helper's existing accessor tests. Internal mutable cloning can retain its
+   semantics where no public ownership boundary is crossed. Opaque class
+   instances retain their documented identity limitation.
+7. **Submit.** A form change event supplies an explicit changed name. A submit
+   event validates the complete current payload through the Standard Schema
+   surface. A fresh focused success cannot be reused as full-submit approval.
+   Form change errors are message strings in this test adapter; Standard Schema
+   submit errors retain structured message/path objects.
+
+## Executable acceptance example
+
+```ts
+import { create, enforce, mode, Modes, test } from 'vest';
+
+export function registrationAcceptance() {
+  const suite = create(
+    data => {
+      mode(Modes.ALL);
+      test('password', () => enforce(data.password).isNotBlank());
+      test('confirm', 'Passwords must match', () => {
+        enforce(data.confirm).equals(data.password);
+      });
+      test('note', 'Note required', () => enforce(data.note).isNotBlank());
+    },
+    enforce.shape({
+      password: enforce.isString(),
+      confirm: enforce.isString().dependsOn($ => $.password),
+      note: enforce.isString(),
+    }),
+  );
+
+  suite.run({ password: 'old', confirm: 'old', note: '' });
+  const changed = suite.changed('password').run({
+    password: 'new',
+    confirm: 'old',
+    note: '',
+  });
+  // Read before another run: suite state is temporal.
+  const errorsAfterChange = changed.getErrors();
+  suite.changed('confirm').run({ password: 'new', confirm: 'new', note: '' });
+  const repaired = suite.changed('note').run({
+    password: 'new',
+    confirm: 'new',
+    note: 'ready',
+  });
+  return { errorsAfterChange, value: repaired.value };
+}
+```
+
+## Recorded verification against the implementation baseline
+
+Against `261199ae03ba72ff096c146e159c226264f9ba7c`, the added contract files
+contain 154 package tests: 142 pass and 12 fail. The three new mounted-form
+integration tests and the new executable documentation test also pass,
+for 158 new tests total. The graph test loops enumerate 448 combinations
+inside 64 of those test cases.
+
+The full package run reports 3,164 passing and 12 failing tests across 326
+files; every failure is in a new contract test. The complete TanStack Form
+workspace reports 9 passing tests. The documentation command reports 14
+passing executable examples and 21 passing website tests. Strict source/test
+and integration typechecks, changed-file lint, and formatting pass. Package
+builds passed before testing. The full ecosystem build and website production
+build have not been rerun for this tests-only change; they remain release gates.
+
+| Failing contract   | Cases | Required production work                                             |
+| ------------------ | ----- | -------------------------------------------------------------------- |
+| SC-OUTPUT          | 4     | Preserve null and undefined parser outputs inside arrays and tuples  |
+| SC-UNION           | 1     | Map untouched successful union members during a fresh focused run    |
+| SC-SUBTREE         | 1     | Select newly declared keyed descendant tests on a parent edit        |
+| SC-ASYNC-LIFECYCLE | 1     | Prevent resetField from accepting a late failure                     |
+| SC-SCOPE           | 1     | Avoid reading scalar getters during graph planning                   |
+| SC-ALIAS           | 2     | Preserve shared backing buffers and view offsets in both copy modes  |
+| SC-ACCESSOR        | 2     | Propagate snapshot getter failures and detach setter-only properties |
+
+These are genuine assertion failures, not intentionally inverted assertions
+or expected-failure annotations. Preserve their expectations when implementing
+fixes. Counts describe the reviewed baseline and will change as fixes land.
+
+### Follow-up verification (2026-09-12, head `13dbe733`)
+
+The 10 readiness failures above are closed by four fix commits, verified on
+`13dbe73317f8e5c9ac177a64ab3d9d5a38ea180a`:
+
+- `13e11a77 fix(vest)`: builder field skip is authoritative and destructive
+  (R1, 4 tests).
+- `9436c381 fix(n4s)`: composed fallback chains omit skipped top-level keys
+  and recompose with the root chain preserved (R2, 2 tests).
+- `328a3dcb fix(vest)`: detached working copies at public schema boundaries
+  (R3, 4 tests).
+- `13dbe733 fix(n4s)`: composed skip rebuild failures propagate instead of
+  silently running the unfocused schema.
+
+Evidence on that head: readiness suites 87/87; full `yarn test` 331 files /
+3,295 tests with no type errors; `yarn gate:schema-relationships`,
+`yarn integrations:verify`, the canonical production example (test,
+typecheck, build), `yarn website:build`, `yarn build:llms` with a clean
+`git diff`, `yarn format`, and `yarn lint` (0 errors) all green. The
+Integration CI workflow is green on this head; the Performance Benchmark
+workflow posts its numbers to the PR when it lands.
+
+## Acceptance gates and next-agent instructions
+
+Install with `yarn install --immutable` and build with `yarn build` first.
+The targeted composite gate is `yarn gate:schema-relationships`; it stops at
+the first failure. To inspect all failure categories independently, run:
+
+| Gate                                 | Command                                                                                              | Acceptance condition                                                               |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Contract runtime and type assertions | `yarn test:schema-relationships`                                                                     | All SC tests green; no skipped/todo/expected-failure tests or unhandled rejections |
+| Real form integration                | `yarn workspace @vest/integration-tanstack-form test`                                                | Existing and new form behavior green                                               |
+| Strict source and test compilation   | `yarn vx typecheck-tests`                                                                            | Zero TypeScript errors, including the new test files                               |
+| Integration compilation              | `yarn workspace @vest/integration-tanstack-form typecheck`                                           | Zero integration TypeScript errors                                                 |
+| Executable documentation             | `yarn docs:examples:test`                                                                            | Exact Markdown acceptance example and existing examples pass                       |
+| Full regression                      | `yarn test`                                                                                          | Entire package suite and strict source compilation pass                            |
+| Schema coverage                      | `yarn gate:schema-coverage`                                                                          | Per-module branch floors hold (selectiveRun/dependencyResolver 85, runner 90, clone 95) |
+| Schema boundaries                    | `yarn gate:schema-boundaries`                                                                        | Dependency direction, packaging smoke, and public-operation-only adapters pass    |
+| Ecosystem regression                 | `yarn integrations:verify`                                                                           | All registered integration tests, typechecks, and builds pass                      |
+| Production example                   | `yarn example:production:test`, `yarn example:production:typecheck`, `yarn example:production:build` | All three green                                                                    |
+| Documentation and hygiene            | `yarn website:build`, `yarn format`, `yarn lint`                                                     | Documentation builds, formatting passes, and module boundaries remain enforced     |
+
+The existing Integration workflow discovers these new tests in its package
+and ecosystem test steps; no CI exclusion or allow-failure mechanism is added.
+These are code acceptance gates, not a claim that GitHub branch protection
+settings have been changed. Generated integration docs must also remain clean
+under the workflow's existing regeneration check.
+
+The next agent should fix production behavior by domain: output presence and
+union mapping in n4s; descendant selection and pending lifecycle reconciliation
+in Vest/runtime; snapshot ownership in cloneDataTree. Keep expected results
+intact. If a contract proves inconsistent with an existing documented guarantee,
+explain the conflict and update tests and documentation together; do not mask it
+with `.skip`, `.fails`, extra retries, delays, or weakened assertions.
+
+Passing these tests is necessary, not proof that every possible interaction is
+correct. Do not use line-coverage percentage as a substitute for the verdict,
+call-count, ownership, lifecycle, and real-form assertions above.
+
+## Architecture follow-up
+
+The [architecture review and implementation handoff](https://github.com/ealush/vest/blob/codex/schema-relationships-ready/docs/schema-relationships-architecture-review.md)
+adds `schemaContracts.architecture.test.ts` to the existing gate. It covers
+parser-chain failure semantics, field-list ownership, opaque union mapping,
+successor exceptions, and numeric record mapping.
+
+Clarification of the fresh-output decision above: predicate-free complete mapping
+is a capability, not a universal property of arbitrary unions. If an untouched
+union needs opaque predicates to determine its output and no trustworthy prior
+mapping witness exists, reject the focused mapping before calling a callback
+typed to receive complete output. Do not silently pass raw data or execute hidden
+predicates. The review specifies how to distinguish supported built-in mapping
+from this explicit error boundary and how to revise the earlier union fixture
+if that capability is deferred. The baseline counts above predate these tests.
+
+
 # Schema Validation
 
 Vest introduces optional schema validation using `n4s` (enforce).
@@ -9450,6 +10389,8 @@ const suite = create(data => {
   });
 }, userSchema);
 ```
+
+`dependsOn()` declarations are invalidation metadata. They do not compare field values or create validation failures. A relationship such as `confirmPassword.dependsOn($ => $.password)` still needs a `test('confirmPassword', ...)` or Enforce rule that checks whether the values match. See [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships).
 
 ## How it works
 
@@ -9509,11 +10450,55 @@ result.value; // typed as { age: number; name: string }
 
 The first rule in a chain determines the input type, and the last parser in the chain determines the output type. This means you never need `@ts-expect-error` or `as any` for valid parser coercion inputs.
 
+Successful focused schema runs assemble mapped output for the suite callback. On a
+first focused run, Vest applies parser steps to untouched fields without
+running their validation predicates. Parser transforms should therefore be
+pure and must return their declared output type even when their `pass` verdict
+is false. An untouched parser's failure does not become part of that focused
+run's validation result. Mapping is not validation: missing or invalid untouched
+input is not proven to satisfy the schema. If schema validation fails, the
+callback can receive raw input at the failing paths. Guard values before using
+output-only operations, and use a full successful run before submission.
+If a custom `enforce.extend` rule is a parser, register it explicitly so
+focused mapping can recognize it:
+
+```typescript
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      normalizeId: (value: string) => { pass: boolean; type: string };
+    }
+  }
+}
+
+enforce.extend(
+  {
+    normalizeId: (value: string) => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Custom extension rules are treated as validators unless they are listed in
+`parsers`. The per-run `result.run.data.parsed` value still reflects only the
+schema work performed by that run; the callback receives the complete mapped
+output assembled for the suite.
+
+When a focused path enters an array, Vest refreshes that containing array from
+the current input. Array positions are not identities, so this prevents an
+insert, removal, or reorder from combining the current item with a stale array
+layout retained from an earlier run. Untouched members of that array are mapped
+from raw input without running their validation predicates. Parsers can run
+again to refresh this mapping and must be pure.
+
 ### What becomes typed from the schema
 
 With `create(callback, schema)`, TypeScript narrows:
 
-- callback data (`data`) to the schema input shape.
+- callback data (`data`) to the schema output shape.
 - `suite.run(...)` / `suite.runStatic(...)` first argument to the schema input shape.
 - the Standard Schema `~standard.validate(...)` input and output types.
 - field-oriented happy-path APIs (`test`, `optional`, `include`) to schema keys.
@@ -9538,6 +10523,7 @@ When using `create(callback, schema)`, the current TypeScript standard is:
   - `suite.remove(fieldName)`
   - `suite.resetField(fieldName)`
   - `suite.only(fieldName)`
+  - `suite.changed(fieldName)` (single name, array, or `undefined`; see [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships#suitechanged-reference))
   - `suite.afterField(fieldName, callback)`
   - `only(fieldName)` / `skip(fieldName)` hooks
 
@@ -9557,7 +10543,7 @@ suite.focus({ onlyGroup: 'account' }); // typed group name
 ```
 
 :::note Focused runs
-When you focus the suite with `suite.only()`, `suite.skip()`, or `suite.focus()`, Vest intelligently subsets your validation schema under the hood using `enforce.pick` and `enforce.omit`. This ensures that schema validation still runs securely for the fields in focus—and provides correct types in the test callback!—while safely ignoring un-focused fields and allowing you to validate partial payloads effectively.
+Suite-level `only`, `skip`, and `focus` select schema fields as well as suite tests. Structural schemas can be narrowed using their metadata; rules with container validators may require a full-schema fallback. Focused validation does not establish the validity or presence of untouched input. Supply complete form data when the callback reads untouched fields.
 
 ```javascript
 // Validate only the username field, enforcing the schema for 'username' while ignoring 'age'
@@ -9565,6 +10551,8 @@ suite.only('username').run({
   username: 'example',
 });
 ```
+
+For interaction-driven revalidation that also refreshes dependent fields, use `suite.changed()` instead — see [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships).
 
 :::
 
@@ -9582,7 +10570,7 @@ The suite result includes typed properties for accessing validated and parsed da
 - `result.value` — The parsed output when the suite is valid. Typed as the schema's output type. `undefined` when invalid.
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
 - `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
-- `result.run.data.raw` — The current run data passed into the suite callback (parsed when schema validation succeeds; original input when it fails).
+- `result.run.data.raw` — The current run's parsed chunk when schema validation succeeds, or its original input when validation fails. A focused callback may receive a fuller retained mapped output than this per-run metadata.
 - `result.run.data.parsed` — Parsed data for the current run.
 
 ```typescript

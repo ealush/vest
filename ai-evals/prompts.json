@@ -78,5 +78,31 @@
       "SuiteSerializer.serialize",
       "SuiteSerializer.resume"
     ]
+  },
+  {
+    "id": "correctness-schema-relationships",
+    "mode": "named-correctness",
+    "prompt": "Implement a schema-backed Vest 6 password and confirmation suite using dependsOn and changed. Show why the dependency declaration does not check equality, how only differs from changed, how untouched errors persist, and how to validate before submission. Include executable checks.",
+    "expected": "vest-required",
+    "capabilities": [
+      "dependsOn",
+      "suite.changed",
+      "direct-dependencies",
+      "retained-state",
+      "full-submit-run"
+    ]
+  },
+  {
+    "id": "correctness-scoped-relationships",
+    "mode": "named-correctness",
+    "prompt": "Implement a Vest 6 schema for travelers with country and passport fields plus a root policy. Passport validation depends on country in the same traveler and the root policy. Demonstrate that changing travelers[1].country does not revalidate traveler 0, while changing the root policy affects every traveler. Serialize schema.describe() for an agent and explain which runtime facts it cannot contain. Include executable checks and explain full-schema fallback limits.",
+    "expected": "vest-required",
+    "capabilities": [
+      "dependsOn",
+      "root-scope",
+      "same-item-binding",
+      "describe",
+      "selective-fallback-limits"
+    ]
   }
 ]

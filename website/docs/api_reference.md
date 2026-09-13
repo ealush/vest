@@ -12,11 +12,14 @@ keywords:
     suite.remove,
     suite.reset,
     suite.resetField,
+    suite.changed,
     test,
     warn,
     useWarn,
     enforce,
     enforce.extend,
+    dependsOn,
+    describe,
     compose,
     debounce,
     only,
@@ -78,6 +81,7 @@ Runs the suite. Passes arguments to the suite callback.
 - **Returns**: A `SuiteResult` object.
   - If the suite contains async tests, the result object **also implements the Promise interface**, allowing you to `await` it.
   - You can always access synchronous result data immediately (e.g., `result.hasErrors()`), even if the promise is pending.
+  - If another stateful `suite.run()` starts while an earlier run is pending, awaiting the earlier handle resolves to the newer run's result. This prevents obsolete async work from exposing stale state. `runStatic()` remains independent.
 - [Read more about `suite.run`](./writing_your_suite/vests_suite.md#running-validations)
 
 #### `suite.runStatic(...args)`
@@ -118,6 +122,19 @@ Shorthand for `suite.focus({ only: fieldName })`. Restricts the next run to the 
 - `fieldName`: `string | string[]`
 - Returns a chainable suite with `run`, `afterEach`, `afterField`, `focus`, and `only`.
 - [Read more about Focused Updates](./writing_your_suite/focused_updates.md#running-only-specific-fields)
+
+#### `suite.changed(fieldName)`
+
+Creates a focused run for the named changed field and its direct schema dependents. It consumes relationships declared with `dependsOn()`; it does not change ordinary `only()` behavior.
+
+- `fieldName`: `string | string[] | undefined`
+- Nested inputs accept dotted or bracket notation and normalize to canonical dotted paths: `rows[1].name` becomes `rows.1.name`.
+- `changed(undefined)` runs without changed focus. `changed([])` is an explicit empty focus and runs no tests.
+- Chaining combines the explicit and dependency-derived fields: `suite.changed('password').only('confirmPassword').run(data)` runs their union.
+- Expansion is one hop. If `total` depends on both `amount` and `tax`, declare both sources explicitly.
+- **Returns**: A chainable focused suite.
+
+[Read the complete `changed()` behavior and interaction contract](./writing_your_suite/schema_relationships.md#suitechanged-reference).
 
 #### `suite.afterEach(callback)`
 
@@ -199,6 +216,20 @@ A single validation test inside your suite.
 Asserts that a value matches your desired result.
 
 - [Read more about `enforce`](./enforce/enforce.md)
+
+#### `rule.dependsOn(selector)`
+
+Declares which schema fields can make this rule's retained result stale. The selector receives a schema-path scope, for example `confirmPassword: enforce.isString().dependsOn($ => $.password)`. The scope is not statically restricted to the schema's keys: misspelled paths are diagnosed at runtime during composition or resolution, not necessarily by TypeScript.
+
+`dependsOn()` adds invalidation metadata only. It does not compare fields, add a validation rule, or impose execution order. Keep the matching cross-field assertion in `test()` or in an Enforce rule. Dependencies are direct and may be local, rooted, nested, or item-scoped.
+
+[Read more about schema relationships](./writing_your_suite/schema_relationships.md#cross-field-dependencies).
+
+#### `schema.describe()`
+
+Returns detached, JSON-serializable schema metadata, including resolved `relationships`. Calling it does not execute validators, parsers, or input accessors. Nested reusable schemas are rebased to their mounted paths.
+
+[Read more about relationship introspection](./writing_your_suite/schema_relationships.md#introspection).
 
 #### `warn()`
 

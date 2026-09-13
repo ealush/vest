@@ -2,7 +2,7 @@
   "name": "vest-monorepo",
   "scripts": {
     "build": "vx build && yarn build:llms",
-    "test": "vx test run --typecheck",
+    "test": "vx test run --typecheck && tsc --noEmit",
     "test:watch": "vx test",
     "bench": "npx tsx vx/scripts/benchmark-reporter.ts --update",
     "release": "vx release",
@@ -24,7 +24,11 @@
     "integrations:status": "tsx scripts/integrations/status.js",
     "docs:examples:test": "yarn workspace vest vitest run src/suite/__tests__/docsExamples.test.ts && yarn workspace website test",
     "ai:eval": "node scripts/score-ai-eval.js",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "test:schema-relationships": "vx test run schemaContracts --typecheck --maxWorkers=2",
+    "gate:schema-relationships": "yarn test:schema-relationships && yarn workspace @vest/integration-tanstack-form test && yarn vx typecheck-tests && yarn workspace @vest/integration-tanstack-form typecheck && yarn docs:examples:test",
+    "gate:schema-coverage": "node scripts/gate-schema-coverage.js",
+    "gate:schema-boundaries": "node scripts/gate-schema-boundaries.js"
   },
   "homepage": "https://vestjs.dev",
   "prettier": {

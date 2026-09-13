@@ -1,7 +1,14 @@
 import { extendEager } from './eager';
 import { ctx } from './enforceContext';
 import { addToChain, registerLazyRule } from './rules/genRuleChain';
+import {
+  declaredTransformOf,
+  MAPPING_DECLARED_OUTPUT,
+} from './rules/chainBuilder/chainExecutor';
 import { RuleRunReturn } from './utils/RuleRunReturn';
+
+type ExtensionRule = (...args: never[]) => unknown;
+type MutableEnforce = Record<string, unknown>;
 
 /**
  * Extends the enforce API with custom validation rules.
@@ -39,27 +46,58 @@ import { RuleRunReturn } from './utils/RuleRunReturn';
  * });
  * ```
  */
-export function extendEnforce(
-  enforce: any,
-  rules: Record<string, (...args: any[]) => any>,
+export function extendEnforce<Rules extends Record<string, ExtensionRule>>(
+  enforce: MutableEnforce,
+  rules: Rules,
+  parserNames: ReadonlySet<string> = new Set(),
 ) {
   extendEager(rules);
 
   Object.keys(rules).forEach(ruleName => {
     const rule = rules[ruleName];
-    const ruleWrapper = (value: any, ...args: any[]) => {
-      const res = ctx.run({ value }, () => rule(value, ...args));
-      return RuleRunReturn.create(res, value);
+    const callableRule = rule as unknown as (
+      value: unknown,
+      ...args: unknown[]
+    ) => unknown;
+    const ruleWrapper = (value: unknown, ...args: unknown[]) => {
+      const res = ctx.run({ value }, () => callableRule(value, ...args));
+      const normalized = RuleRunReturn.create(
+        res as boolean | RuleRunReturn<unknown>,
+        value,
+      );
+      // A1: parser-only mapping consumes each step's declared transform
+      // output even when its validation verdict fails. The declaration
+      // rides alongside — never instead of — the legacy normalized failure
+      // payload, so validation verdicts, failure types, paths, and
+      // messages are unchanged.
+      if (mapsValue) {
+        const declared = declaredTransformOf(res);
+        if (declared.found) {
+          (
+            normalized as unknown as Record<
+              typeof MAPPING_DECLARED_OUTPUT,
+              { value: unknown }
+            >
+          )[MAPPING_DECLARED_OUTPUT] = { value: declared.value };
+        }
+      }
+      return normalized;
     };
 
-    enforce[ruleName] = (...args: any[]) =>
-      addToChain({}, (value: any) => ruleWrapper(value, ...args));
+    const mapsValue = parserNames.has(ruleName);
+    enforce[ruleName] = (...args: unknown[]) =>
+      addToChain(
+        {},
+        (value: unknown) => ruleWrapper(value, ...args),
+        mapsValue,
+      );
 
     registerLazyRule(
       ruleName,
-      (...args: any[]) =>
-        (value: any) =>
+      (...args: unknown[]) =>
+        (value: unknown) =>
           ruleWrapper(value, ...args),
+      mapsValue,
     );
   });
 }

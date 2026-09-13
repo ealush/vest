@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import { enforce } from '../../../n4s';
 
 describe('pick', () => {
@@ -12,7 +12,6 @@ describe('pick', () => {
     const pickedSchema = enforce.pick(schema, ['name', 'age']);
 
     // Pick name and age, validating valid inputs
-    // @ts-expect-error - partial object, un-picked keys omitted
     const result = pickedSchema.run({ name: 'John Doe', age: 30 });
     expect(result.pass).toBe(true);
 
@@ -33,7 +32,6 @@ describe('pick', () => {
 
     const pickedSchema = enforce.pick(schema, 'id');
 
-    // @ts-expect-error - partial object, un-picked keys omitted
     const result = pickedSchema.run({ id: 1 });
     expect(result.pass).toBe(true);
 
@@ -54,7 +52,6 @@ describe('pick', () => {
     // 'email' is in the schema but missing in the value.
     // If we only pick 'name' and 'age', it should still pass.
     const pickedSchema = enforce.pick(schema, ['name', 'age']);
-    // @ts-expect-error - partial object, un-picked keys omitted
     const result = pickedSchema.run({ name: 'John Doe', age: 30 });
     expect(result.pass).toBe(true);
   });
@@ -106,7 +103,6 @@ describe('pick', () => {
     const pickedSchema = enforce.pick(schema, []);
 
     const result = pickedSchema.run({
-      // @ts-expect-error - intentionally passing string instead of number
       id: 'invalid_type_but_not_checked',
     });
     expect(result.pass).toBe(true);
@@ -136,10 +132,69 @@ describe('pick', () => {
       name: 'John',
       // @ts-expect-error - intentionally passing string instead of number
       age: 'thirty',
-      // @ts-expect-error - intentionally passing number instead of string
       email: 123,
     });
 
     expect(invalidResult.pass).toBe(false);
+  });
+
+  it('rejects unknown keys at compile time', () => {
+    const schema = {
+      name: enforce.isString(),
+    };
+
+    // Exercising the call (not just the keyof relation): an unknown key
+    // is a compile-time error on the public lazy overload.
+    // @ts-expect-error - 'typo' is not a key of the schema
+    enforce.pick(schema, ['typo']);
+
+    expectTypeOf<'typo'>().not.toMatchTypeOf<keyof typeof schema>();
+  });
+
+  it('ignores dangling local dependencies on excluded fields', () => {
+    const schema = {
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.missing),
+    };
+
+    const pickedSchema = enforce.pick(schema, ['a']);
+
+    expect(pickedSchema.describe().relationships).toHaveLength(0);
+    expect(pickedSchema.test({ a: 'x' })).toBe(true);
+  });
+
+  it('still rejects dangling local dependencies on included fields', () => {
+    const schema = {
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.missing),
+    };
+
+    expect(() => enforce.pick(schema, ['a', 'b'])).toThrow(
+      /depends on unknown field "missing"/,
+    );
+  });
+
+  it('preserves rooted edges so a picked schema can be mounted', () => {
+    const schema = {
+      accountType: enforce.isString(),
+      child: enforce.isString().dependsOn($ => $.root.accountType),
+    };
+
+    const pickedSchema = enforce.pick(schema, ['child']);
+
+    expect(pickedSchema.describe().relationships).toHaveLength(1);
+    expect(() => pickedSchema.test({ child: 'x' })).toThrow(
+      /depends on unknown field "accountType"/,
+    );
+
+    const mounted = enforce.shape({
+      accountType: enforce.isString(),
+      nested: pickedSchema,
+    });
+
+    expect(
+      mounted.test({ accountType: 'business', nested: { child: 'x' } }),
+    ).toBe(true);
+    expect(mounted.describe().relationships).toHaveLength(1);
   });
 });

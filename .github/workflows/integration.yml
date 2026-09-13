@@ -74,6 +74,10 @@ jobs:
         run: yarn format
       - name: Lint
         run: yarn lint
+      - name: Schema coverage gate
+        run: yarn gate:schema-coverage
+      - name: Schema boundary gate
+        run: yarn gate:schema-boundaries
       - name: Release
         run: yarn release
       - name: Run benchmarks

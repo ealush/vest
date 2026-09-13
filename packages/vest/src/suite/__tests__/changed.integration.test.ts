@@ -1154,7 +1154,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(Object.keys(unaffected.tests)).toContain('1.state');
   });
 
-  /** @deferred v2 — suite.changed with AbortSignal */
+  /** No typed signal overload in V1; runtime misuse still throws explicitly. */
   it('deferred v2 — suite.changed(field, { signal: AbortSignal }) throws in V1', () => {
     const schema = enforce.shape({
       a: enforce.isString(),
@@ -1162,6 +1162,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     const suite = create(() => {}, schema);
     const controller = new AbortController();
     expect(() =>
+      // @ts-expect-error — signal is not part of the V1 type surface
       suite.changed('a', { signal: controller.signal }),
     ).toThrowError(
       new Error('suite.changed({ signal: AbortSignal }) deferred to v2'),

@@ -1,13 +1,25 @@
 import { resolveAffectedPaths } from 'n4s/exports/internal';
 
-/** @deferred v2 — suite.changed AbortSignal support deferred */
-export type ChangedOptions = {
-  signal?: AbortSignal;
-};
+/**
+ * V1 accepts no options on `suite.changed()`. The type is intentionally
+ * empty: AbortSignal-based cancellation is not a V1 feature, so no typed
+ * overload may imply it. JavaScript callers passing an options object are
+ * still rejected explicitly at runtime (see assertNoAbortSignal) instead of
+ * being silently ignored.
+ */
+export type ChangedOptions = Record<string, never>;
 
-/** @deferred v2 — suite.changed with AbortSignal abort deferred to v2 */
-export function assertNoAbortSignal(options?: ChangedOptions): void {
-  if (options?.signal !== undefined) {
+/**
+ * Runtime rejection for unsupported `suite.changed` options. Kept even
+ * though the TypeScript surface accepts no options, so JavaScript misuse
+ * fails explicitly rather than implying cancellation support.
+ */
+export function assertNoAbortSignal(options?: unknown): void {
+  if (
+    options !== null &&
+    typeof options === 'object' &&
+    (options as { signal?: unknown }).signal !== undefined
+  ) {
     throw new Error('suite.changed({ signal: AbortSignal }) deferred to v2');
   }
 }

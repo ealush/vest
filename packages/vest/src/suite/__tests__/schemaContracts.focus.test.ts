@@ -1,7 +1,24 @@
 import { describe, expect, it, vi } from 'vitest';
 import { enforce } from 'n4s';
 
-import { create, each, group, mode, Modes, test } from '../../vest';
+import {
+  create,
+  each,
+  group,
+  include,
+  mode,
+  Modes,
+  omitWhen,
+  optional,
+  skipWhen,
+  test,
+} from '../../vest';
+import { memo } from '../../exports/memo';
+
+// Dynamic field names and schemaless suites cannot satisfy create()'s
+// literal overloads; the contracts under test are runtime behavior.
+
+type LooseSuite = any;
 
 const containers = ['shape', 'loose', 'partial'] as const;
 const inclusions = ['only', 'focus', 'changed', 'combined-empty'] as const;
@@ -178,5 +195,159 @@ describe('schema contracts: focus and temporal state', () => {
       .run({ a: '' });
     expect(called).toHaveBeenCalledTimes(1);
     expect(result.getErrors('a')).toEqual(['business failure']);
+  });
+
+  it('[SC-MODIFIER] include rescues a test from changed-focus exclusion', () => {
+    const calls: string[] = [];
+    const suite: LooseSuite = create(() => {
+      mode(Modes.ALL);
+      include('b').when(() => true);
+      test('a', () => {
+        calls.push('a');
+      });
+      test('b', () => {
+        calls.push('b');
+      });
+    });
+    suite.changed('a').run({});
+    expect(calls.sort()).toEqual(['a', 'b']);
+  });
+
+  it('[SC-MODIFIER] skipWhen hides the dependent user test but not its schema predicate', () => {
+    const schemaPredicate = vi.fn(() => true);
+    const userTest = vi.fn(() => true);
+    const suite = create(
+      () => {
+        mode(Modes.ALL);
+        skipWhen(true, () => {
+          test('b', userTest);
+        });
+        test('a', () => true);
+      },
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.condition(schemaPredicate).dependsOn($ => $.a),
+      }),
+    );
+    const result = suite.changed('a').run({ a: 'ok', b: 'ok' });
+    expect(schemaPredicate).toHaveBeenCalledTimes(1);
+    expect(userTest).not.toHaveBeenCalled();
+    expect(result.hasErrors('b')).toBe(false);
+  });
+
+  it('[SC-MODIFIER] omitWhen removes its test from changed runs entirely', () => {
+    const omitted = vi.fn(() => true);
+    const suite: LooseSuite = create(() => {
+      mode(Modes.ALL);
+      omitWhen(true, () => {
+        test('gone', omitted);
+      });
+      test('a', () => true);
+    });
+    const result = suite.changed('a').run({});
+    expect(omitted).not.toHaveBeenCalled();
+    expect(result.tests.gone).toBeUndefined();
+    expect(result.hasErrors('gone')).toBe(false);
+  });
+
+  it('[SC-MODIFIER] absent optional fields do not break changed runs', () => {
+    const suite: LooseSuite = create(() => {
+      mode(Modes.ALL);
+      test('a', () => true);
+      optional('c');
+    });
+    const result = suite.changed('a').run({});
+    expect(result.hasErrors('a')).toBe(false);
+    expect(result.hasErrors('c')).toBe(false);
+  });
+
+  it('[SC-MODIFIER] duplicate field names across groups all run on change', () => {
+    const first = vi.fn(() => true);
+    const second = vi.fn(() => true);
+    const suite: LooseSuite = create(() => {
+      mode(Modes.ALL);
+      group('one', () => {
+        test('shared', first);
+      });
+      group('two', () => {
+        test('shared', second);
+      });
+    });
+    const result = suite.changed('shared').run({});
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).toHaveBeenCalledTimes(1);
+    expect(result.groups.one.shared.testCount).toBe(1);
+    expect(result.groups.two.shared.testCount).toBe(1);
+  });
+
+  it('[SC-MODE] ONE mode stops a changed run at the first failure', () => {
+    const first = vi.fn(() => false);
+    const second = vi.fn(() => false);
+    const suite: LooseSuite = create(() => {
+      mode(Modes.ONE);
+      test('a', first);
+      test('b', second);
+    });
+    suite.changed(['a', 'b']).run({});
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it('[SC-MEMO] memoized tests do not rerun across unchanged changed-runs', () => {
+    const cb = vi.fn(() => true);
+    const suite: LooseSuite = create(() => {
+      mode(Modes.ALL);
+      memo(() => {
+        test('stable', cb);
+      }, ['key']);
+    });
+    suite.changed('stable').run({});
+    suite.changed('stable').run({});
+    expect(cb).toHaveBeenCalledTimes(1);
+  });
+
+  it('[SC-PATH] unknown changed paths run nothing and report no errors', () => {
+    const called = vi.fn(() => true);
+    const suite: LooseSuite = create(() => {
+      mode(Modes.ALL);
+      test('a', called);
+    });
+    const result = suite.changed('nope.missing').run({});
+    expect(called).not.toHaveBeenCalled();
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-PATH] empty changed paths are a no-op full run', () => {
+    const calls: string[] = [];
+    const suite: LooseSuite = create(() => {
+      mode(Modes.ALL);
+      test('a', () => {
+        calls.push('a');
+      });
+      test('b', () => {
+        calls.push('b');
+      });
+    });
+    // Falsy scalars clear changed focus: the run is unrestricted.
+    suite.changed(undefined).run({});
+    expect(calls.sort()).toEqual(['a', 'b']);
+  });
+
+  it('[SC-PATH] bracket and dot spellings select the same nested field', () => {
+    const dot = vi.fn(() => true);
+    const bracket = vi.fn(() => true);
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(enforce.isString()),
+    });
+    const dotSuite = create(() => {
+      test('rows.0', dot);
+    }, schema);
+    const bracketSuite = create(() => {
+      test('rows.0', bracket);
+    }, schema);
+    dotSuite.changed('rows.0').run({ rows: ['x'] });
+    bracketSuite.changed('rows[0]').run({ rows: ['x'] });
+    expect(dot).toHaveBeenCalledTimes(1);
+    expect(bracket).toHaveBeenCalledTimes(1);
   });
 });

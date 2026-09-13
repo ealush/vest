@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { FocusedSchemaMappingError, SchemaExclusionError, compose } from 'n4s';
 
 import { create, enforce, mode, Modes, test } from '../../vest';
+import { each } from '../../isolates/each';
 
 type SkippedBehavior = 'pass' | 'fail' | 'throw';
 type ContainerKind = 'shape' | 'partial' | 'loose';
@@ -253,3 +254,271 @@ describe('schema contracts: exclusion matrix', () => {
     expect(String((thrown as Error).message)).toMatch(/mapping|focused|union/i);
   });
 });
+
+describe('schema contracts: exclusion interactions', () => {
+  it.each([false, true])(
+    '[SC-EXCLUSION-COMPOSE] root %s preserves exclusion with every root linked',
+    rootFirst => {
+      const skipped = vi.fn(() => true);
+      const selected = vi.fn(() => true);
+      const roots = [vi.fn(() => true), vi.fn(() => true)];
+      const shape = enforce.shape({
+        a: enforce.condition(skipped),
+        b: enforce.condition(selected),
+      });
+      const chain = rootFirst
+        ? [enforce.condition(roots[0]), shape, enforce.condition(roots[1])]
+        : [shape, enforce.condition(roots[0]), enforce.condition(roots[1])];
+      const schema = compose(...(chain as never[]));
+      const result = runPublicChanged(schema, { a: 'a', b: 'b' }, ['b'], ['a']);
+
+      expect(skipped).not.toHaveBeenCalled();
+      expect(selected).toHaveBeenCalledTimes(1);
+      expect(roots[0]).toHaveBeenCalledTimes(1);
+      expect(roots[1]).toHaveBeenCalledTimes(1);
+      expect(result.hasErrors()).toBe(false);
+    },
+  );
+
+  it('[SC-EXCLUSION-COMPOSE] nested composition keeps every root and drops the skip', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const inner = vi.fn(() => true);
+    const outer = vi.fn(() => true);
+    const schema = compose(
+      compose(
+        enforce.shape({
+          a: enforce.condition(skipped),
+          b: enforce.condition(selected),
+        }) as never,
+        enforce.condition(inner) as never,
+      ),
+      enforce.condition(outer) as never,
+    );
+    const result = runPublicChanged(schema, { a: 'a', b: 'b' }, ['b'], ['a']);
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(inner).toHaveBeenCalledTimes(1);
+    expect(outer).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-ARRAY] changed item runs while skipped and sibling predicates stay silent', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.shape({
+          a: enforce.condition(skipped),
+          b: enforce.condition(selected),
+        }),
+      ),
+    });
+    const data = {
+      rows: [
+        { a: 'a0', b: 'b0' },
+        { a: 'a1', b: 'b1' },
+      ],
+    };
+    const result = runPublicChanged(schema, data, ['rows.1.b'], ['rows.1.a']);
+
+    expect(skipped).not.toHaveBeenCalled();
+    // Only the changed member runs: the sibling item is untouched.
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-ARRAY] whole-item change with a skipped child runs the sibling only', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.shape({
+          a: enforce.condition(skipped),
+          b: enforce.condition(selected),
+        }),
+      ),
+    });
+    const result = runPublicChanged(
+      schema,
+      { rows: [{ a: 'a', b: 'b' }] },
+      ['rows.0'],
+      ['rows.0.a'],
+    );
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-ARRAY] sibling error paths track current indices after reorder', () => {
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.shape({
+          id: enforce.isString(),
+          v: enforce.isString(),
+        }),
+      ),
+    });
+    const suite = create(data => {
+      each(
+        (data as { rows: { id: string; v: string }[] }).rows,
+        (row, index) => {
+          test(
+            `rows.${index}.v`,
+            () => {
+              enforce(row.v).isNotBlank();
+            },
+            `${row.id}:v`,
+          );
+        },
+      );
+    }, schema as never);
+    suite.run({
+      rows: [
+        { id: 'a', v: '' },
+        { id: 'b', v: 'ok' },
+      ],
+    });
+    const after = suite.changed('rows.1.v').run({
+      rows: [
+        { id: 'b', v: 'ok' },
+        { id: 'a', v: '' },
+      ],
+    }) as unknown as { hasErrors(field?: string): boolean };
+
+    // Keyed identity follows the moved item: the error tracks item 'a' to
+    // its new index instead of sticking to the old path.
+    expect(after.hasErrors('rows.0.v')).toBe(false);
+    expect(after.hasErrors('rows.1.v')).toBe(true);
+  });
+
+  it('[SC-EXCLUSION-PARSER] skipped parsed child maps honestly without validation', () => {
+    const seen: unknown[] = [];
+    const schema = enforce.shape({
+      age: enforce.isNumeric().toNumber(),
+      note: enforce.isString(),
+    });
+    const suite = create(data => {
+      seen.push(data);
+    }, schema as never);
+    suite.run({ age: '42', note: 'first' });
+    seen.length = 0;
+    const result = suite
+      .changed('note')
+      .focus({ skip: 'age' })
+      .run({ age: '43', note: 'second' });
+
+    expect(result.hasErrors()).toBe(false);
+    // The excluded field was mapped (parsed) but never validated: its
+    // value is honestly parsed input restored from the prior complete
+    // run, not raw strings and not fresh validation.
+    expect(seen[0]).toEqual({ age: 42, note: 'second' });
+  });
+
+  it('[SC-EXCLUSION-UNION] witnessed union survives a dependent change without reprobing', () => {
+    const suite = create(
+      data => {
+        test('note', () => true);
+        void data;
+      },
+      enforce.shape({
+        rows: enforce.isArrayOf(
+          enforce.isNumeric().toNumber(),
+          enforce.isBoolean(),
+        ),
+        note: enforce.isString(),
+      }) as never,
+    );
+    // Full run establishes the branch witness; the dependent change keeps
+    // the same union input, so the retained witness is reused honestly.
+    // Branch-changing inputs need witness invalidation (open MP03).
+    suite.run({ rows: ['1', true], note: 'first' });
+    const result = suite
+      .changed('note')
+      .run({ rows: ['1', true], note: 'second' });
+
+    expect(result.isValid()).toBe(true);
+    expect(result.value).toEqual({ rows: [1, true], note: 'second' });
+  });
+
+  it('[SC-EXCLUSION-UNION] skip on an unwitnessed union still throws before callbacks', () => {
+    const callback = vi.fn();
+    const suite = create(
+      data => {
+        callback(data);
+        test('note', () => true);
+      },
+      enforce.shape({
+        rows: enforce.isArrayOf(
+          enforce.isNumeric().toNumber(),
+          enforce.isBoolean(),
+        ),
+        note: enforce.isString(),
+      }) as never,
+    );
+    expect(() =>
+      suite
+        .changed('note')
+        .focus({ skip: 'rows' })
+        .run({ rows: ['2'], note: 'ok' }),
+    ).toThrow(/mapping|union|focused/i);
+    expect(callback).not.toHaveBeenCalled();
+  });
+  it('[SC-COPY-ISOLATION] mutating a published copy touches nothing else', () => {
+    const callbacks: Record<string, unknown>[] = [];
+    const callerInput = { note: 'first', payload: { nested: 1 } };
+    const suite = create(
+      data => {
+        callbacks.push(data as Record<string, unknown>);
+        test('note', () => true);
+      },
+      enforce.shape({
+        note: enforce.isString(),
+        payload: enforce.shape({ nested: enforce.isNumeric() }),
+      }) as never,
+    );
+
+    const first = suite.run(callerInput as never);
+    expect(first.isValid()).toBe(true);
+    // Mutate the owned nested copy (top-level results are frozen).
+    (
+      (first.value as Record<string, unknown>).payload as Record<
+        string,
+        unknown
+      >
+    ).nested = 999;
+    (
+      (callbacks[0] as Record<string, unknown>).payload as Record<
+        string,
+        unknown
+      >
+    ).nested = 998;
+
+    const second = suite
+      .changed('note')
+      .run({ note: 'second', payload: { nested: 1 } });
+    expect(second.isValid()).toBe(true);
+    expect(second.value).toEqual({ note: 'second', payload: { nested: 1 } });
+    expect(callbacks[1]).toEqual({ note: 'second', payload: { nested: 1 } });
+    // The caller's object was never aliased by any public copy.
+    expect(callerInput).toEqual({ note: 'first', payload: { nested: 1 } });
+  });
+});
+
+function runPublicChanged(
+  schema: unknown,
+  data: Record<string, unknown>,
+  affected: string[],
+  skip: string[],
+): { hasErrors(field?: string): boolean } {
+  const suite = create(() => {}, schema as never) as unknown as {
+    changed(fields: string[]): {
+      focus(modifiers: { skip: string[] }): {
+        run(data: unknown): { hasErrors(field?: string): boolean };
+      };
+    };
+  };
+  return suite.changed(affected).focus({ skip }).run(data);
+}

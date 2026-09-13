@@ -70,11 +70,16 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
       "id": "EX05",
-      "notes": "Compose-before/after-container and multiple/nested composition cases open.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "root-first/triple/nested composition green; skipped zero, all roots once.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": [
+        "[SC-EXCLUSION-COMPOSE] root true/false preserves exclusion",
+        "[SC-EXCLUSION-COMPOSE] nested composition keeps every root and drops the skip"
+      ],
       "verifiedSha": null
     },
     {
@@ -94,35 +99,48 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
       "id": "EX07",
-      "notes": "Concrete index/whole-item cases exist; wildcard, sparse, reorder-with-relationship cases open.",
-      "result": "not-run",
-      "status": "open",
+      "notes": "Concrete index, whole-item, and keyed-reorder index tracking green. Wildcard/sparse/record variants remain open.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
-        "packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts"
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
       ],
-      "testNames": [],
+      "testNames": [
+        "[SC-EXCLUSION-ARRAY] changed item runs while skipped and sibling predicates stay silent",
+        "[SC-EXCLUSION-ARRAY] whole-item change with a skipped child runs the sibling only",
+        "[SC-EXCLUSION-ARRAY] sibling error paths track current indices after reorder"
+      ],
       "verifiedSha": null
     },
     {
       "blocked-by": [],
       "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts",
       "id": "EX08",
-      "notes": "Parsed-output honesty for excluded/selected siblings not yet asserted independently of mapping.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Excluded field maps honestly from retained parsing with zero validation; parser-heavy mapping matrices remain open.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": [
+        "[SC-EXCLUSION-PARSER] skipped parsed child maps honestly without validation"
+      ],
       "verifiedSha": null
     },
     {
       "blocked-by": [],
       "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts",
       "id": "EX09",
-      "notes": "Witnessed vs excluded union under composition open; unwitnessed error contract exists.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Same-branch witness reuse + skip-throw green. Branch-change invalidation stays MP03 (needs A4 provenance).",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": [
+        "[SC-EXCLUSION-UNION] witnessed union survives a dependent change without reprobing",
+        "[SC-EXCLUSION-UNION] skip on an unwitnessed union still throws before callbacks"
+      ],
       "verifiedSha": null
     },
     {
@@ -210,13 +228,17 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "GR04",
-      "notes": "Parent/descendant overlap and numeric paths covered; unknown-path pinning open.",
-      "result": "not-run",
-      "status": "open",
+      "notes": "Unknown/empty/bracket paths pinned.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
         "packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts"
       ],
-      "testNames": [],
+      "testNames": [
+        "[SC-PATH] unknown changed paths run nothing and report no errors",
+        "[SC-PATH] empty changed paths are a no-op full run",
+        "[SC-PATH] bracket and dot spellings select the same nested field"
+      ],
       "verifiedSha": null
     },
     {
@@ -234,11 +256,13 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "GR06",
-      "notes": "New deterministic state-machine suite not yet written.",
-      "result": "not-run",
-      "status": "open",
+      "notes": "100 seeds x 20 ops green.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [],
-      "testNames": [],
+      "testNames": [
+        "[SC-STATE-MACHINE] seed %i converges execution and retention with the oracle"
+      ],
       "verifiedSha": null
     },
     {
@@ -276,22 +300,31 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "AP03",
-      "notes": "skipWhen/omitWhen/optional/groups x changed cross-product open.",
-      "result": "not-run",
-      "status": "open",
+      "notes": "focus.test.ts additions green.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [],
-      "testNames": [],
+      "testNames": [
+        "[SC-MODIFIER] include rescues a test from changed-focus exclusion",
+        "[SC-MODIFIER] skipWhen hides the dependent user test but not its schema predicate",
+        "[SC-MODIFIER] omitWhen removes its test from changed runs entirely",
+        "[SC-MODIFIER] absent optional fields do not break changed runs",
+        "[SC-MODIFIER] duplicate field names across groups all run on change"
+      ],
       "verifiedSha": null
     },
     {
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "AP04",
-      "notes": "Mode/memo/keyed x invalidation interactions open.",
-      "result": "not-run",
-      "status": "open",
+      "notes": "Modes/memo green; keyed covered by 15b + AS03.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [],
-      "testNames": [],
+      "testNames": [
+        "[SC-MODE] ONE mode stops a changed run at the first failure",
+        "[SC-MEMO] memoized tests do not rerun across unchanged changed-runs"
+      ],
       "verifiedSha": null
     },
     {
@@ -378,7 +411,7 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "MP03",
-      "notes": "Witness invalidation/excluded-union/first-focus cases open.",
+      "notes": "Branch-change witness invalidation needs A4 input-matching provenance; same-branch reuse pinned by EX09. Not test-locked to avoid enshrining stale certification.",
       "result": "not-run",
       "status": "open",
       "testFiles": [],
@@ -456,11 +489,15 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "MP09",
-      "notes": "Cross-run/cross-copy isolation assertions open.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Sync copy isolation green; async-settlement half covered by C12 async characterization.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": [
+        "[SC-COPY-ISOLATION] mutating a published copy touches nothing else"
+      ],
       "verifiedSha": null
     },
     {
@@ -502,11 +539,15 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "FP04",
-      "notes": "New metamorphic suite not yet written.",
-      "result": "not-run",
-      "status": "open",
+      "notes": "All three green.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [],
-      "testNames": [],
+      "testNames": [
+        "[SC-METAMORPHIC] input key order preserves verdicts",
+        "[SC-METAMORPHIC] duplicate change selectors behave as a set",
+        "[SC-METAMORPHIC] change order converges after a final full run"
+      ],
       "verifiedSha": null
     },
     {
@@ -539,11 +580,13 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "AS03",
-      "notes": "Keyed ops while pending + two-forms-one-schema cases open.",
-      "result": "not-run",
-      "status": "open",
+      "notes": "Keyed-pending green; two-suite isolation pre-covered.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [],
-      "testNames": [],
+      "testNames": [
+        "[SC-ASYNC-KEYED] keyed reorder while pending attributes settlement by identity"
+      ],
       "verifiedSha": null
     },
     {
@@ -591,11 +634,13 @@
       "blocked-by": [],
       "command": "yarn workspace @vest/integration-tanstack-form test",
       "id": "IN02",
-      "notes": "New two-forms-one-schema suite.",
-      "result": "not-run",
-      "status": "open",
+      "notes": "integrations/tanstack-form green (10 tests). Pending-validation variant open.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [],
-      "testNames": [],
+      "testNames": [
+        "[SC-FORM] two forms sharing one schema stay isolated across edit, reset, and unmount"
+      ],
       "verifiedSha": null
     },
     {
@@ -666,11 +711,13 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-boundaries (new)",
       "id": "PK01",
-      "notes": "New clean-consumer packaging smoke.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Green via gate:schema-boundaries; registry install step intentionally out of scope (offline-safe tarball+import checks; workspace builds covered by integrations:build).",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": ["scripts/gate-schema-boundaries.js"],
+      "testNames": [
+        "pack + exports targets + CJS/ESM import smoke without workspace aliases"
+      ],
       "verifiedSha": null
     },
     {
@@ -692,11 +739,13 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-boundaries (new)",
       "id": "DD01",
-      "notes": "New resolved-import check n4s.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Green via gate:schema-boundaries.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": ["scripts/gate-schema-boundaries.js"],
+      "testNames": [
+        "127 n4s source files: no upward imports into Vest/vestjs-runtime/adapters"
+      ],
       "verifiedSha": null
     },
     {
@@ -714,11 +763,13 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-boundaries (new) + review",
       "id": "DD03",
-      "notes": "New adapter import check + review.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Green via gate:schema-boundaries.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": ["scripts/gate-schema-boundaries.js"],
+      "testNames": [
+        "46 adapter source files: no private planner/runner imports"
+      ],
       "verifiedSha": null
     },
     {
@@ -780,7 +831,7 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-coverage (new)",
       "id": "COV",
-      "notes": "New coverage gate incl. all contracts + unimported files; floors selectiveRun 85 / dependencyResolver 85 / useCreateSuiteRunner 90 / clone 95.",
+      "notes": "Gate script implemented and functional; reports exact plan-quoted baselines (selectiveRun 74.87 / dependencyResolver 69.40 / runner 86.43 / clone 95.12). Floors unmet: needs GR-row tests. Also fixed packages/n4s/vitest.config.ts standalone setupFiles path.",
       "result": "not-run",
       "status": "open",
       "testFiles": [],

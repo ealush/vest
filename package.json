@@ -26,7 +26,9 @@
     "ai:eval": "node scripts/score-ai-eval.js",
     "postinstall": "husky install",
     "test:schema-relationships": "vx test run schemaContracts --typecheck --maxWorkers=2",
-    "gate:schema-relationships": "yarn test:schema-relationships && yarn workspace @vest/integration-tanstack-form test && yarn vx typecheck-tests && yarn workspace @vest/integration-tanstack-form typecheck && yarn docs:examples:test"
+    "gate:schema-relationships": "yarn test:schema-relationships && yarn workspace @vest/integration-tanstack-form test && yarn vx typecheck-tests && yarn workspace @vest/integration-tanstack-form typecheck && yarn docs:examples:test",
+    "gate:schema-coverage": "node scripts/gate-schema-coverage.js",
+    "gate:schema-boundaries": "node scripts/gate-schema-boundaries.js"
   },
   "homepage": "https://vestjs.dev",
   "prettier": {

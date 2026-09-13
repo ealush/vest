@@ -251,17 +251,19 @@ Install with `yarn install --immutable` and build with `yarn build` first.
 The targeted composite gate is `yarn gate:schema-relationships`; it stops at
 the first failure. To inspect all failure categories independently, run:
 
-| Gate                                 | Command                                                                                              | Acceptance condition                                                               |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Contract runtime and type assertions | `yarn test:schema-relationships`                                                                     | All SC tests green; no skipped/todo/expected-failure tests or unhandled rejections |
-| Real form integration                | `yarn workspace @vest/integration-tanstack-form test`                                                | Existing and new form behavior green                                               |
-| Strict source and test compilation   | `yarn vx typecheck-tests`                                                                            | Zero TypeScript errors, including the new test files                               |
-| Integration compilation              | `yarn workspace @vest/integration-tanstack-form typecheck`                                           | Zero integration TypeScript errors                                                 |
-| Executable documentation             | `yarn docs:examples:test`                                                                            | Exact Markdown acceptance example and existing examples pass                       |
-| Full regression                      | `yarn test`                                                                                          | Entire package suite and strict source compilation pass                            |
-| Ecosystem regression                 | `yarn integrations:verify`                                                                           | All registered integration tests, typechecks, and builds pass                      |
-| Production example                   | `yarn example:production:test`, `yarn example:production:typecheck`, `yarn example:production:build` | All three green                                                                    |
-| Documentation and hygiene            | `yarn website:build`, `yarn format`, `yarn lint`                                                     | Documentation builds, formatting passes, and module boundaries remain enforced     |
+| Gate                                 | Command                                                                                              | Acceptance condition                                                                    |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Contract runtime and type assertions | `yarn test:schema-relationships`                                                                     | All SC tests green; no skipped/todo/expected-failure tests or unhandled rejections      |
+| Real form integration                | `yarn workspace @vest/integration-tanstack-form test`                                                | Existing and new form behavior green                                                    |
+| Strict source and test compilation   | `yarn vx typecheck-tests`                                                                            | Zero TypeScript errors, including the new test files                                    |
+| Integration compilation              | `yarn workspace @vest/integration-tanstack-form typecheck`                                           | Zero integration TypeScript errors                                                      |
+| Executable documentation             | `yarn docs:examples:test`                                                                            | Exact Markdown acceptance example and existing examples pass                            |
+| Full regression                      | `yarn test`                                                                                          | Entire package suite and strict source compilation pass                                 |
+| Schema coverage                      | `yarn gate:schema-coverage`                                                                          | Per-module branch floors hold (selectiveRun/dependencyResolver 85, runner 90, clone 95) |
+| Schema boundaries                    | `yarn gate:schema-boundaries`                                                                        | Dependency direction, packaging smoke, and public-operation-only adapters pass          |
+| Ecosystem regression                 | `yarn integrations:verify`                                                                           | All registered integration tests, typechecks, and builds pass                           |
+| Production example                   | `yarn example:production:test`, `yarn example:production:typecheck`, `yarn example:production:build` | All three green                                                                         |
+| Documentation and hygiene            | `yarn website:build`, `yarn format`, `yarn lint`                                                     | Documentation builds, formatting passes, and module boundaries remain enforced          |
 
 The existing Integration workflow discovers these new tests in its package
 and ecosystem test steps; no CI exclusion or allow-failure mechanism is added.

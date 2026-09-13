@@ -6,31 +6,31 @@ type Values = { password: string; confirm: string; note: string };
 
 // A test adapter supplies the event's changed name. Submit always invokes the
 // public Standard Schema surface on the complete payload.
-function fixture(defaultValues: Values) {
+const sharedSchema = () =>
+  enforce.shape({
+    password: enforce.isString(),
+    confirm: enforce.isString().dependsOn($ => $.password),
+    note: enforce.isString(),
+  });
+
+function fixture(defaultValues: Values, schema = sharedSchema()) {
   const calls = vi.fn();
   const onSubmit = vi.fn();
-  const suite = create(
-    data => {
-      mode(Modes.ALL);
-      test('password', () => {
-        calls('password');
-        enforce(data.password).isNotBlank();
-      });
-      test('confirm', 'Passwords must match', () => {
-        calls('confirm');
-        enforce(data.confirm).equals(data.password);
-      });
-      test('note', 'Note required', () => {
-        calls('note');
-        enforce(data.note).isNotBlank();
-      });
-    },
-    enforce.shape({
-      password: enforce.isString(),
-      confirm: enforce.isString().dependsOn($ => $.password),
-      note: enforce.isString(),
-    }),
-  );
+  const suite = create(data => {
+    mode(Modes.ALL);
+    test('password', () => {
+      calls('password');
+      enforce(data.password).isNotBlank();
+    });
+    test('confirm', 'Passwords must match', () => {
+      calls('confirm');
+      enforce(data.confirm).equals(data.password);
+    });
+    test('note', 'Note required', () => {
+      calls('note');
+      enforce(data.note).isNotBlank();
+    });
+  }, schema);
   let changed: keyof Values | undefined;
   const form = new FormApi({
     defaultValues,
@@ -136,6 +136,39 @@ describe('schema contracts: real TanStack Form lifecycle', () => {
       await b.form.handleSubmit();
       expect(b.onSubmit).toHaveBeenCalledTimes(1);
       expect(a.form.state.isValid).toBe(false);
+    } finally {
+      unmountA();
+      unmountB();
+    }
+  });
+
+  it('[SC-FORM] two forms sharing one schema stay isolated across edit, reset, and unmount', async () => {
+    const schema = sharedSchema();
+    const a = fixture({ password: 'old', confirm: 'old', note: 'ok' }, schema);
+    const b = fixture(
+      { password: 'same', confirm: 'same', note: 'ok' },
+      schema,
+    );
+    const unmountA = a.form.mount();
+    const unmountB = b.form.mount();
+    try {
+      await a.edit('password', 'new');
+      expect(a.form.state.fieldMeta.confirm?.errors).toContain(
+        'Passwords must match',
+      );
+      // The shared schema carries no per-form verdicts.
+      expect(b.form.state.isValid).toBe(true);
+      expect(b.form.state.fieldMeta.confirm?.errors ?? []).toEqual([]);
+      a.suite.reset();
+      await b.edit('note', 'ready');
+      await b.form.handleSubmit();
+      expect(b.onSubmit).toHaveBeenCalledTimes(1);
+      expect(b.onSubmit).toHaveBeenCalledWith({
+        password: 'same',
+        confirm: 'same',
+        note: 'ready',
+      });
+      expect(a.onSubmit).not.toHaveBeenCalled();
     } finally {
       unmountA();
       unmountB();

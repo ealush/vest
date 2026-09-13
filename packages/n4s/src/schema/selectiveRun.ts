@@ -842,10 +842,17 @@ function omitSkippedSegs(
   rule: SelectiveSchema,
   skipSegs: AffectedSeg[][],
 ): SelectiveSchema {
-  const children = compositionChildrenOf(rule);
+  const children = omissionChildrenOf(rule);
   if (children.length > 0) {
     return omitSkippedComposition(rule, children, skipSegs);
   }
+  return omitSkippedContainerElse(rule, skipSegs);
+}
+
+function omitSkippedContainerElse(
+  rule: SelectiveSchema,
+  skipSegs: AffectedSeg[][],
+): SelectiveSchema {
   const members = containerMembersOf(rule);
   if (members === null) return rule;
   const plan = partitionSkips(members, skipSegs);
@@ -857,12 +864,14 @@ function omitSkippedSegs(
 
 function omitSkippedComposition(
   rule: SelectiveSchema,
-  children: SelectiveSchema[],
+  children: unknown[],
   skipSegs: AffectedSeg[][],
 ): SelectiveSchema {
   let changed = false;
   const next = children.map(child => {
-    const omitted = omitSkippedSegs(child, skipSegs);
+    const omitted = isRuleLike(child)
+      ? omitSkippedSegs(child, skipSegs)
+      : child;
     if (omitted !== child) changed = true;
     return omitted;
   });
@@ -873,6 +882,24 @@ function omitSkippedComposition(
   return compose(
     ...(next as unknown as Parameters<typeof compose>),
   ) as unknown as SelectiveSchema;
+}
+
+/**
+ * Composition members for omission traversal. Unlike the supplement
+ * walker's helper, this must not filter function facades: compose()
+ * results are callable, and a nested composition lives behind one.
+ */
+function omissionChildrenOf(rule: SelectiveSchema): unknown[] {
+  const children = (rule as unknown as Record<symbol, unknown>)[
+    COMPOSITION_CHILDREN
+  ];
+  return Array.isArray(children) ? children : [];
+}
+
+function isRuleLike(child: unknown): child is SelectiveSchema {
+  return (
+    child !== null && (typeof child === 'object' || typeof child === 'function')
+  );
 }
 
 type SkipPlan = {
@@ -937,7 +964,10 @@ function rebuildNestedMembers(
   const rebuilt = copyMembers(members);
   for (const [key, tails] of nested) {
     const member = members[key] as SelectiveSchema;
-    if (!isObject(member)) continue;
+    // Function facades (e.g. a nested compose() result mounted as a
+    // member) carry slots like object rules; only non-rules are tolerated
+    // as unknown paths.
+    if (!isRuleLike(member)) continue;
     const omitted = omitSkippedSegs(member, tails);
     if (omitted === member) {
       throw new SchemaExclusionError(

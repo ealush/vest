@@ -4,6 +4,7 @@ import { enforce } from 'n4s';
 import { invokeWithUnknown } from '../../__tests__/runtimeTestUtils';
 
 import { create, mode, Modes, test } from '../../vest';
+import { each } from '../../isolates/each';
 
 function deferred() {
   let release: () => void = () => {};
@@ -146,6 +147,53 @@ describe('schema contracts: async interactions', () => {
       await pending;
       expect(slow.get().hasErrors('p.target')).toBe(true);
       expect(fast.get().isValid()).toBe(true);
+    } finally {
+      gate.release();
+      await flush();
+    }
+  });
+
+  it('[SC-ASYNC-KEYED] keyed reorder while pending attributes settlement by identity', async () => {
+    const gate = deferred();
+    const itemSchema = enforce.shape({
+      id: enforce.isString(),
+      country: enforce.isString(),
+    });
+    const suite = create(
+      (data: { travelers: { id: string; country: string }[] }) => {
+        each(data.travelers, (traveler, index) => {
+          test(
+            `travelers.${index}.country`,
+            async () => {
+              if (traveler.id === 'a') await gate.promise;
+              enforce(traveler.country).isNotBlank();
+            },
+            `${traveler.id}:country`,
+          );
+        });
+      },
+      enforce.shape({ travelers: enforce.isArrayOf(itemSchema) }),
+    );
+    const original = {
+      travelers: [
+        { id: 'a', country: '' },
+        { id: 'b', country: 'IL' },
+      ],
+    };
+    const reordered = {
+      travelers: [
+        { id: 'b', country: 'IL' },
+        { id: 'a', country: '' },
+      ],
+    };
+    suite.run(original);
+    const current = suite.changed('travelers.1.country').run(reordered);
+    try {
+      gate.release();
+      const result = await current;
+      await flush();
+      expect(result.hasErrors('travelers.1.country')).toBe(true);
+      expect(result.hasErrors('travelers.0.country')).toBe(false);
     } finally {
       gate.release();
       await flush();

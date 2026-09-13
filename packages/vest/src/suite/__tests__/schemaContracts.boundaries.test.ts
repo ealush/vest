@@ -147,4 +147,67 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
       suite.focus({ skip: 'note' }).run({ rows: ['2'], note: 'ok' }).value,
     ).toEqual({ rows: [2], note: 'ok' });
   });
+
+  it('[SC-BOUNDARY-COPY] throwing getter fails the run without partial publication', () => {
+    const getterError = new Error('getter boom');
+    let armed = false;
+    const calls: string[] = [];
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push(data);
+        for (const field of ['payload', 'other'] as const) {
+          test(field, () => {
+            calls.push(field);
+            return true;
+          });
+        }
+      },
+      enforce.shape({
+        payload: enforce.condition((value: unknown) => value !== null),
+        other: enforce.isString(),
+      }),
+    );
+    const input: Record<string, unknown> = { other: 'ok' };
+    Object.defineProperty(input, 'payload', {
+      enumerable: true,
+      get: () => {
+        if (armed) throw getterError;
+        return { nested: 1 };
+      },
+    });
+
+    const valid = suite.run(input as never);
+    expect(valid.isValid()).toBe(true);
+    const published = JSON.parse(JSON.stringify(valid.value));
+
+    // Skip the throwing field so validation succeeds and the failure lands
+    // in the boundary copy, not in validation.
+    armed = true;
+    calls.length = 0;
+    let thrown: unknown;
+    try {
+      suite
+        .changed('other')
+        .focus({ skip: 'payload' })
+        .run(input as never);
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(getterError);
+    expect(seen).toHaveLength(1);
+
+    // Atomicity: the previously published snapshot is unchanged, no
+    // builder state leaks into the next run, and the suite stays usable.
+    expect(JSON.parse(JSON.stringify(published))).toEqual({
+      other: 'ok',
+      payload: { nested: 1 },
+    });
+    armed = false;
+    calls.length = 0;
+    const recovery = suite.run({ other: 'next', payload: { nested: 2 } });
+    expect(calls.sort()).toEqual(['other', 'payload']);
+    expect(recovery.isValid()).toBe(true);
+    expect(recovery.value).toEqual({ other: 'next', payload: { nested: 2 } });
+  });
 });

@@ -12,15 +12,20 @@ declare global {
         pass: boolean;
         type: { value: number };
       };
+      architectureBoom: (value: string) => { pass: boolean; type: string };
     }
   }
 }
+const architectureBoomError = new Error('parser boom');
 enforce.extend(
   {
     architectureNumber: () => ({ pass: false, type: 2 }),
     architectureBox: (value: number) => ({ pass: true, type: { value } }),
+    architectureBoom: () => {
+      throw architectureBoomError;
+    },
   },
-  { parsers: ['architectureNumber', 'architectureBox'] },
+  { parsers: ['architectureNumber', 'architectureBox', 'architectureBoom'] },
 );
 
 function mappingSchema() {
@@ -97,6 +102,32 @@ describe('schema contracts: architectural boundaries', () => {
     const result = suite.changed('a').run({ a: 'raw', b: 'ok' });
     expect(result.hasErrors('a')).toBe(true);
     expect(result.value).toBeUndefined();
+  });
+
+  it('[ARCH-MAPPING] throwing parser preserves cause without a second validation route', () => {
+    const selected = vi.fn(() => true);
+    const callback = vi.fn();
+    const suite = create(
+      data => {
+        callback(data);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce.architectureBoom(),
+        b: enforce.condition(selected),
+      }),
+    );
+
+    let thrown: unknown;
+    try {
+      suite.changed('b').focus({ skip: 'a' }).run({ a: 'x', b: 'y' });
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBe(architectureBoomError);
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(callback).not.toHaveBeenCalled();
   });
 
   it.each(['onlyGroup', 'skipGroup'] as const)(

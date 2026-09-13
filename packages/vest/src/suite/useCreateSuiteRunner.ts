@@ -550,6 +550,11 @@ function mappedFailureInput(schema: unknown, fallback: unknown): unknown {
   try {
     return mapWithoutValidation(schema, fallback);
   } catch {
+    // Best-effort failure path only: validation already failed, so this
+    // input never backs a successful mapping and no `value` is published
+    // from it. Falling back to raw input here runs no further validation;
+    // execution-route errors propagate untouched (see runProjectedOrFull
+    // and the supplement gap handlers, which only catch boundary errors).
     return fallback;
   }
 }

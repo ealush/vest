@@ -10020,7 +10020,7 @@ Schema Relationships are **metadata + `suite.changed()` in V1**. `describe()` re
 
 V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set expansion (flat, nested, reusable, array same-item, and root→array fan-out via run-time `data`). There is no options overload in V1:
 
-> `suite.changed()` takes only the changed fields. AbortSignal-based cancellation is not a V1 feature, so no typed option implies it. JavaScript callers passing `{ signal }` fail explicitly with `Error('suite.changed({ signal: AbortSignal }) deferred to v2')` instead of being silently ignored. Async test callbacks still receive their own `AbortSignal`.
+> `suite.changed()` takes only the changed fields. AbortSignal-based cancellation is not a V1 feature, so no typed option implies it. JavaScript callers passing any second argument fail explicitly — `{ signal }` with `Error('suite.changed({ signal: AbortSignal }) deferred to v2')`, anything else with `Error('suite.changed() accepts no options in V1')` — instead of being silently ignored. Async test callbacks still receive their own `AbortSignal`.
 >
 > No behavior change for current V1 usage `suite.changed(field).run(data)`.
 

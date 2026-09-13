@@ -1,6 +1,6 @@
 {
   "generated": "2026-09-12",
-  "head": "5718442f",
+  "head": "8557b105",
   "note": "Living manifest for docs/schema-relationships-production-acceptance-plan.md. Statuses: open, covered, blocked, unsupported-documented. verifiedSha is set only by an executed green run on that exact SHA. covered requires checking assertions, not file greenness.",
   "rows": [
     {
@@ -80,7 +80,7 @@
         "[SC-EXCLUSION-COMPOSE] root true/false preserves exclusion",
         "[SC-EXCLUSION-COMPOSE] nested composition keeps every root and drops the skip"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -110,7 +110,7 @@
         "[SC-EXCLUSION-ARRAY] whole-item change with a skipped child runs the sibling only",
         "[SC-EXCLUSION-ARRAY] sibling error paths track current indices after reorder"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -125,7 +125,7 @@
       "testNames": [
         "[SC-EXCLUSION-PARSER] skipped parsed child maps honestly without validation"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -141,7 +141,7 @@
         "[SC-EXCLUSION-UNION] witnessed union survives a dependent change without reprobing",
         "[SC-EXCLUSION-UNION] skip on an unwitnessed union still throws before callbacks"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": ["C03"],
@@ -239,7 +239,7 @@
         "[SC-PATH] empty changed paths are a no-op full run",
         "[SC-PATH] bracket and dot spellings select the same nested field"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -263,7 +263,7 @@
       "testNames": [
         "[SC-STATE-MACHINE] seed %i converges execution and retention with the oracle"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -311,7 +311,7 @@
         "[SC-MODIFIER] absent optional fields do not break changed runs",
         "[SC-MODIFIER] duplicate field names across groups all run on change"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -325,7 +325,7 @@
         "[SC-MODE] ONE mode stops a changed run at the first failure",
         "[SC-MEMO] memoized tests do not rerun across unchanged changed-runs"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": ["C10"],
@@ -498,7 +498,7 @@
       "testNames": [
         "[SC-COPY-ISOLATION] mutating a published copy touches nothing else"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -548,7 +548,7 @@
         "[SC-METAMORPHIC] duplicate change selectors behave as a set",
         "[SC-METAMORPHIC] change order converges after a final full run"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -587,7 +587,7 @@
       "testNames": [
         "[SC-ASYNC-KEYED] keyed reorder while pending attributes settlement by identity"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -641,7 +641,7 @@
       "testNames": [
         "[SC-FORM] two forms sharing one schema stay isolated across edit, reset, and unmount"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -718,7 +718,7 @@
       "testNames": [
         "pack + exports targets + CJS/ESM import smoke without workspace aliases"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -746,7 +746,7 @@
       "testNames": [
         "127 n4s source files: no upward imports into Vest/vestjs-runtime/adapters"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
@@ -770,7 +770,7 @@
       "testNames": [
         "46 adapter source files: no private planner/runner imports"
       ],
-      "verifiedSha": null
+      "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],

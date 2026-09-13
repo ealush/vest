@@ -169,9 +169,9 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "GR01",
-      "notes": "64-graph x 7-change-set oracle green; simultaneous invalid fields + schema-predicate observations open.",
-      "result": "pass",
-      "status": "covered",
+      "notes": "64-graph x 7-change-set oracle green; simultaneous invalid fields + schema-predicate observations open. Remainder open: flat 3-field oracle green; simultaneous invalid fields + schema-predicate observations open.",
+      "result": "partial",
+      "status": "open",
       "testFiles": [
         "packages/n4s/src/schema/__tests__/schemaContracts.readiness.test.ts",
         "packages/vest/src/suite/__tests__/schemaContracts.featureMatrix.test.ts"
@@ -245,9 +245,9 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "AP01",
-      "notes": "13-case composition matrix green; builder-reuse accumulation checks open.",
-      "result": "pass",
-      "status": "covered",
+      "notes": "13-case composition matrix green; builder-reuse accumulation checks open. Remainder open: 13-case composition matrix green; builder-reuse accumulation checks open.",
+      "result": "partial",
+      "status": "open",
       "testFiles": [
         "packages/vest/src/suite/__tests__/schemaContracts.readiness.test.ts"
       ],
@@ -301,8 +301,16 @@
       "notes": "Signal overload removed from ChangedOptions (Record<string, never>); runtime rejection retained and asserted with @ts-expect-error; fluent inference + callback AbortSignal covered in schemaContracts.publicApi.test.ts.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [],
-      "testNames": [],
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.publicApi.test.ts",
+        "packages/vest/src/suite/__tests__/changed.integration.test.ts"
+      ],
+      "testNames": [
+        "[SC-PUBLIC-API] changed has no signal overload but valid chains keep inference",
+        "[SC-PUBLIC-API] async test callbacks still receive an AbortSignal",
+        "deferred v2 \u2014 suite.changed(field, { signal: AbortSignal }) throws in V1",
+        "suite.changed(field, {}) throws: V1 accepts no options"
+      ],
       "verifiedSha": "5718442f"
     },
     {
@@ -341,9 +349,13 @@
       "status": "covered",
       "testFiles": [
         "packages/vest/src/suite/__tests__/changed.callbackMapping.test.ts",
-        "packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts"
+        "packages/vest/src/suite/__tests__/schemaContracts.output.test.ts"
       ],
-      "testNames": [],
+      "testNames": [
+        "maps untouched fields before the first-ever focused callback without validating them",
+        "[SC-PARSER] a pure non-idempotent parser is applied to raw values, never to previously parsed values",
+        "[SC-FAILURE-MAP] failed focused validation cannot poison the retained successful parser mapping"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -354,9 +366,12 @@
       "result": "pass",
       "status": "covered",
       "testFiles": [
-        "packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts"
+        "packages/vest/src/suite/__tests__/schemaContracts.output.test.ts"
       ],
-      "testNames": [],
+      "testNames": [
+        "[SC-PRESENCE] deletion and explicit undefined remain distinct through focused mapping",
+        "[SC-PRESENCE] first skip-only mapping preserves a present undefined parser output"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -374,9 +389,9 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "MP04",
-      "notes": "Parser ordering/counts partially covered; retry-prohibition covered by adversarial test.",
-      "result": "pass",
-      "status": "covered",
+      "notes": "Parser ordering/counts partially covered; retry-prohibition covered by adversarial test. Remainder open: retry prohibition + parser ordering green; full parser-before/after/nested/custom matrix open.",
+      "result": "partial",
+      "status": "open",
       "testFiles": [
         "packages/vest/src/suite/__tests__/changed.adversarial.test.ts"
       ],
@@ -407,7 +422,10 @@
       "testFiles": [
         "packages/vest/src/suite/__tests__/schemaContracts.snapshots.test.ts"
       ],
-      "testNames": [],
+      "testNames": [
+        "[SC-ACCESSOR] reads an immutable snapshot getter once and detaches its live return value",
+        "[SC-ALIAS] descriptor, symbol, Map and Set references keep one shared detached identity"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -460,9 +478,9 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "FP02",
-      "notes": "Getter-free planning covered at n4s boundary; outer-run materialization split needs explicit test.",
-      "result": "pass",
-      "status": "covered",
+      "notes": "Getter-free planning covered at n4s boundary; outer-run materialization split needs explicit test. Remainder open: getter-free scalar/index planning green; outer-run materialization split test open.",
+      "result": "partial",
+      "status": "open",
       "testFiles": [
         "packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts"
       ],
@@ -477,7 +495,7 @@
       "result": "pass",
       "status": "covered",
       "testFiles": ["packages/context/src/__tests__"],
-      "testNames": [],
+      "testNames": ["Context (context.test.ts + cascade.test.ts suites)"],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -539,7 +557,10 @@
         "packages/vest/src/suite/after/__tests__/afterEach.test.ts",
         "packages/vest/src/suite/after/__tests__/afterEach.additional.test.ts"
       ],
-      "testNames": [],
+      "testNames": [
+        "should run after each async test finishes",
+        "should call all callbacks after each async test completes"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -584,19 +605,23 @@
       "notes": "Green on fix heads.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [],
-      "testNames": [],
+      "testFiles": [
+        "integrations/* (hono, kit, react-hook-form, standard-schema, t3-env, tanstack-form, tanstack-router, trpc)"
+      ],
+      "testNames": [
+        "yarn integrations:verify green (test + typecheck + build per integration)"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
       "blocked-by": [],
       "command": "yarn example:production:test",
       "id": "IN04",
-      "notes": "Green on fix heads; nested/async/submit extensions open.",
-      "result": "pass",
-      "status": "covered",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Green on fix heads; nested/async/submit extensions open. Remainder open: example trio green; nested/async/submit extensions open.",
+      "result": "partial",
+      "status": "open",
+      "testFiles": ["examples/* canonical production registration app"],
+      "testNames": ["example:production:test + typecheck + build green"],
       "verifiedSha": null
     },
     {
@@ -609,7 +634,10 @@
       "testFiles": [
         "packages/vest/src/suite/__tests__/schemaContracts.boundaries.test.ts"
       ],
-      "testNames": [],
+      "testNames": [
+        "concrete array-index planning does not invoke an accessor",
+        "composition cannot deliver an unparsed union as complete callback output"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -652,8 +680,12 @@
       "notes": "No-schema/schema consumer behavior green except documented changes.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [],
-      "testNames": [],
+      "testFiles": [
+        "packages/vest (no-schema suites) + integrations/* (schema consumers)"
+      ],
+      "testNames": [
+        "yarn test + yarn integrations:verify green except documented focus-collision correction"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -697,7 +729,7 @@
       "result": "pass",
       "status": "covered",
       "testFiles": ["packages/context/src/__tests__"],
-      "testNames": [],
+      "testNames": ["Context (context.test.ts + cascade.test.ts suites)"],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -830,6 +862,30 @@
       "status": "open",
       "testFiles": [],
       "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn docs:examples:test && yarn website:build && yarn build:llms && git diff --exit-code",
+      "id": "DO01",
+      "notes": "Public examples execute; website/llms/integration docs regenerate with zero drift.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": ["packages/vest/src/suite/__tests__/docsExamples.test.ts"],
+      "testNames": ["executable acceptance example + existing doc examples"],
+      "verifiedSha": "c881ebd6"
+    },
+    {
+      "blocked-by": [],
+      "command": "scripts/gate-schema-boundaries (new)",
+      "id": "DO02",
+      "notes": "Contract-to-test manifest exists (this file); executable rejection tests for declared-unsupported behaviors partially open (EX10 covered, array/opaque cells open).",
+      "result": "partial",
+      "status": "open",
+      "testFiles": ["docs/schema-relationships-acceptance-status.json"],
+      "testNames": [
+        "[SC-EXCLUSION-OPAQUE] moved-chain fallback with intersecting skip fails closed"
+      ],
       "verifiedSha": null
     }
   ]

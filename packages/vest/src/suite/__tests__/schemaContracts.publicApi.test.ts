@@ -25,13 +25,18 @@ describe('schema contracts: public API surface', () => {
       // @ts-expect-error — signal is not part of the V1 type surface
       suite.changed('password', { signal: controller.signal }),
     ).toThrowError(/deferred to v2/);
+    expect(() =>
+      // @ts-expect-error — V1 changed() takes no options at all
+      suite.changed('password', {}),
+    ).toThrowError(/accepts no options/);
 
     const result = suite
       .changed('password')
       .only('password')
       .focus({ skip: 'confirm' })
       .run({ password: 'secret', confirm: 'secret' });
-    expectTypeOf(result.isValid()).toBeBoolean();
+    expectTypeOf(result.types?.output.password).toEqualTypeOf<string>();
+    expectTypeOf(result.types?.output.confirm).toEqualTypeOf<string>();
     expect(result.hasErrors('confirm')).toBe(false);
   });
 

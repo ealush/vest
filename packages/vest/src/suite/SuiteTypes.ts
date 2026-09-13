@@ -14,7 +14,6 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
-import type { ChangedOptions } from './changed';
 import { TTypedMethods } from './getTypedMethods';
 
 type CallbackTail<T extends CB> =
@@ -58,10 +57,7 @@ type SuiteMethods<
   resetField: CB<void, [fieldName: F]>;
   changed: CB<
     FocusedMethods<F, G, T, S>,
-    [
-      changedField: FieldExclusion<F> | string | string[],
-      options?: ChangedOptions,
-    ]
+    [changedField: FieldExclusion<F> | string | string[]]
   >;
   run: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
   runStatic: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
@@ -81,10 +77,7 @@ type FocusedMethods<
   afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   changed: CB<
     FocusedMethods<F, G, T, S>,
-    [
-      changedField: FieldExclusion<F> | string | string[],
-      options?: ChangedOptions,
-    ]
+    [changedField: FieldExclusion<F> | string | string[]]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
@@ -105,10 +98,7 @@ type AfterMethods<
   afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   changed: CB<
     FocusedMethods<F, G, T, S>,
-    [
-      changedField: FieldExclusion<F> | string | string[],
-      options?: ChangedOptions,
-    ]
+    [changedField: FieldExclusion<F> | string | string[]]
   >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;

@@ -179,8 +179,14 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
 
     const valid = suite.run(input as never);
     expect(valid.isValid()).toBe(true);
-    const published = JSON.parse(JSON.stringify(valid.value));
+    // Save the actual delivered references: inspecting these after the
+    // failure catches in-place corruption that a serialized copy would miss.
+    const deliveredValue = valid.value as Record<string, unknown>;
+    const deliveredCallback = seen[0] as Record<string, unknown>;
 
+    // A derived builder created before the failure keeps its intentional
+    // focus; the failure must not clear it (no automatic clearing).
+    const derived = suite.changed('other');
     // Skip the throwing field so validation succeeds and the failure lands
     // in the boundary copy, not in validation.
     armed = true;
@@ -197,17 +203,95 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
     expect(thrown).toBe(getterError);
     expect(seen).toHaveLength(1);
 
-    // Atomicity: the previously published snapshot is unchanged, no
-    // builder state leaks into the next run, and the suite stays usable.
-    expect(JSON.parse(JSON.stringify(published))).toEqual({
+    // Atomicity on the delivered references themselves.
+    expect(deliveredValue).toEqual({ other: 'ok', payload: { nested: 1 } });
+    expect(deliveredCallback).toEqual({
       other: 'ok',
       payload: { nested: 1 },
     });
+    // No partial publication is observable through the suite either.
+    expect(suite.get().hasErrors()).toBe(false);
+    expect(suite.get().tests.payload.testCount).toBe(1);
+    expect(suite.get().tests.other.testCount).toBe(1);
+
+    // Recovery: the base suite is uncontaminated and the pre-derived
+    // builder retains its focus.
     armed = false;
     calls.length = 0;
     const recovery = suite.run({ other: 'next', payload: { nested: 2 } });
     expect(calls.sort()).toEqual(['other', 'payload']);
     expect(recovery.isValid()).toBe(true);
     expect(recovery.value).toEqual({ other: 'next', payload: { nested: 2 } });
+    calls.length = 0;
+    const refocused = derived.run({ other: 'again', payload: { nested: 3 } });
+    expect(calls).toEqual(['other']);
+    expect(refocused.hasErrors('payload')).toBe(false);
+  });
+
+  it('[SC-BOUNDARY-COPY] boundary failure leaves earlier async work pending and clean', async () => {
+    const gate = (() => {
+      let release: () => void = () => {};
+      const promise = new Promise<void>(resolve => {
+        release = resolve;
+      });
+      return { promise, release };
+    })();
+    const flush = () => new Promise<void>(resolve => setImmediate(resolve));
+    const getterError = new Error('getter boom');
+    let armed = false;
+    const callbacks: unknown[] = [];
+    const suite = create(
+      data => {
+        callbacks.push(data);
+        test('asy', async () => {
+          await gate.promise;
+        });
+        test('other', () => true);
+      },
+      enforce.shape({
+        payload: enforce.condition((value: unknown) => value !== null),
+        other: enforce.isString(),
+        asy: enforce.isString(),
+      }),
+    );
+    const input: Record<string, unknown> = {
+      other: 'ok',
+      asy: 'ok',
+    };
+    Object.defineProperty(input, 'payload', {
+      enumerable: true,
+      get: () => {
+        if (armed) throw getterError;
+        return { nested: 1 };
+      },
+    });
+
+    const first = suite.run(input as never);
+    expect(first.isPending()).toBe(true);
+
+    armed = true;
+    let thrown: unknown;
+    try {
+      suite
+        .changed('other')
+        .focus({ skip: 'payload' })
+        .run(input as never);
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(getterError);
+    // The earlier run is still live and nothing new was published.
+    expect(first.isPending()).toBe(true);
+    expect(suite.get().isPending()).toBe(true);
+    expect(callbacks).toHaveLength(1);
+
+    gate.release();
+    const settled = await first;
+    await flush();
+    expect(settled.hasErrors()).toBe(false);
+    expect(suite.get().isPending()).toBe(false);
+    // Settlement publishes the pending verdict without re-invoking the
+    // suite callback: exactly one publication for one run.
+    expect(callbacks).toHaveLength(1);
   });
 });

@@ -1154,7 +1154,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     expect(Object.keys(unaffected.tests)).toContain('1.state');
   });
 
-  /** No typed signal overload in V1; runtime misuse still throws explicitly. */
+  /** No typed options in V1; runtime misuse still throws explicitly. */
   it('deferred v2 — suite.changed(field, { signal: AbortSignal }) throws in V1', () => {
     const schema = enforce.shape({
       a: enforce.isString(),
@@ -1167,5 +1167,16 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     ).toThrowError(
       new Error('suite.changed({ signal: AbortSignal }) deferred to v2'),
     );
+  });
+
+  it('suite.changed(field, {}) throws: V1 accepts no options', () => {
+    const schema = enforce.shape({
+      a: enforce.isString(),
+    });
+    const suite = create(() => {}, schema);
+    expect(() =>
+      // @ts-expect-error — V1 changed() takes no options at all
+      suite.changed('a', {}),
+    ).toThrowError(new Error('suite.changed() accepts no options in V1'));
   });
 });

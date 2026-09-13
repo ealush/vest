@@ -16,7 +16,6 @@ import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { FieldExclusion } from '../hooks/focused/focused';
 import { assertNoAbortSignal } from './changed';
-import type { ChangedOptions } from './changed';
 import {
   InternalSuiteModifiers,
   SuiteModifiers,
@@ -303,9 +302,8 @@ function useCreateChanged<
   // produce the unusable field 'rows.rows.$item.tax' and nothing would run.
   return function changed(
     changedField: string | string[] | FieldExclusion<F>,
-    options?: ChangedOptions,
+    options?: unknown,
   ) {
-    /** @deferred v2 — AbortSignal abort deferred */
     assertNoAbortSignal(options);
     // Falsy scalars (undefined, null, false, '') are a legal no-op — run
     // without changed focus. Only changed([]) is an explicit zero-field

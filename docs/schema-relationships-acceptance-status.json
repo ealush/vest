@@ -424,12 +424,12 @@
       "verifiedSha": "c881ebd6"
     },
     {
-      "blocked-by": ["C11", "C12"],
+      "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "MP08",
       "notes": "Throwing parser identity + throwing getter atomicity proven (see notes). Parser-created accessors and reentrant second-suite cases remain open. Requires nothing further from C11/C12.",
       "result": "partial",
-      "status": "blocked",
+      "status": "open",
       "testFiles": [],
       "testNames": [],
       "verifiedSha": null
@@ -543,12 +543,12 @@
       "verifiedSha": "c881ebd6"
     },
     {
-      "blocked-by": ["C12"],
+      "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "AS05",
       "notes": "Sync throw-during-copy + recovery characterized green (boundaries test). Pending-work variants remain open.",
       "result": "not-run",
-      "status": "blocked",
+      "status": "open",
       "testFiles": [],
       "testNames": [],
       "verifiedSha": null
@@ -712,12 +712,12 @@
       "verifiedSha": null
     },
     {
-      "blocked-by": ["C03", "C11"],
+      "blocked-by": [],
       "command": "review + EX10/MP08",
       "id": "DD06",
       "notes": "Blocked on C03/C11 error-boundary work.",
       "result": "not-run",
-      "status": "blocked",
+      "status": "open",
       "testFiles": [],
       "testNames": [],
       "verifiedSha": null

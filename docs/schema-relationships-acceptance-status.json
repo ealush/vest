@@ -1,6 +1,6 @@
 {
   "generated": "2026-09-12",
-  "head": "64f13196",
+  "head": "5718442f",
   "note": "Living manifest for docs/schema-relationships-production-acceptance-plan.md. Statuses: open, covered, blocked, unsupported-documented. verifiedSha is set only by an executed green run on that exact SHA. covered requires checking assertions, not file greenness.",
   "rows": [
     {
@@ -298,12 +298,12 @@
       "blocked-by": ["C10"],
       "command": "yarn test:schema-relationships",
       "id": "AP05",
-      "notes": "Requires C10 (remove signal overload) first.",
-      "result": "not-run",
-      "status": "blocked",
+      "notes": "Signal overload removed from ChangedOptions (Record<string, never>); runtime rejection retained and asserted with @ts-expect-error; fluent inference + callback AbortSignal covered in schemaContracts.publicApi.test.ts.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [],
       "testNames": [],
-      "verifiedSha": null
+      "verifiedSha": "5718442f"
     },
     {
       "blocked-by": [],
@@ -427,8 +427,8 @@
       "blocked-by": ["C11", "C12"],
       "command": "yarn test:schema-relationships",
       "id": "MP08",
-      "notes": "New throwing/reentrant boundary-copy tests; requires C11/C12 semantics.",
-      "result": "not-run",
+      "notes": "Throwing parser identity + throwing getter atomicity proven (see notes). Parser-created accessors and reentrant second-suite cases remain open. Requires nothing further from C11/C12.",
+      "result": "partial",
       "status": "blocked",
       "testFiles": [],
       "testNames": [],
@@ -546,7 +546,7 @@
       "blocked-by": ["C12"],
       "command": "yarn test:schema-relationships",
       "id": "AS05",
-      "notes": "New throw-during-copy + recovery tests; requires C12 semantics.",
+      "notes": "Sync throw-during-copy + recovery characterized green (boundaries test). Pending-work variants remain open.",
       "result": "not-run",
       "status": "blocked",
       "testFiles": [],

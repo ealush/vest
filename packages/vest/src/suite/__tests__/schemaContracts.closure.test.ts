@@ -3,7 +3,6 @@ import {
   EnforceSchemaError,
   FocusedSchemaMappingError,
   SchemaExclusionError,
-  SchemaProjectionError,
   compose,
   enforce,
 } from 'n4s';
@@ -50,7 +49,7 @@ enforce.extend(
     },
     closureFrameworkBoom: (value: string) => {
       if (value === 'MAPPED') {
-        throw new SchemaProjectionError('closure mapping fault');
+        throw new Error('closure mapping fault');
       }
       return { pass: true, type: value };
     },
@@ -604,7 +603,8 @@ describe('schema contracts: single normalization across routes', () => {
 
 // DD06: unsupported projection, validation failure, and unexpected execution
 // exceptions stay distinguished on every route (C03/C11 boundary; mapping
-// faults of any class propagate, structural gaps use SchemaProjectionError).
+// and execution faults of any class propagate with single execution,
+// structural gaps route via planning before user execution).
 describe('schema contracts: error boundaries per route', () => {
   function throwingParserSuite() {
     const callback = vi.fn();
@@ -670,6 +670,8 @@ describe('schema contracts: error boundaries per route', () => {
       // focused run cannot provide on its own.
       const valid = suite.run({ a: 'good', b: 'ok' });
       expect(valid.isValid()).toBe(true);
+      // No framework-owned mapping fallback exists: the fault propagates
+      // by identity with no fabricated callback input.
       let thrown: unknown;
       try {
         if (route === 'full') suite.run({ a: 'bad', b: 'ok' });
@@ -677,18 +679,11 @@ describe('schema contracts: error boundaries per route', () => {
       } catch (error) {
         thrown = error;
       }
-      // No framework-owned mapping fallback exists: the fault propagates
-      // by identity with no fabricated callback input.
-      expect(thrown).toBeInstanceOf(SchemaProjectionError);
+      expect(thrown).toBeInstanceOf(Error);
+      expect((thrown as Error).message).toBe('closure mapping fault');
       expect(callback).toHaveBeenCalledTimes(1);
     },
   );
-
-  it('[SC-DD06] dedicated projection error carries a stable code', () => {
-    const error = new SchemaProjectionError('probe');
-    expect(error.code).toBe('SCHEMA_PROJECTION_UNAVAILABLE');
-    expect(error).toBeInstanceOf(Error);
-  });
 
   // R1: composed skip-only must observe hard exclusions. Fails red until
   // the composed fallback route applies omission before execution.

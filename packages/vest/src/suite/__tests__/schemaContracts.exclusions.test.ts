@@ -524,23 +524,33 @@ function runPublicChanged(
 }
 
 describe('schema contracts: runner retained-path utilities', () => {
-  it('[SC-MERGE] skip-only run with an array index skip repairs from retention', () => {
+  it('[SC-MERGE] skip-only run with an array index skip fails closed before execution', () => {
     const calls: string[] = [];
     const schema = enforce.shape({
       rows: enforce.isArrayOf(enforce.isNumeric().toNumber()),
       note: enforce.isString(),
     });
-    const suite = create(data => {
+    const callback = vi.fn((...args: unknown[]) => {
       calls.push('ran');
       test('note', () => true);
-      void data;
-    }, schema as never);
+      void args;
+    });
+    const suite: any = create(callback as never, schema as never);
     suite.run({ rows: ['1', '2'], note: 'first' });
-    calls.length = 0;
-    const result = suite
-      .focus({ skip: 'rows.0' })
-      .run({ rows: ['9', '2'], note: 'second' });
-    expect(result.hasErrors()).toBe(false);
+    // Array members are positional: omitting one index from a skip-only run
+    // is unrepresentable as a rebuilt schema, so the run fails closed with
+    // a stable code instead of executing the excluded member. Retention
+    // repair for array members belongs to changed() routes with supplement.
+    let thrown: unknown;
+    try {
+      suite.focus({ skip: 'rows.0' }).run({ rows: ['9', '2'], note: 'second' });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
+    expect((thrown as SchemaExclusionError).code).toBe(
+      'SCHEMA_EXCLUSION_UNSUPPORTED',
+    );
     expect(calls).toEqual(['ran']);
   });
 

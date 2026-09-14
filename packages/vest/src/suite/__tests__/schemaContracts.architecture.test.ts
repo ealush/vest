@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { EnforceSchemaError, SchemaProjectionError, enforce } from 'n4s';
+import { EnforceSchemaError, enforce } from 'n4s';
 import { mapWithoutValidation } from 'n4s/exports/internal';
 
 import { create, group, mode, Modes, test } from '../../vest';
@@ -55,7 +55,7 @@ enforce.extend(
     },
     architectureFrameworkBoom: (value: string) => {
       if (value === 'MAPPED') {
-        throw new SchemaProjectionError('structural mapping fault');
+        throw new Error('structural mapping fault');
       }
       return { pass: true, type: value };
     },
@@ -252,10 +252,8 @@ describe('schema contracts: architectural boundaries', () => {
     } catch (error) {
       thrown = error;
     }
-    expect(thrown).toBeInstanceOf(SchemaProjectionError);
-    expect((thrown as SchemaProjectionError).code).toBe(
-      'SCHEMA_PROJECTION_UNAVAILABLE',
-    );
+    expect(thrown).toBeInstanceOf(Error);
+    expect((thrown as Error).message).toBe('structural mapping fault');
     expect(callback).toHaveBeenCalledTimes(1);
   });
 

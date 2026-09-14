@@ -863,3 +863,65 @@ describe('schema contracts: skip-all, empty selection, nonexistent paths (T1 #7)
     expect(result.hasErrors()).toBe(false);
   });
 });
+
+describe('schema contracts: plain nested skip-only (P1)', () => {
+  function nestedFixture(
+    container: 'shape' | 'partial' | 'loose',
+    excludedBehavior: SkippedBehavior = 'throw',
+  ) {
+    const excluded = skippedPredicate(excludedBehavior);
+    const sibling = vi.fn(() => true);
+    const outer = vi.fn(() => true);
+    const inner =
+      container === 'shape'
+        ? enforce.shape({
+            a: enforce.condition(excluded),
+            b: enforce.condition(sibling),
+          })
+        : container === 'partial'
+          ? enforce.partial({
+              a: enforce.condition(excluded),
+              b: enforce.condition(sibling),
+            })
+          : enforce.loose({
+              a: enforce.condition(excluded),
+              b: enforce.condition(sibling),
+            });
+    const schema = enforce.shape({
+      profile: inner as never,
+      other: enforce.condition(outer),
+    });
+    return { excluded, outer, schema, sibling };
+  }
+
+  it.each(['shape', 'partial', 'loose'] as const)(
+    '[SC-NESTED-SKIP] plain %s skip-only never executes the nested excluded validator',
+    container => {
+      const { excluded, outer, schema, sibling } = nestedFixture(container);
+      const suite: any = create((_data: unknown) => {}, schema as never);
+      const result = suite
+        .focus({ skip: 'profile.a' })
+        .run({ profile: { a: 'a', b: 'b' }, other: 'o' } as never);
+      expect(excluded).not.toHaveBeenCalled();
+      expect(sibling).toHaveBeenCalledTimes(1);
+      expect(outer).toHaveBeenCalledTimes(1);
+      expect(result.hasErrors()).toBe(false);
+    },
+  );
+
+  it.each(['shape', 'partial', 'loose'] as const)(
+    '[SC-NESTED-SKIP] plain %s only(profile)+skip(profile.a) excludes nested while keeping the parent',
+    container => {
+      const { excluded, outer, schema, sibling } = nestedFixture(container);
+      const suite: any = create((_data: unknown) => {}, schema as never);
+      const result = suite
+        .only('profile')
+        .focus({ skip: 'profile.a' })
+        .run({ profile: { a: 'a', b: 'b' }, other: 'o' } as never);
+      expect(excluded).not.toHaveBeenCalled();
+      expect(sibling).toHaveBeenCalledTimes(1);
+      expect(result.hasErrors()).toBe(false);
+      expect(outer).not.toHaveBeenCalled();
+    },
+  );
+});

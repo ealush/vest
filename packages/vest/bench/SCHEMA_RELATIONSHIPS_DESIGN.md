@@ -446,6 +446,14 @@ contract suites.
 
 Gate thresholds use `max(5, rme)` masking in reporter — so a 7% diff tagged `0.00%` is still visible in raw log. Always check CI log raw output, not only masked table.
 
+**G1 budget decision (2026-09-14).** G1 reads ~0.84 (warn band: below 0.90
+target, above 0.80 floor) with absolute overhead ~1.3us/edge vs 5us ceiling
+(head-only gate run: C13 1.463 pass, D13 1.417 pass, G1 warn tolerated).
+Creation is one-time per schema; the ~15% registration cost is inherent to
+storing the dependency graph. Decision: warn-band accepted as non-blocking
+with the absolute-ceiling guard enforced by `gate:schema-performance`.
+Gate passes; no optimization required for merge.
+
 ### 7.2 How to prove "not regressing" historically
 
 Keep rows **additive** — never rename existing bench names. Baseline checkout (`latest` branch) will have no rows for these names; reporter shows them as new (Diff=0). On second run, diffs appear — evolutions are comparable. Pin heavy suites to `time:1000` so tinybench confidence stays high even on noisy CI.

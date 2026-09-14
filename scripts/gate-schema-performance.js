@@ -5,7 +5,7 @@
  * Method (see the retired >10x/>20x analysis): Vest's per-run cost is
  * dominated by declaring and reconciling the whole suite, so cross-process
  * throughput comparisons drown in process noise. This gate instead runs
- * packages/vest/src/__tests__/perf-pairs.test.ts, which measures
+ * packages/vest/perf-gate/perf-pairs.test.ts, which measures
  * full-vs-changed pairs in-process (warmup, then interleaved batches in
  * alternating order) and prints one PERF_PAIR JSON line per workload.
  * It enforces revised floors (changed/full >= 1x target, 0.9x hard floor;
@@ -222,12 +222,34 @@ function checkBaseRegression(headMs, baseMs) {
 
 function withBaselineFile(baselineDir, fn) {
   const dest = path.join(baselineDir, PAIRS_FILE);
+  const configSrc = path.join(
+    REPO_ROOT,
+    'packages',
+    'vest',
+    'perf-gate',
+    'vitest.perf.config.ts',
+  );
+  const configDest = path.join(
+    baselineDir,
+    'packages',
+    'vest',
+    'perf-gate',
+    'vitest.perf.config.ts',
+  );
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.copyFileSync(path.join(REPO_ROOT, PAIRS_FILE), dest);
+  const hadConfig = fs.existsSync(configDest);
+  if (!hadConfig) {
+    fs.mkdirSync(path.dirname(configDest), { recursive: true });
+    fs.copyFileSync(configSrc, configDest);
+  }
   try {
     return fn();
   } finally {
     fs.rmSync(dest, { force: true });
+    if (!hadConfig) {
+      fs.rmSync(configDest, { force: true });
+    }
   }
 }
 

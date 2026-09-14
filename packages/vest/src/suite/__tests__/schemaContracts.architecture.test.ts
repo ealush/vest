@@ -13,10 +13,19 @@ declare global {
         type: { value: number };
       };
       architectureBoom: (value: string) => { pass: boolean; type: string };
+      architectureConditionalMapped: (value: string) => {
+        pass: boolean;
+        type: string;
+      };
+      architectureBoomOnMapped: (value: string) => {
+        pass: boolean;
+        type: string;
+      };
     }
   }
 }
 const architectureBoomError = new Error('parser boom');
+const architectureMappedBoomError = new Error('mapped parser boom');
 enforce.extend(
   {
     architectureNumber: () => ({ pass: false, type: 2 }),
@@ -24,8 +33,24 @@ enforce.extend(
     architectureBoom: () => {
       throw architectureBoomError;
     },
+    architectureConditionalMapped: (value: string) =>
+      value === 'bad'
+        ? { pass: false, type: 'MAPPED' }
+        : { pass: true, type: value },
+    architectureBoomOnMapped: (value: string) => {
+      if (value === 'MAPPED') throw architectureMappedBoomError;
+      return { pass: true, type: value };
+    },
   },
-  { parsers: ['architectureNumber', 'architectureBox', 'architectureBoom'] },
+  {
+    parsers: [
+      'architectureNumber',
+      'architectureBox',
+      'architectureBoom',
+      'architectureConditionalMapped',
+      'architectureBoomOnMapped',
+    ],
+  },
 );
 
 function mappingSchema() {
@@ -128,6 +153,45 @@ describe('schema contracts: architectural boundaries', () => {
     expect(thrown).toBe(architectureBoomError);
     expect(selected).toHaveBeenCalledTimes(1);
     expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('[ARCH-MAPPING] failure mapping propagates parser exceptions instead of raw fallback', () => {
+    const callback = vi.fn();
+    const suite = create(
+      data => {
+        callback(data);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce.architectureConditionalMapped().architectureBoomOnMapped(),
+        b: enforce.isString(),
+      }),
+    );
+
+    const valid = suite.run({ a: 'good', b: 'ok' });
+    expect(valid.isValid()).toBe(true);
+    const delivered = valid.value as Record<string, unknown>;
+    expect(callback).toHaveBeenCalledTimes(1);
+
+    // Validation fails at the first stage (short-circuit: the throwing
+    // stage never runs as a validator). Failure mapping runs every parser
+    // stage, so the second stage throws there.
+    let thrown: unknown;
+    try {
+      suite.run({ a: 'bad', b: 'ok' });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(architectureMappedBoomError);
+    // No callback with fabricated raw input, no partial publication, and
+    // the previously delivered snapshot is untouched.
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(delivered).toEqual({ a: 'good', b: 'ok' });
+    expect(suite.get().hasErrors()).toBe(false);
+
+    const recovery = suite.run({ a: 'fine', b: 'ok' });
+    expect(recovery.isValid()).toBe(true);
+    expect(recovery.value).toEqual({ a: 'fine', b: 'ok' });
   });
 
   it.each(['onlyGroup', 'skipGroup'] as const)(

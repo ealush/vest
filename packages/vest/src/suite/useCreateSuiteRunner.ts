@@ -4,6 +4,7 @@ import {
   parseAffectedFieldName,
   runSchemaPaths,
 } from 'n4s/exports/internal';
+import { EnforceSchemaError } from 'n4s';
 import type {
   MappingProvenance,
   SelectiveExecutionCoverage,
@@ -549,14 +550,27 @@ function failedCallbackMapping(
 function mappedFailureInput(schema: unknown, fallback: unknown): unknown {
   try {
     return mapWithoutValidation(schema, fallback);
-  } catch {
-    // Best-effort failure path only: validation already failed, so this
-    // input never backs a successful mapping and no `value` is published
-    // from it. Falling back to raw input here runs no further validation;
-    // execution-route errors propagate untouched (see runProjectedOrFull
-    // and the supplement gap handlers, which only catch boundary errors).
-    return fallback;
+  } catch (error) {
+    // C11: only a framework-declared mapping-unavailable failure keeps the
+    // documented raw fallback. Unexpected parser/getter exceptions
+    // propagate with their identity: a failing run must not deliver
+    // fabricated raw input as schema output while losing the cause.
+    if (isMappingUnavailable(error)) return fallback;
+    throw error;
   }
+}
+
+/**
+ * Classifies framework mapping failures that keep the best-effort raw
+ * fallback. Matches by identity with a name fallback for dual-copy
+ * interop, mirroring the boundary-error handling in selectiveRun.
+ */
+function isMappingUnavailable(error: unknown): boolean {
+  if (error instanceof EnforceSchemaError) return true;
+  return (
+    isObject(error) &&
+    (error as { name?: unknown }).name === 'EnforceSchemaError'
+  );
 }
 
 function successfulCallbackMapping(

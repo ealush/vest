@@ -257,11 +257,16 @@ describe('suite schema integration', () => {
     expect(result.hasErrors('subscribed')).toBe(true);
   });
 
-  it('uses original data in callback when parser mapping throws', () => {
+  it('propagates parser mapping throws instead of raw fallback', () => {
+    const mappingBoom = new Error('cannot map');
     n4sEnforce.extend(
       {
-        throwingParser: () => {
-          throw new Error('cannot map');
+        throwingParser: (value: unknown) => {
+          // Validation short-circuits on the failing field before this
+          // parser runs as a validator; failure mapping executes every
+          // parser stage, so it throws only there.
+          if (value === 'x') throw mappingBoom;
+          return { pass: true, type: value };
         },
       },
       { parsers: ['throwingParser'] },
@@ -281,12 +286,22 @@ describe('suite schema integration', () => {
     }, schema);
 
     // Validation fails on 'name' before the throwing parser runs, so the
-    // run reports the failure; mapping then throws and the callback falls
-    // back to the original data instead of throwing the run.
-    // @ts-expect-error - Invalid data
-    const result = suite.run({ name: 42, mapped: 'x' });
+    // run reports the failure; failure mapping then throws, and the
+    // unexpected parser exception propagates with its identity instead of
+    // delivering fabricated raw input to the schema-typed callback.
+    let thrown: unknown;
+    try {
+      // @ts-expect-error - Invalid data
+      suite.run({ name: 42, mapped: 'x' });
+    } catch (error) {
+      thrown = error;
+    }
 
-    expect(result.hasErrors('name')).toBe(true);
-    expect(callbackData).toEqual({ name: 42, mapped: 'x' });
+    expect(thrown).toBe(mappingBoom);
+    expect(callbackData).toBeUndefined();
+
+    const recovery = suite.run({ name: 'ok', mapped: 'y' });
+    expect(recovery.isValid()).toBe(true);
+    expect(callbackData).toEqual({ name: 'ok', mapped: 'y' });
   });
 });

@@ -52,6 +52,13 @@ const G1_CREATIONS_PER_BATCH = 20000;
 // Feature-free single workloads, comparable against a base checkout that
 // predates the relationships feature.
 const SINGLES = ['C12full', 'D13full', 'A1'];
+// A1 is creation-only: the pre-feature base lacks the relationship
+// machinery entirely, so a relative A1 comparison measures feature
+// existence (~11x: ~290ms vs ~25ms per 20k plain shapes), not regression.
+// A1 is therefore bounded absolutely instead: one-time cost per shape with
+// wide headroom over the observed ~290ms. C12full/D13full measure run
+// behavior comparable across versions and keep the relative blocker.
+const SINGLES_ABSOLUTE_MS = { A1: 500 };
 
 function vestConfigFor(cwd) {
   return path.join(
@@ -387,6 +394,9 @@ function evaluateSingleGate(
   baseSingles,
   remeasureSingles = null,
 ) {
+  if (Object.hasOwn(SINGLES_ABSOLUTE_MS, label)) {
+    return evaluateAbsoluteSingle(label, headSingles);
+  }
   let result = checkSingle(label, headSingles, baseSingles);
   let retried = false;
   if (result.verdict === 'unstable') {
@@ -403,6 +413,80 @@ function evaluateSingleGate(
   }
   reportSingle(label, result, retried);
   return result.verdict !== 'pass';
+}
+
+/**
+ * Absolute ceiling for creation-only singles (A1). Retries head once on
+ * instability, then fails inconclusive — never success. The base sample is
+ * reported for context but does not gate: see SINGLES_ABSOLUTE_MS.
+ */
+function evaluateAbsoluteSingle(label, headSingles) {
+  const ceiling = SINGLES_ABSOLUTE_MS[label];
+  const first = readAbsoluteSample(headSingles, label);
+  if (first.times === null) {
+    reportAbsoluteSingle(label, NaN, NaN, ceiling, false, 'fail-missing');
+    return true;
+  }
+  const sample = stabilizeAbsoluteSample(first, label);
+  const verdict = classifyAbsoluteSample(sample, ceiling);
+  reportAbsoluteSingle(
+    label,
+    sample.headMs,
+    sample.headCv,
+    ceiling,
+    sample.retried,
+    verdict,
+  );
+  return verdict !== 'pass';
+}
+
+function readAbsoluteSample(headSingles, label) {
+  return { label, times: timesOf(headSingles, label) };
+}
+
+function stabilizeAbsoluteSample(first, label) {
+  if (!isUnstableTimes(first.times)) {
+    return { ...describeTimes(first.times), retried: false };
+  }
+  const fresh = runMeasurement(REPO_ROOT);
+  return { ...describeTimes(timesOf(fresh.singles, label)), retried: true };
+}
+
+function isUnstableTimes(times) {
+  return times === null || unstableCv(cv(times));
+}
+
+function describeTimes(times) {
+  if (times === null) return { headCv: NaN, headMs: NaN };
+  return { headCv: cv(times), headMs: median(times) };
+}
+
+function classifyAbsoluteSample(sample, ceiling) {
+  if (isUnstableAbsoluteSample(sample)) return 'unstable';
+  return sample.headMs <= ceiling ? 'pass' : 'fail-breach';
+}
+
+function isUnstableAbsoluteSample(sample) {
+  return (
+    !validPositive(sample.headMs) ||
+    !Number.isFinite(sample.headCv) ||
+    sample.headCv > STABILITY_MAX_CV
+  );
+}
+
+function reportAbsoluteSingle(
+  label,
+  headMs,
+  headCv,
+  ceiling,
+  retried,
+  verdict,
+) {
+  console.log(
+    `single ${label}: head ${fmt(headMs)}ms (cv ${fmt(headCv)}) ` +
+      `vs absolute ceiling ${ceiling}ms -> ${verdict}` +
+      `${retried ? ' (retried)' : ''}`,
+  );
 }
 
 function checkSingle(label, headSingles, baseSingles) {
@@ -585,6 +669,18 @@ function selfTestSingles() {
       'singles unstable',
       checkSingle('S', unstable, stable).verdict === 'unstable',
     ),
+    checkCase(
+      'absolute A1 under ceiling passes',
+      evaluateAbsoluteSingle('A1', absoluteTestSingles(290)) === false,
+    ),
+    checkCase(
+      'absolute A1 over ceiling breaches',
+      evaluateAbsoluteSingle('A1', absoluteTestSingles(600)) === true,
+    ),
+    checkCase(
+      'absolute A1 missing fails',
+      evaluateAbsoluteSingle('A1', new Map()) === true,
+    ),
   ];
 }
 
@@ -635,6 +731,12 @@ function selfTestNoShortCircuit() {
 
 function steadyTestSingles(ms) {
   return new Map([['S', { label: 'S', times: [ms, ms, ms, ms, ms, ms, ms] }]]);
+}
+
+function absoluteTestSingles(ms) {
+  return new Map([
+    ['A1', { label: 'A1', times: [ms, ms, ms, ms, ms, ms, ms] }],
+  ]);
 }
 
 try {

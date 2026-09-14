@@ -391,11 +391,11 @@ describe('schema contracts: single normalization across routes', () => {
   }
 
   it('[SC-DD05] changed/skip spellings, skip-only, and only agree on one execution set', () => {
-    // Bare skip-only / only full runs over a composed root-chain take the
-    // untouched-executing fallback path (EX03 extended-interactions family,
-    // recorded open); route parity here covers the supported selection
-    // routes: both changed/skip orders on plain and composed schemas, plus
-    // skip-only and only on plain schemas where exclusion is exact.
+    // Hard exclusions hold on every route including composed skip-only (R1:
+    // the composed fallback reuses the omission walker). Inclusion (only),
+    // composed or plain, keeps its explicit selection semantics: it narrows
+    // reporting, not predicate execution, so composed only() still runs the
+    // unselected validator exactly once.
     const observations: {
       errors: boolean;
       root: number;
@@ -436,7 +436,11 @@ describe('schema contracts: single normalization across routes', () => {
         });
       }
     }
-    for (const route of ['changed-then-skip', 'skip-then-changed'] as const) {
+    for (const route of [
+      'changed-then-skip',
+      'skip-then-changed',
+      'skip-only',
+    ] as const) {
       const skipped = vi.fn(() => true);
       const selected = vi.fn(() => true);
       const root = vi.fn(() => true);
@@ -456,11 +460,15 @@ describe('schema contracts: single normalization across routes', () => {
             hasErrors(): boolean;
           }
         ).hasErrors();
-      else
+      else if (route === 'skip-then-changed')
         errors = (
           suite.focus({ skip: 'a' }).changed('b').run(data) as {
             hasErrors(): boolean;
           }
+        ).hasErrors();
+      else
+        errors = (
+          suite.focus({ skip: 'a' }).run(data) as { hasErrors(): boolean }
         ).hasErrors();
       observations.push({
         errors,
@@ -484,6 +492,26 @@ describe('schema contracts: single normalization across routes', () => {
       .filter(o => o.route.startsWith('composed/'))
       .map(o => o.root);
     expect(new Set(composedRoots)).toEqual(new Set([1]));
+  });
+
+  it('[SC-DD05] composed only() keeps inclusion semantics and runs unselected once', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const schema = compose(
+      enforce.shape({
+        a: enforce.condition(skipped),
+        b: enforce.condition(selected),
+      }) as never,
+      enforce.condition(() => true) as never,
+    );
+    const result = create((_data: unknown) => {}, schema as never)
+      .only('b')
+      .run({ a: 'a', b: 'b' } as never);
+    // Inclusion narrows reporting, not predicate execution: documented
+    // contrast with hard skip exclusions, which never execute.
+    expect(skipped).toHaveBeenCalledTimes(1);
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
   });
 
   it('[SC-DD05] a skip clears the retained verdict without running the field', () => {
@@ -810,4 +838,217 @@ describe('schema contracts: error boundaries per route', () => {
       expect(callback).not.toHaveBeenCalled();
     },
   );
+});
+
+// SE02-hostile: hostile keys, inherited/non-enumerable/dotted/numeric keys,
+// and malformed selectors never pollute prototypes, never mutate inherited
+// state, and never attribute errors across fields. Outer-API complement to
+// the SE02 zero-invocation pins above.
+describe('schema contracts: hostile keys and selectors (SE02)', () => {
+  function hostileSuite() {
+    const schema = enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString(),
+    });
+    const calls: string[] = [];
+    const suite = create((_data: unknown) => {
+      test('a', () => {
+        calls.push('a');
+        return true;
+      });
+      test('b', () => {
+        calls.push('b');
+        return true;
+      });
+    }, schema);
+    return { calls, suite };
+  }
+
+  it('[SC-SE02-HOSTILE] __proto__/constructor/prototype input keys cause no pollution', () => {
+    const { suite } = hostileSuite();
+    const hostile = JSON.parse(
+      '{"__proto__":{"polluted":true},"constructor":{"polluted":true},"prototype":{"polluted":true},"a":"x","b":"y"}',
+    );
+    const result = suite.run(hostile);
+    // Strict shapes reject the hostile extra keys at the top level, but
+    // the failure is never attributed to the honest fields and nothing
+    // is written into Object.prototype.
+    expect(result.hasErrors('a')).toBe(false);
+    expect(result.hasErrors('b')).toBe(false);
+    expect((Object.prototype as Record<string, unknown>).polluted).toBe(
+      undefined,
+    );
+    expect({}.hasOwnProperty('polluted')).toBe(false);
+    expect(Object.prototype.hasOwnProperty('polluted')).toBe(false);
+    // The payload's own hostile keys did not become suite fields.
+    expect(result.hasErrors('a')).toBe(false);
+    expect(result.hasErrors('b')).toBe(false);
+  });
+
+  it('[SC-SE02-HOSTILE] inherited keys are not treated as own values and prototypes stay intact', () => {
+    const { suite } = hostileSuite();
+    const proto = { a: 'inherited' };
+    const input = Object.create(proto);
+    input.b = 'y';
+    const result = suite.run(input as never);
+    // Inherited `a` does not satisfy the own-value requirement.
+    expect(result.hasErrors('a')).toBe(true);
+    expect(result.hasErrors('b')).toBe(false);
+    expect(proto).toEqual({ a: 'inherited' });
+    expect(Object.getPrototypeOf(input)).toBe(proto);
+    expect((Object.prototype as Record<string, unknown>).polluted).toBe(
+      undefined,
+    );
+  });
+
+  it('[SC-SE02-HOSTILE] numeric/dotted record keys do not conflate or cross-attribute', () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push(data);
+      },
+      enforce.shape({
+        dict: enforce.record(enforce.isString().isNotBlank()),
+        note: enforce.isString(),
+      }) as never,
+    );
+    // Dotted and numeric-like keys stay distinct own properties.
+    const data = {
+      dict: { '1': 'ok', '01': '', 'a.b': 'ok' },
+      note: 'ok',
+    };
+    const result = suite.run(data as never);
+    expect(result.hasErrors()).toBe(true);
+    expect(Object.hasOwn(data.dict as object, '1')).toBe(true);
+    expect(Object.hasOwn(data.dict as object, '01')).toBe(true);
+    expect(Object.hasOwn(data.dict as object, 'a.b')).toBe(true);
+    expect((Object.prototype as Record<string, unknown>).polluted).toBe(
+      undefined,
+    );
+  });
+
+  it('[SC-SE02-HOSTILE] non-enumerable keys and malformed selectors stay inert', () => {
+    const { calls, suite } = hostileSuite();
+    const input: Record<string, unknown> = { a: 'x', b: 'y' };
+    Object.defineProperty(input, '__proto__pollutant', {
+      enumerable: false,
+      value: 'hidden',
+    });
+    expect(suite.run(input as never).hasErrors()).toBe(false);
+
+    for (const selector of [
+      '__proto__',
+      'constructor',
+      'prototype',
+      'a..b',
+      'nope.missing',
+    ]) {
+      calls.length = 0;
+      let thrown: unknown;
+      let result: { hasErrors(): boolean } | undefined;
+      try {
+        result = suite.changed(selector).run({ a: 'x', b: 'y' }) as {
+          hasErrors(): boolean;
+        };
+      } catch (error) {
+        thrown = error;
+      }
+      expect(thrown).toBeUndefined();
+      expect(result?.hasErrors()).toBe(false);
+      expect(calls).toEqual([]);
+    }
+    expect((Object.prototype as Record<string, unknown>).polluted).toBe(
+      undefined,
+    );
+  });
+});
+
+// T5-async: rejection (not just resolution-failure) variants. A rejecting
+// pending test settles as a field error; reset/remove/resetField while
+// pending prevent resurrection; two pending fields with one reset keep the
+// untouched pending work live.
+describe('schema contracts: async rejection lifecycle (T5)', () => {
+  const schema = enforce.shape({
+    p: enforce.shape({
+      source: enforce.isString(),
+      target: enforce.isString().dependsOn($ => $.source),
+    }),
+    other: enforce.isString(),
+  });
+
+  // Dynamic field names cannot satisfy create()'s literal field vocabulary;
+  // the contracts under test are runtime lifecycle behavior.
+  type LooseSuite = any;
+
+  function rejectingSuite(): {
+    boom: Error;
+    gate: Promise<void>;
+    reject: (error: unknown) => void;
+    suite: LooseSuite;
+  } {
+    let reject!: (error: unknown) => void;
+    const gate = new Promise<void>((_resolve, rejectPromise) => {
+      reject = rejectPromise;
+    });
+    const boom = new Error('async rejection boom');
+    const suite: LooseSuite = create(() => {
+      test('p.target', async () => {
+        await gate;
+      });
+    }, schema);
+    return { boom, gate, reject, suite };
+  }
+
+  it.each(['reset', 'remove', 'resetField'] as const)(
+    '[SC-T5] %s after a pending rejection prevents resurrection',
+    async operation => {
+      const { boom, reject, suite } = rejectingSuite();
+      suite.run({ p: { source: 'same', target: 'x' }, other: 'ok' });
+      expect(suite.get().isPending()).toBe(true);
+      if (operation === 'reset') suite.reset();
+      else if (operation === 'remove') suite.remove('p.target');
+      else suite.resetField('p.target');
+      reject(boom);
+      await flush();
+      await flush();
+      expect(suite.get().isPending()).toBe(false);
+      expect(suite.get().hasErrors('p.target')).toBe(false);
+      if (operation === 'remove') {
+        expect(suite.get().tests['p.target']).toBeUndefined();
+      }
+    },
+  );
+
+  it('[SC-T5] two pending rejections with one reset keep the untouched field live', async () => {
+    let rejectA!: (error: unknown) => void;
+    let rejectB!: (error: unknown) => void;
+    const gateA = new Promise<void>((_resolve, rejectPromise) => {
+      rejectA = rejectPromise;
+    });
+    const gateB = new Promise<void>((_resolve, rejectPromise) => {
+      rejectB = rejectPromise;
+    });
+    const suite: LooseSuite = create(() => {
+      test('p.target', async () => {
+        await gateA;
+      });
+      test('other', async () => {
+        await gateB;
+      });
+    }, schema);
+    suite.run({ p: { source: 's', target: 'x' }, other: 'ok' });
+    expect(suite.get().isPending()).toBe(true);
+
+    suite.resetField('p.target');
+    rejectA(new Error('stale A'));
+    rejectB(new Error('live B'));
+    await flush();
+    await flush();
+
+    expect(suite.get().isPending()).toBe(false);
+    // The reset field stays cleared; the untouched pending rejection
+    // settles as its own field error with no cross-field attribution.
+    expect(suite.get().hasErrors('p.target')).toBe(false);
+    expect(suite.get().hasErrors('other')).toBe(true);
+  });
 });

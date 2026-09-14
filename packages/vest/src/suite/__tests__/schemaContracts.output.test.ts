@@ -419,3 +419,319 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
     expect(validated).not.toHaveBeenCalled();
   });
 });
+
+describe('schema contracts: parser before/after container with skip (T1 parser placement)', () => {
+  it('[SC-PARSER-CONTAINER] toNumber on a skipped field maps from retention with zero validation', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      age: compose(
+        enforce.isNumeric().toNumber(),
+        enforce.condition(validated),
+      ),
+      note: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create((_data: unknown) => {
+      seen.push(_data);
+    }, schema as never);
+    const full = suite.run({ age: '42', note: 'first' } as never);
+    expect(full.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ age: 42, note: 'first' });
+    expect(validated).toHaveBeenCalledTimes(1);
+
+    validated.mockClear();
+    seen.length = 0;
+    const result = suite
+      .changed('note')
+      .focus({ skip: 'age' })
+      .run({ age: '43', note: 'second' } as never);
+
+    expect(result.hasErrors()).toBe(false);
+    expect(result.hasErrors('age')).toBe(false);
+    // Honest retention: the excluded parser output stays 42, the mapped
+    // sibling carries the fresh input, and no excluded validation runs.
+    expect(seen[0]).toEqual({ age: 42, note: 'second' });
+    expect(validated).not.toHaveBeenCalled();
+  });
+
+  it('[SC-PARSER-CONTAINER] toNumber on a selected field validates once with fresh output', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      age: compose(
+        enforce.isNumeric().toNumber(),
+        enforce.condition(validated),
+      ),
+      note: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create((_data: unknown) => {
+      seen.push(_data);
+    }, schema as never);
+    suite.run({ age: '42', note: 'first' } as never);
+    validated.mockClear();
+    seen.length = 0;
+
+    const result = suite
+      .changed('age')
+      .run({ age: '43', note: 'first' } as never);
+
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ age: 43, note: 'first' });
+    expect(validated).toHaveBeenCalledTimes(1);
+  });
+
+  it('[SC-PARSER-CONTAINER] custom parsers before/after on a skipped field map honestly with explicit counts', () => {
+    let beforeCalls = 0;
+    let afterCalls = 0;
+    (enforce as any).extend(
+      {
+        exclBeforeCount: (value: string) => {
+          beforeCalls += 1;
+          return { pass: true, type: `${value}<` };
+        },
+        exclAfterCount: (value: string) => {
+          afterCalls += 1;
+          return { pass: true, type: `${value}>` };
+        },
+      },
+      { parsers: ['exclBeforeCount', 'exclAfterCount'] },
+    );
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      deep: compose(
+        (enforce as any).isString().exclBeforeCount().exclAfterCount(),
+        enforce.condition(validated),
+      ),
+      note: (enforce as any).isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create((_data: unknown) => {
+      seen.push(_data);
+    }, schema as never);
+    suite.run({ deep: 'x', note: 'first' } as never);
+    expect(seen[0]).toEqual({ deep: 'x<>', note: 'first' });
+    expect(validated).toHaveBeenCalledTimes(1);
+    expect(beforeCalls).toBe(1);
+    expect(afterCalls).toBe(1);
+
+    validated.mockClear();
+    beforeCalls = 0;
+    afterCalls = 0;
+    seen.length = 0;
+    const result = suite
+      .changed('note')
+      .focus({ skip: 'deep' })
+      .run({ deep: 'y', note: 'second' } as never);
+
+    expect(result.hasErrors()).toBe(false);
+    // Both parser stages map honestly from retention ('x<>', not fresh 'y');
+    // the excluded validator never runs. Parser stages execute for honest
+    // mapping without validation.
+    expect(seen[0]).toEqual({ deep: 'x<>', note: 'second' });
+    expect(validated).not.toHaveBeenCalled();
+    expect(beforeCalls).toBe(1);
+    expect(afterCalls).toBe(1);
+  });
+
+  it('[SC-PARSER-CONTAINER] custom parsers before/after on a selected field validate once with fresh output', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      deep: compose(
+        (enforce as any).isString().exclBeforeCount().exclAfterCount(),
+        enforce.condition(validated),
+      ),
+      note: (enforce as any).isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create((_data: unknown) => {
+      seen.push(_data);
+    }, schema as never);
+    suite.run({ deep: 'x', note: 'first' } as never);
+    validated.mockClear();
+    seen.length = 0;
+
+    const result = suite
+      .changed('deep')
+      .run({ deep: 'z', note: 'first' } as never);
+
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ deep: 'z<>', note: 'first' });
+    expect(validated).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('schema contracts: MP04b supported parser combinations', () => {
+  it.each([
+    { name: 'null', value: null },
+    { name: 'undefined', value: undefined },
+    { name: 'false', value: false },
+    { name: 'zero', value: 0 },
+    { name: 'empty', value: '' },
+  ])(
+    '[SC-MP04b-OUTPUT] $name parser output keeps callback/output parity under allowed focus',
+    ({ value }) => {
+      const rule = compose(
+        (enforce as any).contractEmit(value),
+        enforce.condition(() => true),
+      );
+      const schema = enforce.shape({
+        v: rule,
+        note: enforce.isString(),
+      });
+      const seen: unknown[] = [];
+      const suite = create((_data: unknown) => {
+        seen.push(_data);
+        test('marker', () => true);
+      }, schema as never);
+      const full = suite.run({ v: 'raw', note: 'first' } as never);
+      expect(full.hasErrors()).toBe(false);
+      expect(full.value).toEqual({ v: value, note: 'first' });
+      expect(seen[0]).toEqual({ v: value, note: 'first' });
+
+      seen.length = 0;
+      // Allowed focus selects the parser field itself: fresh input maps to
+      // the declared output and callback, value, and parsed output agree.
+      const focused = suite
+        .changed('v')
+        .run({ v: 'fresh', note: 'first' } as never);
+
+      expect(focused.hasErrors()).toBe(false);
+      expect(seen[0]).toEqual({ v: value, note: 'first' });
+      expect(focused.value).toEqual({ v: value, note: 'first' });
+      expect((focused as any).run.data.parsed).toEqual({
+        v: value,
+        note: 'first',
+      });
+      if (value === undefined)
+        expect(Object.hasOwn(seen[0] as object, 'v')).toBe(true);
+    },
+  );
+
+  it('[SC-MP04b-NESTED] nested parsers keep parity on a selected field', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      deep: compose(
+        enforce.isNumeric().toNumber().clamp(0, 120),
+        enforce.condition(validated),
+      ),
+      note: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create((_data: unknown) => {
+      seen.push(_data);
+      test('marker', () => true);
+    }, schema as never);
+    suite.run({ deep: '90', note: 'first' } as never);
+    validated.mockClear();
+    seen.length = 0;
+
+    const result = suite
+      .changed('deep')
+      .run({ deep: '70', note: 'first' } as never);
+
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ deep: 70, note: 'first' });
+    expect(result.value).toEqual({ deep: 70, note: 'first' });
+    expect(validated).toHaveBeenCalledTimes(1);
+  });
+
+  it('[SC-MP04b-COMPOSED] composed parser stages keep parity under allowed focus', () => {
+    const validated = vi.fn(() => true);
+    const schema = compose(
+      enforce.shape({
+        a: compose(
+          (enforce as any).isString().matrixSuffix().matrixSuffix(),
+          enforce.condition(validated),
+        ),
+        b: enforce.isString(),
+      }) as never,
+      enforce.condition(() => true) as never,
+    );
+    const seen: unknown[] = [];
+    const suite = create((_data: unknown) => {
+      seen.push(_data);
+      test('marker', () => true);
+    }, schema as never);
+    const full = suite.run({ a: 'x', b: 'ok' } as never);
+    expect(full.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ a: 'x!!', b: 'ok' });
+
+    validated.mockClear();
+    seen.length = 0;
+    const focused = suite
+      .changed('b')
+      .focus({ skip: 'a' })
+      .run({ a: 'y', b: 'ok2' } as never);
+
+    expect(focused.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ a: 'x!!', b: 'ok2' });
+    expect(validated).not.toHaveBeenCalled();
+  });
+
+  it('[SC-MP04b-FAIL] failing custom parser on the selected field reports without poisoning retention', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      custom: compose(
+        (enforce as any).isString().matrixFailEmit(),
+        enforce.condition(validated),
+      ),
+      note: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create((_data: unknown) => {
+      seen.push(_data);
+      test('marker', () => true);
+    }, schema as never);
+    suite.run({ custom: 'good', note: 'first' } as never);
+    expect(seen[0]).toEqual({ custom: 'good', note: 'first' });
+
+    validated.mockClear();
+    seen.length = 0;
+    const failed = suite
+      .changed('custom')
+      .run({ custom: 'bad', note: 'first' } as never);
+
+    expect(failed.hasErrors()).toBe(true);
+    expect(failed.hasErrors('custom')).toBe(true);
+    expect(failed.value).toBeUndefined();
+    // The failing parser still delivers its declared output to the callback;
+    // retention keeps the last successful mapping for the next run.
+    expect(seen[0]).toEqual({ custom: 'MAPPED', note: 'first' });
+    expect(validated).not.toHaveBeenCalled();
+
+    seen.length = 0;
+    const repaired = suite
+      .changed('custom')
+      .run({ custom: 'good', note: 'first' } as never);
+    expect(repaired.hasErrors()).toBe(false);
+    expect(repaired.value).toEqual({ custom: 'good', note: 'first' });
+    expect(seen[0]).toEqual({ custom: 'good', note: 'first' });
+  });
+
+  it('[SC-MP04b-IDEMPOTENT] idempotent parser output stays stable across focused runs', () => {
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf((enforce as any).contractSuffix()),
+      note: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create((_data: unknown) => {
+      seen.push(_data);
+      test('marker', () => true);
+    }, schema as never);
+    suite.run({ rows: ['a', 'b'], note: 'first' } as never);
+    expect(seen[0]).toEqual({ rows: ['a!', 'b!'], note: 'first' });
+
+    const first = suite
+      .changed('rows.0')
+      .run({ rows: ['c', 'b'], note: 'first' } as never);
+    expect(first.hasErrors()).toBe(false);
+    expect(first.value).toEqual({ rows: ['c!', 'b!'], note: 'first' });
+    expect(seen.at(-1)).toEqual({ rows: ['c!', 'b!'], note: 'first' });
+
+    const second = suite
+      .changed('rows.0')
+      .run({ rows: ['d', 'b'], note: 'first' } as never);
+    expect(second.hasErrors()).toBe(false);
+    expect(second.value).toEqual({ rows: ['d!', 'b!'], note: 'first' });
+  });
+});

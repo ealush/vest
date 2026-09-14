@@ -561,3 +561,305 @@ describe('schema contracts: recovery after exclusion and root failures (EX12)', 
     expect(recovered.value).toEqual({ a: 'a', b: 'b' });
   });
 });
+
+describe('schema contracts: only+skip route matrix remainder (T1 routes)', () => {
+  type ContainerKind = 'shape' | 'partial' | 'loose';
+  type RouteName =
+    | 'changed-first'
+    | 'focus-first'
+    | 'only-first'
+    | 'focus-only-first';
+
+  const kinds: ContainerKind[] = ['shape', 'partial', 'loose'];
+  const routes: RouteName[] = [
+    'changed-first',
+    'focus-first',
+    'only-first',
+    'focus-only-first',
+  ];
+
+  function runRoute(
+    suite: any,
+    route: RouteName,
+    data: never,
+  ): { hasErrors(field?: string): boolean } {
+    if (route === 'changed-first')
+      return suite
+        .changed(['b'])
+        .focus({ skip: ['a'] })
+        .run(data);
+    if (route === 'focus-first')
+      return suite
+        .focus({ skip: ['a'] })
+        .changed(['b'])
+        .run(data);
+    if (route === 'only-first')
+      return suite.only('b').focus({ skip: 'a' }).run(data);
+    return suite.focus({ skip: 'a' }).only('b').run(data);
+  }
+
+  it.each(kinds.flatMap(kind => routes.map(route => ({ kind, route }))))(
+    '[SC-EXCLUSION-ROUTE] $kind/$route excludes skipped, runs selected once',
+    ({ kind, route }) => {
+      const skipped = vi.fn(() => true);
+      const selected = vi.fn(() => true);
+      const schema = (enforce as any)[kind]({
+        a: enforce.condition(skipped),
+        b: enforce.condition(selected),
+      });
+      const suite: any = create((_data: unknown) => {}, schema as never);
+      const result = runRoute(suite, route, { a: 'a', b: 'b' } as never);
+
+      expect(skipped).not.toHaveBeenCalled();
+      expect(selected).toHaveBeenCalledTimes(1);
+      expect(result.hasErrors()).toBe(false);
+      expect(result.hasErrors('a')).toBe(false);
+      expect(result.hasErrors('b')).toBe(false);
+    },
+  );
+
+  it.each(
+    kinds.flatMap(kind =>
+      routes.flatMap(route =>
+        [true, false].map(rootPass => ({ kind, route, rootPass })),
+      ),
+    ),
+  )(
+    '[SC-EXCLUSION-ROUTE-COMPOSED] $kind/$route/root-$rootPass keeps root verdict',
+    ({ kind, route, rootPass }) => {
+      const skipped = vi.fn(() => true);
+      const selected = vi.fn(() => true);
+      const root = vi.fn(() => rootPass);
+      const inner = (enforce as any)[kind]({
+        a: enforce.condition(skipped),
+        b: enforce.condition(selected),
+      });
+      const schema = compose(inner as never, enforce.condition(root) as never);
+      const suite: any = create((_data: unknown) => {}, schema as never);
+      const result = runRoute(suite, route, { a: 'a', b: 'b' } as never);
+
+      expect(skipped).not.toHaveBeenCalled();
+      expect(selected).toHaveBeenCalledTimes(1);
+      expect(root).toHaveBeenCalledTimes(1);
+      expect(result.hasErrors('a')).toBe(false);
+      expect(result.hasErrors('b')).toBe(false);
+      expect(result.hasErrors()).toBe(!rootPass);
+    },
+  );
+});
+
+describe('schema contracts: tuple and array placements (T1 placement)', () => {
+  function tupleFixture() {
+    const first = vi.fn(() => true);
+    const second = vi.fn(() => true);
+    const schema = enforce.shape({
+      pair: enforce.tuple(enforce.condition(first), enforce.condition(second)),
+    });
+    return { first, schema, second };
+  }
+
+  it.each(['changed-first', 'focus-first'] as const)(
+    '[SC-EXCLUSION-TUPLE] %s skips tuple.0 and runs the sibling only',
+    order => {
+      const { first, schema, second } = tupleFixture();
+      const suite: any = create((_data: unknown) => {}, schema as never);
+      const data = { pair: ['a', 'b'] } as never;
+      const result =
+        order === 'changed-first'
+          ? suite.changed('pair.1').focus({ skip: 'pair.0' }).run(data)
+          : suite.focus({ skip: 'pair.0' }).changed('pair.1').run(data);
+
+      expect(first).not.toHaveBeenCalled();
+      expect(second).toHaveBeenCalledTimes(1);
+      expect(result.hasErrors()).toBe(false);
+      expect(result.hasErrors('pair.0')).toBe(false);
+      expect(result.hasErrors('pair.1')).toBe(false);
+    },
+  );
+
+  it('[SC-EXCLUSION-TUPLE] parent tuple change with a member skip runs the sibling only', () => {
+    const { first, schema, second } = tupleFixture();
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    const result = suite
+      .changed('pair')
+      .focus({ skip: 'pair.0' })
+      .run({ pair: ['a', 'b'] } as never);
+
+    expect(first).not.toHaveBeenCalled();
+    expect(second).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  function arrayComposedFixture() {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const root = vi.fn(() => true);
+    const callback = vi.fn();
+    const schema = compose(
+      enforce.shape({
+        rows: enforce.isArrayOf(
+          enforce.shape({
+            a: enforce.condition(skipped),
+            b: enforce.condition(selected),
+          }),
+        ),
+      }) as never,
+      enforce.condition(root) as never,
+    );
+    const suite: any = create((_data: unknown) => {
+      callback(_data);
+    }, schema as never);
+    return { callback, root, selected, skipped, suite };
+  }
+
+  it('[SC-EXCLUSION-ARRAY-COMPOSED] concrete array skip under composition fails closed', () => {
+    const { callback, root, selected, skipped, suite } = arrayComposedFixture();
+    let thrown: unknown;
+    try {
+      suite
+        .changed('rows.0.b')
+        .focus({ skip: 'rows.0.a' })
+        .run({ rows: [{ a: 'a0', b: 'b0' }] } as never);
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).not.toHaveBeenCalled();
+    expect(root).not.toHaveBeenCalled();
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('[SC-EXCLUSION-TUPLE-COMPOSED] tuple member skip under composition fails closed', () => {
+    const first = vi.fn(() => true);
+    const second = vi.fn(() => true);
+    const root = vi.fn(() => true);
+    const callback = vi.fn();
+    const schema = compose(
+      enforce.shape({
+        pair: enforce.tuple(
+          enforce.condition(first),
+          enforce.condition(second),
+        ),
+      }) as never,
+      enforce.condition(root) as never,
+    );
+    const suite: any = create((_data: unknown) => {
+      callback(_data);
+    }, schema as never);
+    let thrown: unknown;
+    try {
+      suite
+        .changed('pair.1')
+        .focus({ skip: 'pair.0' })
+        .run({ pair: ['a', 'b'] } as never);
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
+    expect(first).not.toHaveBeenCalled();
+    expect(second).not.toHaveBeenCalled();
+    expect(root).not.toHaveBeenCalled();
+    expect(callback).not.toHaveBeenCalled();
+  });
+});
+
+describe('schema contracts: skip-all, empty selection, nonexistent paths (T1 #7)', () => {
+  function shapeSpies() {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const schema = enforce.shape({
+      a: enforce.condition(skipped),
+      b: enforce.condition(selected),
+    });
+    return { schema, selected, skipped };
+  }
+
+  it('[SC-EXCLUSION-SKIP-ALL] changed+skip-all runs nothing and invents no validity', () => {
+    const { schema, selected, skipped } = shapeSpies();
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    const result = suite
+      .changed('b')
+      .focus({ skip: true })
+      .run({ a: 'a', b: 'b' } as never);
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).not.toHaveBeenCalled();
+    expect(result.hasErrors()).toBe(false);
+    expect(result.hasErrors('a')).toBe(false);
+    expect(result.hasErrors('b')).toBe(false);
+    expect(result.value).toBeUndefined();
+  });
+
+  it('[SC-EXCLUSION-EMPTY] changed([]) runs nothing and invents no validity', () => {
+    const { schema, selected, skipped } = shapeSpies();
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    const result = suite.changed([]).run({ a: 'a', b: 'b' } as never);
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).not.toHaveBeenCalled();
+    expect(result.hasErrors()).toBe(false);
+    expect(result.hasErrors('a')).toBe(false);
+    expect(result.value).toBeUndefined();
+  });
+
+  it('[SC-EXCLUSION-EMPTY] changed([]) retains a seeded failure without execution', () => {
+    const failing = vi.fn(() => false);
+    const passing = vi.fn(() => true);
+    const schema = enforce.shape({
+      a: enforce.condition(failing),
+      b: enforce.condition(passing),
+    });
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    expect(suite.run({ a: 'bad', b: 'ok' } as never).hasErrors('a')).toBe(true);
+
+    failing.mockClear();
+    passing.mockClear();
+    const retained = suite.changed([]).run({ a: 'good', b: 'next' } as never);
+
+    expect(failing).not.toHaveBeenCalled();
+    expect(passing).not.toHaveBeenCalled();
+    expect(retained.hasErrors('a')).toBe(true);
+    expect(retained.hasErrors('b')).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-NONEXISTENT] changed+nonexistent skip runs the selection only', () => {
+    const { schema, selected, skipped } = shapeSpies();
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    const result = suite
+      .changed(['b'])
+      .focus({ skip: ['nope.missing'] })
+      .run({ a: 'a', b: 'b' } as never);
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-NONEXISTENT] skip-only with an unknown path is a full-run no-op', () => {
+    const { schema, selected, skipped } = shapeSpies();
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    const result = suite
+      .focus({ skip: ['nope.missing'] })
+      .run({ a: 'a', b: 'b' } as never);
+
+    expect(skipped).toHaveBeenCalledTimes(1);
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-NONEXISTENT] changed([])+skip runs nothing', () => {
+    const { schema, selected, skipped } = shapeSpies();
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    const result = suite
+      .changed([])
+      .focus({ skip: 'a' })
+      .run({ a: 'a', b: 'b' } as never);
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).not.toHaveBeenCalled();
+    expect(result.hasErrors()).toBe(false);
+  });
+});

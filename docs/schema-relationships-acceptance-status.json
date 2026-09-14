@@ -98,8 +98,8 @@
     {
       "blocked-by": [],
       "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
-      "id": "EX07",
-      "notes": "Concrete index, whole-item, and keyed-reorder index tracking green. Wildcard/sparse/record variants remain open.",
+      "id": "EX07a",
+      "notes": "Concrete index, whole-item, and keyed-reorder index tracking green.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -110,13 +110,24 @@
         "[SC-EXCLUSION-ARRAY] whole-item change with a skipped child runs the sibling only",
         "[SC-EXCLUSION-ARRAY] sibling error paths track current indices after reorder"
       ],
-      "verifiedSha": "8557b105"
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
+      "id": "EX07b",
+      "notes": "Wildcard scope, sparse entries, and record-key variants remain open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
     },
     {
       "blocked-by": [],
       "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts",
-      "id": "EX08",
-      "notes": "Excluded field maps honestly from retained parsing with zero validation; parser-heavy mapping matrices remain open.",
+      "id": "EX08a",
+      "notes": "Skipped parsed child maps honestly from retained parsing with zero validation.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -125,7 +136,18 @@
       "testNames": [
         "[SC-EXCLUSION-PARSER] skipped parsed child maps honestly without validation"
       ],
-      "verifiedSha": "8557b105"
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts",
+      "id": "EX08b",
+      "notes": "Parser-heavy mapping matrices (nested parsers, custom parsers with skips) remain open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
     },
     {
       "blocked-by": [],
@@ -186,16 +208,26 @@
     {
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
-      "id": "GR01",
-      "notes": "64-graph x 7-change-set oracle green; simultaneous invalid fields + schema-predicate observations open. Remainder open: flat 3-field oracle green; simultaneous invalid fields + schema-predicate observations open.",
-      "result": "partial",
-      "status": "open",
+      "id": "GR01a",
+      "notes": "64-graph x 7-change-set flat oracle green.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
-        "packages/n4s/src/schema/__tests__/schemaContracts.readiness.test.ts",
-        "packages/vest/src/suite/__tests__/schemaContracts.featureMatrix.test.ts"
+        "packages/n4s/src/schema/__tests__/schemaContracts.readiness.test.ts"
       ],
-      "testNames": ["[SC-EXECUTION-MATRIX]", "[SC-GRAPH]"],
-      "verifiedSha": "c881ebd6"
+      "testNames": ["[SC-EXECUTION-MATRIX]"],
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "GR01b",
+      "notes": "Multiple simultaneous invalid fields with schema-predicate observations remain open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
     },
     {
       "blocked-by": [],
@@ -259,7 +291,9 @@
       "notes": "100 seeds x 20 ops green.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [],
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.stateMachine.test.ts"
+      ],
       "testNames": [
         "[SC-STATE-MACHINE] seed %i converges execution and retention with the oracle"
       ],
@@ -268,15 +302,26 @@
     {
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
-      "id": "AP01",
-      "notes": "13-case composition matrix green; builder-reuse accumulation checks open. Remainder open: 13-case composition matrix green; builder-reuse accumulation checks open.",
-      "result": "partial",
-      "status": "open",
+      "id": "AP01a",
+      "notes": "13-case composition matrix green.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
         "packages/vest/src/suite/__tests__/schemaContracts.readiness.test.ts"
       ],
       "testNames": ["[SC-COMPOSITION]"],
-      "verifiedSha": "c881ebd6"
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AP01b",
+      "notes": "Builder-reuse accumulation checks remain open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
     },
     {
       "blocked-by": [],
@@ -303,7 +348,9 @@
       "notes": "focus.test.ts additions green.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [],
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.focus.test.ts"
+      ],
       "testNames": [
         "[SC-MODIFIER] include rescues a test from changed-focus exclusion",
         "[SC-MODIFIER] skipWhen hides the dependent user test but not its schema predicate",
@@ -320,7 +367,9 @@
       "notes": "Modes/memo green; keyed covered by 15b + AS03.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [],
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.focus.test.ts"
+      ],
       "testNames": [
         "[SC-MODE] ONE mode stops a changed run at the first failure",
         "[SC-MEMO] memoized tests do not rerun across unchanged changed-runs"
@@ -411,7 +460,7 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "MP03",
-      "notes": "Branch-change witness invalidation needs A4 input-matching provenance; same-branch reuse pinned by EX09. Not test-locked to avoid enshrining stale certification.",
+      "notes": "Branch-change witness invalidation needs A4 input-matching provenance; same-branch reuse pinned by EX09. Not test-locked to avoid enshrining stale certification. Decision: documented follow-up, not a release blocker. Branch-change witness invalidation needs A4 input-matching provenance (retention architecture), not an exclusion fix. Same-branch reuse pinned by EX09.",
       "result": "not-run",
       "status": "open",
       "testFiles": [],
@@ -421,15 +470,26 @@
     {
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
-      "id": "MP04",
-      "notes": "Parser ordering/counts partially covered; retry-prohibition covered by adversarial test. Remainder open: retry prohibition + parser ordering green; full parser-before/after/nested/custom matrix open.",
-      "result": "partial",
-      "status": "open",
+      "id": "MP04a",
+      "notes": "Retry prohibition and parser ordering green.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
         "packages/vest/src/suite/__tests__/changed.adversarial.test.ts"
       ],
       "testNames": ["does not retry a failing validator"],
-      "verifiedSha": "c881ebd6"
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP04b",
+      "notes": "Full parser-before/after/nested/custom matrix remains open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
     },
     {
       "blocked-by": [],
@@ -477,9 +537,26 @@
     {
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
-      "id": "MP08",
-      "notes": "Throwing parser identity + throwing getter atomicity proven (see notes). Parser-created accessors and reentrant second-suite cases remain open. Requires nothing further from C11/C12.",
-      "result": "partial",
+      "id": "MP08a",
+      "notes": "Throwing parser identity with no second route; throwing getter with no partial publication.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.architecture.test.ts",
+        "packages/vest/src/suite/__tests__/schemaContracts.boundaries.test.ts"
+      ],
+      "testNames": [
+        "[ARCH-MAPPING] throwing parser preserves cause without a second validation route",
+        "[SC-BOUNDARY-COPY] throwing getter fails the run without partial publication"
+      ],
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "MP08b",
+      "notes": "Parser-created accessors and reentrant second-suite getters remain open.",
+      "result": "not-run",
       "status": "open",
       "testFiles": [],
       "testNames": [],
@@ -514,15 +591,26 @@
     {
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
-      "id": "FP02",
-      "notes": "Getter-free planning covered at n4s boundary; outer-run materialization split needs explicit test. Remainder open: getter-free scalar/index planning green; outer-run materialization split test open.",
-      "result": "partial",
-      "status": "open",
+      "id": "FP02a",
+      "notes": "Getter-free scalar and concrete-index planning green.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
         "packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts"
       ],
       "testNames": ["getter-free"],
-      "verifiedSha": "c881ebd6"
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "FP02b",
+      "notes": "Explicit outer-run materialization split test remains open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
     },
     {
       "blocked-by": [],
@@ -542,7 +630,9 @@
       "notes": "All three green.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [],
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.stateMachine.test.ts"
+      ],
       "testNames": [
         "[SC-METAMORPHIC] input key order preserves verdicts",
         "[SC-METAMORPHIC] duplicate change selectors behave as a set",
@@ -583,7 +673,9 @@
       "notes": "Keyed-pending green; two-suite isolation pre-covered.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [],
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.async.test.ts"
+      ],
       "testNames": [
         "[SC-ASYNC-KEYED] keyed reorder while pending attributes settlement by identity"
       ],
@@ -609,8 +701,23 @@
     {
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
-      "id": "AS05",
-      "notes": "Sync throw-during-copy + recovery characterized green (boundaries test). Pending-work variants remain open.",
+      "id": "AS05a",
+      "notes": "Throw-during-boundary-copy with pending async work: throw identity, pending preserved, clean settlement, valid recovery.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.boundaries.test.ts"
+      ],
+      "testNames": [
+        "[SC-BOUNDARY-COPY] boundary failure leaves earlier async work pending and clean"
+      ],
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn test:schema-relationships",
+      "id": "AS05b",
+      "notes": "reset/remove/skip-while-pending combined with boundary throws remains open.",
       "result": "not-run",
       "status": "open",
       "testFiles": [],
@@ -633,15 +740,28 @@
     {
       "blocked-by": [],
       "command": "yarn workspace @vest/integration-tanstack-form test",
-      "id": "IN02",
-      "notes": "integrations/tanstack-form green (10 tests). Pending-validation variant open.",
+      "id": "IN02a",
+      "notes": "Two forms sharing one schema isolated across edit, reset, unmount, and single submit.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [],
+      "testFiles": [
+        "integrations/tanstack-form/src/schemaContracts.integration.test.ts"
+      ],
       "testNames": [
         "[SC-FORM] two forms sharing one schema stay isolated across edit, reset, and unmount"
       ],
-      "verifiedSha": "8557b105"
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn workspace @vest/integration-tanstack-form test",
+      "id": "IN02b",
+      "notes": "Pending-validation variant across unmount remains open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
+      "verifiedSha": null
     },
     {
       "blocked-by": [],
@@ -661,12 +781,23 @@
     {
       "blocked-by": [],
       "command": "yarn example:production:test",
-      "id": "IN04",
-      "notes": "Green on fix heads; nested/async/submit extensions open. Remainder open: example trio green; nested/async/submit extensions open.",
-      "result": "partial",
-      "status": "open",
+      "id": "IN04a",
+      "notes": "Example test/typecheck/build trio green.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": ["examples/* canonical production registration app"],
       "testNames": ["example:production:test + typecheck + build green"],
+      "verifiedSha": "6c6c40bb"
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn example:production:test",
+      "id": "IN04b",
+      "notes": "Nested/async/submit extensions remain open.",
+      "result": "not-run",
+      "status": "open",
+      "testFiles": [],
+      "testNames": [],
       "verifiedSha": null
     },
     {
@@ -700,7 +831,7 @@
       "blocked-by": [],
       "command": "yarn bench (bounded fixtures)",
       "id": "SE03",
-      "notes": "New bounded-resource fixtures.",
+      "notes": "New bounded-resource fixtures. Decision: documented follow-up. Bounded deep/wide/large inputs need a dedicated harness with measured budgets; no unbounded-input defect is known.",
       "result": "not-run",
       "status": "open",
       "testFiles": [],
@@ -904,7 +1035,7 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-performance (new)",
       "id": "PF05",
-      "notes": "Size scaling + heap plateau.",
+      "notes": "Size scaling + heap plateau. Decision: documented follow-up. Heap-plateau measurement needs GC-exposed harness runs; no leak signal observed (retained mappings are bounded by suite state).",
       "result": "not-run",
       "status": "open",
       "testFiles": [],

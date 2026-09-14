@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  EnforceSchemaError,
   FocusedSchemaMappingError,
   SchemaExclusionError,
   SchemaMappingUnavailableError,
@@ -21,6 +22,14 @@ declare global {
         type: string;
       };
       closureFrameworkBoom: (value: string) => {
+        pass: boolean;
+        type: string;
+      };
+      closureReviewBoom: (value: string) => {
+        pass: boolean;
+        type: string;
+      };
+      closureReviewFlaky: (value: string) => {
         pass: boolean;
         type: string;
       };
@@ -643,6 +652,122 @@ describe('schema contracts: error boundaries per route', () => {
     const error = new SchemaMappingUnavailableError('probe');
     expect(error.code).toBe('SCHEMA_MAPPING_UNAVAILABLE');
     expect(error).toBeInstanceOf(Error);
+  });
+
+  // R1: composed skip-only must observe hard exclusions. Fails red until
+  // the composed fallback route applies omission before execution.
+  it('[SC-R1] composed skip-only never executes the excluded validator', () => {
+    const excluded = vi.fn(() => true);
+    const root = vi.fn(() => true);
+    const schema = compose(
+      enforce.shape({
+        a: enforce.condition(excluded),
+        b: enforce.isString(),
+      }),
+      enforce.condition(root),
+    );
+    const callback = vi.fn();
+    const suite = create((_data: unknown) => {
+      callback((_data as unknown[])[0]);
+      test('a', () => true);
+      test('b', () => true);
+    }, schema);
+    const result = suite.focus({ skip: 'a' }).run({ a: 'a', b: 'b' });
+    expect(excluded).not.toHaveBeenCalled();
+    expect(root).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors('a')).toBe(false);
+  });
+
+  // R1: nested composed skip-only keeps the same hard-exclusion contract.
+  it('[SC-R1] nested composed skip-only never executes the excluded validator', () => {
+    const excluded = vi.fn(() => true);
+    const schema = compose(
+      enforce.shape({
+        profile: enforce.shape({
+          a: enforce.condition(excluded),
+          b: enforce.isString(),
+        }),
+      }),
+      enforce.condition(() => true),
+    );
+    create((_data: unknown) => {}, schema)
+      .focus({ skip: 'profile.a' })
+      .run({ profile: { a: 'a', b: 'b' } });
+    expect(excluded).not.toHaveBeenCalled();
+  });
+
+  // R2: reusable fault injector — always-throwing user parser, mirroring
+  // the public-API reproduction (parser stage throws EnforceSchemaError).
+  const reviewFault = new EnforceSchemaError('user parser fault');
+  let reviewCalls = 0;
+  const reviewUnrelated = vi.fn(() => true);
+  enforce.extend(
+    {
+      closureReviewBoom: () => {
+        reviewCalls += 1;
+        throw reviewFault;
+      },
+      closureReviewFlaky: (() => {
+        let calls = 0;
+        return () => {
+          calls += 1;
+          if (calls === 1) throw reviewFault;
+          return { pass: true, type: 'recovered' };
+        };
+      })(),
+    },
+    { parsers: ['closureReviewBoom', 'closureReviewFlaky'] },
+  );
+
+  function reviewSuite(parser: 'closureReviewBoom' | 'closureReviewFlaky') {
+    const callback = vi.fn();
+    reviewUnrelated.mockClear();
+    const suite = create(
+      (_data: unknown) => {
+        callback((_data as unknown[])[0]);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a:
+          parser === 'closureReviewBoom'
+            ? enforce.closureReviewBoom()
+            : enforce.closureReviewFlaky(),
+        b: enforce.condition(reviewUnrelated),
+      }),
+    );
+    return { callback, suite };
+  }
+
+  // R2: an unexpected user exception attempts user execution exactly once
+  // and propagates by identity with no callback or alternate route.
+  it('[SC-R2] always-throwing user fault executes once and propagates', () => {
+    reviewCalls = 0;
+    const { callback, suite } = reviewSuite('closureReviewBoom');
+    let thrown: unknown;
+    try {
+      suite.changed('a').run({ a: 'x', b: 'ok' });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(reviewFault);
+    expect(reviewCalls).toBe(1);
+    expect(reviewUnrelated).not.toHaveBeenCalled();
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  // R2: throw-first injector still surfaces the original sentinel without
+  // fallback, unrelated predicates, or callbacks.
+  it('[SC-R2] throw-first user fault surfaces the original without fallback', () => {
+    const { callback, suite } = reviewSuite('closureReviewFlaky');
+    let thrown: unknown;
+    try {
+      suite.changed('a').run({ a: 'x', b: 'ok' });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(reviewFault);
+    expect(reviewUnrelated).not.toHaveBeenCalled();
+    expect(callback).not.toHaveBeenCalled();
   });
 
   it.each(['full', 'changed'] as const)(

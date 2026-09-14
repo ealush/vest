@@ -9,6 +9,7 @@ import {
 } from 'vest-utils';
 
 import { EnforceSchemaError } from '../errors/EnforceSchemaError';
+import { SchemaProjectionError } from '../errors/SchemaProjectionError';
 import { enforceLazy } from '../lazy';
 import type { SchemaMemberRule } from '../rules/schemaRules/schemaRulesLazyTypes';
 import type { DescribeResult } from '../utils/RuleInstance';
@@ -980,12 +981,21 @@ function omitSkippedComposition(
     return omitted;
   });
   if (!changed) return rule;
-  // Intentionally no catch: a rebuild failure is a programmer error, not
-  // a signal to silently run the original schema (which would execute
-  // skipped predicates and only filter their errors afterward).
-  return compose(
-    ...(next as unknown as Parameters<typeof compose>),
-  ) as unknown as SelectiveSchema;
+  // Intentionally no catch-all: a rebuild failure is a programmer error,
+  // not a signal to silently run the original schema (which would execute
+  // skipped predicates and only filter their errors afterward). Framework
+  // structural failures surface as projection errors so execution-time
+  // fallbacks can route them without catching user exceptions.
+  try {
+    return compose(
+      ...(next as unknown as Parameters<typeof compose>),
+    ) as unknown as SelectiveSchema;
+  } catch (error) {
+    if (isFrameworkRebuildFailure(error)) {
+      throw asProjectionError(error, 'this composition');
+    }
+    throw error;
+  }
 }
 
 /**
@@ -1096,19 +1106,26 @@ function rebuildContainer(
   members: Record<string, SelectiveSchema>,
   exact: readonly string[],
 ): SelectiveSchema {
-  if (isPartialLikeContainer(rule)) {
-    const kept = copyMembers(members);
-    for (const key of exact) Reflect.deleteProperty(kept, key);
-    return preserveOptionality(rule, rebuildShapeContainer(rule, kept));
+  try {
+    if (isPartialLikeContainer(rule)) {
+      const kept = copyMembers(members);
+      for (const key of exact) Reflect.deleteProperty(kept, key);
+      return preserveOptionality(rule, rebuildShapeContainer(rule, kept));
+    }
+    // The interop view cannot name rule members; the values are the schema's
+    // own member rules, so they satisfy the member constraint by construction.
+    return preserveOptionality(
+      rule,
+      enforceLazy.omit(members as unknown as Record<string, SchemaMemberRule>, [
+        ...exact,
+      ]) as unknown as SelectiveSchema,
+    );
+  } catch (error) {
+    if (isFrameworkRebuildFailure(error)) {
+      throw asProjectionError(error, 'this container');
+    }
+    throw error;
   }
-  // The interop view cannot name rule members; the values are the schema's
-  // own member rules, so they satisfy the member constraint by construction.
-  return preserveOptionality(
-    rule,
-    enforceLazy.omit(members as unknown as Record<string, SchemaMemberRule>, [
-      ...exact,
-    ]) as unknown as SelectiveSchema,
-  );
 }
 
 function containerMembersOf(
@@ -1183,17 +1200,48 @@ function executeSchemaOnce(
 }
 
 /**
- * Detects standalone-boundary rejections. instanceof-first for same-copy
- * errors, with an error-name fallback: the error can originate from a
- * second copy of the n4s classes when the executable schema was built
- * through the packaged entry point (dual-copy interop). Anything else —
- * including plain TypeErrors from buggy validators — is not a boundary.
+ * Detects structural projection unavailability. Matches ONLY the dedicated
+ * SchemaProjectionError (instanceof-first, code+name fallback for dual-copy
+ * interop where the executable schema was built through the packaged entry
+ * point): it is emitted solely by n4s-owned rebuild operations before user
+ * execution begins, never by user predicates, parsers, resolvers, or
+ * getters. A generic EnforceSchemaError is publicly exported and throwable
+ * by user code, so it must propagate instead of triggering an alternate
+ * validation route that would re-execute user callbacks.
  */
 function isBoundaryError(error: unknown): boolean {
-  if (error instanceof EnforceSchemaError) return true;
+  if (error instanceof SchemaProjectionError) return true;
+  if (!isObject(error)) return false;
+  const typed = error as { code?: unknown; name?: unknown };
   return (
-    isObject(error) &&
-    (error as { name?: unknown }).name === 'EnforceSchemaError'
+    typed.code === 'SCHEMA_PROJECTION_UNAVAILABLE' &&
+    typed.name === 'SchemaProjectionError'
+  );
+}
+
+/**
+ * Converts a framework structural failure during fragment/member rebuild
+ * into the dedicated projection error, preserving the original as cause.
+ * SchemaExclusionError (explicit unsupported exclusion) and user exceptions
+ * pass through untouched: only generic framework errors become boundary
+ * signals, and rebuilds execute no user predicates — only metadata reads
+ * and pure ref selectors.
+ */
+function asProjectionError(
+  error: unknown,
+  what: string,
+): SchemaProjectionError {
+  if (error instanceof SchemaProjectionError) return error;
+  return new SchemaProjectionError(
+    `Selective execution cannot project ${what} without executing excluded work.`,
+    { cause: error },
+  );
+}
+
+function isFrameworkRebuildFailure(error: unknown): boolean {
+  return (
+    error instanceof EnforceSchemaError &&
+    !(error instanceof SchemaProjectionError)
   );
 }
 
@@ -3513,17 +3561,24 @@ function rebuildShapeContainer(
   original: SelectiveSchema,
   filtered: Record<string, SelectiveSchema>,
 ): SelectiveSchema {
-  if (!isPartialLikeContainer(original)) return looseRule(filtered);
-  // optional(member) changes present-undefined semantics and invents absent
-  // properties. Reuse the native partial evaluator with only strict-key
-  // rejection disabled for this internal fragment.
-  const projected = RuleInstance.create((value: unknown) =>
-    partialLoose(value as Record<string, unknown>, filtered),
-  );
-  return Object.assign(projected, {
-    __schema: filtered,
-    [PARTIAL_LIKE]: true,
-  });
+  try {
+    if (!isPartialLikeContainer(original)) return looseRule(filtered);
+    // optional(member) changes present-undefined semantics and invents absent
+    // properties. Reuse the native partial evaluator with only strict-key
+    // rejection disabled for this internal fragment.
+    const projected = RuleInstance.create((value: unknown) =>
+      partialLoose(value as Record<string, unknown>, filtered),
+    );
+    return Object.assign(projected, {
+      __schema: filtered,
+      [PARTIAL_LIKE]: true,
+    });
+  } catch (error) {
+    if (isFrameworkRebuildFailure(error)) {
+      throw asProjectionError(error, 'this shape fragment');
+    }
+    throw error;
+  }
 }
 
 function projectArrayRule(
@@ -3751,7 +3806,16 @@ function applySchemaFocus(
 ): SelectiveSchema {
   // Root-container n4s schemas run unfocused here (pick/omit need __schema
   // keys); runFlatSchema still narrows their failures by affected path.
+  // Exception: vendor schemas with hard skip exclusions take the
+  // composition-aware omission walker (same operation as the changed()
+  // fallback) so composed skip-only runs never execute excluded
+  // validators. Inclusion (only) keeps legacy full-run parity. Foreign
+  // schemas always run unfocused.
   if (!isN4sSchema(schema)) {
+    if (isN4sVendorSchema(schema) && !buildArrayProp(modifiers.only)) {
+      const skip = buildArrayProp(modifiers.skip);
+      if (skip) return omitSkippedDeep(schema, skip);
+    }
     return schema;
   }
 
@@ -3821,9 +3885,27 @@ function buildFocusedSchemaInstance(
       : (enforceLazy.pick(members, only) as unknown as SelectiveSchema);
   }
 
-  return skip
-    ? (enforceLazy.omit(members, skip) as unknown as SelectiveSchema)
-    : schema;
+  if (!skip) return schema;
+  return omitSkippedMembers(schema, members, skip);
+}
+
+/**
+ * Omits skipped top-level members. Composed schemas carry no __schema: the
+ * pick/omit member operation cannot see their fields, so the legacy path
+ * returned the schema unchanged and executed excluded validators. Reuse
+ * the same omission walker as the changed() fallback (composition-aware,
+ * kind-preserving, fail-closed on unrebuildable containers) so hard
+ * exclusions hold on every executable route.
+ */
+function omitSkippedMembers(
+  schema: SelectiveSchema,
+  members: Record<string, SchemaMemberRule>,
+  skip: string[],
+): SelectiveSchema {
+  if (schema.__schema === undefined) {
+    return omitSkippedDeep(schema, skip);
+  }
+  return enforceLazy.omit(members, skip) as unknown as SelectiveSchema;
 }
 
 /**
@@ -3891,18 +3973,16 @@ function isSelectiveSchemaResult(
 /**
  * Detects parse errors that represent genuine validation failures (the
  * foreign-parse fallback path only — n4s rules report failures via
- * `validate` issues and never reach here). Only validation-marked errors
- * take the fallback: a bare TypeError is a programming error (buggy
- * validator, broken getter) and stays loud instead of being hidden behind
- * a run-again pass.
+ * `validate` issues and never reach here). Only errors carrying the
+ * documented validation protocol (`isValidation === true`) take the
+ * fallback: an error class exported by another library (including n4s's
+ * own public EnforceSchemaError, throwable by user parsers) never implies
+ * validation failure, and bare TypeErrors stay loud instead of being
+ * hidden behind a run-again pass.
  */
 function isExpectedSchemaParseError(error: unknown): boolean {
-  if (error instanceof EnforceSchemaError) return true;
   if (!isObject(error)) return false;
-  const typedError = error as { isValidation?: unknown; name?: unknown };
-  return (
-    typedError.isValidation === true || typedError.name === 'EnforceSchemaError'
-  );
+  return (error as { isValidation?: unknown }).isValidation === true;
 }
 
 /**

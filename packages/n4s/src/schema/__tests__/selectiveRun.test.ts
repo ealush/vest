@@ -558,37 +558,32 @@ describe('runSchemaPaths standalone boundaries', () => {
       }),
     });
 
-  it('treats a same-copy EnforceSchemaError member as a boundary', () => {
-    const schema = shapeWithMember(
-      new EnforceSchemaError('EnforceSchemaError: orphaned source'),
-    );
-    const results = runSchemaPaths(
-      schema,
-      { a: 42, z: 'ok' },
-      {
-        affected: ['a', 'z'],
-      },
-    );
-    expect(
-      results.filter(result => !result.pass).map(result => result.path),
-    ).toEqual([['a']]);
+  it('propagates a same-copy EnforceSchemaError member failure by identity', () => {
+    const fault = new EnforceSchemaError('EnforceSchemaError: orphaned source');
+    const schema = shapeWithMember(fault);
+    let thrown: unknown;
+    try {
+      runSchemaPaths(schema, { a: 42, z: 'ok' }, { affected: ['a', 'z'] });
+    } catch (error) {
+      thrown = error;
+    }
+    // User-thrown public errors never gain projection authority, even when
+    // their message mimics a framework boundary.
+    expect(thrown).toBe(fault);
   });
 
-  it('treats a cross-copy EnforceSchemaError (name fallback) as a boundary', () => {
+  it('propagates a cross-copy EnforceSchemaError (name lookalike) member failure', () => {
     const crossCopy = Object.assign(new Error('orphaned source'), {
       name: 'EnforceSchemaError',
     });
     const schema = shapeWithMember(crossCopy);
-    const results = runSchemaPaths(
-      schema,
-      { a: 42, z: 'ok' },
-      {
-        affected: ['a', 'z'],
-      },
-    );
-    expect(
-      results.filter(result => !result.pass).map(result => result.path),
-    ).toEqual([['a']]);
+    let thrown: unknown;
+    try {
+      runSchemaPaths(schema, { a: 42, z: 'ok' }, { affected: ['a', 'z'] });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(crossCopy);
   });
 
   it('lets a non-EnforceSchemaError member failure propagate', () => {

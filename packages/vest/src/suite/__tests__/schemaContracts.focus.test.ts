@@ -108,6 +108,14 @@ describe('schema contracts: focus and temporal state', () => {
     expect(b).not.toHaveBeenCalled();
   });
 
+  it('[SC-SKIP] an empty skip list behaves as no skip at all', () => {
+    const { suite, a, b } = fixture('shape');
+    const result = suite.focus({ skip: [] }).run({ a: 'good', b: 'ok' });
+    expect(result.hasErrors()).toBe(false);
+    expect(a).toHaveBeenCalledTimes(1);
+    expect(b).toHaveBeenCalledTimes(1);
+  });
+
   it('[SC-SKIP] explicit skip destroys a prior field failure without evaluating its predicate', () => {
     const { suite, a } = fixture('shape');
     suite.run({ a: 'bad', b: 'ok' });

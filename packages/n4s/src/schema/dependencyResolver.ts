@@ -666,7 +666,12 @@ function assertSchemaRootPathsValidInner(schema: unknown): void {
       }
     }
     const item: unknown = recordOf(node)[ITEM_SCHEMA];
-    if (item) collect(item);
+    // Tuple and multi-rule arrays store a list: validate every member so
+    // dangling references inside positional members fail like everywhere
+    // else (GR05).
+    if (Array.isArray(item)) {
+      for (const v of item) collect(v);
+    } else if (item) collect(item);
     // Plain shape object (no __schema/RESOLVED wrapper)
     if (
       !recordOf(node).__schema &&

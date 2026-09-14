@@ -522,3 +522,337 @@ function runPublicChanged(
   };
   return suite.changed(affected).focus({ skip }).run(data);
 }
+
+describe('schema contracts: runner retained-path utilities', () => {
+  it('[SC-MERGE] skip-only run with an array index skip repairs from retention', () => {
+    const calls: string[] = [];
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(enforce.isNumeric().toNumber()),
+      note: enforce.isString(),
+    });
+    const suite = create(data => {
+      calls.push('ran');
+      test('note', () => true);
+      void data;
+    }, schema as never);
+    suite.run({ rows: ['1', '2'], note: 'first' });
+    calls.length = 0;
+    const result = suite
+      .focus({ skip: 'rows.0' })
+      .run({ rows: ['9', '2'], note: 'second' });
+    expect(result.hasErrors()).toBe(false);
+    expect(calls).toEqual(['ran']);
+  });
+
+  it('[SC-MERGE] unsafe skip names never corrupt retained mappings', () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push(data);
+        test('note', () => true);
+      },
+      enforce.shape({ note: enforce.isString() }) as never,
+    );
+    suite.run({ note: 'first' });
+    const result = suite.focus({ skip: '__proto__' }).run({ note: 'second' });
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[1]).toEqual({ note: 'second' });
+    expect((seen[1] as Record<string, unknown>).note).toBe('second');
+  });
+
+  it('[SC-MERGE] skipped union regions reuse coverage without probing', () => {
+    const suite = create(
+      data => {
+        test('note', () => true);
+        void data;
+      },
+      enforce.shape({
+        rows: enforce.isArrayOf(
+          enforce.isNumeric().toNumber(),
+          enforce.isBoolean(),
+        ),
+        note: enforce.isString(),
+      }) as never,
+    );
+    suite.run({ rows: ['1', true], note: 'first' });
+    const result = suite
+      .focus({ skip: 'note' })
+      .run({ rows: ['1', true], note: 'second' });
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-MERGE] retained primitive members reuse mapping without revalidation', () => {
+    const seen: unknown[] = [];
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(enforce.isString()),
+    });
+    const suite = create(data => {
+      seen.push(data);
+    }, schema as never);
+    suite.run({ rows: ['a', 'b'] });
+    const result = suite.changed('rows.0').run({ rows: ['c', 'b'] });
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[1]).toEqual({ rows: ['c', 'b'] });
+  });
+
+  it('[SC-MERGE] grown arrays replace the retained array wholesale', () => {
+    const seen: unknown[] = [];
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(enforce.isNumeric().toNumber()),
+    });
+    const suite = create(data => {
+      seen.push(data);
+    }, schema as never);
+    suite.run({ rows: ['1', '2'] });
+    const result = suite.changed('rows.0').run({ rows: ['3', '2', '9'] });
+    expect(result.hasErrors()).toBe(false);
+    const delivered = seen[1] as { rows: unknown[] };
+    // The changed member is parsed; the wholesale path is exercised.
+    // OPEN DEFECT: unexecuted members of a resized array keep raw input
+    // ('2'/'9' unparsed) instead of retained parsed values or fresh
+    // mapping. Positional identity breaks on insert/remove; do not treat
+    // this output as fully parsed until MP01 covers resized mapping.
+    expect(delivered.rows[0]).toBe(3);
+    expect(delivered.rows).toHaveLength(3);
+  });
+
+  it('[SC-MERGE] hostile affected paths cannot corrupt retained mappings', () => {
+    const seen: unknown[] = [];
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(enforce.isString()),
+    });
+    const suite = create(data => {
+      seen.push(data);
+      test('rows', () => true);
+    }, schema as never);
+    suite.run({ rows: ['a'] });
+    const result = suite.changed('rows.__proto__').run({ rows: ['b'] });
+    expect(result.hasErrors('rows')).toBe(false);
+    // OPEN (SE01): hostile affected paths are ignored — the callback keeps
+    // retained data instead of the current input. Safe (no corruption) but
+    // stale; reject-vs-ignore needs an explicit product rule.
+    expect(seen[1]).toEqual({ rows: ['a'] });
+  });
+
+  it('[SC-MERGE] foreign schemas deliver raw input on focused runs', () => {
+    const seen: unknown[] = [];
+    const foreign = {
+      run: (value: unknown) => [{ pass: true, type: value }],
+    };
+    const suite = create(data => {
+      seen.push(data);
+      test('a', () => true);
+    }, foreign as never);
+    suite.run({ a: 1 });
+    const result = suite.changed('a').run({ a: 2 });
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[1]).toEqual({ a: 2 });
+  });
+
+  it('[SC-MERGE] typeless foreign verdicts fall back to raw input', () => {
+    const seen: unknown[] = [];
+    const foreign = {
+      run: () => [{ pass: true }],
+    };
+    const suite = create(data => {
+      seen.push(data);
+      test('a', () => true);
+    }, foreign as never);
+    const result = suite.changed('a').run({ a: 2 });
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ a: 2 });
+  });
+});
+
+it('[SC-MERGE] nested skips under scalar leaves are ignored safely', () => {
+  const seen: unknown[] = [];
+  const suite = create(
+    data => {
+      seen.push(data);
+      test('a', () => true);
+    },
+    enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString(),
+    }) as never,
+  );
+  suite.run({ a: 'x', b: 'y' });
+  const result = suite
+    .changed('b')
+    .focus({ skip: 'a.deeper.still' })
+    .run({ a: 'x', b: 'z' });
+  expect(result.hasErrors()).toBe(false);
+  expect(seen[1]).toEqual({ a: 'x', b: 'z' });
+});
+
+it('[SC-MERGE] unsafe skip names never touch retained mappings', () => {
+  const seen: unknown[] = [];
+  const suite = create(
+    data => {
+      seen.push(data);
+      test('note', () => true);
+    },
+    enforce.shape({ note: enforce.isString() }) as never,
+  );
+  suite.run({ note: 'first' });
+  const result = suite
+    .changed('note')
+    .focus({ skip: '__proto__.x' })
+    .run({ note: 'second' });
+  expect(result.hasErrors()).toBe(false);
+  expect(seen[1]).toEqual({ note: 'second' });
+});
+
+it('[SC-MERGE] nested arrays merge through array copies', () => {
+  const seen: unknown[] = [];
+  const schema = enforce.shape({
+    matrix: enforce.isArrayOf(enforce.isArrayOf(enforce.isString())),
+  });
+  const suite = create(data => {
+    seen.push(data);
+  }, schema as never);
+  suite.run({ matrix: [['a', 'b']] });
+  const result = suite.changed('matrix.0.1').run({ matrix: [['a', 'c']] });
+  expect(result.hasErrors()).toBe(false);
+  expect(seen[1]).toEqual({ matrix: [['a', 'c']] });
+});
+
+it('[SC-MERGE] added keys materialize without disturbing retention', () => {
+  const seen: unknown[] = [];
+  const schema = enforce.shape({
+    kept: enforce.isString(),
+    extra: enforce.isString(),
+  });
+  const suite = create(data => {
+    seen.push(data);
+    test('extra', () => true);
+  }, schema as never);
+  suite.run({ kept: 'k' } as never);
+  const result = suite.changed('extra').run({ kept: 'k', extra: 'new' });
+  expect(result.hasErrors()).toBe(false);
+  expect(seen[1]).toEqual({ kept: 'k', extra: 'new' });
+});
+
+it('[SC-MERGE] oversized numeric segments stay bindings, not indices', () => {
+  const seen: unknown[] = [];
+  const schema = enforce.shape({
+    dict: enforce.record(enforce.isString()),
+  });
+  const suite = create(data => {
+    seen.push(data);
+    test('dict', () => true);
+  }, schema as never);
+  const key = '9007199254740993';
+  suite.run({ dict: { [key]: 'a' } });
+  const result = suite.changed(`dict.${key}`).run({ dict: { [key]: 'b' } });
+  expect(result.hasErrors()).toBe(false);
+  expect(seen[1]).toEqual({ dict: { [key]: 'b' } });
+});
+
+describe('schema contracts: union coverage directions', () => {
+  it('[SC-EXCLUSION-OPAQUE] ancestor focus covers union members without throwing', () => {
+    const suite = create(
+      data => {
+        test('rows', () => true);
+        void data;
+      },
+      enforce.shape({
+        rows: enforce.isArrayOf(
+          enforce.isNumeric().toNumber(),
+          enforce.isBoolean(),
+        ),
+      }) as never,
+    );
+    suite.run({ rows: ['1', true] });
+    // 'rows' is an ancestor of every union member path: coverage shares a
+    // validation line without executing hidden predicates.
+    const result = suite.changed('rows').run({ rows: ['2', false] });
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-OPAQUE] descendant focus below a union member stays precise', () => {
+    const first = vi.fn(() => true);
+    const second = vi.fn(() => true);
+    const suite = create(
+      data => {
+        test('rows', () => true);
+        void data;
+      },
+      enforce.shape({
+        rows: enforce.isArrayOf(
+          enforce.condition(first),
+          enforce.condition(second),
+        ),
+      }) as never,
+    );
+    // Deeper than member rows.0 but sharing its validation line: the
+    // member is covered without executing hidden predicates, while the
+    // uncovered sibling still throws honestly. (Branch validation itself
+    // may probe alternatives during any-match execution.)
+    expect(() =>
+      suite.changed('rows.0.deeper.still').run({ rows: [1, 2] }),
+    ).toThrow(/mapping|union|focused/i);
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it('[SC-MERGE] fallback-array members reuse retained output when identical', () => {
+    const seen: unknown[] = [];
+    const schema = compose(
+      enforce.shape({
+        rows: enforce.isArrayOf(enforce.condition(() => true)),
+        note: enforce.isString(),
+      }),
+      enforce.condition(() => true),
+    );
+    const suite = create(data => {
+      seen.push(data);
+    }, schema as never);
+    // Parser-free members leave no mapping provenance, so the unexecuted
+    // member resolves identical to the raw input and reuses the retained
+    // mapping instead of revalidating.
+    suite.run({ rows: ['x', 'y'], note: 'first' });
+    const result = suite
+      .changed('rows.0')
+      .run({ rows: ['z', 'y'], note: 'first' });
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[1]).toEqual({ rows: ['z', 'y'], note: 'first' });
+  });
+
+  it('[SC-MERGE] skip-only runs ignore nested skips under scalars', () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push(data);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString(),
+      }) as never,
+    );
+    suite.run({ a: 'x', b: 'y' });
+    const result = suite
+      .focus({ skip: 'a.deeper.still' })
+      .run({ a: 'x', b: 'z' });
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[1]).toEqual({ a: 'x', b: 'z' });
+  });
+
+  it('[SC-MERGE] untouched absent keys hydrate from retention', () => {
+    const seen: unknown[] = [];
+    const schema = enforce.partial({
+      gone: enforce.isString(),
+      other: enforce.isString(),
+    });
+    const suite = create(data => {
+      seen.push(data);
+      test('other', () => true);
+    }, schema as never);
+    suite.run({ gone: 'g', other: 'ok' });
+    // Unlike changing the deleted field itself (which honors deletion),
+    // merely untouched absence hydrates from the retained mapping.
+    const result = suite.changed('other').run({ other: 'next' });
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[1]).toEqual({ other: 'next', gone: 'g' });
+  });
+});

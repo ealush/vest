@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { enforce } from 'n4s';
+import { EnforceSchemaError, enforce } from 'n4s';
 import { mapWithoutValidation } from 'n4s/exports/internal';
 
 import { create, group, mode, Modes, test } from '../../vest';
@@ -18,6 +18,14 @@ declare global {
         type: string;
       };
       architectureBoomOnMapped: (value: string) => {
+        pass: boolean;
+        type: string;
+      };
+      architectureFrameworkBoom: (value: string) => {
+        pass: boolean;
+        type: string;
+      };
+      architectureThrowPrimitive: (value: string) => {
         pass: boolean;
         type: string;
       };
@@ -41,6 +49,18 @@ enforce.extend(
       if (value === 'MAPPED') throw architectureMappedBoomError;
       return { pass: true, type: value };
     },
+    architectureFrameworkBoom: (value: string) => {
+      if (value === 'MAPPED') {
+        throw new EnforceSchemaError('structural mapping fault');
+      }
+      return { pass: true, type: value };
+    },
+    architectureThrowPrimitive: (value: string) => {
+      if (value === 'MAPPED') {
+        throw 'primitive boom';
+      }
+      return { pass: true, type: value };
+    },
   },
   {
     parsers: [
@@ -49,6 +69,8 @@ enforce.extend(
       'architectureBoom',
       'architectureConditionalMapped',
       'architectureBoomOnMapped',
+      'architectureFrameworkBoom',
+      'architectureThrowPrimitive',
     ],
   },
 );
@@ -192,6 +214,49 @@ describe('schema contracts: architectural boundaries', () => {
     const recovery = suite.run({ a: 'fine', b: 'ok' });
     expect(recovery.isValid()).toBe(true);
     expect(recovery.value).toEqual({ a: 'fine', b: 'ok' });
+  });
+
+  it('[ARCH-MAPPING] framework mapping failures keep the documented raw fallback', () => {
+    const callback = vi.fn();
+    const suite = create(
+      data => {
+        callback(data);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce.architectureConditionalMapped().architectureFrameworkBoom(),
+        b: enforce.isString(),
+      }),
+    );
+    // Validation fails at the first stage; failure mapping reaches the
+    // second stage, which throws a framework-declared mapping fault. The
+    // classified boundary keeps best-effort raw input without throwing.
+    const result = suite.run({ a: 'bad', b: 'ok' });
+    expect(result.hasErrors('a')).toBe(true);
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback.mock.calls[0][0]).toEqual({ a: 'bad', b: 'ok' });
+  });
+
+  it('[ARCH-MAPPING] non-object mapping throws propagate with identity', () => {
+    const callback = vi.fn();
+    const suite = create(
+      data => {
+        callback(data);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce.architectureConditionalMapped().architectureThrowPrimitive(),
+        b: enforce.isString(),
+      }),
+    );
+    let thrown: unknown;
+    try {
+      suite.run({ a: 'bad', b: 'ok' });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe('primitive boom');
+    expect(callback).not.toHaveBeenCalled();
   });
 
   it.each(['onlyGroup', 'skipGroup'] as const)(

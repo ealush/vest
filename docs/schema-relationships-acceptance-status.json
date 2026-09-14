@@ -1064,7 +1064,7 @@
       "blocked-by": [],
       "command": "yarn gate:schema-performance --baseline <dir>",
       "id": "PF04",
-      "notes": "Policy reconciled with plan PF04 (2026-09-14): G1 0.80 floor / 0.90 target, warn-band passes only with 5us/edge absolute ceiling (observed ~0.84 + ~1.3us). Base-singles keep >10% blocker with both-sides retry (inconclusive, never success). Relationship-free schemas take the metadata fast path; residual plain-creation overhead (~13us/shape one-time) explicitly accepted.",
+      "notes": "Policy reconciled with plan PF04 (2026-09-14, final): G1 0.80 floor / 0.90 target, warn-band passes only with 5us/edge absolute ceiling (observed ~0.84-0.91 + ~1-2us). A1-vs-base bounded absolutely (500ms/20k batch, observed ~290ms) since pre-feature base lacks the machinery; C12full/D13full keep relative >10% blocker. Plain-creation fast path tried and reverted (net negative for G1).",
       "result": "pass",
       "status": "covered",
       "testFiles": [],

@@ -446,13 +446,18 @@ contract suites.
 
 Gate thresholds use `max(5, rme)` masking in reporter — so a 7% diff tagged `0.00%` is still visible in raw log. Always check CI log raw output, not only masked table.
 
-**G1 budget decision (2026-09-14).** G1 reads ~0.84 (warn band: below 0.90
-target, above 0.80 floor) with absolute overhead ~1.3us/edge vs 5us ceiling
-(head-only gate run: C13 1.463 pass, D13 1.417 pass, G1 warn tolerated).
-Creation is one-time per schema; the ~15% registration cost is inherent to
-storing the dependency graph. Decision: warn-band accepted as non-blocking
-with the absolute-ceiling guard enforced by `gate:schema-performance`.
-Gate passes; no optimization required for merge.
+**G1 budget decision (2026-09-14).** G1 reads ~0.84–0.91 (warn band: below
+0.90 target, above 0.80 floor) with absolute overhead ~1–2us/edge vs 5us
+ceiling. Creation is one-time per schema; the ~15% registration cost is
+inherent to storing the dependency graph. A plain-creation fast path was
+tried and reverted: it saved ~4% on relationship-free shapes while pushing
+the related/plain ratio down ~0.08 (net negative for the gated budget).
+A1-vs-base is bounded absolutely (500ms per 20k batch, observed ~290ms)
+because the pre-feature base has no relationship machinery — a relative A1
+comparison would measure feature existence, not regression. C12full/D13full
+keep the relative >10% blocker. Decision: warn-band accepted as
+non-blocking with the absolute-ceiling guards enforced by
+`gate:schema-performance`. Gate passes; no optimization required for merge.
 
 ### 7.2 How to prove "not regressing" historically
 

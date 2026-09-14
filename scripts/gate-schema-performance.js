@@ -328,16 +328,20 @@ function runGate(baselineDir) {
   // Pairs and singles are always both evaluated: a breached pair must not
   // hide base-regression evidence (or vice versa). Proven by the
   // no-short-circuit self-test.
-  return decideGateOutcome(head, base).failed;
+  const remeasureSingles = () => ({
+    head: runMeasurement(REPO_ROOT),
+    base: measureBaseline(baselineDir),
+  });
+  return decideGateOutcome(head, base, [], remeasureSingles).failed;
 }
 
-function decideGateOutcome(head, base, trace = []) {
+function decideGateOutcome(head, base, trace = [], remeasureSingles = null) {
   trace.push('pairs');
   const pairsFailed = evaluatePairs(head);
   let singlesFailed = false;
   if (base !== null) {
     trace.push('singles');
-    singlesFailed = evaluateSingles(head, base);
+    singlesFailed = evaluateSingles(head, base, remeasureSingles);
   }
   return { failed: pairsFailed || singlesFailed, trace };
 }
@@ -355,10 +359,11 @@ function evaluatePairs(head) {
   return failed;
 }
 
-function evaluateSingles(head, base) {
+function evaluateSingles(head, base, remeasureSingles = null) {
   let failed = false;
   for (const label of SINGLES) {
-    if (evaluateSingleGate(label, head.singles, base.singles)) failed = true;
+    if (evaluateSingleGate(label, head.singles, base.singles, remeasureSingles))
+      failed = true;
   }
   return failed;
 }
@@ -376,13 +381,25 @@ function evaluateGatePair(pair, headSamples) {
   return pairFailed(entry);
 }
 
-function evaluateSingleGate(label, headSingles, baseSingles) {
+function evaluateSingleGate(
+  label,
+  headSingles,
+  baseSingles,
+  remeasureSingles = null,
+) {
   let result = checkSingle(label, headSingles, baseSingles);
   let retried = false;
   if (result.verdict === 'unstable') {
     retried = true;
-    const fresh = runMeasurement(REPO_ROOT);
-    result = checkSingle(label, fresh.singles, baseSingles);
+    // Baseline instability cannot be fixed by remeasuring head alone:
+    // remeasure both sides so a noisy baseline gets a fresh sample.
+    if (remeasureSingles) {
+      const fresh = remeasureSingles();
+      result = checkSingle(label, fresh.head.singles, fresh.base.singles);
+    } else {
+      const fresh = runMeasurement(REPO_ROOT);
+      result = checkSingle(label, fresh.singles, baseSingles);
+    }
   }
   reportSingle(label, result, retried);
   return result.verdict !== 'pass';
@@ -588,13 +605,36 @@ function selfTestNoShortCircuit() {
   };
   const trace = [];
   const outcome = decideGateOutcome(breaching, base, trace);
+  // Unstable baselines must remeasure both sides: a head-only retry keeps
+  // the same noisy baseline and can never stabilize.
+  let retriedBase = null;
+  const unstableBase = evaluateSingleGate(
+    'S',
+    steadyTestSingles(100),
+    new Map([['S', { label: 'S', times: [50, 150, 50, 150, 50, 150, 50] }]]),
+    () => {
+      retriedBase = steadyTestSingles(100);
+      return {
+        head: { singles: steadyTestSingles(100) },
+        base: { singles: retriedBase },
+      };
+    },
+  );
   return [
     checkCase(
       'no short-circuit trace',
       JSON.stringify(trace) === JSON.stringify(['pairs', 'singles']),
     ),
     checkCase('breach still fails', outcome.failed === true),
+    checkCase(
+      'unstable baseline retries both sides',
+      retriedBase !== null && unstableBase === false,
+    ),
   ];
+}
+
+function steadyTestSingles(ms) {
+  return new Map([['S', { label: 'S', times: [ms, ms, ms, ms, ms, ms, ms] }]]);
 }
 
 try {

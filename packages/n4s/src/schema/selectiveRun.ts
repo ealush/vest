@@ -981,21 +981,12 @@ function omitSkippedComposition(
     return omitted;
   });
   if (!changed) return rule;
-  // Intentionally no catch-all: a rebuild failure is a programmer error,
-  // not a signal to silently run the original schema (which would execute
-  // skipped predicates and only filter their errors afterward). Framework
-  // structural failures surface as projection errors so execution-time
-  // fallbacks can route them without catching user exceptions.
-  try {
-    return compose(
-      ...(next as unknown as Parameters<typeof compose>),
-    ) as unknown as SelectiveSchema;
-  } catch (error) {
-    if (isFrameworkRebuildFailure(error)) {
-      throw asProjectionError(error, 'this composition');
-    }
-    throw error;
-  }
+  // Intentionally no catch: a rebuild failure is a programmer error, not
+  // a signal to silently run the original schema (which would execute
+  // skipped predicates and only filter their errors afterward).
+  return compose(
+    ...(next as unknown as Parameters<typeof compose>),
+  ) as unknown as SelectiveSchema;
 }
 
 /**
@@ -1106,26 +1097,19 @@ function rebuildContainer(
   members: Record<string, SelectiveSchema>,
   exact: readonly string[],
 ): SelectiveSchema {
-  try {
-    if (isPartialLikeContainer(rule)) {
-      const kept = copyMembers(members);
-      for (const key of exact) Reflect.deleteProperty(kept, key);
-      return preserveOptionality(rule, rebuildShapeContainer(rule, kept));
-    }
-    // The interop view cannot name rule members; the values are the schema's
-    // own member rules, so they satisfy the member constraint by construction.
-    return preserveOptionality(
-      rule,
-      enforceLazy.omit(members as unknown as Record<string, SchemaMemberRule>, [
-        ...exact,
-      ]) as unknown as SelectiveSchema,
-    );
-  } catch (error) {
-    if (isFrameworkRebuildFailure(error)) {
-      throw asProjectionError(error, 'this container');
-    }
-    throw error;
+  if (isPartialLikeContainer(rule)) {
+    const kept = copyMembers(members);
+    for (const key of exact) Reflect.deleteProperty(kept, key);
+    return preserveOptionality(rule, rebuildShapeContainer(rule, kept));
   }
+  // The interop view cannot name rule members; the values are the schema's
+  // own member rules, so they satisfy the member constraint by construction.
+  return preserveOptionality(
+    rule,
+    enforceLazy.omit(members as unknown as Record<string, SchemaMemberRule>, [
+      ...exact,
+    ]) as unknown as SelectiveSchema,
+  );
 }
 
 function containerMembersOf(
@@ -1212,37 +1196,18 @@ function executeSchemaOnce(
 function isBoundaryError(error: unknown): boolean {
   if (error instanceof SchemaProjectionError) return true;
   if (!isObject(error)) return false;
-  const typed = error as { code?: unknown; name?: unknown };
-  return (
-    typed.code === 'SCHEMA_PROJECTION_UNAVAILABLE' &&
-    typed.name === 'SchemaProjectionError'
-  );
-}
-
-/**
- * Converts a framework structural failure during fragment/member rebuild
- * into the dedicated projection error, preserving the original as cause.
- * SchemaExclusionError (explicit unsupported exclusion) and user exceptions
- * pass through untouched: only generic framework errors become boundary
- * signals, and rebuilds execute no user predicates — only metadata reads
- * and pure ref selectors.
- */
-function asProjectionError(
-  error: unknown,
-  what: string,
-): SchemaProjectionError {
-  if (error instanceof SchemaProjectionError) return error;
-  return new SchemaProjectionError(
-    `Selective execution cannot project ${what} without executing excluded work.`,
-    { cause: error },
-  );
-}
-
-function isFrameworkRebuildFailure(error: unknown): boolean {
-  return (
-    error instanceof EnforceSchemaError &&
-    !(error instanceof SchemaProjectionError)
-  );
+  // Classifier property access must never replace the original fault: a
+  // throwing code/name getter reads as non-boundary, and the original
+  // exception propagates untouched.
+  try {
+    const typed = error as { code?: unknown; name?: unknown };
+    return (
+      typed.code === 'SCHEMA_PROJECTION_UNAVAILABLE' &&
+      typed.name === 'SchemaProjectionError'
+    );
+  } catch {
+    return false;
+  }
 }
 
 type AffectedSeg = string | number;
@@ -3561,24 +3526,17 @@ function rebuildShapeContainer(
   original: SelectiveSchema,
   filtered: Record<string, SelectiveSchema>,
 ): SelectiveSchema {
-  try {
-    if (!isPartialLikeContainer(original)) return looseRule(filtered);
-    // optional(member) changes present-undefined semantics and invents absent
-    // properties. Reuse the native partial evaluator with only strict-key
-    // rejection disabled for this internal fragment.
-    const projected = RuleInstance.create((value: unknown) =>
-      partialLoose(value as Record<string, unknown>, filtered),
-    );
-    return Object.assign(projected, {
-      __schema: filtered,
-      [PARTIAL_LIKE]: true,
-    });
-  } catch (error) {
-    if (isFrameworkRebuildFailure(error)) {
-      throw asProjectionError(error, 'this shape fragment');
-    }
-    throw error;
-  }
+  if (!isPartialLikeContainer(original)) return looseRule(filtered);
+  // optional(member) changes present-undefined semantics and invents absent
+  // properties. Reuse the native partial evaluator with only strict-key
+  // rejection disabled for this internal fragment.
+  const projected = RuleInstance.create((value: unknown) =>
+    partialLoose(value as Record<string, unknown>, filtered),
+  );
+  return Object.assign(projected, {
+    __schema: filtered,
+    [PARTIAL_LIKE]: true,
+  });
 }
 
 function projectArrayRule(
@@ -3809,10 +3767,11 @@ function applySchemaFocus(
   // Exception: vendor schemas with hard skip exclusions take the
   // composition-aware omission walker (same operation as the changed()
   // fallback) so composed skip-only runs never execute excluded
-  // validators. Inclusion (only) keeps legacy full-run parity. Foreign
-  // schemas always run unfocused.
+  // validators. Inclusion (only) keeps legacy full-run parity, but an
+  // explicit skip still omits through the walker so only+skip on composed
+  // chains honors hard exclusions. Foreign schemas always run unfocused.
   if (!isN4sSchema(schema)) {
-    if (isN4sVendorSchema(schema) && !buildArrayProp(modifiers.only)) {
+    if (isN4sVendorSchema(schema)) {
       const skip = buildArrayProp(modifiers.skip);
       if (skip) return omitSkippedDeep(schema, skip);
     }

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { compose, EnforceSchemaError, enforce } from '../../n4s';
+import {
+  compose,
+  EnforceSchemaError,
+  SchemaProjectionError,
+  enforce,
+} from '../../n4s';
 import {
   assertSchemaRootPathsValid,
   parseAffectedFieldName,
@@ -591,6 +596,60 @@ describe('runSchemaPaths standalone boundaries', () => {
     expect(() =>
       runSchemaPaths(schema, { a: 42, z: 'ok' }, { affected: ['a', 'z'] }),
     ).toThrowError(/member bug/);
+  });
+
+  it('routes a dedicated projection error through the safe fallback', () => {
+    const schema = shapeWithMember(
+      new SchemaProjectionError('orphaned member source'),
+    );
+    const results = runSchemaPaths(
+      schema,
+      { a: 42, z: 'ok' },
+      { affected: ['a', 'z'] },
+    );
+    // The structural signal takes the full-run fallback instead of
+    // propagating: only the genuine 'a' failure is reported.
+    expect(
+      results.filter(result => !result.pass).map(result => result.path),
+    ).toEqual([['a']]);
+  });
+
+  it('routes a code/name projection lookalike (cross-copy) as a boundary', () => {
+    const crossCopy = Object.assign(new Error('orphaned member source'), {
+      code: 'SCHEMA_PROJECTION_UNAVAILABLE',
+      name: 'SchemaProjectionError',
+    });
+    const schema = shapeWithMember(crossCopy);
+    const results = runSchemaPaths(
+      schema,
+      { a: 42, z: 'ok' },
+      { affected: ['a', 'z'] },
+    );
+    expect(
+      results.filter(result => !result.pass).map(result => result.path),
+    ).toEqual([['a']]);
+  });
+
+  it('propagates a fault whose classifier properties throw on read', () => {
+    const hostile = Object.create(Error.prototype, {
+      code: {
+        get() {
+          throw new Error('getter boom');
+        },
+      },
+      message: { value: 'hostile fault' },
+      name: { value: 'SchemaProjectionError' },
+    });
+    const schema = shapeWithMember(hostile);
+    let thrown: unknown;
+    try {
+      runSchemaPaths(schema, { a: 42, z: 'ok' }, { affected: ['a', 'z'] });
+    } catch (error) {
+      thrown = error;
+    }
+    // The classifier must not replace the original fault with the getter
+    // error: identity survives even when code/name cannot be read.
+    expect(thrown).toBe(hostile);
   });
 });
 

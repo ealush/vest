@@ -366,6 +366,28 @@ describe('selectiveRun edge coverage', () => {
     expect(Array.isArray(results)).toBe(true);
   });
 
+  it('resolves empty changed sets to no paths', () => {
+    const schema = enforce.shape({
+      a: enforce.isString().dependsOn($ => $.b),
+      b: enforce.isString(),
+    });
+    expect(resolveAffectedPaths(schema, [])).toEqual([]);
+  });
+
+  it('expands descendants through composed facades', () => {
+    const schema = compose(
+      enforce.shape({
+        p: enforce.shape({
+          x: enforce.isString(),
+          y: enforce.isString().dependsOn($ => $.x),
+        }),
+      }),
+    );
+    expect(
+      resolveAffectedPaths(schema, ['p.x'], { p: { x: 1, y: 2 } }),
+    ).toEqual(['p.x', 'p.y']);
+  });
+
   it('supplements members hidden by divergence short-circuit exactly once', () => {
     const calls: string[] = [];
     const member = (field: string, valid: (value: unknown) => boolean) =>
@@ -473,5 +495,508 @@ describe('selectiveRun edge coverage', () => {
     const schema = enforce.isArrayOf(enforce.condition(member));
     const results = runSchemaPaths(schema, ['a', 'b'], { affected: ['0'] });
     expect(results.every(result => result.pass)).toBe(true);
+  });
+
+  it('picks only-focused top-level members without affected', () => {
+    const a = vi.fn(() => false);
+    const b = vi.fn(() => false);
+    const failures = runSchemaPaths(
+      enforce.shape({
+        a: enforce.condition(a),
+        b: enforce.condition(b),
+      }),
+      { a: 1, b: 2 },
+      { only: ['a'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['a']]);
+    expect(a).toHaveBeenCalledTimes(1);
+    expect(b).not.toHaveBeenCalled();
+  });
+
+  it('intersects only with skip without running excluded members', () => {
+    const a = vi.fn(() => false);
+    const b = vi.fn(() => false);
+    const c = vi.fn(() => false);
+    const failures = runSchemaPaths(
+      enforce.shape({
+        a: enforce.condition(a),
+        b: enforce.condition(b),
+        c: enforce.condition(c),
+      }),
+      { a: 1, b: 2, c: 3 },
+      { only: ['a', 'b'], skip: ['b'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['a']]);
+    expect(a).toHaveBeenCalledTimes(1);
+    expect(b).not.toHaveBeenCalled();
+    expect(c).not.toHaveBeenCalled();
+  });
+
+  it('omits skip-only top-level members without affected', () => {
+    const a = vi.fn(() => false);
+    const b = vi.fn(() => false);
+    const failures = runSchemaPaths(
+      enforce.shape({
+        a: enforce.condition(a),
+        b: enforce.condition(b),
+      }),
+      { a: 1, b: 2 },
+      { skip: ['a'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['b']]);
+    expect(a).not.toHaveBeenCalled();
+    expect(b).toHaveBeenCalledTimes(1);
+  });
+
+  it('drops an affected parent covered by a nested skip without running', () => {
+    const x = vi.fn(() => true);
+    const schema = enforce.shape({
+      a: enforce.shape({ x: enforce.condition(x) }),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { a: { x: 'ok' } },
+      { affected: ['a'], skip: ['a.x'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(x).not.toHaveBeenCalled();
+  });
+
+  it('tolerates empty affected segments without throwing', () => {
+    const selected = vi.fn(() => true);
+    const results = runSchemaPaths(
+      enforce.shape({ a: enforce.condition(selected) }),
+      { a: 'x' },
+      { affected: [''], skip: ['a'] },
+    );
+    expect(Array.isArray(results)).toBe(true);
+    expect(results.every(result => result.pass)).toBe(true);
+  });
+
+  it('does not cascade a skip strictly above the affected path', () => {
+    const b = vi.fn(() => false);
+    const failures = runSchemaPaths(
+      enforce.shape({ a: enforce.shape({ b: enforce.condition(b) }) }),
+      { a: { b: 1 } },
+      { affected: ['a.b'], skip: ['a'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['a', 'b']]);
+    expect(b).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports unknown explicit-undefined keys first on partial tops', () => {
+    const aFail = vi.fn(() => false);
+    const bSpy = vi.fn(() => true);
+    const failures = runSchemaPaths(
+      enforce.partial({
+        a: enforce.condition(aFail),
+        b: enforce.condition(bSpy),
+      }),
+      { a: 1, extra: undefined } as Record<string, unknown>,
+      { affected: ['b', 'extra'] },
+    ).filter(result => !result.pass);
+    // Partial evaluates the unknown explicit-undefined key before declared
+    // members, so the main run short-circuits at `extra` and the absent
+    // shadowed member never executes standalone.
+    expect(failures.map(result => result.path)).toEqual([['extra']]);
+    expect(bSpy).not.toHaveBeenCalled();
+  });
+
+  it('runs absent required members standalone in the flat supplement', () => {
+    const aFail = vi.fn(() => false);
+    const bSpy = vi.fn(() => false);
+    const failures = runSchemaPaths(
+      enforce.shape({
+        a: enforce.condition(aFail),
+        b: enforce.condition(bSpy),
+      }),
+      { a: 1, extra: undefined } as Record<string, unknown>,
+      { affected: ['b', 'extra'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['b']]);
+    expect(bSpy).toHaveBeenCalledTimes(1);
+    expect(bSpy).toHaveBeenCalledWith(undefined);
+  });
+
+  it('skips flat supplement members orphaned from their root edge', () => {
+    const aFail = vi.fn(() => false);
+    const schema = enforce.shape({
+      a: enforce.condition(aFail),
+      b: enforce.isString().dependsOn($ => $.root.a),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { a: 42, b: 'x', extra: undefined } as Record<string, unknown>,
+      { affected: ['b', 'extra'] },
+    );
+    expect(Array.isArray(results)).toBe(true);
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(aFail).toHaveBeenCalled();
+  });
+
+  it('reproduces tuple container failures when the value is too long', () => {
+    const first = vi.fn(() => true);
+    const second = vi.fn(() => true);
+    const failures = runSchemaPaths(
+      enforce.shape({
+        pair: enforce.tuple(
+          enforce.condition(first),
+          enforce.condition(second),
+        ),
+      }),
+      { pair: ['a', 'b', 'c'] },
+      { affected: ['pair.0'] },
+    ).filter(result => !result.pass);
+    // Positions are meaningless without a valid length: the container's own
+    // verdict reports at `pair` instead of inventing member attribution.
+    expect(failures.map(result => result.path)).toEqual([['pair']]);
+    expect(failures).toHaveLength(1);
+  });
+
+  it('reproduces tuple container failures when a required position is missing', () => {
+    const schema = enforce.shape({
+      pair: enforce.tuple(enforce.isString(), enforce.isNumber()),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { pair: ['ok'] },
+      { affected: ['pair.0'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['pair']]);
+  });
+
+  it('accepts a missing trailing optional tuple position', () => {
+    const first = vi.fn(() => true);
+    const schema = enforce.shape({
+      pair: enforce.tuple(
+        enforce.condition(first),
+        enforce.optional(enforce.isNumber()),
+      ),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { pair: ['ok'] },
+      { affected: ['pair.0'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(first).toHaveBeenCalledTimes(1);
+  });
+
+  it('reproduces tuple container failures for non-array values', () => {
+    const member = vi.fn(() => true);
+    const failures = runSchemaPaths(
+      enforce.shape({
+        pair: enforce.tuple(enforce.condition(member)),
+      }),
+      { pair: 'nope' },
+      { affected: ['pair.0'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['pair']]);
+    expect(member).not.toHaveBeenCalled();
+  });
+
+  it('reproduces union container failures for non-array values', () => {
+    const numeric = vi.fn(() => true);
+    const boolean = vi.fn(() => true);
+    const failures = runSchemaPaths(
+      enforce.shape({
+        list: enforce.isArrayOf(
+          enforce.condition(numeric),
+          enforce.condition(boolean),
+        ),
+      }),
+      { list: 'nope' },
+      { affected: ['list.0'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['list']]);
+    expect(numeric).not.toHaveBeenCalled();
+    expect(boolean).not.toHaveBeenCalled();
+  });
+
+  it('ignores union indices beyond the runtime array', () => {
+    const schema = enforce.shape({
+      list: enforce.isArrayOf(enforce.isString(), enforce.isNumber()),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { list: ['ok'] },
+      { affected: ['list.5'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+  });
+
+  it('does not rerun union members the main run already covered', () => {
+    const schema = enforce.shape({
+      list: enforce.isArrayOf(
+        enforce.condition(() => false),
+        enforce.condition(() => false),
+      ),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { list: [true] },
+      { affected: ['list.0'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['list', '0']]);
+    expect(failures).toHaveLength(1);
+  });
+
+  it('accepts union members through whole-member matching in the supplement', () => {
+    const schema = enforce.shape({
+      other: enforce.condition(() => false),
+      list: enforce.isArrayOf(enforce.isString(), enforce.isNumber()),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { other: 1, list: ['ok'] },
+      { affected: ['list.0'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+  });
+
+  it('falls back to the top-level key for nullish array fan-out data', () => {
+    const schema = enforce.shape({
+      region: enforce.isString(),
+      travelers: enforce.isArrayOf(
+        enforce.shape({
+          country: enforce.isString(),
+          tax: enforce.isString().dependsOn($ => $.root.region),
+        }),
+      ),
+    });
+    const resolved = resolveAffectedPaths(schema, ['region'], undefined);
+    expect(resolved).toContain('region');
+    expect(resolved).toContain('travelers');
+    expect(resolved.every(entry => !entry.includes('$item'))).toBe(true);
+  });
+
+  it('expands array descendants by index from run data', () => {
+    const schema = enforce.shape({
+      travelers: enforce.isArrayOf(
+        enforce.shape({ country: enforce.isString() }),
+      ),
+    });
+    const resolved = resolveAffectedPaths(schema, ['travelers'], {
+      travelers: [{ country: 'A' }, { country: 'B' }],
+    });
+    expect(resolved).toContain('travelers.0');
+    expect(resolved).toContain('travelers.1');
+    expect(resolved).toContain('travelers.0.country');
+  });
+
+  it('expands record descendants through data keys', () => {
+    const schema = enforce.shape({
+      dict: enforce.record(enforce.isNumber()),
+    });
+    const resolved = resolveAffectedPaths(schema, ['dict'], {
+      dict: { a: 1 },
+    });
+    expect(resolved).toContain('dict.a');
+  });
+
+  it('keeps unknown deep paths without diverging to the full fallback', () => {
+    const schema = enforce.shape({ a: enforce.isString() });
+    const results = runSchemaPaths(
+      schema,
+      { a: 'ok', extra: undefined } as Record<string, unknown>,
+      { affected: ['unknown.deep'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+  });
+
+  it('tolerates tuple descendant indices beyond the declared members', () => {
+    const schema = enforce.shape({
+      pair: enforce.tuple(enforce.isString(), enforce.isNumber()),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { pair: ['a', 1] },
+      { affected: ['pair.5'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+  });
+
+  it('marks root reevaluated on a passing full fallback with coverage', () => {
+    const schema = compose(
+      enforce.shape({ a: enforce.isString() }),
+      enforce.condition(() => true),
+    );
+    const coverage = { rootReevaluated: false };
+    const results = runSchemaPaths(
+      schema,
+      { a: 'ok' },
+      { affected: ['a'], coverage },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(coverage.rootReevaluated).toBe(true);
+  });
+
+  it('leaves root unevaluated on a failing full fallback with coverage', () => {
+    const schema = compose(
+      enforce.shape({ a: enforce.isString() }),
+      enforce.condition(() => true),
+    );
+    const coverage = { rootReevaluated: false };
+    const failures = runSchemaPaths(
+      schema,
+      { a: 42 },
+      { affected: ['a'], coverage },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['a']]);
+    expect(coverage.rootReevaluated).toBe(false);
+  });
+
+  it('dispatches numeric record keys through the value rule', () => {
+    const schema = enforce.shape({
+      dict: enforce.record(enforce.isNumber()),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { dict: { '1': 'x' } },
+      { affected: ['dict.1'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['dict', '1']]);
+  });
+
+  it('evaluates exact record keys against the two-arg key rule', () => {
+    const schema = enforce.shape({
+      dict: enforce.record(
+        enforce.isString().matches(/^k/),
+        enforce.isNumber(),
+      ),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { dict: { zz: 1, bad: 2 } },
+      { affected: ['dict.bad'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => (result.path ?? []).join('.'))).toEqual([
+      'dict.bad',
+    ]);
+  });
+
+  it('skips absent partial members shadowed in the projected supplement', () => {
+    const bSpy = vi.fn(() => true);
+    const failures = runSchemaPaths(
+      enforce.partial({
+        a: enforce.condition(() => false),
+        b: enforce.condition(bSpy),
+      }),
+      { a: 1 },
+      { affected: ['a', 'b'] },
+    ).filter(result => !result.pass);
+    // The main run fails at `a`, proving `b` never executed; `b` is absent
+    // from a partial-like parent, so the supplement skips it instead of
+    // inventing a failure the full run never reports.
+    expect(failures.map(result => result.path)).toEqual([['a']]);
+    expect(bSpy).not.toHaveBeenCalled();
+  });
+
+  it('ignores single-array indices beyond the runtime array', () => {
+    const schema = enforce.shape({
+      items: enforce.isArrayOf(enforce.isString()),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { items: ['ok'] },
+      { affected: ['items.5'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+  });
+
+  it('runs nested arrays through the excluded-fragment member path', () => {
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(enforce.isArrayOf(enforce.isString())),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { rows: [['ok', 42]] },
+      { affected: ['rows.0.1'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['rows', '0', '1']]);
+  });
+
+  it('supplements whole-kept arrays without rerunning visited indices', () => {
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(enforce.isString()),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { rows: [42, 43] },
+      { affected: ['rows', 'rows.0', 'rows.1'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([
+      ['rows', '0'],
+      ['rows', '1'],
+    ]);
+  });
+
+  it('supplements whole-kept tuples without rerunning visited positions', () => {
+    const schema = enforce.shape({
+      pair: enforce.tuple(enforce.isString(), enforce.isNumber()),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { pair: [42, 'x'] },
+      { affected: ['pair', 'pair.0', 'pair.1'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([
+      ['pair', '0'],
+      ['pair', '1'],
+    ]);
+  });
+
+  it('supplements whole-kept unions without rerunning visited elements', () => {
+    const schema = enforce.shape({
+      list: enforce.isArrayOf(enforce.isString(), enforce.isNumber()),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { list: [true, false] },
+      { affected: ['list', 'list.0', 'list.1'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([
+      ['list', '0'],
+      ['list', '1'],
+    ]);
+  });
+
+  it('descends into excluded containers shadowed after a failure', () => {
+    const schema = enforce.shape({
+      a: enforce.condition(() => false),
+      list: enforce.isArrayOf(enforce.isString()),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { a: 1, list: [42] },
+      { affected: ['a', 'list.0'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['a'], ['list', '0']]);
+  });
+
+  it('reports deep record member failures when the entry is present', () => {
+    const schema = enforce.shape({
+      dict: enforce.record(enforce.shape({ x: enforce.isString() })),
+    });
+    const failures = runSchemaPaths(
+      schema,
+      { dict: { a: { x: 1 } } },
+      { affected: ['dict.a.x'] },
+    ).filter(result => !result.pass);
+    expect(failures.map(result => result.path)).toEqual([['dict', 'a', 'x']]);
+  });
+
+  it('ignores deep record selections missing from the run data', () => {
+    const member = vi.fn(() => true);
+    const schema = enforce.shape({
+      dict: enforce.record(enforce.shape({ x: enforce.condition(member) })),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { dict: {} },
+      { affected: ['dict.a.x'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(member).not.toHaveBeenCalled();
   });
 });

@@ -294,4 +294,59 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
     // suite callback: exactly one publication for one run.
     expect(callbacks).toHaveLength(1);
   });
+
+  it('[SC-BOUNDARY-COPY] a reentrant second-suite getter publishes detached copies in both suites', () => {
+    // MP08b: a getter that runs a second suite while the outer boundary
+    // copy materializes it. The inner suite must observe the getter value
+    // and stay isolated; the outer run delivers detached data and recovers.
+    const innerSeen: unknown[] = [];
+    const inner = create(data => {
+      innerSeen.push({ ...(data as Record<string, unknown>) });
+      test('x', () => {
+        enforce((data as { x: unknown }).x).isString();
+      });
+    });
+    const input: Record<string, unknown> = { note: 'n' };
+    Object.defineProperty(input, 'payload', {
+      enumerable: true,
+      get: () => {
+        inner.run({ x: 'from-getter' });
+        return { v: 1 };
+      },
+    });
+    const outerSeen: unknown[] = [];
+    const outer = create(
+      data => {
+        outerSeen.push(data);
+        test('note', () => true);
+      },
+      enforce.shape({
+        payload: enforce.shape({ v: enforce.isNumeric() }),
+        note: enforce.isString(),
+      }) as never,
+    );
+
+    const result = outer.run(input as never);
+    expect(result.isValid()).toBe(true);
+    expect(result.value).toEqual({ note: 'n', payload: { v: 1 } });
+    // One materializing read per outer boundary copy; the inner suite
+    // observed the getter-driven run each time without leaking state.
+    expect(innerSeen).toEqual([{ x: 'from-getter' }, { x: 'from-getter' }]);
+    expect(outerSeen[0]).toEqual({ note: 'n', payload: { v: 1 } });
+    // The delivered payload is detached from the caller's input object.
+    // (Reading input.payload would re-invoke the getter, so the check
+    // stays on the published copies plus the intact descriptor.)
+    (outerSeen[0] as Record<string, { v: number }>).payload.v = 999;
+    expect(result.value).toEqual({ note: 'n', payload: { v: 1 } });
+    expect(typeof Object.getOwnPropertyDescriptor(input, 'payload')?.get).toBe(
+      'function',
+    );
+
+    const recovery = outer.run({ note: 'n2', payload: { v: 2 } } as never);
+    expect(recovery.isValid()).toBe(true);
+    expect(recovery.value).toEqual({ note: 'n2', payload: { v: 2 } });
+    // Recovery reads no getter: the inner suite ran only for the outer run
+    // that materialized the accessor.
+    expect(innerSeen).toHaveLength(2);
+  });
 });

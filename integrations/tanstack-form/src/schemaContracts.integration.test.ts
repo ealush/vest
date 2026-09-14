@@ -174,4 +174,115 @@ describe('schema contracts: real TanStack Form lifecycle', () => {
       unmountB();
     }
   });
+
+  it('[SC-FORM] pending validation across unmount stays isolated with no stale update or duplicate submit', async () => {
+    // IN02b: the pending state lives in A's suite callback (async confirm
+    // test), not in the shared schema object, so B's suite over the same
+    // schema stays synchronous and submittable throughout.
+    const schema = sharedSchema();
+    let release: () => void = () => {};
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    const flush = () =>
+      new Promise<void>(resolve => {
+        setImmediate(resolve);
+      });
+    function pendingFixture(defaultValues: Values, asyncConfirm: boolean) {
+      const calls = vi.fn();
+      const onSubmit = vi.fn();
+      const suite = create(data => {
+        mode(Modes.ALL);
+        test('password', () => {
+          calls('password');
+          enforce(data.password).isNotBlank();
+        });
+        if (asyncConfirm) {
+          test('confirm', async () => {
+            calls('confirm');
+            await gate;
+            enforce(data.confirm).equals(data.password);
+          });
+        } else {
+          test('confirm', 'Passwords must match', () => {
+            calls('confirm');
+            enforce(data.confirm).equals(data.password);
+          });
+        }
+        test('note', 'Note required', () => {
+          calls('note');
+          enforce(data.note).isNotBlank();
+        });
+      }, schema);
+      let changed: keyof Values | undefined;
+      const form = new FormApi({
+        defaultValues,
+        onSubmit: ({ value }) => {
+          onSubmit(value);
+        },
+        validators: {
+          onChange: ({ value }) => {
+            const result =
+              changed === undefined
+                ? suite.run(value)
+                : suite.changed(changed).run(value);
+            return result.hasErrors()
+              ? { fields: result.getErrors() }
+              : undefined;
+          },
+          onSubmit: suite,
+        },
+      });
+      return {
+        calls,
+        async edit(field: keyof Values, value: string) {
+          changed = field;
+          form.setFieldValue(field, value, { dontValidate: true });
+          await form.validate('change');
+        },
+        form,
+        onSubmit,
+        suite,
+      };
+    }
+    const a = pendingFixture(
+      { password: 'old', confirm: 'old', note: 'ok' },
+      true,
+    );
+    const b = pendingFixture(
+      { password: 'same', confirm: 'same', note: 'ok' },
+      false,
+    );
+    const unmountA = a.form.mount();
+    const unmountB = b.form.mount();
+    try {
+      await a.edit('password', 'new');
+      expect(a.suite.get().isPending()).toBe(true);
+      expect(a.calls).toHaveBeenCalledWith('confirm');
+      unmountA();
+      // B shares the schema but owns an independent suite: untouched, valid,
+      // and submittable while A is still pending.
+      expect(b.form.state.isValid).toBe(true);
+      await b.form.handleSubmit();
+      expect(b.onSubmit).toHaveBeenCalledExactlyOnceWith({
+        password: 'same',
+        confirm: 'same',
+        note: 'ok',
+      });
+      // Settle A's stale work after unmount: the verdict lands in A's suite
+      // only, with no cross-form update and no second submit.
+      release();
+      await flush();
+      await flush();
+      expect(a.suite.get().isPending()).toBe(false);
+      expect(a.suite.get().hasErrors('confirm')).toBe(true);
+      expect(b.suite.get().hasErrors('confirm')).toBe(false);
+      expect(b.form.state.isValid).toBe(true);
+      expect(b.onSubmit).toHaveBeenCalledTimes(1);
+      expect(a.onSubmit).not.toHaveBeenCalled();
+    } finally {
+      release();
+      unmountB();
+    }
+  });
 });

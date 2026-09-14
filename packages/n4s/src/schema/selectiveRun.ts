@@ -156,6 +156,11 @@ export function runSchemaPaths(
         ? expandChangedToAffected(schema, options.affected, data)
         : options.resolvedAffected,
   });
+  // Record-descending skips are unhonorable on every execution route
+  // (projection keeps records whole; omission cannot split a shared value
+  // rule): fail closed before any execution instead of running excluded
+  // validators and filtering afterward (C03/EX07b).
+  assertRecordSkipsExcludable(schema as SelectiveSchema, focus.skip);
   const execute = (): SelectiveSchemaResult[] =>
     runSchemaWithParse(
       schema as SelectiveSchema,
@@ -274,6 +279,105 @@ function skipCoversField(
     if (String(skipped[index]) !== String(field[index])) return false;
   }
   return true;
+}
+
+/**
+ * Fail-closed record exclusion (C03/EX07b). A skip naming a path strictly
+ * inside a record() region cannot be honored: every key shares one value
+ * rule, so omitting a single key's member is unrepresentable — running the
+ * shared rule would execute the excluded validator. Reject before any
+ * execution instead of running unfocused and filtering afterward. Skips
+ * ending AT a record (exact whole-record drop) stay supported, as do skips
+ * through shapes, single-rule arrays, tuples, and compositions. Union
+ * members stop the walk: branch choice needs validation, so those skips
+ * stay with the witness boundary instead of failing here.
+ */
+function assertRecordSkipsExcludable(
+  schema: SelectiveSchema,
+  skip: string | readonly string[] | boolean | null | undefined,
+): void {
+  if (skip === true) return;
+  const skipSegs = parsedSkipSegs(skip);
+  if (skipSegs.length === 0) return;
+  const root = asRuleNode(schema);
+  for (const segs of skipSegs) {
+    assertSkipPathExcludable(root, segs, segs);
+  }
+}
+
+function assertSkipPathExcludable(
+  rule: SelectiveSchema | undefined,
+  segs: readonly AffectedSeg[],
+  full: readonly AffectedSeg[],
+): void {
+  let node = rule;
+  let rest = segs;
+  while (node !== undefined && rest.length > 0) {
+    if (descendCompositionChildren(node, rest, full)) return;
+    assertNotRecordContainer(node, full);
+    const next = stepSkipSegment(node, rest[0]);
+    if (next === undefined) return;
+    node = next;
+    rest = rest.slice(1);
+  }
+}
+
+/**
+ * Recurses the exclusion walk into composition children. Returns whether
+ * the node was a composition (the caller stops after descending).
+ */
+function descendCompositionChildren(
+  node: SelectiveSchema,
+  rest: readonly AffectedSeg[],
+  full: readonly AffectedSeg[],
+): boolean {
+  const children = omissionChildrenOf(node);
+  if (children.length === 0) return false;
+  for (const child of children) {
+    if (isRuleLike(child)) assertSkipPathExcludable(child, rest, full);
+  }
+  return true;
+}
+
+/**
+ * Rejects a skip that enters a record's shared value rule with a remaining
+ * path: a per-key omission is unrepresentable there.
+ */
+function assertNotRecordContainer(
+  node: SelectiveSchema,
+  full: readonly AffectedSeg[],
+): void {
+  if (containerKindOf(node) === 'record') {
+    throw new SchemaExclusionError(
+      `Selective execution cannot exclude [${full.join('.')}] without ` +
+        `executing excluded validators: the path descends into a record ` +
+        `whose shared value rule cannot omit a single key.`,
+    );
+  }
+}
+
+function stepSkipSegment(
+  node: SelectiveSchema,
+  head: AffectedSeg,
+): SelectiveSchema | undefined {
+  return typeof head === 'number'
+    ? skipIndexStep(node, head)
+    : memberRuleOf(node, head);
+}
+
+/**
+ * One index step of the exclusion walk. Union members (multi-rule array
+ * slots) stop the walk: descending by position would pick a branch without
+ * validation, so those skips stay with the witness boundary. Tuple
+ * positions and single-rule array items descend precisely.
+ */
+function skipIndexStep(
+  node: SelectiveSchema,
+  head: number,
+): SelectiveSchema | undefined {
+  const slot = symbolSlotOf(node, ITEM_SCHEMA);
+  if (isArray(slot) && containerKindOf(node) === 'array') return undefined;
+  return itemMemberOf(node, head) ?? memberRuleOf(node, String(head));
 }
 
 /**

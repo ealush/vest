@@ -1,0 +1,563 @@
+import { describe, expect, it, vi } from 'vitest';
+
+import { SchemaExclusionError, compose } from 'n4s';
+
+import { create, enforce, group, mode, Modes, test, warn } from '../../vest';
+
+type SkippedBehavior = 'pass' | 'fail' | 'throw';
+
+function skippedPredicate(behavior: SkippedBehavior) {
+  if (behavior === 'pass') return vi.fn(() => true);
+  if (behavior === 'fail') return vi.fn(() => false);
+  return vi.fn(() => {
+    throw new Error('excluded predicate executed');
+  });
+}
+
+function runChangedSkip(
+  schema: unknown,
+  data: Record<string, unknown>,
+  affected: string[],
+  skip: string[],
+): any {
+  const suite = create(() => {}, schema as never) as any;
+  return suite.changed(affected).focus({ skip }).run(data);
+}
+
+describe('schema contracts: exclusion overlap and fan-out (EX03)', () => {
+  function subtreeFixture() {
+    const pa = vi.fn(() => true);
+    const pb = vi.fn(() => true);
+    const other = vi.fn(() => true);
+    const schema = enforce.shape({
+      profile: enforce.shape({
+        a: enforce.condition(pa),
+        b: enforce.condition(pb),
+      }),
+      other: enforce.condition(other),
+    });
+    return { other, pa, pb, schema };
+  }
+
+  it('[SC-EXCLUSION-SKIP-ANCESTOR] skip-only parent run excludes the whole subtree but keeps siblings', () => {
+    const { other, pa, pb, schema } = subtreeFixture();
+    const suite = create(() => {}, schema as never) as any;
+    const result = suite
+      .focus({ skip: ['profile'] })
+      .run({ profile: { a: 'a', b: 'b' }, other: 'o' });
+
+    expect(pa).not.toHaveBeenCalled();
+    expect(pb).not.toHaveBeenCalled();
+    expect(other).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-CHANGE-WINS] changed descendant still runs under a parent skip', () => {
+    const { other, pa, pb, schema } = subtreeFixture();
+    const result = runChangedSkip(
+      schema,
+      { profile: { a: 'a', b: 'b' }, other: 'o' },
+      ['profile.b', 'other'],
+      ['profile'],
+    );
+
+    // The explicitly changed descendant stays selected; the unselected
+    // child of the skipped subtree stays silent; the changed sibling runs.
+    expect(pa).not.toHaveBeenCalled();
+    expect(pb).toHaveBeenCalledTimes(1);
+    expect(other).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-CHILD-SKIP] parent change with a child skip runs the sibling only', () => {
+    const { pa, pb, schema } = subtreeFixture();
+    const result = runChangedSkip(
+      schema,
+      { profile: { a: 'a', b: 'b' }, other: 'o' },
+      ['profile'],
+      ['profile.a'],
+    );
+
+    expect(pa).not.toHaveBeenCalled();
+    expect(pb).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+    expect(result.hasErrors('profile.a')).toBe(false);
+  });
+
+  it.each([
+    ['duplicate', ['profile.a', 'profile.a']],
+    ['overlapping', ['profile', 'profile.a']],
+  ])('[SC-EXCLUSION-SKIP-SET] %s skips behave as a set', (_name, skip) => {
+    const { pa, pb, schema } = subtreeFixture();
+    const result = runChangedSkip(
+      schema,
+      { profile: { a: 'a', b: 'b' }, other: 'o' },
+      ['profile.b'],
+      skip,
+    );
+
+    expect(pa).not.toHaveBeenCalled();
+    expect(pb).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it.each(['changed-first', 'focus-first'] as const)(
+    '[SC-EXCLUSION-FANOUT-ORDER] %s runs every composed root once with skip+changed',
+    order => {
+      const skipped = vi.fn(() => true);
+      const selected = vi.fn(() => true);
+      const roots = [vi.fn(() => true), vi.fn(() => true)];
+      const shape = enforce.shape({
+        a: enforce.condition(skipped),
+        b: enforce.condition(selected),
+      });
+      const schema = compose(
+        shape as never,
+        enforce.condition(roots[0]) as never,
+        enforce.condition(roots[1]) as never,
+      );
+      const suite = create(() => {}, schema as never) as any;
+      const data = { a: 'a', b: 'b' };
+      const result =
+        order === 'changed-first'
+          ? suite
+              .changed(['b'])
+              .focus({ skip: ['a'] })
+              .run(data)
+          : suite
+              .focus({ skip: ['a'] })
+              .changed(['b'])
+              .run(data);
+
+      expect(skipped).not.toHaveBeenCalled();
+      expect(selected).toHaveBeenCalledTimes(1);
+      expect(roots[0]).toHaveBeenCalledTimes(1);
+      expect(roots[1]).toHaveBeenCalledTimes(1);
+      expect(result.hasErrors()).toBe(false);
+    },
+  );
+
+  it('[SC-EXCLUSION-DEP-FANOUT] dependent still runs when its source is skipped', () => {
+    const source = vi.fn(() => true);
+    const dependent = vi.fn(() => true);
+    const schema = enforce.shape({
+      a: enforce.condition(source),
+      // Type-level only: the runtime object keeps its dependency metadata.
+      b: enforce
+        .condition(dependent)
+        .dependsOn(($: any) => $.a) as unknown as ReturnType<
+        typeof enforce.condition
+      >,
+    });
+    const calls: string[] = [];
+    const suite = create(data => {
+      mode(Modes.ALL);
+      test('a', () => {
+        calls.push('a');
+        enforce((data as any).a).isString();
+      });
+      test('b', () => {
+        calls.push('b');
+        enforce((data as any).b).isString();
+      });
+    }, schema);
+    const result = suite
+      .changed('b')
+      .focus({ skip: 'a' })
+      .run({ a: 'a', b: 'b' });
+
+    expect(source).not.toHaveBeenCalled();
+    expect(dependent).toHaveBeenCalledTimes(1);
+    expect(calls).toEqual(['b']);
+    expect(result.hasErrors('a')).toBe(false);
+    expect(result.hasErrors('b')).toBe(false);
+  });
+});
+
+describe('schema contracts: exclusion attribution (EX04)', () => {
+  const selectedOutcomes = [true, false];
+  const rootOutcomes = [true, false];
+  const behaviors: SkippedBehavior[] = ['pass', 'fail', 'throw'];
+
+  const cases = selectedOutcomes.flatMap(selectedPass =>
+    rootOutcomes.flatMap(rootPass =>
+      behaviors.map(behavior => ({
+        behavior,
+        name:
+          `selected-${selectedPass ? 'pass' : 'fail'}/` +
+          `root-${rootPass ? 'pass' : 'fail'}/skipped-${behavior}`,
+        rootPass,
+        selectedPass,
+      })),
+    ),
+  );
+
+  it.each(cases)('[SC-EXCLUSION-ATTRIBUTION] $name', testCase => {
+    const { behavior, rootPass, selectedPass } = testCase;
+    const skipped = skippedPredicate(behavior);
+    const selected = vi.fn(() => selectedPass);
+    const root = vi.fn(() => rootPass);
+    const inner = enforce.shape({
+      a: enforce.condition(skipped),
+      b: enforce.condition(selected),
+    });
+    const schema = compose(inner as never, enforce.condition(root) as never);
+    const result = runChangedSkip(schema, { a: 'a', b: 'b' }, ['b'], ['a']);
+
+    // The excluded predicate never fires, whatever it would have done.
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+    // Errors stay attributed: the skipped path is clean, the selected path
+    // carries exactly its own verdict.
+    expect(result.hasErrors('a')).toBe(false);
+    expect(result.hasErrors('b')).toBe(!selectedPass);
+    expect(result.hasErrors()).toBe(!selectedPass || !rootPass);
+    if (selectedPass) {
+      // With the selected work passing, the root verdict is preserved.
+      expect(root).toHaveBeenCalledTimes(1);
+    } else {
+      // A failing selected sibling short-circuits the composed root; the
+      // overall failure is still reported via the selected path above.
+      expect(root).not.toHaveBeenCalled();
+    }
+  });
+});
+
+describe('schema contracts: partial optionality and strictness (EX06)', () => {
+  it.each([
+    ['missing', () => ({ b: 'b' })],
+    [
+      'own-undefined',
+      () => {
+        const data: Record<string, unknown> = { b: 'b' };
+        Object.defineProperty(data, 'a', {
+          configurable: true,
+          enumerable: true,
+          value: undefined,
+          writable: true,
+        });
+        return data;
+      },
+    ],
+    ['null', () => ({ a: null, b: 'b' })],
+  ])(
+    '[SC-EXCLUSION-PARTIAL-ABSENCE] skipped child with %s input never validates',
+    (_name, makeData) => {
+      const skipped = vi.fn(() => true);
+      const selected = vi.fn(() => true);
+      const schema = enforce.partial({
+        a: enforce.condition(skipped),
+        b: enforce.condition(selected),
+      });
+      const result = runChangedSkip(schema, makeData(), ['b'], ['a']);
+
+      expect(skipped).not.toHaveBeenCalled();
+      expect(selected).toHaveBeenCalledTimes(1);
+      expect(result.hasErrors('a')).toBe(false);
+      expect(result.hasErrors('b')).toBe(false);
+      expect(result.hasErrors()).toBe(false);
+    },
+  );
+
+  it('[SC-EXCLUSION-NONENUMERABLE] non-enumerable skipped key never executes', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const schema = enforce.partial({
+      a: enforce.condition(skipped),
+      b: enforce.condition(selected),
+    });
+    const data: Record<string, unknown> = { b: 'b' };
+    Object.defineProperty(data, 'a', {
+      configurable: true,
+      enumerable: false,
+      value: 'a',
+      writable: true,
+    });
+    const result = runChangedSkip(schema, data, ['b'], ['a']);
+
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it.each(['shape', 'partial', 'loose'] as const)(
+    '[SC-EXCLUSION-STRICTNESS] %s keeps native extra-key semantics on full runs',
+    kind => {
+      const suite = create(
+        data => {
+          mode(Modes.ALL);
+          test('a', () => {
+            enforce((data as any).a).isString();
+          });
+          test('b', () => {
+            enforce((data as any).b).isString();
+          });
+        },
+        (enforce as any)[kind]({
+          a: enforce.isString(),
+          b: enforce.isString(),
+        }),
+      );
+      const result = suite.run({ a: 'a', b: 'b', zebra: 1 } as never);
+
+      // shape/partial reject extra keys; loose allows them.
+      expect(result.hasErrors()).toBe(kind !== 'loose');
+    },
+  );
+
+  it.each(['shape', 'partial', 'loose'] as const)(
+    '[SC-EXCLUSION-STRICTNESS] %s focused skip+changed run narrows extra keys out',
+    kind => {
+      const skipped = vi.fn(() => true);
+      const selected = vi.fn(() => true);
+      const schema = (enforce as any)[kind]({
+        a: enforce.condition(skipped),
+        b: enforce.condition(selected),
+      });
+      const result = runChangedSkip(
+        schema,
+        { a: 'a', b: 'b', zebra: 1 },
+        ['b'],
+        ['a'],
+      );
+
+      expect(skipped).not.toHaveBeenCalled();
+      expect(selected).toHaveBeenCalledTimes(1);
+      expect(result.hasErrors()).toBe(false);
+    },
+  );
+});
+
+describe('schema contracts: skip clearing of warnings and pending (EX11)', () => {
+  function warnFixture() {
+    const calls: string[] = [];
+    const suite = create(
+      data => {
+        mode(Modes.ALL);
+        test('a', () => {
+          calls.push('a');
+          warn();
+          enforce((data as any).a).isNotBlank();
+        });
+        test('b', () => {
+          calls.push('b');
+          enforce((data as any).b).isNotBlank();
+        });
+      },
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString(),
+      }),
+    );
+    return { calls, suite };
+  }
+
+  it('[SC-SKIP-CLEAR-WARN] skip clears a seeded warning while the dependent reruns', () => {
+    const { calls, suite } = warnFixture();
+    const seeded = suite.run({ a: '', b: 'ok' });
+    expect(seeded.hasWarnings('a')).toBe(true);
+
+    calls.length = 0;
+    const result = suite
+      .changed('b')
+      .focus({ skip: 'a' })
+      .run({ a: '', b: 'ok' });
+
+    expect(calls).toEqual(['b']);
+    expect(result.hasWarnings('a')).toBe(false);
+    expect(result.hasErrors('a')).toBe(false);
+    expect(result.hasWarnings()).toBe(false);
+    expect(suite.get().hasWarnings('a')).toBe(false);
+  });
+
+  it('[SC-SKIP-CLEAR-PENDING] skip clears seeded pending work and stale settlement cannot restore it', async () => {
+    let release: () => void = () => {};
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    const flush = () => new Promise<void>(resolve => setImmediate(resolve));
+    const suite = create(
+      data => {
+        mode(Modes.ALL);
+        test('a', async () => {
+          await gate;
+          enforce((data as any).a).isNotBlank();
+        });
+        test('b', () => {
+          enforce((data as any).b).isNotBlank();
+        });
+      },
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString(),
+      }),
+    );
+
+    suite.run({ a: '', b: 'ok' });
+    expect(suite.get().isPending('a')).toBe(true);
+
+    try {
+      const result = suite
+        .changed('b')
+        .focus({ skip: 'a' })
+        .run({ a: '', b: 'next' });
+
+      expect(result.isPending('a')).toBe(false);
+      expect(result.isPending()).toBe(false);
+      expect(result.hasErrors('a')).toBe(false);
+
+      release();
+      await flush();
+      await flush();
+
+      expect(suite.get().isPending('a')).toBe(false);
+      expect(suite.get().isPending()).toBe(false);
+      expect(suite.get().hasErrors('a')).toBe(false);
+    } finally {
+      release();
+      await flush();
+    }
+  });
+
+  it('[SC-SKIPGROUP-RETAINS] group exclusion retains history unlike field skip', () => {
+    const calls: string[] = [];
+    const suite = create(
+      data => {
+        mode(Modes.ALL);
+        group('account', () => {
+          for (const field of ['a', 'b'] as const) {
+            test(field, () => {
+              calls.push(field);
+              enforce((data as any)[field]).notEquals('bad');
+            });
+          }
+        });
+        group('other', () => {
+          test('c', () => {
+            calls.push('c');
+            enforce((data as any).c).notEquals('bad');
+          });
+        });
+      },
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString().dependsOn(($: any) => $.a),
+        c: enforce.isString(),
+      }),
+    );
+
+    suite.run({ a: 'bad', b: 'bad', c: 'bad' });
+    calls.length = 0;
+    const result = suite
+      .changed(['a', 'c'])
+      .focus({ skipGroup: 'account' })
+      .run({ a: 'ok', b: 'ok', c: 'ok' });
+
+    // Group exclusion keeps its distinct historical behavior: excluded
+    // members do not run and their prior errors are retained.
+    expect(calls).toEqual(['c']);
+    expect(result.hasErrors('a')).toBe(true);
+    expect(result.hasErrors('b')).toBe(true);
+    expect(result.hasErrors('c')).toBe(false);
+  });
+});
+
+describe('schema contracts: recovery after exclusion and root failures (EX12)', () => {
+  function imperativeSuite(schema: unknown) {
+    const calls: string[] = [];
+    const suite = create(data => {
+      mode(Modes.ALL);
+      for (const field of ['a', 'b'] as const) {
+        test(field, () => {
+          calls.push(field);
+          enforce((data as any)[field]).isString();
+        });
+      }
+    }, schema as never);
+    return { calls, suite };
+  }
+
+  it('[SC-RECOVERY-FALLBACK] valid run recovers after an unsupported-exclusion failure', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const moved = (
+      enforce.shape({
+        a: enforce.condition(skipped),
+        b: enforce.condition(selected),
+      }) as unknown as { message(m: string): unknown }
+    ).message('moved container');
+    const { calls, suite } = imperativeSuite(moved) as unknown as {
+      calls: string[];
+      suite: any;
+    };
+
+    let thrown: unknown;
+    try {
+      suite.changed('b').focus({ skip: 'a' }).run({ a: 'a', b: 'b' });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
+    expect(skipped).not.toHaveBeenCalled();
+
+    skipped.mockClear();
+    selected.mockClear();
+    calls.length = 0;
+    const recovered = suite.run({ a: 'a', b: 'b' });
+
+    expect(recovered.hasErrors()).toBe(false);
+    expect(recovered.isValid()).toBe(true);
+    expect(recovered.value).toEqual({ a: 'a', b: 'b' });
+    expect(selected).toHaveBeenCalled();
+    expect(calls.sort()).toEqual(['a', 'b']);
+  });
+
+  it('[SC-RECOVERY-ROOT] valid run recovers after a root failure', () => {
+    const root = vi.fn(() => false);
+    const schema = compose(
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString(),
+      }) as never,
+      enforce.condition(root) as never,
+    );
+    const { suite } = imperativeSuite(schema) as unknown as { suite: any };
+
+    const failed = suite.run({ a: 'a', b: 'b' });
+    expect(root).toHaveBeenCalled();
+    expect(failed.hasErrors()).toBe(true);
+    expect(failed.isValid()).toBe(false);
+    expect(failed.value).toBeUndefined();
+
+    root.mockImplementation(() => true);
+    const recovered = suite.run({ a: 'a', b: 'b' });
+    expect(recovered.hasErrors()).toBe(false);
+    expect(recovered.isValid()).toBe(true);
+    expect(recovered.value).toEqual({ a: 'a', b: 'b' });
+  });
+
+  it('[SC-RECOVERY-ISOLATION] exclusion failure in one suite never leaks into another suite', () => {
+    const schema = (
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString(),
+      }) as unknown as { message(m: string): unknown }
+    ).message('shared moved container');
+    const first = imperativeSuite(schema).suite as any;
+    const second = imperativeSuite(schema).suite as any;
+
+    expect(() =>
+      first.changed('b').focus({ skip: 'a' }).run({ a: 'a', b: 'b' }),
+    ).toThrow(SchemaExclusionError);
+
+    const healthy = second.run({ a: 'a', b: 'b' });
+    expect(healthy.hasErrors()).toBe(false);
+    expect(healthy.isValid()).toBe(true);
+    expect(healthy.value).toEqual({ a: 'a', b: 'b' });
+
+    const recovered = first.run({ a: 'a', b: 'b' });
+    expect(recovered.hasErrors()).toBe(false);
+    expect(recovered.isValid()).toBe(true);
+    expect(recovered.value).toEqual({ a: 'a', b: 'b' });
+  });
+});

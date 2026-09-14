@@ -1,6 +1,42 @@
 import { describe, expect, it, vi } from 'vitest';
+import { enforce } from 'n4s';
 
+import { create, test } from '../../vest';
 import { cloneDataTree } from '../cloneDataTree';
+
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      snapshotCounted: (value: string) => { pass: boolean; type: unknown };
+    }
+  }
+}
+
+const snapshotCounts = { parserRuns: 0, getterReads: 0 };
+enforce.extend(
+  {
+    snapshotCounted: (value: string) => {
+      snapshotCounts.parserRuns += 1;
+      const carrier: Record<string, unknown> = {};
+      Object.defineProperty(carrier, 'val', {
+        enumerable: true,
+        get: () => {
+          snapshotCounts.getterReads += 1;
+          return `fixed:${value}`;
+        },
+      });
+      return { pass: true, type: carrier };
+    },
+  },
+  { parsers: ['snapshotCounted'] },
+);
+
+function snapshotSchema() {
+  return enforce.shape({
+    doc: enforce.isString().snapshotCounted(),
+    note: enforce.isString(),
+  });
+}
 
 describe('schema contracts: ownership and snapshot boundaries', () => {
   it.each([false, true])(
@@ -95,5 +131,83 @@ describe('schema contracts: ownership and snapshot boundaries', () => {
       expect(() => collection.clear()).toThrow(TypeError);
     });
     expect(copy.map.valueOf()).toBe(copy.map);
+  });
+});
+
+describe('schema contracts: parser-created accessor detachment (MP08b)', () => {
+  it('[SC-ACCESSOR] a parser-created accessor materializes once per boundary copy with detached identities', () => {
+    snapshotCounts.parserRuns = 0;
+    snapshotCounts.getterReads = 0;
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+      test('note', () => true);
+    }, snapshotSchema() as never);
+    const result = suite.run({ doc: 'd', note: 'n' });
+
+    expect(result.isValid()).toBe(true);
+    // One parser run (no validation retry); one materializing read per
+    // published copy (suite callback input + result value).
+    expect(snapshotCounts.parserRuns).toBe(1);
+    expect(snapshotCounts.getterReads).toBe(2);
+    const callbackDoc = (seen[0] as { doc: Record<string, unknown> }).doc;
+    const resultDoc = (result.value as { doc: Record<string, unknown> }).doc;
+    expect(callbackDoc).not.toBe(resultDoc);
+    // Materialized accessors read as stable data: further reads add no
+    // getter invocations.
+    expect(callbackDoc.val).toBe('fixed:d');
+    expect(resultDoc.val).toBe('fixed:d');
+    expect(snapshotCounts.getterReads).toBe(2);
+    // Mutating one published copy touches nothing else.
+    (callbackDoc as Record<string, unknown>).val = 'MUT';
+    expect(resultDoc.val).toBe('fixed:d');
+    expect(snapshotCounts.getterReads).toBe(2);
+  });
+
+  it('[SC-ACCESSOR] a retained parser-created accessor is reused without re-reading the getter', () => {
+    snapshotCounts.parserRuns = 0;
+    snapshotCounts.getterReads = 0;
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+      test('note', () => true);
+    }, snapshotSchema() as never);
+    suite.run({ doc: 'd', note: 'n' });
+    expect(snapshotCounts.getterReads).toBe(2);
+
+    const next = suite.changed('note').run({ doc: 'd', note: 'n2' });
+    expect(next.isValid()).toBe(true);
+    // The retained mapping stays detached: no new accessor reads and the
+    // delivered value is stable across runs.
+    expect(snapshotCounts.getterReads).toBe(2);
+    expect((next.value as { doc: { val: unknown } }).doc.val).toBe('fixed:d');
+    expect((seen[1] as { doc: { val: unknown } }).doc.val).toBe('fixed:d');
+    expect(snapshotCounts.getterReads).toBe(2);
+  });
+
+  it('[SC-ACCESSOR] two suites sharing one schema keep parser-created accessors detached', () => {
+    snapshotCounts.parserRuns = 0;
+    snapshotCounts.getterReads = 0;
+    const schema = snapshotSchema();
+    const seenA: unknown[] = [];
+    const seenB: unknown[] = [];
+    const suiteA = create(data => {
+      seenA.push(data);
+      test('note', () => true);
+    }, schema as never);
+    const suiteB = create(data => {
+      seenB.push(data);
+      test('note', () => true);
+    }, schema as never);
+    suiteA.run({ doc: 'd', note: 'a' });
+    suiteB.run({ doc: 'd', note: 'b' });
+
+    const docA = (seenA[0] as { doc: Record<string, unknown> }).doc;
+    const docB = (seenB[0] as { doc: Record<string, unknown> }).doc;
+    expect(docA).not.toBe(docB);
+    expect(docA.val).toBe('fixed:d');
+    expect(docB.val).toBe('fixed:d');
+    (docA as Record<string, unknown>).val = 'MUT-A';
+    expect(docB.val).toBe('fixed:d');
   });
 });

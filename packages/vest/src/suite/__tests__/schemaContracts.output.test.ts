@@ -12,6 +12,8 @@ declare global {
         output: unknown,
       ) => { pass: boolean; type: unknown };
       contractSuffix: (value: string) => { pass: boolean; type: string };
+      matrixSuffix: (value: string) => { pass: boolean; type: string };
+      matrixFailEmit: (value: string) => { pass: boolean; type: string };
     }
   }
 }
@@ -22,8 +24,20 @@ enforce.extend(
       type: output,
     }),
     contractSuffix: (value: string) => ({ pass: true, type: `${value}!` }),
+    matrixSuffix: (value: string) => ({ pass: true, type: `${value}!` }),
+    matrixFailEmit: (value: string) =>
+      value === 'bad'
+        ? { pass: false, type: 'MAPPED' }
+        : { pass: true, type: value },
   },
-  { parsers: ['contractEmit', 'contractSuffix'] },
+  {
+    parsers: [
+      'contractEmit',
+      'contractSuffix',
+      'matrixSuffix',
+      'matrixFailEmit',
+    ],
+  },
 );
 
 const outputs = [
@@ -229,5 +243,179 @@ describe('schema contracts: parsed output matrix', () => {
     expect(seen[1]).toEqual({ n: 42, note: '' });
     const repaired = suite.changed('note').run({ n: '42', note: 'fixed' });
     expect(repaired.value).toEqual({ n: 42, note: 'fixed' });
+  });
+});
+
+describe('schema contracts: parser mapping matrix (EX08b)', () => {
+  // Nested parsers (a parser chained after a parser) and custom registered
+  // parsers under exclusion: mapping stays honest while excluded validation
+  // stays at zero. A trailing composed condition observes validation
+  // execution only — pure parser mapping never runs it.
+  it('[SC-PARSER-MATRIX] nested built-in parsers on a skipped field map honestly from retention', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      deep: compose(
+        enforce.isNumeric().toNumber().clamp(0, 120),
+        enforce.condition(validated),
+      ),
+      note: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+      test('note', () => true);
+    }, schema as never);
+    const full = suite.run({ deep: '90', note: 'first' });
+    expect(full.isValid()).toBe(true);
+    expect(seen[0]).toEqual({ deep: 90, note: 'first' });
+    expect(validated).toHaveBeenCalledTimes(1);
+
+    validated.mockClear();
+    seen.length = 0;
+    const result = suite
+      .changed('note')
+      .focus({ skip: 'deep' })
+      .run({ deep: '50', note: 'second' });
+
+    expect(result.hasErrors()).toBe(false);
+    // Both parser stages map honestly, but from the retained run ('90'):
+    // the skipped field is never revalidated and never remapped from raw.
+    expect(seen[0]).toEqual({ deep: 90, note: 'second' });
+    expect(validated).not.toHaveBeenCalled();
+  });
+
+  it('[SC-PARSER-MATRIX] nested built-in parsers on a selected field validate exactly once with fresh output', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      deep: compose(
+        enforce.isNumeric().toNumber().clamp(0, 120),
+        enforce.condition(validated),
+      ),
+      note: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+      test('note', () => true);
+    }, schema as never);
+    suite.run({ deep: '90', note: 'first' });
+    validated.mockClear();
+    seen.length = 0;
+    const result = suite.changed('deep').run({ deep: '70', note: 'first' });
+
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ deep: 70, note: 'first' });
+    // No retry-as-probe: the trailing validator runs exactly once.
+    expect(validated).toHaveBeenCalledTimes(1);
+  });
+
+  it('[SC-PARSER-MATRIX] nested custom parsers on a skipped field map honestly without validation', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      a: compose(
+        enforce.isString().matrixSuffix().matrixSuffix(),
+        enforce.condition(validated),
+      ),
+      b: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+    }, schema as never);
+    suite.run({ a: 'x', b: 'ok' });
+    expect(seen[0]).toEqual({ a: 'x!!', b: 'ok' });
+
+    validated.mockClear();
+    seen.length = 0;
+    const result = suite
+      .changed('b')
+      .focus({ skip: 'a' })
+      .run({ a: 'y', b: 'ok2' });
+
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ a: 'x!!', b: 'ok2' });
+    expect(validated).not.toHaveBeenCalled();
+  });
+
+  it('[SC-PARSER-MATRIX] nested custom parsers on a selected field validate exactly once', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      a: compose(
+        enforce.isString().matrixSuffix().matrixSuffix(),
+        enforce.condition(validated),
+      ),
+      b: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+    }, schema as never);
+    suite.run({ a: 'x', b: 'ok' });
+    validated.mockClear();
+    seen.length = 0;
+    const result = suite.changed('a').run({ a: 'z', b: 'ok' });
+
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ a: 'z!!', b: 'ok' });
+    expect(validated).toHaveBeenCalledTimes(1);
+  });
+
+  it('[SC-PARSER-MATRIX] a skipped custom parser maps its declared output even when validation would fail', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      custom: compose(
+        enforce.isString().matrixFailEmit(),
+        enforce.condition(validated),
+      ),
+      note: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+    }, schema as never);
+    suite.run({ custom: 'good', note: 'first' });
+    expect(seen[0]).toEqual({ custom: 'good', note: 'first' });
+
+    validated.mockClear();
+    seen.length = 0;
+    // 'bad' fails the custom parser's own verdict, but the field is
+    // excluded: its declared output maps honestly without validation.
+    const result = suite
+      .changed('note')
+      .focus({ skip: 'custom' })
+      .run({ custom: 'bad', note: 'second' });
+
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ custom: 'good', note: 'second' });
+    expect(validated).not.toHaveBeenCalled();
+  });
+
+  it('[SC-PARSER-MATRIX] an array member parser with an index skip reuses retention without validation', () => {
+    const validated = vi.fn(() => true);
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        compose(enforce.isNumeric().toNumber(), enforce.condition(validated)),
+      ),
+      note: enforce.isString(),
+    });
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+    }, schema as never);
+    suite.run({ rows: ['1', '2'], note: 'first' });
+    expect(seen[0]).toEqual({ rows: [1, 2], note: 'first' });
+
+    validated.mockClear();
+    seen.length = 0;
+    const result = suite
+      .changed('note')
+      .focus({ skip: 'rows.0' })
+      .run({ rows: ['9', '2'], note: 'second' });
+
+    expect(result.hasErrors()).toBe(false);
+    // The excluded index maps from retention (1, not fresh 9); the sibling
+    // keeps its parsed value and no excluded validation runs.
+    expect(seen[0]).toEqual({ rows: [1, 2], note: 'second' });
+    expect(validated).not.toHaveBeenCalled();
   });
 });

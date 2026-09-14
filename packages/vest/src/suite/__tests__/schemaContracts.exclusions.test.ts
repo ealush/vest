@@ -856,3 +856,331 @@ describe('schema contracts: union coverage directions', () => {
     expect(seen[1]).toEqual({ other: 'next', gone: 'g' });
   });
 });
+
+describe('schema contracts: exclusion wildcard scope (EX07b)', () => {
+  function memberSpies() {
+    const calls: string[] = [];
+    const member = () =>
+      enforce.shape({
+        a: enforce.condition((value: unknown) => {
+          calls.push(`a:${String(value)}`);
+          return true;
+        }),
+        b: enforce.condition((value: unknown) => {
+          calls.push(`b:${String(value)}`);
+          return true;
+        }),
+      });
+    return { calls, member };
+  }
+
+  it('[SC-EXCLUSION-WILDCARD] parent array change with a nested skip runs every non-skipped member exactly once', () => {
+    const { calls, member } = memberSpies();
+    const schema = enforce.shape({ rows: enforce.isArrayOf(member()) });
+    const seen: unknown[] = [];
+    const suite = create(data => {
+      seen.push(data);
+    }, schema as never);
+    // A parent change is wildcard scope over indices: the expansion must
+    // split the parent into explicit non-skipped branches instead of
+    // keeping it whole (which would execute the skipped child).
+    const result = suite
+      .changed('rows')
+      .focus({ skip: 'rows.0.a' })
+      .run({
+        rows: [
+          { a: 'a0', b: 'b0' },
+          { a: 'a1', b: 'b1' },
+        ],
+      });
+
+    expect(calls).toEqual(['b:b0', 'a:a1', 'b:b1']);
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({
+      rows: [
+        { a: 'a0', b: 'b0' },
+        { a: 'a1', b: 'b1' },
+      ],
+    });
+  });
+
+  it('[SC-EXCLUSION-WILDCARD] parent array change with a nested skip stays split on a retained run', () => {
+    const { calls, member } = memberSpies();
+    const schema = enforce.shape({ rows: enforce.isArrayOf(member()) });
+    const suite = create((_data: unknown) => {}, schema as never);
+    const data = {
+      rows: [
+        { a: 'a0', b: 'b0' },
+        { a: 'a1', b: 'b1' },
+      ],
+    };
+    suite.run(data);
+    calls.length = 0;
+    const result = suite
+      .changed('rows')
+      .focus({ skip: 'rows.1.a' })
+      .run({
+        rows: [
+          { a: 'a0', b: 'b0x' },
+          { a: 'a1', b: 'b1x' },
+        ],
+      });
+
+    expect(calls).toEqual(['a:a0', 'b:b0x', 'b:b1x']);
+    expect(result.hasErrors()).toBe(false);
+  });
+});
+
+describe('schema contracts: exclusion sparse entries (EX07b)', () => {
+  function sparseData(b2: string): { rows: unknown[] } {
+    const rows: unknown[] = [{ a: 'a0', b: 'b0' }];
+    rows.length = 3;
+    rows[2] = { a: 'a2', b: b2 };
+    return { rows };
+  }
+
+  it('[SC-EXCLUSION-SPARSE] sparse holes never execute predicates and attribute exactly at the hole', () => {
+    const calls: string[] = [];
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.shape({
+          a: enforce.condition((value: unknown) => {
+            calls.push(`a:${String(value)}`);
+            return true;
+          }),
+          b: enforce.condition((value: unknown) => {
+            calls.push(`b:${String(value)}`);
+            return true;
+          }),
+        }),
+      ),
+    });
+    const suite = create((_data: unknown) => {}, schema as never);
+    const full = suite.run(sparseData('b2'));
+
+    // The hole validates as a member (no predicate to run for it) and its
+    // failure short-circuits the run: only the dense leading item executes,
+    // and the failure attributes to the hole index itself.
+    expect(calls).toEqual(['a:a0', 'b:b0']);
+    expect(full.hasErrors('rows.1')).toBe(true);
+    expect(full.hasErrors('rows.0')).toBe(false);
+    expect(full.hasErrors('rows.2')).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-SPARSE] changed sibling past a hole runs with its skip honored', () => {
+    const calls: string[] = [];
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(
+        enforce.shape({
+          a: enforce.condition((value: unknown) => {
+            calls.push(`a:${String(value)}`);
+            return true;
+          }),
+          b: enforce.condition((value: unknown) => {
+            calls.push(`b:${String(value)}`);
+            return true;
+          }),
+        }),
+      ),
+    });
+    const suite = create(() => {}, schema as never) as unknown as {
+      changed(field: string): {
+        focus(modifiers: { skip: string }): {
+          run(data: unknown): { hasErrors(field?: string): boolean };
+        };
+      };
+      run(data: unknown): unknown;
+    };
+    suite.run(sparseData('b2'));
+    calls.length = 0;
+    const result = suite
+      .changed('rows.2.b')
+      .focus({ skip: 'rows.2.a' })
+      .run(sparseData('b2x'));
+
+    expect(calls).toEqual(['b:b2x']);
+    // The hole failure is retained; the changed sibling stays clean and the
+    // skipped child never runs.
+    expect(result.hasErrors('rows.1')).toBe(true);
+    expect(result.hasErrors('rows.2')).toBe(false);
+    expect(result.hasErrors('rows.2.b')).toBe(false);
+  });
+});
+
+describe('schema contracts: exclusion record keys (EX07b)', () => {
+  function recordSuite() {
+    const aCalls: string[] = [];
+    const bCalls: string[] = [];
+    const schema = enforce.shape({
+      dict: enforce.record(
+        enforce.shape({
+          a: enforce.condition((value: unknown) => {
+            aCalls.push(String(value));
+            return true;
+          }),
+          b: enforce.condition((value: unknown) => {
+            bCalls.push(String(value));
+            return true;
+          }),
+        }),
+      ),
+      note: enforce.isString(),
+    });
+    const callbacks: unknown[] = [];
+    const suite = create(data => {
+      callbacks.push(data);
+    }, schema as never);
+    return { aCalls, bCalls, callbacks, suite };
+  }
+
+  const recordData = () => ({
+    dict: { k1: { a: 'a1', b: 'b1' }, k2: { a: 'a2', b: 'b2' } },
+    note: 'n',
+  });
+
+  it('[SC-EXCLUSION-RECORD] a key change executes the shared value rule over every key (wildcard scope)', () => {
+    // Records cannot narrow through their shared value rule, so a key
+    // change is wildcard scope: every key's predicates run, exactly once.
+    const { aCalls, bCalls, suite } = recordSuite();
+    const result = suite.changed('dict.k1.b').run(recordData());
+
+    expect(aCalls).toEqual(['a1', 'a2']);
+    expect(bCalls).toEqual(['b1', 'b2']);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-RECORD] skipping the whole record executes no member', () => {
+    const { aCalls, bCalls, suite } = recordSuite();
+    const result = suite
+      .changed('note')
+      .focus({ skip: 'dict' })
+      .run(recordData());
+
+    expect(aCalls).toEqual([]);
+    expect(bCalls).toEqual([]);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-EXCLUSION-RECORD] a skip descending into a record fails closed before excluded work', () => {
+    const { aCalls, bCalls, callbacks, suite } = recordSuite();
+    let thrown: unknown;
+    try {
+      suite.changed('dict.k1.b').focus({ skip: 'dict.k1.a' }).run(recordData());
+    } catch (error) {
+      thrown = error;
+    }
+
+    // C03: a per-key omission is unrepresentable through the shared value
+    // rule, so the run rejects instead of executing the skipped validator.
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
+    expect((thrown as SchemaExclusionError).code).toBe(
+      'SCHEMA_EXCLUSION_UNSUPPORTED',
+    );
+    expect(aCalls).toEqual([]);
+    expect(bCalls).toEqual([]);
+    expect(callbacks).toEqual([]);
+  });
+
+  it('[SC-EXCLUSION-RECORD] a whole-key record skip fails closed on skip-only runs', () => {
+    const { aCalls, bCalls, callbacks, suite } = recordSuite();
+    let thrown: unknown;
+    try {
+      suite.focus({ skip: 'dict.k1' }).run(recordData());
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
+    expect((thrown as SchemaExclusionError).code).toBe(
+      'SCHEMA_EXCLUSION_UNSUPPORTED',
+    );
+    expect(aCalls).toEqual([]);
+    expect(bCalls).toEqual([]);
+    expect(callbacks).toEqual([]);
+  });
+});
+
+describe('schema contracts: union witness invalidation (MP03)', () => {
+  function unionSuite(callback?: (data: unknown) => void) {
+    return create(
+      data => {
+        callback?.(data);
+        test('note', () => true);
+      },
+      enforce.shape({
+        rows: enforce.isArrayOf(
+          enforce.isNumeric().toNumber(),
+          enforce.isBoolean(),
+        ),
+        note: enforce.isString(),
+      }) as never,
+    );
+  }
+
+  it('[SC-WITNESS] an affected branch change revalidates instead of reusing the stale witness', () => {
+    const suite = unionSuite();
+    suite.run({ rows: ['1', true], note: 'first' });
+    // rows.0 is covered by the change: the numeric witness cannot certify
+    // boolean input, so the member revalidates honestly on its new branch.
+    const result = suite
+      .changed('rows.0')
+      .run({ rows: [true, true], note: 'first' });
+
+    expect(result.isValid()).toBe(true);
+    expect(result.value).toEqual({ rows: [true, true], note: 'first' });
+  });
+
+  it('[SC-WITNESS] an affected union growth revalidates new members and refreshes the witness', () => {
+    const suite = unionSuite();
+    suite.run({ rows: ['1', true], note: 'first' });
+    const grown = suite
+      .changed('rows')
+      .run({ rows: ['1', true, '3'], note: 'first' });
+
+    expect(grown.isValid()).toBe(true);
+    expect(grown.value).toEqual({ rows: [1, true, 3], note: 'first' });
+    // The refreshed witness covers the grown shape for a later focused run.
+    const next = suite
+      .changed('note')
+      .run({ rows: ['1', true, '3'], note: 'second' });
+    expect(next.isValid()).toBe(true);
+    expect(next.value).toEqual({ rows: [1, true, 3], note: 'second' });
+  });
+
+  it('[SC-WITNESS] an uncovered union growth without a witness fails closed before callbacks', () => {
+    const callback = vi.fn();
+    const suite = unionSuite(callback);
+    suite.run({ rows: ['1', true], note: 'first' });
+    callback.mockClear();
+    let thrown: unknown;
+    try {
+      // The new member rows.2 is neither covered by the change nor present
+      // in the retained witness: choosing its branch without validation
+      // would fabricate typed output, so the run rejects instead.
+      suite.changed('note').run({ rows: ['1', true, '3'], note: 'second' });
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
+    expect(callback).not.toHaveBeenCalled();
+    // A later full run re-establishes the witness and succeeds.
+    const recovery = suite.run({ rows: ['1', true, '3'], note: 'second' });
+    expect(recovery.isValid()).toBe(true);
+    expect(recovery.value).toEqual({ rows: [1, true, 3], note: 'second' });
+  });
+
+  it('[SC-WITNESS] same-branch skipped input reuses the retained witness (EX09 control)', () => {
+    // Guards against over-tightening: a skip over a union region whose
+    // input stays on the witnessed branches keeps the documented reuse.
+    const suite = unionSuite();
+    suite.run({ rows: ['1', true], note: 'first' });
+    const result = suite
+      .changed('note')
+      .focus({ skip: 'rows' })
+      .run({ rows: ['9', false], note: 'second' });
+
+    expect(result.isValid()).toBe(true);
+    expect(result.value).toEqual({ rows: [1, true], note: 'second' });
+  });
+});

@@ -8,7 +8,6 @@
 export { assertSchemaRootPathsValid } from '../schema/dependencyResolver';
 export { FocusedSchemaMappingError } from '../errors/FocusedSchemaMappingError';
 export { SchemaExclusionError } from '../errors/SchemaExclusionError';
-export { SchemaProjectionError } from '../errors/SchemaProjectionError';
 export { mapWithoutValidation } from '../schema/mapWithoutValidation';
 export type { MappingProvenance } from '../schema/mapWithoutValidation';
 export {

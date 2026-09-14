@@ -74,7 +74,6 @@ export { FIELD } from './schema/scopeProxy';
 export { EnforceSchemaError } from './errors/EnforceSchemaError';
 export { FocusedSchemaMappingError } from './errors/FocusedSchemaMappingError';
 export { SchemaExclusionError } from './errors/SchemaExclusionError';
-export { SchemaProjectionError } from './errors/SchemaProjectionError';
 export type { ScopeHandle } from './utils/RuleInstance';
 export type { SchemaMemberRule } from './rules/schemaRules/schemaRulesLazyTypes';
 

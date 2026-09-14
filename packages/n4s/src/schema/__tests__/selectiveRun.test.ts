@@ -1,11 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import {
-  compose,
-  EnforceSchemaError,
-  SchemaProjectionError,
-  enforce,
-} from '../../n4s';
+import { compose, EnforceSchemaError, enforce } from '../../n4s';
 import {
   assertSchemaRootPathsValid,
   parseAffectedFieldName,
@@ -240,6 +235,34 @@ describe('runSchemaPaths foreign executable schemas', () => {
     expect(runSchemaPaths(exotic, good, { affected: ['a'] })).toEqual(
       runSchemaPaths(exotic, good),
     );
+  });
+
+  it('propagates a foreign parse fault whose validation flag throws on read', () => {
+    const run = vi.fn((value: unknown) => [{ pass: true, type: value }]);
+    const fault = Object.create(Error.prototype, {
+      isValidation: {
+        get() {
+          throw new Error('flag getter boom');
+        },
+      },
+      message: { value: 'foreign parse fault' },
+    });
+    const exotic = {
+      parse: () => {
+        throw fault;
+      },
+      run,
+    };
+    let thrown: unknown;
+    try {
+      runSchemaPaths(exotic, { a: 'x' }, { affected: ['a'] });
+    } catch (error) {
+      thrown = error;
+    }
+    // The classifier must not replace the original fault with the getter
+    // error, and the run fallback must not execute (zero fallback calls).
+    expect(thrown).toBe(fault);
+    expect(run).not.toHaveBeenCalled();
   });
 });
 
@@ -598,36 +621,41 @@ describe('runSchemaPaths standalone boundaries', () => {
     ).toThrowError(/member bug/);
   });
 
-  it('routes a dedicated projection error through the safe fallback', () => {
-    const schema = shapeWithMember(
-      new SchemaProjectionError('orphaned member source'),
-    );
-    const results = runSchemaPaths(
-      schema,
-      { a: 42, z: 'ok' },
-      { affected: ['a', 'z'] },
-    );
-    // The structural signal takes the full-run fallback instead of
-    // propagating: only the genuine 'a' failure is reported.
-    expect(
-      results.filter(result => !result.pass).map(result => result.path),
-    ).toEqual([['a']]);
+  it('propagates a projection-named user fault without fallback authority', () => {
+    // A locally defined class with the former boundary name proves names
+    // confer no routing authority: user-thrown values of any class
+    // propagate with single execution.
+    class SchemaProjectionError extends Error {
+      readonly code = 'SCHEMA_PROJECTION_UNAVAILABLE';
+      constructor(message: string) {
+        super(message);
+        this.name = 'SchemaProjectionError';
+      }
+    }
+    const fault = new SchemaProjectionError('orphaned member source');
+    const schema = shapeWithMember(fault);
+    let thrown: unknown;
+    try {
+      runSchemaPaths(schema, { a: 42, z: 'ok' }, { affected: ['a', 'z'] });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(fault);
   });
 
-  it('routes a code/name projection lookalike (cross-copy) as a boundary', () => {
+  it('propagates a code/name projection lookalike (cross-copy) as a fault', () => {
     const crossCopy = Object.assign(new Error('orphaned member source'), {
       code: 'SCHEMA_PROJECTION_UNAVAILABLE',
       name: 'SchemaProjectionError',
     });
     const schema = shapeWithMember(crossCopy);
-    const results = runSchemaPaths(
-      schema,
-      { a: 42, z: 'ok' },
-      { affected: ['a', 'z'] },
-    );
-    expect(
-      results.filter(result => !result.pass).map(result => result.path),
-    ).toEqual([['a']]);
+    let thrown: unknown;
+    try {
+      runSchemaPaths(schema, { a: 42, z: 'ok' }, { affected: ['a', 'z'] });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(crossCopy);
   });
 
   it('propagates a fault whose classifier properties throw on read', () => {

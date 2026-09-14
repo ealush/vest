@@ -9,7 +9,6 @@ import {
 } from 'vest-utils';
 
 import { EnforceSchemaError } from '../errors/EnforceSchemaError';
-import { SchemaProjectionError } from '../errors/SchemaProjectionError';
 import { enforceLazy } from '../lazy';
 import type { SchemaMemberRule } from '../rules/schemaRules/schemaRulesLazyTypes';
 import type { DescribeResult } from '../utils/RuleInstance';
@@ -429,13 +428,17 @@ function runViaThrowingParse(
   parse: (...args: unknown[]) => unknown,
   data: unknown,
 ): SelectiveSchemaResult[] | null {
+  // Narrowly scoped to parsing: only parse() runs inside the try, so an
+  // exception from runParsedValue can never be recaught here as a parse
+  // failure and retried on raw input.
+  let parsedValue: unknown;
   try {
-    const parsedValue = parse(data);
-    return runParsedValue(executableSchema, parsedValue);
+    parsedValue = parse(data);
   } catch (error) {
     if (isExpectedSchemaParseError(error)) return null;
     throw error;
   }
+  return runParsedValue(executableSchema, parsedValue);
 }
 
 /**
@@ -841,16 +844,11 @@ function appendFlatMember(
   if (skipAbsentMember(run)) return;
   const child = childValue(run.data, run.key);
   // This path is reached only when an earlier failure proved the member
-  // was never executed.
-  let outcome: SelectiveSchemaResult[];
-  try {
-    outcome = runExecutableSchema(rule, child);
-  } catch (error) {
-    // A member with external dependencies cannot run standalone (orphaned
-    // source): skip it — the main run's verdict stands, as before.
-    if (isBoundaryError(error)) return;
-    throw error;
-  }
+  // was never executed. No error boundary here: structural gaps are
+  // detected during planning (projection returns null, supplement flags a
+  // gap) before user execution begins, so any exception from the run is an
+  // unexpected user fault that propagates with single execution.
+  const outcome = runExecutableSchema(rule, child);
   for (const result of prefixFailureResults(outcome, [run.key])) {
     out.push(result);
   }
@@ -896,17 +894,11 @@ function runProjectedOrFull(
     markRootReevaluated(modifiers, results);
     return { full: true, results };
   }
-  try {
-    return { full: false, results: runExecutableSchema(projectedSchema, data) };
-  } catch (error) {
-    if (!isBoundaryError(error)) throw error;
-    const results = runExecutableSchema(
-      changedFallbackSchema(schema, modifiers),
-      data,
-    );
-    markRootReevaluated(modifiers, results);
-    return { full: true, results };
-  }
+  // No error boundary here: an unprojectable fragment is detected during
+  // planning (buildProjectedSchema returns null) before user execution, so
+  // any exception from the fragment run is an unexpected user fault that
+  // propagates with single execution instead of retrying an alternate route.
+  return { full: false, results: runExecutableSchema(projectedSchema, data) };
 }
 
 /**
@@ -1073,6 +1065,12 @@ function rebuildNestedMembers(
     // member) carry slots like object rules; only non-rules are tolerated
     // as unknown paths.
     if (!isRuleLike(member)) continue;
+    // A skip descending beneath a scalar leaf matches no executable
+    // validator, so it is a safe no-op (like an unknown top-level skip).
+    // Beneath a container (shape/array/tuple/record/composition) real
+    // validators may hide: an unrepresentable omission fails closed
+    // instead of executing excluded work.
+    if (!hasOmissibleChildren(member)) continue;
     const omitted = omitSkippedSegs(member, tails);
     if (omitted === member) {
       throw new SchemaExclusionError(
@@ -1084,6 +1082,18 @@ function rebuildNestedMembers(
     defineMember(rebuilt, key, omitted);
   }
   return rebuilt;
+}
+
+/**
+ * Whether a member rule can contain nested executable validators: named
+ * shape members, array/tuple/record item schemas, or composition children.
+ * Scalar leaves match nothing beneath them.
+ */
+function hasOmissibleChildren(rule: SelectiveSchema): boolean {
+  if (omissionChildrenOf(rule).length > 0) return true;
+  if (containerMembersOf(rule) !== null) return true;
+  const slots = rule as unknown as Record<symbol, unknown>;
+  return slots[ITEM_SCHEMA] !== undefined;
 }
 
 /**
@@ -1181,33 +1191,6 @@ function executeSchemaOnce(
       type: data,
     },
   ];
-}
-
-/**
- * Detects structural projection unavailability. Matches ONLY the dedicated
- * SchemaProjectionError (instanceof-first, code+name fallback for dual-copy
- * interop where the executable schema was built through the packaged entry
- * point): it is emitted solely by n4s-owned rebuild operations before user
- * execution begins, never by user predicates, parsers, resolvers, or
- * getters. A generic EnforceSchemaError is publicly exported and throwable
- * by user code, so it must propagate instead of triggering an alternate
- * validation route that would re-execute user callbacks.
- */
-function isBoundaryError(error: unknown): boolean {
-  if (error instanceof SchemaProjectionError) return true;
-  if (!isObject(error)) return false;
-  // Classifier property access must never replace the original fault: a
-  // throwing code/name getter reads as non-boundary, and the original
-  // exception propagates untouched.
-  try {
-    const typed = error as { code?: unknown; name?: unknown };
-    return (
-      typed.code === 'SCHEMA_PROJECTION_UNAVAILABLE' &&
-      typed.name === 'SchemaProjectionError'
-    );
-  } catch {
-    return false;
-  }
 }
 
 type AffectedSeg = string | number;
@@ -2068,24 +2051,19 @@ function collectArraySupplement(
   mainRun: ProjectedMainRun,
 ): ArraySupplement {
   const gap = { found: false };
-  try {
-    return {
-      results: collectArraySupplementInner(schema, data, {
-        expanded,
-        fullMain: mainRun.full,
-        gap,
-        main: mainRun.results,
-      }),
-      gap: gap.found,
-    };
-  } catch (error) {
-    // Best-effort augmentation only: a member fragment that cannot even
-    // project (e.g. an orphaned rooted edge at composition) must not break
-    // the run — report the gap so the caller falls back to the full run.
-    // Anything that is not a schema boundary failure stays loud.
-    if (isBoundaryError(error)) return { results: [], gap: true };
-    throw error;
-  }
+  // No error boundary here: unprojectable members flag the gap structurally
+  // during traversal (before their execution), so any exception from the
+  // traversal is an unexpected user fault that propagates with single
+  // execution instead of falling back to a re-executing full run.
+  return {
+    results: collectArraySupplementInner(schema, data, {
+      expanded,
+      fullMain: mainRun.full,
+      gap,
+      main: mainRun.results,
+    }),
+    gap: gap.found,
+  };
 }
 
 type ArraySupplementContext = {
@@ -2947,18 +2925,12 @@ function safeRunItem(
   value: unknown,
   sink: IndexRunSink,
 ): SelectiveSchemaResult[] {
-  try {
-    return runExecutableSchema(rule, value);
-  } catch (error) {
-    // A standalone member run can orphan a $.root edge that only composes
-    // in the full schema. Record the gap so the caller falls back to the
-    // full run instead of silently omitting the affected member.
-    if (isBoundaryError(error)) {
-      sink.gap.found = true;
-      return [];
-    }
-    throw error;
-  }
+  // No error boundary here: a standalone member run that cannot compose
+  // flags the gap structurally before execution. Any exception from the
+  // run is an unexpected user fault that propagates with single execution.
+  // The sink stays threaded for gap reporting by structural detectors.
+  void sink.gap;
+  return runExecutableSchema(rule, value);
 }
 
 /**
@@ -3825,8 +3797,11 @@ function buildIntersectedSchemaInstance(
   const picked = enforceLazy.pick(
     members,
     only.filter(f => !skipSet.has(f)),
-  );
-  return picked as unknown as SelectiveSchema;
+  ) as unknown as SelectiveSchema;
+  // Nested skips under kept top-level keys (e.g. only('profile') with
+  // skip('profile.a')) omit through the same kind-preserving walker as
+  // every other exclusion route instead of running excluded validators.
+  return omitSkippedDeep(picked, skip);
 }
 
 function buildFocusedSchemaInstance(
@@ -3845,26 +3820,12 @@ function buildFocusedSchemaInstance(
   }
 
   if (!skip) return schema;
-  return omitSkippedMembers(schema, members, skip);
-}
-
-/**
- * Omits skipped top-level members. Composed schemas carry no __schema: the
- * pick/omit member operation cannot see their fields, so the legacy path
- * returned the schema unchanged and executed excluded validators. Reuse
- * the same omission walker as the changed() fallback (composition-aware,
- * kind-preserving, fail-closed on unrebuildable containers) so hard
- * exclusions hold on every executable route.
- */
-function omitSkippedMembers(
-  schema: SelectiveSchema,
-  members: Record<string, SchemaMemberRule>,
-  skip: string[],
-): SelectiveSchema {
-  if (schema.__schema === undefined) {
-    return omitSkippedDeep(schema, skip);
-  }
-  return enforceLazy.omit(members, skip) as unknown as SelectiveSchema;
+  // Every skip route — plain top-level, nested, or composed — reuses the
+  // same omission walker as the changed() fallback (composition-aware,
+  // kind-preserving, fail-closed on unrebuildable containers). The legacy
+  // top-level-only omit() left nested skips (e.g. 'profile.a' on a plain
+  // shape) executing excluded validators.
+  return omitSkippedDeep(schema, skip);
 }
 
 /**
@@ -3941,7 +3902,14 @@ function isSelectiveSchemaResult(
  */
 function isExpectedSchemaParseError(error: unknown): boolean {
   if (!isObject(error)) return false;
-  return (error as { isValidation?: unknown }).isValidation === true;
+  // Classifier property access must never replace the original fault: a
+  // throwing isValidation getter reads as unexpected, and the original
+  // parser exception propagates untouched.
+  try {
+    return (error as { isValidation?: unknown }).isValidation === true;
+  } catch {
+    return false;
+  }
 }
 
 /**

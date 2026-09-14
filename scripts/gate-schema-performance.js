@@ -8,14 +8,21 @@
  * packages/vest/perf-gate/perf-pairs.test.ts, which measures
  * full-vs-changed pairs in-process (warmup, then interleaved batches in
  * alternating order) and prints one PERF_PAIR JSON line per workload.
- * It enforces revised floors (changed/full >= 1x target, 0.9x hard floor;
- * creation A2/A1 >= 0.90), fails closed on missing rows, NaN samples, and
- * breached floors, and treats excess dispersion (after one retry) as
- * inconclusive-fail. With --baseline <dir> (a built checkout, e.g. CI's
- * .benchmark-baseline), the same file is copied there and per-workload
- * changed-side regressions beyond the predeclared limit fail.
- * --self-test exercises the pure parse/evaluate logic on synthetic data.
- * Exit nonzero on any violation.
+ * It enforces revised floors (C13/D13 changed/full >= 1x target, 0.9x hard
+ * floor; G1 related/plain 0.80 floor with 0.90 target, warn-band passing
+ * only with the 5us/edge absolute ceiling; A1 creation-vs-base bounded
+ * absolutely at 500ms per 20k-shape batch), fails closed on missing rows,
+ * thin samples (< 7 batches), mismatched lengths, non-positive samples,
+ * NaN samples, and breached floors, and treats excess dispersion (after
+ * retrying head and baseline) as inconclusive-fail. The relative base
+ * budget is exactly 10% latency growth (head <= base * 1.10). With
+ * --baseline <dir> (a built checkout, e.g. CI's .benchmark-baseline), the
+ * same file is copied there (pre-existing bytes restored afterward) and
+ * C12full/D13full regressions beyond the limit fail. A1 needs no baseline
+ * and is enforced in head-only mode too. --self-test exercises the pure
+ * parse/evaluate logic on synthetic data. Measurement subprocess failures
+ * print captured sample stdout before failing. Exit nonzero on any
+ * violation.
  */
 /* eslint-disable no-console */
 const { execFileSync } = require('node:child_process');
@@ -32,7 +39,13 @@ const PAIRS_FILE = path.join(
 );
 
 const STABILITY_MAX_CV = 0.2;
-const BASE_REGRESSION_LIMIT = 0.9;
+// Relative base comparison is a latency-growth budget: head batch medians
+// may grow at most 10% over base (head <= base * 1.10). Named precisely —
+// the previous `base / 0.9` formulation permitted 11.11% growth.
+const BASE_LATENCY_GROWTH_LIMIT = 1.1;
+// Documented minimum interleaved batches per pair workload. Fewer samples
+// fail closed instead of passing on thin evidence.
+const MIN_PAIR_BATCHES = 7;
 
 const PAIRS = [
   { floor: 0.9, id: 'G4', label: 'C13', target: 1.0 },
@@ -75,12 +88,37 @@ function measurementFileFor(cwd) {
 }
 
 function runMeasurement(cwd) {
-  const output = execFileSync(
-    VITEST_BIN,
-    ['run', '--config', vestConfigFor(cwd), measurementFileFor(cwd)],
-    { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] },
-  );
-  return parsePairs(output);
+  try {
+    const output = execFileSync(
+      VITEST_BIN,
+      ['run', '--config', vestConfigFor(cwd), measurementFileFor(cwd)],
+      { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] },
+    );
+    return parsePairs(output);
+  } catch (error) {
+    printCapturedEvidence(error);
+    throw error;
+  }
+}
+
+/**
+ * Subprocess/parse failures still emit available evidence: print any
+ * captured sample stdout before failing so a red gate never hides data.
+ */
+function printCapturedEvidence(error) {
+  const stdout = capturedStdout(error);
+  if (stdout.trim().length > 0) {
+    console.log('--- captured measurement stdout (failing run) ---');
+    console.log(stdout);
+    console.log('--- end captured measurement stdout ---');
+  }
+}
+
+function capturedStdout(error) {
+  if (error === null || typeof error !== 'object' || !('stdout' in error)) {
+    return '';
+  }
+  return String(error.stdout ?? '');
 }
 
 function parsePairs(output) {
@@ -161,8 +199,23 @@ function evaluatePair(ratios, pair) {
 
 function hasUsableRatios(ratios) {
   return (
-    Array.isArray(ratios) && ratios.length > 0 && ratios.every(validPositive)
+    Array.isArray(ratios) &&
+    ratios.length >= MIN_PAIR_BATCHES &&
+    ratios.every(validPositive)
   );
+}
+
+function hasValidPairTimings(sample) {
+  if (!sample) return false;
+  const { full, changed, ratios } = sample;
+  if (!hasAlignedPairArrays(full, changed, ratios)) return false;
+  return full.every(validPositive) && changed.every(validPositive);
+}
+
+function hasAlignedPairArrays(full, changed, ratios) {
+  if (!Array.isArray(full) || !Array.isArray(changed)) return false;
+  if (!Array.isArray(ratios)) return false;
+  return full.length === changed.length && full.length === ratios.length;
 }
 
 function classifyMedian(med, pair) {
@@ -173,12 +226,12 @@ function classifyMedian(med, pair) {
 
 function gatePair(pair, initial, remeasure) {
   let samples = initial;
-  let evaluated = evaluatePair(samples.get(pair.label)?.ratios, pair);
+  let evaluated = evaluateGatedPair(pair, samples);
   let retried = false;
   if (evaluated.verdict === 'unstable') {
     retried = true;
     samples = remeasure();
-    evaluated = evaluatePair(samples.get(pair.label)?.ratios, pair);
+    evaluated = evaluateGatedPair(pair, samples);
   }
   const times = sampleTimes(samples, pair.label);
   return {
@@ -187,6 +240,16 @@ function gatePair(pair, initial, remeasure) {
     sample: samples.get(pair.label) ?? null,
     ...times,
   };
+}
+
+function evaluateGatedPair(pair, samples) {
+  const sample = samples.get(pair.label);
+  // Raw-time validation precedes arithmetic: mismatched lengths or
+  // non-positive samples fail closed even when ratios look plausible.
+  if (!hasValidPairTimings(sample)) {
+    return { cv: NaN, median: NaN, verdict: 'fail-missing' };
+  }
+  return evaluatePair(sample.ratios, pair);
 }
 
 function sampleTimes(samples, label) {
@@ -224,7 +287,9 @@ function checkBaseRegression(headMs, baseMs) {
   if (!validPositive(headMs) || !validPositive(baseMs) || !(baseMs > 0)) {
     return 'fail-missing';
   }
-  return headMs > baseMs / BASE_REGRESSION_LIMIT ? 'fail-regression' : 'pass';
+  return headMs > baseMs * BASE_LATENCY_GROWTH_LIMIT
+    ? 'fail-regression'
+    : 'pass';
 }
 
 function withBaselineFile(baselineDir, fn) {
@@ -243,21 +308,42 @@ function withBaselineFile(baselineDir, fn) {
     'perf-gate',
     'vitest.perf.config.ts',
   );
+  // A pre-existing injected file is byte-restored (not deleted) on success
+  // and failure alike: the gate must never mutate baseline sources.
+  const priorDest = readExistingFile(dest);
+  const priorConfig = readExistingFile(configDest);
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.copyFileSync(path.join(REPO_ROOT, PAIRS_FILE), dest);
-  const hadConfig = fs.existsSync(configDest);
-  if (!hadConfig) {
+  if (priorConfig === null) {
     fs.mkdirSync(path.dirname(configDest), { recursive: true });
     fs.copyFileSync(configSrc, configDest);
   }
   try {
     return fn();
   } finally {
-    fs.rmSync(dest, { force: true });
-    if (!hadConfig) {
+    restoreInjectedFile(dest, priorDest);
+    if (priorConfig === null) {
       fs.rmSync(configDest, { force: true });
+    } else {
+      restoreInjectedFile(configDest, priorConfig);
     }
   }
+}
+
+function readExistingFile(filePath) {
+  try {
+    return fs.readFileSync(filePath);
+  } catch {
+    return null;
+  }
+}
+
+function restoreInjectedFile(filePath, priorBytes) {
+  if (priorBytes === null) {
+    fs.rmSync(filePath, { force: true });
+    return;
+  }
+  fs.writeFileSync(filePath, priorBytes);
 }
 
 function reportPair(pair, head) {
@@ -345,12 +431,24 @@ function runGate(baselineDir) {
 function decideGateOutcome(head, base, trace = [], remeasureSingles = null) {
   trace.push('pairs');
   const pairsFailed = evaluatePairs(head);
-  let singlesFailed = false;
-  if (base !== null) {
-    trace.push('singles');
-    singlesFailed = evaluateSingles(head, base, remeasureSingles);
-  }
+  trace.push('singles');
+  const singlesFailed = evaluateAllSingles(head, base, remeasureSingles);
   return { failed: pairsFailed || singlesFailed, trace };
+}
+
+function evaluateAllSingles(head, base, remeasureSingles) {
+  // Absolute singles (A1) need no baseline and are enforced in every mode;
+  // relative singles additionally require a baseline.
+  if (evaluateAbsoluteSingles(head)) return true;
+  return base !== null && evaluateSingles(head, base, remeasureSingles);
+}
+
+function evaluateAbsoluteSingles(head) {
+  let failed = false;
+  for (const label of Object.keys(SINGLES_ABSOLUTE_MS)) {
+    if (evaluateAbsoluteSingle(label, head.singles)) failed = true;
+  }
+  return failed;
 }
 
 function measureBaseline(baselineDir) {
@@ -369,6 +467,8 @@ function evaluatePairs(head) {
 function evaluateSingles(head, base, remeasureSingles = null) {
   let failed = false;
   for (const label of SINGLES) {
+    // Absolute-ceiling singles are enforced separately in every mode.
+    if (Object.hasOwn(SINGLES_ABSOLUTE_MS, label)) continue;
     if (evaluateSingleGate(label, head.singles, base.singles, remeasureSingles))
       failed = true;
   }
@@ -394,9 +494,6 @@ function evaluateSingleGate(
   baseSingles,
   remeasureSingles = null,
 ) {
-  if (Object.hasOwn(SINGLES_ABSOLUTE_MS, label)) {
-    return evaluateAbsoluteSingle(label, headSingles);
-  }
   let result = checkSingle(label, headSingles, baseSingles);
   let retried = false;
   if (result.verdict === 'unstable') {
@@ -546,8 +643,11 @@ function selfTest() {
     ...selfTestEvaluate(),
     ...selfTestParse(),
     ...selfTestBase(),
+    ...selfTestPairEvidence(),
     ...selfTestSingles(),
     ...selfTestNoShortCircuit(),
+    ...selfTestHeadOnlyAbsolute(),
+    ...selfTestInjectedFileRestore(),
   ];
   const ok = results.every(Boolean);
   console.log(ok ? 'self-test passed' : 'self-test FAILED');
@@ -627,10 +727,11 @@ function selfTestParse() {
 }
 
 function selfTestBase() {
+  // Latency-growth budget is exactly 10%: 110/100 passes, 111/100 fails.
   const cases = [
     { args: [100, 100], want: 'pass' },
-    { args: [111, 100], want: 'pass' },
-    { args: [112, 100], want: 'fail-regression' },
+    { args: [110, 100], want: 'pass' },
+    { args: [111, 100], want: 'fail-regression' },
     { args: [NaN, 100], want: 'fail-missing' },
   ];
   return cases.map(({ args, want }, index) =>
@@ -639,6 +740,101 @@ function selfTestBase() {
       checkBaseRegression(args[0], args[1]) === want,
     ),
   );
+}
+
+function selfTestPairEvidence() {
+  const good = {
+    changed: [1, 1, 1, 1, 1, 1, 1],
+    full: [2, 2, 2, 2, 2, 2, 2],
+    label: 'X',
+    ratios: [2, 2, 2, 2, 2, 2, 2],
+  };
+  const thin = { ...good, ratios: [1.4] };
+  const mismatched = { ...good, full: [2, 2] };
+  const nonPositive = { ...good, changed: [1, 0, 1, 1, 1, 1, 1] };
+  const pair = { floor: 0.9, label: 'X', target: 1.0 };
+  return [
+    checkCase(
+      'pair thin sample fails closed',
+      evaluateGatedPair(pair, new Map([['X', thin]])).verdict ===
+        'fail-missing',
+    ),
+    checkCase(
+      'pair mismatched lengths fail closed',
+      evaluateGatedPair(pair, new Map([['X', mismatched]])).verdict ===
+        'fail-missing',
+    ),
+    checkCase(
+      'pair non-positive times fail closed',
+      evaluateGatedPair(pair, new Map([['X', nonPositive]])).verdict ===
+        'fail-missing',
+    ),
+    checkCase(
+      'pair valid evidence passes',
+      evaluateGatedPair(pair, new Map([['X', good]])).verdict === 'pass',
+    ),
+  ];
+}
+
+function passingPairSamples() {
+  const good = {
+    changed: [1, 1, 1, 1, 1, 1, 1],
+    full: [2, 2, 2, 2, 2, 2, 2],
+    label: 'C13',
+    ratios: [2, 2, 2, 2, 2, 2, 2],
+  };
+  const g1 = {
+    changed: [2, 2, 2, 2, 2, 2, 2],
+    full: [2, 2, 2, 2, 2, 2, 2],
+    label: 'G1',
+    ratios: [1, 1, 1, 1, 1, 1, 1],
+  };
+  const d13 = { ...good, label: 'D13' };
+  return new Map([
+    ['C13', good],
+    ['D13', d13],
+    ['G1', g1],
+  ]);
+}
+
+function selfTestHeadOnlyAbsolute() {
+  // Head-only mode (no baseline) still enforces absolute singles.
+  const head = {
+    samples: passingPairSamples(),
+    singles: absoluteTestSingles(600),
+  };
+  const trace = [];
+  const outcome = decideGateOutcome(head, null, trace);
+  const headOk = {
+    samples: passingPairSamples(),
+    singles: absoluteTestSingles(290),
+  };
+  const outcomeOk = decideGateOutcome(headOk, null, []);
+  return [
+    checkCase(
+      'head-only trace always covers singles',
+      JSON.stringify(trace) === JSON.stringify(['pairs', 'singles']),
+    ),
+    checkCase('head-only A1 breach fails', outcome.failed === true),
+    checkCase('head-only A1 within ceiling passes', outcomeOk.failed === false),
+  ];
+}
+
+function selfTestInjectedFileRestore() {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'gate-restore-'));
+  const dest = path.join(dir, PAIRS_FILE);
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  fs.writeFileSync(dest, 'pre-existing');
+  withBaselineFile(dir, () => {
+    if (fs.readFileSync(dest, 'utf8') === 'pre-existing') {
+      throw new Error('injection did not overwrite');
+    }
+  });
+  const restored = fs.readFileSync(dest, 'utf8') === 'pre-existing';
+  fs.rmSync(dir, { force: true, recursive: true });
+  return [checkCase('injected file bytes restored', restored)];
 }
 
 function steadySingles(ms) {

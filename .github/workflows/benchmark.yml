@@ -55,7 +55,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: schema-performance-evidence
-          path: benchmark-results.md
+          path: |
+            benchmark-results.md
+            schema-perf-results.json
           if-no-files-found: warn
 
       - name: Comment Benchmark Results

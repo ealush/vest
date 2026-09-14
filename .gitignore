@@ -143,5 +143,6 @@ dist
 
 benchmark-results-local.md
 .benchmark-baseline
+schema-perf-results.json
 
 .turbo/

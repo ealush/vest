@@ -249,7 +249,13 @@ function evaluateGatedPair(pair, samples) {
   if (!hasValidPairTimings(sample)) {
     return { cv: NaN, median: NaN, verdict: 'fail-missing' };
   }
-  return evaluatePair(sample.ratios, pair);
+  // Ratios are derived from raw timings, never trusted from the sample:
+  // a supplied ratio contradicting full/changed would otherwise pass.
+  return evaluatePair(deriveRatios(sample), pair);
+}
+
+function deriveRatios(sample) {
+  return sample.full.map((fullMs, index) => fullMs / sample.changed[index]);
 }
 
 function sampleTimes(samples, label) {
@@ -351,6 +357,7 @@ function reportPair(pair, head) {
     `${pair.id} ${pair.label}: median ratio ${fmt(head.median)} ` +
       `(cv ${fmt(head.cv)}) -> ${head.verdict}${head.retried ? ' (retried)' : ''}`,
   );
+  recordPairEvidence(pair, head);
 }
 
 function reportCreationOverhead(head) {
@@ -415,7 +422,10 @@ function parseBaselineDir(args) {
   return baselineIndex === -1 ? null : path.resolve(args[baselineIndex + 1]);
 }
 
+const EVIDENCE_FILE = path.join(REPO_ROOT, 'schema-perf-results.json');
+
 function runGate(baselineDir) {
+  resetEvidence();
   const head = runMeasurement(REPO_ROOT);
   const base = measureBaseline(baselineDir);
   // Pairs and singles are always both evaluated: a breached pair must not
@@ -425,7 +435,75 @@ function runGate(baselineDir) {
     head: runMeasurement(REPO_ROOT),
     base: measureBaseline(baselineDir),
   });
-  return decideGateOutcome(head, base, [], remeasureSingles).failed;
+  const outcome = decideGateOutcome(head, base, [], remeasureSingles);
+  // Evidence persists on pass AND failure: the CI artifact carries gate
+  // measurements and verdicts separately from the earlier benchmark report.
+  writeEvidenceFile(EVIDENCE_FILE, buildEvidence(outcome, baselineDir));
+  return outcome.failed;
+}
+
+function resetEvidence() {
+  evidence.pairs = [];
+  evidence.singles = [];
+}
+
+const evidence = { pairs: [], singles: [] };
+
+function recordPairEvidence(pair, entry) {
+  evidence.pairs.push({
+    changedMs: entry.changedMs,
+    cv: entry.cv,
+    floor: pair.floor,
+    fullMs: entry.fullMs,
+    id: pair.id,
+    label: pair.label,
+    median: entry.median,
+    retried: entry.retried,
+    target: pair.target,
+    verdict: entry.verdict,
+  });
+}
+
+function recordSingleEvidence(label, result, retried, kind) {
+  evidence.singles.push({
+    baseCv: result.baseCv,
+    baseMs: result.baseMs,
+    headCv: result.headCv,
+    headMs: result.headMs,
+    kind,
+    label,
+    retried,
+    verdict: result.verdict,
+  });
+}
+
+function buildEvidence(outcome, baselineDir) {
+  return {
+    baseline: baselineDir,
+    failed: outcome.failed,
+    generatedAt: new Date().toISOString(),
+    node: process.version,
+    pairs: evidence.pairs,
+    sha: revisionSha(REPO_ROOT),
+    singles: evidence.singles,
+    trace: outcome.trace,
+  };
+}
+
+function revisionSha(cwd) {
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd,
+      encoding: 'utf8',
+    }).trim();
+  } catch {
+    return null;
+  }
+}
+
+function writeEvidenceFile(filePath, payload) {
+  fs.writeFileSync(filePath, `${JSON.stringify(payload, null, 2)}\n`);
+  console.log(`gate evidence written to ${filePath}`);
 }
 
 function decideGateOutcome(head, base, trace = [], remeasureSingles = null) {
@@ -438,9 +516,13 @@ function decideGateOutcome(head, base, trace = [], remeasureSingles = null) {
 
 function evaluateAllSingles(head, base, remeasureSingles) {
   // Absolute singles (A1) need no baseline and are enforced in every mode;
-  // relative singles additionally require a baseline.
-  if (evaluateAbsoluteSingles(head)) return true;
-  return base !== null && evaluateSingles(head, base, remeasureSingles);
+  // relative singles additionally require a baseline. Every required row
+  // evaluates despite another failure: an A1 breach must not suppress
+  // relative evidence, or vice versa.
+  const absoluteFailed = evaluateAbsoluteSingles(head);
+  const relativeFailed =
+    base !== null && evaluateSingles(head, base, remeasureSingles);
+  return absoluteFailed || relativeFailed;
 }
 
 function evaluateAbsoluteSingles(head) {
@@ -554,7 +636,9 @@ function isUnstableTimes(times) {
 }
 
 function describeTimes(times) {
-  if (times === null) return { headCv: NaN, headMs: NaN };
+  if (times === null || times.length < MIN_PAIR_BATCHES) {
+    return { headCv: NaN, headMs: NaN };
+  }
   return { headCv: cv(times), headMs: median(times) };
 }
 
@@ -584,6 +668,12 @@ function reportAbsoluteSingle(
       `vs absolute ceiling ${ceiling}ms -> ${verdict}` +
       `${retried ? ' (retried)' : ''}`,
   );
+  recordSingleEvidence(
+    label,
+    { baseCv: NaN, baseMs: NaN, headCv, headMs, verdict },
+    retried,
+    'absolute',
+  );
 }
 
 function checkSingle(label, headSingles, baseSingles) {
@@ -602,6 +692,20 @@ function checkSingle(label, headSingles, baseSingles) {
 }
 
 function checkSingleTimes(headTimes, baseTimes) {
+  // Thin evidence fails closed: a single timing per side cannot establish
+  // stability, even when the medians agree.
+  if (
+    headTimes.length < MIN_PAIR_BATCHES ||
+    baseTimes.length < MIN_PAIR_BATCHES
+  ) {
+    return {
+      baseCv: NaN,
+      baseMs: NaN,
+      headCv: NaN,
+      headMs: NaN,
+      verdict: 'fail-missing',
+    };
+  }
   const headCv = cv(headTimes);
   const baseCv = cv(baseTimes);
   const headMs = median(headTimes);
@@ -636,6 +740,7 @@ function reportSingle(label, result, retried) {
       `vs base ${fmt(result.baseMs)}ms (cv ${fmt(result.baseCv)}) -> ${result.verdict}` +
       `${retried ? ' (retried)' : ''}`,
   );
+  recordSingleEvidence(label, result, retried, 'relative');
 }
 
 function selfTest() {
@@ -645,9 +750,11 @@ function selfTest() {
     ...selfTestBase(),
     ...selfTestPairEvidence(),
     ...selfTestSingles(),
+    ...selfTestSinglesNoShortCircuit(),
     ...selfTestNoShortCircuit(),
     ...selfTestHeadOnlyAbsolute(),
     ...selfTestInjectedFileRestore(),
+    ...selfTestEvidenceFile(),
   ];
   const ok = results.every(Boolean);
   console.log(ok ? 'self-test passed' : 'self-test FAILED');
@@ -773,6 +880,64 @@ function selfTestPairEvidence() {
       'pair valid evidence passes',
       evaluateGatedPair(pair, new Map([['X', good]])).verdict === 'pass',
     ),
+    checkCase(
+      'pair ratios derive from timings, not supplied values',
+      evaluateGatedPair(
+        { floor: 0.9, label: 'X', target: 1.0 },
+        new Map([
+          [
+            'X',
+            {
+              changed: [200, 200, 200, 200, 200, 200, 200],
+              full: [100, 100, 100, 100, 100, 100, 100],
+              label: 'X',
+              ratios: [2, 2, 2, 2, 2, 2, 2],
+            },
+          ],
+        ]),
+      ).verdict === 'fail-breach',
+    ),
+  ];
+}
+
+function selfTestSinglesNoShortCircuit() {
+  // An absolute-single failure must not suppress relative-singles
+  // evaluation: the retry spy proves the relative stage still ran.
+  let relativeEvaluated = false;
+  const head = {
+    samples: passingPairSamples(),
+    singles: new Map([
+      ['A1', { label: 'A1', times: [600, 600, 600, 600, 600, 600, 600] }],
+      [
+        'C12full',
+        { label: 'C12full', times: [100, 100, 100, 100, 100, 100, 100] },
+      ],
+      [
+        'D13full',
+        { label: 'D13full', times: [100, 100, 100, 100, 100, 100, 100] },
+      ],
+    ]),
+  };
+  const base = {
+    samples: new Map(),
+    singles: new Map([
+      [
+        'C12full',
+        { label: 'C12full', times: [100, 100, 100, 100, 100, 100, 100] },
+      ],
+      ['D13full', { label: 'D13full', times: [50, 150, 50, 150, 50, 150, 50] }],
+    ]),
+  };
+  const failed = evaluateAllSingles(head, base, () => {
+    relativeEvaluated = true;
+    return { head, base };
+  });
+  void failed;
+  return [
+    checkCase(
+      'absolute failure still evaluates relative singles',
+      relativeEvaluated === true,
+    ),
   ];
 }
 
@@ -820,6 +985,43 @@ function selfTestHeadOnlyAbsolute() {
   ];
 }
 
+function selfTestEvidenceFile() {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const filePath = path.join(
+    fs.mkdtempSync(path.join(os.tmpdir(), 'gate-evidence-')),
+    'evidence.json',
+  );
+  resetEvidence();
+  recordPairEvidence(
+    { floor: 0.9, id: 'G4', label: 'C13', target: 1.0 },
+    {
+      changedMs: 1,
+      cv: 0.1,
+      fullMs: 2,
+      median: 2,
+      retried: false,
+      verdict: 'pass',
+    },
+  );
+  writeEvidenceFile(
+    filePath,
+    buildEvidence({ failed: false, trace: ['pairs', 'singles'] }, null),
+  );
+  const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  resetEvidence();
+  return [
+    checkCase(
+      'evidence file carries pair verdicts',
+      parsed.failed === false &&
+        parsed.pairs.length === 1 &&
+        parsed.pairs[0].id === 'G4' &&
+        parsed.pairs[0].verdict === 'pass' &&
+        Array.isArray(parsed.trace),
+    ),
+  ];
+}
+
 function selfTestInjectedFileRestore() {
   const fs = require('node:fs');
   const os = require('node:os');
@@ -848,6 +1050,9 @@ function selfTestSingles() {
     ['S', { label: 'S', times: [50, 150, 50, 150, 50, 150, 50] }],
   ]);
   const missing = new Map();
+  function thin(ms) {
+    return new Map([['S', { label: 'S', times: [ms] }]]);
+  }
   return [
     checkCase(
       'singles stable pass',
@@ -864,6 +1069,10 @@ function selfTestSingles() {
     checkCase(
       'singles unstable',
       checkSingle('S', unstable, stable).verdict === 'unstable',
+    ),
+    checkCase(
+      'singles thin evidence fails closed',
+      checkSingle('S', thin(100), thin(100)).verdict === 'fail-missing',
     ),
     checkCase(
       'absolute A1 under ceiling passes',

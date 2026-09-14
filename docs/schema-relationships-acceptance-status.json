@@ -842,11 +842,18 @@
       "blocked-by": [],
       "command": "mutation run (new)",
       "id": "MUT",
-      "notes": "Targeted mutants: skip-filter removal, transitive expansion, accept stale generation, missing/undefined collapse, buffer reuse, rebuild-error swallow.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "All 6 mutants killed against source-aliased package configs; tree verified clean after every run. M1 required neutering both skip-subtraction layers (defense in depth); M1/M6 initially survived against stale dist, which the per-package configs fix.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": ["scripts/check-schema-mutants.js"],
+      "testNames": [
+        "M1-skip-filter",
+        "M2-transitive-expansion",
+        "M3-stale-generation",
+        "M4-missing-undefined-collapse",
+        "M5-buffer-reuse",
+        "M6-rebuild-error-swallow"
+      ],
       "verifiedSha": null
     },
     {

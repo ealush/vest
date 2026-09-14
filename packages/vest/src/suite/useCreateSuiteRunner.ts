@@ -3,7 +3,6 @@ import {
   mapWithoutValidation,
   parseAffectedFieldName,
   runSchemaPaths,
-  SchemaMappingUnavailableError,
 } from 'n4s/exports/internal';
 import type {
   MappingProvenance,
@@ -548,34 +547,14 @@ function failedCallbackMapping(
 }
 
 function mappedFailureInput(schema: unknown, fallback: unknown): unknown {
-  try {
-    return mapWithoutValidation(schema, fallback);
-  } catch (error) {
-    // C11: only a framework-declared mapping-unavailable failure keeps the
-    // documented raw fallback. Unexpected parser/getter exceptions
-    // propagate with their identity: a failing run must not deliver
-    // fabricated raw input as schema output while losing the cause.
-    if (isMappingUnavailable(error)) return fallback;
-    throw error;
-  }
-}
-
-/**
- * Classifies framework mapping failures that keep the best-effort raw
- * fallback. Matches ONLY the dedicated SchemaMappingUnavailableError by
- * identity, code, and name (dual-copy interop): a generic
- * EnforceSchemaError is publicly exported and throwable by user parsers,
- * so it must propagate instead of silently delivering raw input to the
- * schema-typed callback.
- */
-function isMappingUnavailable(error: unknown): boolean {
-  if (error instanceof SchemaMappingUnavailableError) return true;
-  if (!isObject(error)) return false;
-  const typed = error as { code?: unknown; name?: unknown };
-  return (
-    typed.code === 'SCHEMA_MAPPING_UNAVAILABLE' &&
-    typed.name === 'SchemaMappingUnavailableError'
-  );
+  // No fallback catch: mapWithoutValidation runs pure parser steps, and any
+  // exception from them is an unexpected user fault that must propagate
+  // with its identity. A failing run must not deliver fabricated raw input
+  // as schema output while losing the cause (C11/R2). There is no
+  // framework-owned mapping-unavailable producer — mapping walks metadata
+  // and never throws framework errors — so a class-based fallback would
+  // only ever swallow user exceptions.
+  return mapWithoutValidation(schema, fallback);
 }
 
 function successfulCallbackMapping(

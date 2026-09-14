@@ -1,9 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  EnforceSchemaError,
-  SchemaMappingUnavailableError,
-  enforce,
-} from 'n4s';
+import { EnforceSchemaError, SchemaProjectionError, enforce } from 'n4s';
 import { mapWithoutValidation } from 'n4s/exports/internal';
 
 import { create, group, mode, Modes, test } from '../../vest';
@@ -59,7 +55,7 @@ enforce.extend(
     },
     architectureFrameworkBoom: (value: string) => {
       if (value === 'MAPPED') {
-        throw new SchemaMappingUnavailableError('structural mapping fault');
+        throw new SchemaProjectionError('structural mapping fault');
       }
       return { pass: true, type: value };
     },
@@ -233,7 +229,7 @@ describe('schema contracts: architectural boundaries', () => {
     expect(recovery.value).toEqual({ a: 'fine', b: 'ok' });
   });
 
-  it('[ARCH-MAPPING] framework mapping failures keep the documented raw fallback', () => {
+  it('[ARCH-MAPPING] mapping-stage faults propagate instead of raw fallback', () => {
     const callback = vi.fn();
     const suite = create(
       data => {
@@ -245,13 +241,22 @@ describe('schema contracts: architectural boundaries', () => {
         b: enforce.isString(),
       }),
     );
+    const valid = suite.run({ a: 'good', b: 'ok' });
+    expect(valid.isValid()).toBe(true);
     // Validation fails at the first stage; failure mapping reaches the
-    // second stage, which throws a framework-declared mapping fault. The
-    // classified boundary keeps best-effort raw input without throwing.
-    const result = suite.run({ a: 'bad', b: 'ok' });
-    expect(result.hasErrors('a')).toBe(true);
+    // second stage, which throws. There is no framework-owned fallback:
+    // the fault propagates by identity with no fabricated callback input.
+    let thrown: unknown;
+    try {
+      suite.run({ a: 'bad', b: 'ok' });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(SchemaProjectionError);
+    expect((thrown as SchemaProjectionError).code).toBe(
+      'SCHEMA_PROJECTION_UNAVAILABLE',
+    );
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback.mock.calls[0][0]).toEqual({ a: 'bad', b: 'ok' });
   });
 
   it('[ARCH-MAPPING] user-thrown EnforceSchemaError propagates instead of raw fallback', () => {

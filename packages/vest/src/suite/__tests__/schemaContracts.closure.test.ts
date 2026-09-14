@@ -3,7 +3,7 @@ import {
   EnforceSchemaError,
   FocusedSchemaMappingError,
   SchemaExclusionError,
-  SchemaMappingUnavailableError,
+  SchemaProjectionError,
   compose,
   enforce,
 } from 'n4s';
@@ -50,7 +50,7 @@ enforce.extend(
     },
     closureFrameworkBoom: (value: string) => {
       if (value === 'MAPPED') {
-        throw new SchemaMappingUnavailableError('closure mapping fault');
+        throw new SchemaProjectionError('closure mapping fault');
       }
       return { pass: true, type: value };
     },
@@ -575,8 +575,8 @@ describe('schema contracts: single normalization across routes', () => {
 });
 
 // DD06: unsupported projection, validation failure, and unexpected execution
-// exceptions stay distinguished on every route (C03/C11 boundary; C11 fixed
-// via SchemaMappingUnavailableError).
+// exceptions stay distinguished on every route (C03/C11 boundary; mapping
+// faults of any class propagate, structural gaps use SchemaProjectionError).
 describe('schema contracts: error boundaries per route', () => {
   function throwingParserSuite() {
     const callback = vi.fn();
@@ -635,22 +635,30 @@ describe('schema contracts: error boundaries per route', () => {
   );
 
   it.each(['full', 'changed'] as const)(
-    '[SC-DD06] framework mapping fault keeps raw fallback on route %s',
+    '[SC-DD06] mapping-stage fault propagates with identity on route %s',
     route => {
       const { callback, suite } = frameworkFaultSuite();
-      const result =
-        route === 'full'
-          ? suite.run({ a: 'bad', b: 'ok' })
-          : suite.changed('a').run({ a: 'bad', b: 'ok' });
-      expect(result.hasErrors('a')).toBe(true);
+      // A full run first: it establishes the branch witness a first-ever
+      // focused run cannot provide on its own.
+      const valid = suite.run({ a: 'good', b: 'ok' });
+      expect(valid.isValid()).toBe(true);
+      let thrown: unknown;
+      try {
+        if (route === 'full') suite.run({ a: 'bad', b: 'ok' });
+        else suite.changed('a').run({ a: 'bad', b: 'ok' });
+      } catch (error) {
+        thrown = error;
+      }
+      // No framework-owned mapping fallback exists: the fault propagates
+      // by identity with no fabricated callback input.
+      expect(thrown).toBeInstanceOf(SchemaProjectionError);
       expect(callback).toHaveBeenCalledTimes(1);
-      expect(callback.mock.calls[0][0]).toEqual({ a: 'bad', b: 'ok' });
     },
   );
 
-  it('[SC-DD06] dedicated mapping-unavailable error carries a stable code', () => {
-    const error = new SchemaMappingUnavailableError('probe');
-    expect(error.code).toBe('SCHEMA_MAPPING_UNAVAILABLE');
+  it('[SC-DD06] dedicated projection error carries a stable code', () => {
+    const error = new SchemaProjectionError('probe');
+    expect(error.code).toBe('SCHEMA_PROJECTION_UNAVAILABLE');
     expect(error).toBeInstanceOf(Error);
   });
 

@@ -3,8 +3,8 @@ import {
   mapWithoutValidation,
   parseAffectedFieldName,
   runSchemaPaths,
+  SchemaMappingUnavailableError,
 } from 'n4s/exports/internal';
-import { EnforceSchemaError } from 'n4s';
 import type {
   MappingProvenance,
   SelectiveExecutionCoverage,
@@ -562,14 +562,19 @@ function mappedFailureInput(schema: unknown, fallback: unknown): unknown {
 
 /**
  * Classifies framework mapping failures that keep the best-effort raw
- * fallback. Matches by identity with a name fallback for dual-copy
- * interop, mirroring the boundary-error handling in selectiveRun.
+ * fallback. Matches ONLY the dedicated SchemaMappingUnavailableError by
+ * identity, code, and name (dual-copy interop): a generic
+ * EnforceSchemaError is publicly exported and throwable by user parsers,
+ * so it must propagate instead of silently delivering raw input to the
+ * schema-typed callback.
  */
 function isMappingUnavailable(error: unknown): boolean {
-  if (error instanceof EnforceSchemaError) return true;
+  if (error instanceof SchemaMappingUnavailableError) return true;
+  if (!isObject(error)) return false;
+  const typed = error as { code?: unknown; name?: unknown };
   return (
-    isObject(error) &&
-    (error as { name?: unknown }).name === 'EnforceSchemaError'
+    typed.code === 'SCHEMA_MAPPING_UNAVAILABLE' &&
+    typed.name === 'SchemaMappingUnavailableError'
   );
 }
 

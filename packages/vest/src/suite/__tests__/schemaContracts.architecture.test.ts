@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { EnforceSchemaError, enforce } from 'n4s';
+import {
+  EnforceSchemaError,
+  SchemaMappingUnavailableError,
+  enforce,
+} from 'n4s';
 import { mapWithoutValidation } from 'n4s/exports/internal';
 
 import { create, group, mode, Modes, test } from '../../vest';
@@ -22,6 +26,10 @@ declare global {
         type: string;
       };
       architectureFrameworkBoom: (value: string) => {
+        pass: boolean;
+        type: string;
+      };
+      architectureUserEnforceBoom: (value: string) => {
         pass: boolean;
         type: string;
       };
@@ -51,7 +59,15 @@ enforce.extend(
     },
     architectureFrameworkBoom: (value: string) => {
       if (value === 'MAPPED') {
-        throw new EnforceSchemaError('structural mapping fault');
+        throw new SchemaMappingUnavailableError('structural mapping fault');
+      }
+      return { pass: true, type: value };
+    },
+    architectureUserEnforceBoom: (value: string) => {
+      // A user parser throwing the PUBLIC EnforceSchemaError must NOT be
+      // mistaken for a framework mapping-unavailable fault: it propagates.
+      if (value === 'MAPPED') {
+        throw new EnforceSchemaError('user parser fault');
       }
       return { pass: true, type: value };
     },
@@ -70,6 +86,7 @@ enforce.extend(
       'architectureConditionalMapped',
       'architectureBoomOnMapped',
       'architectureFrameworkBoom',
+      'architectureUserEnforceBoom',
       'architectureThrowPrimitive',
     ],
   },
@@ -235,6 +252,38 @@ describe('schema contracts: architectural boundaries', () => {
     expect(result.hasErrors('a')).toBe(true);
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback.mock.calls[0][0]).toEqual({ a: 'bad', b: 'ok' });
+  });
+
+  it('[ARCH-MAPPING] user-thrown EnforceSchemaError propagates instead of raw fallback', () => {
+    const callback = vi.fn();
+    const userFault = new EnforceSchemaError('user parser fault');
+    const suite = create(
+      data => {
+        callback(data);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce
+          .architectureConditionalMapped()
+          .architectureUserEnforceBoom(),
+        b: enforce.isString(),
+      }),
+    );
+    const valid = suite.run({ a: 'good', b: 'ok' });
+    expect(valid.isValid()).toBe(true);
+    // Validation fails at the first stage; failure mapping reaches the
+    // second stage, which throws the public EnforceSchemaError. The
+    // dedicated-error boundary must NOT swallow it as mapping-unavailable.
+    let thrown: unknown;
+    try {
+      suite.run({ a: 'bad', b: 'ok' });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(EnforceSchemaError);
+    expect((thrown as Error).message).toBe('user parser fault');
+    expect(thrown).not.toBe(userFault);
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 
   it('[ARCH-MAPPING] non-object mapping throws propagate with identity', () => {

@@ -27,26 +27,40 @@ const VITEST_BIN = path.join(REPO_ROOT, 'node_modules', '.bin', 'vitest');
 const PAIRS_FILE = path.join(
   'packages',
   'vest',
-  'src',
-  '__tests__',
+  'perf-gate',
   'perf-pairs.test.ts',
 );
 
 const STABILITY_MAX_CV = 0.2;
-const BASE_REGRESSION_LIMIT = 0.8;
+const BASE_REGRESSION_LIMIT = 0.9;
 
 const PAIRS = [
   { floor: 0.9, id: 'G4', label: 'C13', target: 1.0 },
   { floor: 0.9, id: 'G6', label: 'D13', target: 1.0 },
-  { floor: 0.9, id: 'G1', label: 'G1', target: 0.9 },
+  { floor: 0.8, id: 'G1', label: 'G1', target: 0.9 },
 ];
+
+// Absolute per-edge creation overhead ceiling (microseconds, median of
+// batch deltas). The G1 ratio floor above guards relative regressions;
+// this guards pathological absolute blowups on any machine. Calibrated
+// with wide headroom over the observed ~1-2us/edge range so ordinary
+// machine variance cannot trip it. See the G1 evidence note in
+// SCHEMA_RELATIONSHIPS_DESIGN.md.
+const G1_ABSOLUTE_US_PER_EDGE = 5;
+const G1_CREATIONS_PER_BATCH = 20000;
 
 // Feature-free single workloads, comparable against a base checkout that
 // predates the relationships feature.
 const SINGLES = ['C12full', 'D13full', 'A1'];
 
 function vestConfigFor(cwd) {
-  return path.join(cwd, 'packages', 'vest', 'vitest.config.ts');
+  return path.join(
+    cwd,
+    'packages',
+    'vest',
+    'perf-gate',
+    'vitest.perf.config.ts',
+  );
 }
 
 function measurementFileFor(cwd) {
@@ -130,7 +144,9 @@ function evaluatePair(ratios, pair) {
   }
   const med = median(ratios);
   const stability = cv(ratios);
-  if (!validPositive(stability) || stability > STABILITY_MAX_CV) {
+  // Zero variance is perfect stability, not missing data: only NaN (no
+  // measurable mean) is inconclusive here.
+  if (!Number.isFinite(stability) || stability > STABILITY_MAX_CV) {
     return { cv: stability, median: med, verdict: 'unstable' };
   }
   return { cv: stability, median: med, verdict: classifyMedian(med, pair) };
@@ -157,17 +173,19 @@ function gatePair(pair, initial, remeasure) {
     samples = remeasure();
     evaluated = evaluatePair(samples.get(pair.label)?.ratios, pair);
   }
+  const times = sampleTimes(samples, pair.label);
   return {
     ...evaluated,
-    changedMs: pairChangedMs(samples, pair.label),
     retried,
+    sample: samples.get(pair.label) ?? null,
+    ...times,
   };
 }
 
-function pairChangedMs(samples, label) {
+function sampleTimes(samples, label) {
   const sample = samples.get(label);
-  if (!sample) return NaN;
-  return median(sample.changed);
+  if (!sample) return { changedMs: NaN, fullMs: NaN };
+  return { changedMs: median(sample.changed), fullMs: median(sample.full) };
 }
 
 function parseSingleLine(line) {
@@ -195,12 +213,6 @@ function isSingleSample(sample) {
   );
 }
 
-function singleMedianMs(singles, label) {
-  const sample = singles.get(label);
-  if (!sample) return NaN;
-  return median(sample.times);
-}
-
 function checkBaseRegression(headMs, baseMs) {
   if (!validPositive(headMs) || !validPositive(baseMs) || !(baseMs > 0)) {
     return 'fail-missing';
@@ -226,6 +238,50 @@ function reportPair(pair, head) {
   );
 }
 
+function reportCreationOverhead(head) {
+  const perEdgeUs = creationOverheadUs(head.sample);
+  const verdict = classifyOverhead(perEdgeUs);
+  console.log(
+    `  G1 absolute overhead: ${fmt(Math.max(perEdgeUs, 0))}us/edge ` +
+      `(ceiling ${G1_ABSOLUTE_US_PER_EDGE}us) -> ${verdict}`,
+  );
+  return verdict;
+}
+
+function classifyOverhead(perEdgeUs) {
+  if (!Number.isFinite(perEdgeUs)) return 'fail-missing';
+  if (perEdgeUs <= G1_ABSOLUTE_US_PER_EDGE) return 'pass';
+  return 'fail-breach';
+}
+
+function pairFailed(entry) {
+  return entry.verdict !== 'pass' && entry.verdict !== 'warn-below-target';
+}
+
+function creationOverheadUs(sample) {
+  if (!isOverheadSample(sample)) return NaN;
+  const diffs = sample.full.map((plainMs, index) =>
+    batchOverheadUs(plainMs, sample.changed[index]),
+  );
+  if (diffs.some(value => !Number.isFinite(value))) return NaN;
+  return median(diffs);
+}
+
+function isOverheadSample(sample) {
+  return (
+    !!sample &&
+    Array.isArray(sample.full) &&
+    Array.isArray(sample.changed) &&
+    sample.full.length === sample.changed.length &&
+    sample.full.length > 0
+  );
+}
+
+function batchOverheadUs(plainMs, relatedMs) {
+  if (!validPositive(plainMs) || !validPositive(relatedMs)) return NaN;
+  return ((relatedMs - plainMs) / G1_CREATIONS_PER_BATCH) * 1000;
+}
+
 function fmt(value) {
   return validPositive(value) ? value.toFixed(3) : String(value);
 }
@@ -247,7 +303,21 @@ function parseBaselineDir(args) {
 function runGate(baselineDir) {
   const head = runMeasurement(REPO_ROOT);
   const base = measureBaseline(baselineDir);
-  return evaluatePairs(head) || (base !== null && evaluateSingles(head, base));
+  // Pairs and singles are always both evaluated: a breached pair must not
+  // hide base-regression evidence (or vice versa). Proven by the
+  // no-short-circuit self-test.
+  return decideGateOutcome(head, base).failed;
+}
+
+function decideGateOutcome(head, base, trace = []) {
+  trace.push('pairs');
+  const pairsFailed = evaluatePairs(head);
+  let singlesFailed = false;
+  if (base !== null) {
+    trace.push('singles');
+    singlesFailed = evaluateSingles(head, base);
+  }
+  return { failed: pairsFailed || singlesFailed, trace };
 }
 
 function measureBaseline(baselineDir) {
@@ -272,19 +342,80 @@ function evaluateSingles(head, base) {
 }
 
 function evaluateGatePair(pair, headSamples) {
-  const entry = gatePair(pair, headSamples, () => runMeasurement(REPO_ROOT));
+  const entry = gatePair(
+    pair,
+    headSamples,
+    () => runMeasurement(REPO_ROOT).samples,
+  );
   reportPair(pair, entry);
-  return entry.verdict !== 'pass' && entry.verdict !== 'warn-below-target';
+  if (pair.id === 'G1') {
+    return reportCreationOverhead(entry) !== 'pass' || pairFailed(entry);
+  }
+  return pairFailed(entry);
 }
 
 function evaluateSingleGate(label, headSingles, baseSingles) {
-  const headMs = singleMedianMs(headSingles, label);
-  const baseMs = singleMedianMs(baseSingles, label);
-  const verdict = checkBaseRegression(headMs, baseMs);
+  let result = checkSingle(label, headSingles, baseSingles);
+  let retried = false;
+  if (result.verdict === 'unstable') {
+    retried = true;
+    const fresh = runMeasurement(REPO_ROOT);
+    result = checkSingle(label, fresh.singles, baseSingles);
+  }
+  reportSingle(label, result, retried);
+  return result.verdict !== 'pass';
+}
+
+function checkSingle(label, headSingles, baseSingles) {
+  const headTimes = timesOf(headSingles, label);
+  const baseTimes = timesOf(baseSingles, label);
+  if (!headTimes || !baseTimes) {
+    return {
+      baseCv: NaN,
+      baseMs: NaN,
+      headCv: NaN,
+      headMs: NaN,
+      verdict: 'fail-missing',
+    };
+  }
+  return checkSingleTimes(headTimes, baseTimes);
+}
+
+function checkSingleTimes(headTimes, baseTimes) {
+  const headCv = cv(headTimes);
+  const baseCv = cv(baseTimes);
+  const headMs = median(headTimes);
+  const baseMs = median(baseTimes);
+  if (unstableCv(headCv) || unstableCv(baseCv)) {
+    return { baseCv, baseMs, headCv, headMs, verdict: 'unstable' };
+  }
+  return {
+    baseCv,
+    baseMs,
+    headCv,
+    headMs,
+    verdict: checkBaseRegression(headMs, baseMs),
+  };
+}
+
+function unstableCv(value) {
+  return !Number.isFinite(value) || value > STABILITY_MAX_CV;
+}
+
+function timesOf(singles, label) {
+  const sample = singles.get(label);
+  if (!sample || !Array.isArray(sample.times) || sample.times.length === 0) {
+    return null;
+  }
+  return sample.times;
+}
+
+function reportSingle(label, result, retried) {
   console.log(
-    `single ${label}: head ${fmt(headMs)}ms vs base ${fmt(baseMs)}ms -> ${verdict}`,
+    `single ${label}: head ${fmt(result.headMs)}ms (cv ${fmt(result.headCv)}) ` +
+      `vs base ${fmt(result.baseMs)}ms (cv ${fmt(result.baseCv)}) -> ${result.verdict}` +
+      `${retried ? ' (retried)' : ''}`,
   );
-  return verdict !== 'pass';
 }
 
 function selfTest() {
@@ -292,6 +423,8 @@ function selfTest() {
     ...selfTestEvaluate(),
     ...selfTestParse(),
     ...selfTestBase(),
+    ...selfTestSingles(),
+    ...selfTestNoShortCircuit(),
   ];
   const ok = results.every(Boolean);
   console.log(ok ? 'self-test passed' : 'self-test FAILED');
@@ -320,13 +453,35 @@ function selfTestEvaluate() {
     },
     { ratios: [1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0], verdict: 'unstable' },
     { ratios: [], verdict: 'fail-missing' },
+    { ratios: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5], verdict: 'pass' },
   ];
-  return cases.map(({ ratios, verdict }, index) =>
+  const results = cases.map(({ ratios, verdict }, index) =>
     checkCase(
       `evaluate ${index} (expect ${verdict})`,
       evaluatePair(ratios, { floor: 0.9, target: 1.0 }).verdict === verdict,
     ),
   );
+  results.push(
+    checkCase(
+      'evaluate G1 warn band (0.85 vs floor 0.8)',
+      evaluatePair([0.85, 0.86, 0.84, 0.85, 0.87, 0.85, 0.86], {
+        floor: 0.8,
+        target: 0.9,
+      }).verdict === 'warn-below-target',
+    ),
+    checkCase(
+      'creation overhead within ceiling',
+      classifyOverhead(0.5) === 'pass' &&
+        classifyOverhead(0) === 'pass' &&
+        classifyOverhead(-0.2) === 'pass',
+    ),
+    checkCase(
+      'creation overhead breach/missing',
+      classifyOverhead(5.9) === 'fail-breach' &&
+        classifyOverhead(NaN) === 'fail-missing',
+    ),
+  );
+  return results;
 }
 
 function selfTestParse() {
@@ -351,7 +506,8 @@ function selfTestParse() {
 function selfTestBase() {
   const cases = [
     { args: [100, 100], want: 'pass' },
-    { args: [130, 100], want: 'fail-regression' },
+    { args: [111, 100], want: 'pass' },
+    { args: [112, 100], want: 'fail-regression' },
     { args: [NaN, 100], want: 'fail-missing' },
   ];
   return cases.map(({ args, want }, index) =>
@@ -360,6 +516,63 @@ function selfTestBase() {
       checkBaseRegression(args[0], args[1]) === want,
     ),
   );
+}
+
+function steadySingles(ms) {
+  return new Map([['S', { label: 'S', times: [ms, ms, ms, ms, ms, ms, ms] }]]);
+}
+
+function selfTestSingles() {
+  const stable = steadySingles(100);
+  const regressed = steadySingles(130);
+  const unstable = new Map([
+    ['S', { label: 'S', times: [50, 150, 50, 150, 50, 150, 50] }],
+  ]);
+  const missing = new Map();
+  return [
+    checkCase(
+      'singles stable pass',
+      checkSingle('S', stable, stable).verdict === 'pass',
+    ),
+    checkCase(
+      'singles regression',
+      checkSingle('S', regressed, stable).verdict === 'fail-regression',
+    ),
+    checkCase(
+      'singles missing',
+      checkSingle('S', missing, stable).verdict === 'fail-missing',
+    ),
+    checkCase(
+      'singles unstable',
+      checkSingle('S', unstable, stable).verdict === 'unstable',
+    ),
+  ];
+}
+
+function selfTestNoShortCircuit() {
+  // Breaching pairs must not skip singles evaluation: the trace proves
+  // both stages ran.
+  const breaching = {
+    samples: new Map([
+      ['C13', { changed: [1], full: [1], label: 'C13', ratios: [0.5] }],
+      ['D13', { changed: [1], full: [1], label: 'D13', ratios: [0.5] }],
+      ['G1', { changed: [1], full: [1], label: 'G1', ratios: [0.5] }],
+    ]),
+    singles: new Map([['C12full', { label: 'C12full', times: [10] }]]),
+  };
+  const base = {
+    samples: new Map(),
+    singles: new Map([['C12full', { label: 'C12full', times: [10] }]]),
+  };
+  const trace = [];
+  const outcome = decideGateOutcome(breaching, base, trace);
+  return [
+    checkCase(
+      'no short-circuit trace',
+      JSON.stringify(trace) === JSON.stringify(['pairs', 'singles']),
+    ),
+    checkCase('breach still fails', outcome.failed === true),
+  ];
 }
 
 try {

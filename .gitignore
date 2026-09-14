@@ -17,6 +17,8 @@ packages/*/*
 !packages/*/vitest.config.ts
 !packages/*/bench
 !packages/*/docs
+!packages/*/perf-gate
+!packages/*/perf-gate/*
 .env
 
 playground.*

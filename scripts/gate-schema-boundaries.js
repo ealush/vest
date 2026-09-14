@@ -54,6 +54,15 @@ function isSourceFile(name) {
 const IMPORT_RE =
   /(?:import|export)[^'"]*?from\s*['"]([^'"]+)["']|require\(\s*['"]([^'"]+)['"]\s*\)/g;
 
+// Workspace aliases resolved to package roots for direction checks. Bare
+// external imports (including vest-utils) are governed by the per-check
+// forbidden patterns, not by this map.
+const ALIAS_ROOTS = new Map([
+  ['n4s', path.join(REPO_ROOT, 'packages', 'n4s')],
+  ['vest', path.join(REPO_ROOT, 'packages', 'vest')],
+  ['vestjs-runtime', path.join(REPO_ROOT, 'packages', 'vestjs-runtime')],
+]);
+
 function importsOf(file) {
   const source = fs.readFileSync(file, 'utf8');
   const found = [];
@@ -65,31 +74,129 @@ function importsOf(file) {
   return found;
 }
 
-function checkImports({ roots, allowSelf = true, forbid, label }) {
+function checkImports({
+  roots,
+  allowSelf = true,
+  forbid,
+  forbidResolved,
+  label,
+  scope,
+}) {
   const files = roots.flatMap(root =>
     walk(root).filter(f => !f.includes('__tests__')),
   );
   let bad = 0;
   for (const file of files) {
-    bad += checkFileImports(file, forbid, label);
+    bad += checkFileImports(file, forbid, forbidResolved, label, scope);
   }
   if (bad === 0) pass(`${label}: ${files.length} files clean`);
   void allowSelf;
 }
 
-function checkFileImports(file, forbid, label) {
+function checkFileImports(file, forbid, forbidResolved, label, scope) {
   let bad = 0;
   for (const spec of importsOf(file)) {
-    if (spec.startsWith('.') || spec.startsWith('node:')) continue;
-    if (forbid.some(pattern => pattern.test(spec))) {
+    if (checkImportSpec(file, spec, forbid, forbidResolved, label, scope)) {
       bad += 1;
-      fail(`${label}: ${path.relative(REPO_ROOT, file)} imports ${spec}`);
     }
   }
   return bad;
 }
 
+function checkImportSpec(file, spec, forbid, forbidResolved, label, scope) {
+  if (spec.startsWith('node:')) return false;
+  // Bare and aliased specifiers keep the existing pattern rules (this
+  // catches 'n4s/exports/internal' and deep 'vest/src' / 'n4s/src' paths).
+  if (forbid.some(pattern => pattern.test(spec))) {
+    fail(`${label}: ${path.relative(REPO_ROOT, file)} imports ${spec}`);
+    return true;
+  }
+  // Relative imports (including `import type`) resolve against the file:
+  // they must stay inside the scope root.
+  if (spec.startsWith('.')) {
+    return checkRelativeScope(file, spec, label, scope);
+  }
+  // Workspace aliases resolve to package roots for direction checks.
+  return checkAliasedScope(file, spec, forbidResolved, label);
+}
+
+function checkRelativeScope(file, spec, label, scope) {
+  const resolved = resolveRelativeImport(file, spec);
+  const roots = scopeRoots(scope, file);
+  if (!roots.some(root => resolved.startsWith(root + path.sep))) {
+    fail(
+      `${label}: ${path.relative(REPO_ROOT, file)} escapes scope via ${spec}`,
+    );
+    return true;
+  }
+  return false;
+}
+
+function checkAliasedScope(file, spec, forbidResolved, label) {
+  const resolved = resolveImport(file, spec);
+  if (resolved === null) return false;
+  if (forbidResolved.some(root => resolved.startsWith(root + path.sep))) {
+    fail(
+      `${label}: ${path.relative(REPO_ROOT, file)} reaches ${path.relative(REPO_ROOT, resolved)} via ${spec}`,
+    );
+    return true;
+  }
+  return false;
+}
+
+function resolveImport(fromFile, spec) {
+  void fromFile;
+  for (const [alias, root] of ALIAS_ROOTS) {
+    if (spec === alias || spec.startsWith(`${alias}/`)) return root;
+  }
+  return null;
+}
+
+function scopeRoots(scope, file) {
+  if (scope.type === 'ownDir') {
+    const match = scope.roots.find(root => file.startsWith(root + path.sep));
+    return match ? [match] : [];
+  }
+  return [scope.root];
+}
+
+function resolveRelativeImport(fromFile, spec) {
+  const base = path.resolve(path.dirname(fromFile), spec);
+  const candidates = [
+    base,
+    `${base}.ts`,
+    `${base}.tsx`,
+    `${base}.js`,
+    `${base}.jsx`,
+    `${base}.mjs`,
+    `${base}.cjs`,
+    path.join(base, 'index.ts'),
+    ...tsEquivalents(base),
+  ];
+  for (const candidate of candidates) {
+    try {
+      if (fs.statSync(candidate).isFile()) return candidate;
+    } catch {
+      continue;
+    }
+  }
+  return path.join(REPO_ROOT, '..', 'unresolvable', spec);
+}
+
+// TypeScript's nodenext-style `./x.js` means `./x.ts`: probe the
+// source spelling alongside the literal one.
+function tsEquivalents(base) {
+  const match = /^(.*)\.(js|jsx|mjs|cjs)$/.exec(base);
+  if (!match) return [];
+  const stem = match[1];
+  const out = [`${stem}.ts`, `${stem}.tsx`, path.join(stem, 'index.ts')];
+  return match[2] === 'js' || match[2] === 'jsx'
+    ? out
+    : out.filter(candidate => !candidate.endsWith('.tsx'));
+}
+
 function checkN4sDirection() {
+  const packages = path.join(REPO_ROOT, 'packages');
   checkImports({
     forbid: [
       /^vest$/,
@@ -99,20 +206,36 @@ function checkN4sDirection() {
       /^vestjs-runtime\//,
       /integrations\//,
     ],
+    forbidResolved: [
+      path.join(packages, 'vest'),
+      path.join(packages, 'vestjs-runtime'),
+      path.join(REPO_ROOT, 'integrations'),
+      path.join(packages, 'vast'),
+      path.join(packages, 'anyone'),
+      path.join(packages, 'context'),
+    ],
     label: 'DD01 n4s owns downward dependencies only',
     roots: [path.join(REPO_ROOT, 'packages', 'n4s', 'src')],
+    scope: { root: path.join(REPO_ROOT, 'packages', 'n4s'), type: 'package' },
   });
 }
 
 function checkAdapterBoundaries() {
-  const roots = fs
-    .readdirSync(path.join(REPO_ROOT, 'integrations'), { withFileTypes: true })
-    .filter(
-      e =>
-        e.isDirectory() &&
-        fs.existsSync(path.join(REPO_ROOT, 'integrations', e.name, 'src')),
-    )
-    .map(e => path.join(REPO_ROOT, 'integrations', e.name, 'src'));
+  const integrations = path.join(REPO_ROOT, 'integrations');
+  // kit/ is registry infrastructure (it exists to reference sibling
+  // integration configs), not a form adapter.
+  const adapters = new Set(
+    fs
+      .readdirSync(integrations, { withFileTypes: true })
+      .filter(
+        e =>
+          e.isDirectory() &&
+          e.name !== 'kit' &&
+          fs.existsSync(path.join(integrations, e.name, 'src')),
+      )
+      .map(e => e.name),
+  );
+  const roots = [...adapters].map(name => path.join(integrations, name, 'src'));
   checkImports({
     forbid: [
       /n4s\/exports\/internal/,
@@ -124,8 +247,14 @@ function checkAdapterBoundaries() {
       /vest\/src\//,
       /n4s\/src\//,
     ],
+    forbidResolved: [
+      path.join(REPO_ROOT, 'packages', 'vest', 'src'),
+      path.join(REPO_ROOT, 'packages', 'n4s', 'src'),
+      path.join(REPO_ROOT, 'packages', 'vestjs-runtime', 'src'),
+    ],
     label: 'DD03 adapters use public operations only',
     roots,
+    scope: { roots, type: 'ownDir' },
   });
 }
 

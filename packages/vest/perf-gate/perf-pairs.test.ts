@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { create, enforce, test } from '../vest';
-import { each } from '../isolates/each';
+import { create, enforce, test } from '../src/vest';
+import { each } from '../src/isolates/each';
 
 /**
  * Paired full-vs-changed throughput measurement for gate:schema-performance.

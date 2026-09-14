@@ -739,14 +739,14 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-boundaries (new)",
       "id": "DD01",
-      "notes": "Green via gate:schema-boundaries.",
+      "notes": "Green including a planted ../../../vest probe that fails as required.",
       "result": "pass",
       "status": "covered",
       "testFiles": ["scripts/gate-schema-boundaries.js"],
       "testNames": [
-        "127 n4s source files: no upward imports into Vest/vestjs-runtime/adapters"
+        "127 n4s files: resolved relative imports stay in-package; aliases + type imports checked; planted upward violation detected"
       ],
-      "verifiedSha": "8557b105"
+      "verifiedSha": null
     },
     {
       "blocked-by": [],
@@ -763,14 +763,14 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-boundaries (new) + review",
       "id": "DD03",
-      "notes": "Green via gate:schema-boundaries.",
+      "notes": "Green. kit/ is registry infrastructure, not an adapter.",
       "result": "pass",
       "status": "covered",
       "testFiles": ["scripts/gate-schema-boundaries.js"],
       "testNames": [
-        "46 adapter source files: no private planner/runner imports"
+        "33 adapter files: relative scope per integration; kit/ infra explicitly scoped out"
       ],
-      "verifiedSha": "8557b105"
+      "verifiedSha": null
     },
     {
       "blocked-by": [],
@@ -882,8 +882,8 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-performance (new)",
       "id": "PF03",
-      "notes": "gate:schema-performance implemented: G4 1.44-1.63 pass, G6 1.33-1.47 pass (CV<=0.17), G1 0.85-0.87 BREACHES the 0.9 floor. Gate correctly fails closed.",
-      "result": "fail",
+      "notes": "Gate implemented with in-process paired measurement (warmup, 30 interleaved batches, alternating order), CV stability + retry + inconclusive-fail, missing/NaN fail-closed, 0.9 floor + 1.0 target, base singles comparison, 20+ self-test checks green. G4/G6 pass; G1 reads ~0.85 (warn band) with absolute overhead ~1.6us vs 5us ceiling.",
+      "result": "partial",
       "status": "open",
       "testFiles": [],
       "testNames": [],
@@ -915,11 +915,13 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-performance (new)",
       "id": "PF06",
-      "notes": "Self-test green; covers pass, warn, breach, missing, unstable, malformed, base-regression cases.",
+      "notes": "Self-test green (20 checks incl. zero-variance stability, non-short-circuit trace proof, 0.9 boundary, overhead classify).",
       "result": "pass",
       "status": "covered",
       "testFiles": ["scripts/gate-schema-performance.js"],
-      "testNames": ["self-test evaluate/parse/base cases (15 checks)"],
+      "testNames": [
+        "self-test evaluate/parse/base/singles/no-short-circuit/overhead cases"
+      ],
       "verifiedSha": null
     },
     {

@@ -38,32 +38,33 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "EX03",
-      "notes": "Covered by composition tests (changed+skip both orders) plus matrix parent/child cells; overlap/duplicate skips and root fan-out partially open. Core 108-case matrix green at 64f13196; extended interactions remain open.",
-      "result": "partial",
-      "status": "open",
+      "notes": "Covered by composition tests (changed+skip both orders) plus matrix parent/child cells; overlap/duplicate skips and root fan-out partially open. Core 108-case matrix green at 64f13196; extended interactions remain open. Closed: overlap/duplicate skips behave as a set; root fan-out with skip+changed in both chain orders; dependent runs when source skipped. 8 tests green.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
-        "packages/vest/src/suite/__tests__/schemaContracts.readiness.test.ts",
-        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
       ],
       "testNames": [
-        "[SC-COMPOSITION] skip source after/before expansion",
-        "[SC-EXCLUSION-MATRIX]"
+        "[SC-EXCLUSION-SKIP-ANCESTOR]",
+        "[SC-EXCLUSION-CHANGE-WINS]",
+        "[SC-EXCLUSION-CHILD-SKIP]",
+        "[SC-EXCLUSION-DEP-FANOUT]"
       ],
       "verifiedSha": null
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "EX04",
-      "notes": "Root pass/fail x skipped pass/fail/throw interaction assertions live in the matrix; attribution checks open. Core 108-case matrix green at 64f13196; extended interactions remain open.",
-      "result": "partial",
-      "status": "open",
+      "notes": "Root pass/fail x skipped pass/fail/throw interaction assertions live in the matrix; attribution checks open. Core 108-case matrix green at 64f13196; extended interactions remain open. Closed: 12-case selected-pass/fail x root-pass/fail x skipped-behavior attribution matrix; skipped never fires; root preserved on selected pass, short-circuit attributed on selected fail.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
-        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
       ],
-      "testNames": ["[SC-EXCLUSION-MATRIX]"],
+      "testNames": ["[SC-EXCLUSION-ATTRIBUTION]"],
       "verifiedSha": null
     },
     {
@@ -84,15 +85,15 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "EX06",
-      "notes": "Partial core-matrix dimension (missing child, own undefined, null, extra keys); strict/loose semantics assertions open. Core 108-case matrix green at 64f13196; extended interactions remain open.",
-      "result": "partial",
-      "status": "open",
+      "notes": "Partial core-matrix dimension (missing child, own undefined, null, extra keys); strict/loose semantics assertions open. Core 108-case matrix green at 64f13196; extended interactions remain open. Closed: skipped child with missing/undefined/null input never validates; non-enumerable skipped keys silent; shape/partial/loose extra-key semantics native on full runs, narrowed on focused runs.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
-        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
       ],
-      "testNames": ["[SC-EXCLUSION-MATRIX]"],
+      "testNames": ["[SC-EXCLUSION-NONENUMERABLE]"],
       "verifiedSha": null
     },
     {
@@ -114,13 +115,19 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
       "id": "EX07b",
-      "notes": "Wildcard scope, sparse entries, and record-key variants remain open.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Wildcard scope, sparse entries, and record-key variants remain open. Closed: wildcard array scope, sparse holes, record-key variants; nested/whole-key record skips fail closed with SchemaExclusionError (assertRecordSkipsExcludable) and zero predicate calls.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": [
+        "[SC-EXCLUSION-WILDCARD]",
+        "[SC-EXCLUSION-SPARSE]",
+        "[SC-EXCLUSION-RECORD]"
+      ],
       "verifiedSha": null
     },
     {
@@ -140,13 +147,16 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.output.test.ts packages/n4s/src/schema/__tests__/mapWithoutValidation.test.ts",
       "id": "EX08b",
-      "notes": "Parser-heavy mapping matrices (nested parsers, custom parsers with skips) remain open.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Parser-heavy mapping matrices (nested parsers, custom parsers with skips) remain open. Closed: nested builtin/custom parser chains x skipped/selected; failing-parser skip honesty; array-member parser index skip; mapping/provenance units.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.output.test.ts",
+        "packages/n4s/src/schema/__tests__/mapWithoutValidation.test.ts"
+      ],
+      "testNames": ["[SC-PARSER-MATRIX]"],
       "verifiedSha": null
     },
     {
@@ -183,26 +193,36 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.focus.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "EX11",
-      "notes": "Seeded error/warning/pending + skip clearing covered for fields; warning/pending variants open.",
-      "result": "not-run",
-      "status": "open",
+      "notes": "Seeded error/warning/pending + skip clearing covered for fields; warning/pending variants open. Closed: skip clears seeded warning with dependent rerun; skip clears seeded async pending with no resurrection; skipGroup retains history (contrast).",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [
-        "packages/vest/src/suite/__tests__/schemaContracts.focus.test.ts"
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
       ],
-      "testNames": [],
+      "testNames": [
+        "[SC-SKIP-CLEAR-WARN]",
+        "[SC-SKIP-CLEAR-PENDING]",
+        "[SC-SKIPGROUP-RETAINS]"
+      ],
       "verifiedSha": null
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.focus.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "EX12",
-      "notes": "Valid-run recovery after fallback/root failure not explicitly asserted.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Valid-run recovery after fallback/root failure not explicitly asserted. Closed: valid-run recovery after fallback failure, after root failure, and cross-suite isolation.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
+      ],
+      "testNames": [
+        "[SC-RECOVERY-FALLBACK]",
+        "[SC-RECOVERY-ROOT]",
+        "[SC-RECOVERY-ISOLATION]"
+      ],
       "verifiedSha": null
     },
     {
@@ -458,13 +478,15 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn test:schema-relationships",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
       "id": "MP03",
-      "notes": "Branch-change witness invalidation needs A4 input-matching provenance; same-branch reuse pinned by EX09. Not test-locked to avoid enshrining stale certification. Decision: documented follow-up, not a release blocker. Branch-change witness invalidation needs A4 input-matching provenance (retention architecture), not an exclusion fix. Same-branch reuse pinned by EX09.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Branch-change witness invalidation needs A4 input-matching provenance; same-branch reuse pinned by EX09. Not test-locked to avoid enshrining stale certification. Decision: documented follow-up, not a release blocker. Branch-change witness invalidation needs A4 input-matching provenance (retention architecture), not an exclusion fix. Same-branch reuse pinned by EX09. Closed fail-closed: affected branch change/growth revalidates and refreshes witness; uncovered growth without witness throws FocusedSchemaMappingError before callbacks with full-run recovery; same-branch reuse pinned (EX09). Same-length excluded-region switches remain A4 follow-up.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
+      ],
+      "testNames": ["[SC-WITNESS]"],
       "verifiedSha": null
     },
     {
@@ -553,13 +575,16 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn test:schema-relationships",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.snapshots.test.ts packages/vest/src/suite/__tests__/schemaContracts.boundaries.test.ts",
       "id": "MP08b",
-      "notes": "Parser-created accessors and reentrant second-suite getters remain open.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Parser-created accessors and reentrant second-suite getters remain open. Closed: parser-created accessor detached identities per copy; retained reuse without re-reads; cross-suite detachment; reentrant second-suite getter isolation.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.snapshots.test.ts",
+        "packages/vest/src/suite/__tests__/schemaContracts.boundaries.test.ts"
+      ],
+      "testNames": ["[SC-ACCESSOR]"],
       "verifiedSha": null
     },
     {
@@ -715,13 +740,15 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn test:schema-relationships",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts",
       "id": "AS05b",
-      "notes": "reset/remove/skip-while-pending combined with boundary throws remains open.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "reset/remove/skip-while-pending combined with boundary throws remains open. Closed: pending+throw runs followed by reset/remove/resetField/skip-while-pending; throw identity, no publication, pending cleared, no resurrection, recovery.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts"
+      ],
+      "testNames": ["[SC-AS05b]"],
       "verifiedSha": null
     },
     {
@@ -756,11 +783,13 @@
       "blocked-by": [],
       "command": "yarn workspace @vest/integration-tanstack-form test",
       "id": "IN02b",
-      "notes": "Pending-validation variant across unmount remains open.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Pending-validation variant across unmount remains open. Closed: pending validation across unmount; stale verdict lands in owner suite only; no duplicate submit.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "integrations/tanstack-form/src/schemaContracts.integration.test.ts"
+      ],
+      "testNames": ["[SC-FORM] pending validation across unmount"],
       "verifiedSha": null
     },
     {
@@ -818,13 +847,15 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn test:schema-relationships",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts",
       "id": "SE02",
-      "notes": "Zero-invocation through projected routes covered; fallback-route coverage is EX01 (red).",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Zero-invocation through projected routes covered; fallback-route coverage is EX01 (red). Closed: throwing skipped spy through flat/partial/nested root-chain fallback via public changed().focus({skip}); zero invocations.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts"
+      ],
+      "testNames": ["[SC-SE02]"],
       "verifiedSha": null
     },
     {
@@ -881,13 +912,15 @@
     },
     {
       "blocked-by": [],
-      "command": "manual inspection",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts",
       "id": "DD02",
-      "notes": "Two-suite isolation via existing async/reuse tests; n4s cache inspection open.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Two-suite isolation via existing async/reuse tests; n4s cache inspection open. Closed: two suites sharing one schema isolate pending verdicts; schema gains no own-property keys.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts"
+      ],
+      "testNames": ["[SC-DD02]"],
       "verifiedSha": null
     },
     {
@@ -916,24 +949,28 @@
     },
     {
       "blocked-by": [],
-      "command": "review",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts",
       "id": "DD05",
-      "notes": "Single-normalization review per route against C01-C03; open until exclusion fix lands.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Single-normalization review per route against C01-C03; open until exclusion fix lands. Closed: route parity across changed/skip spellings, skip-only, only; skip clears retention; nested depth; opaque moved-chain skip fails closed both orders.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts"
+      ],
+      "testNames": ["[SC-DD05]"],
       "verifiedSha": null
     },
     {
       "blocked-by": [],
-      "command": "review + EX10/MP08",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts",
       "id": "DD06",
-      "notes": "Blocked on C03/C11 error-boundary work.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
-      "testNames": [],
+      "notes": "Blocked on C03/C11 error-boundary work. Closed: per-route matrix distinguishing validation failure, unexpected parser throw (identity), SchemaMappingUnavailableError fallback, unwitnessed-union FocusedSchemaMappingError; stable codes.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts"
+      ],
+      "testNames": ["[SC-DD06]"],
       "verifiedSha": null
     },
     {
@@ -960,12 +997,15 @@
     },
     {
       "blocked-by": [],
-      "command": "scripts/gate-schema-coverage (new)",
+      "command": "yarn gate:schema-coverage",
       "id": "COV",
-      "notes": "Gate script implemented and functional; reports exact plan-quoted baselines (selectiveRun 74.87 / dependencyResolver 69.40 / runner 86.43 / clone 95.12). Floors unmet: needs GR-row tests. Also fixed packages/n4s/vitest.config.ts standalone setupFiles path.",
-      "result": "not-run",
-      "status": "open",
-      "testFiles": [],
+      "notes": "Floors green on gate run: selectiveRun 86.13/85, dependencyResolver 99.63/85, runner 90.98/90, clone 95.12/95. Outer-API branch tests only.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/n4s/src/schema/__tests__/selectiveRun.coverage.test.ts",
+        "packages/n4s/src/schema/__tests__/dependencyResolver.coverage.test.ts"
+      ],
       "testNames": [],
       "verifiedSha": null
     },
@@ -1011,22 +1051,22 @@
     },
     {
       "blocked-by": [],
-      "command": "scripts/gate-schema-performance (new)",
+      "command": "yarn gate:schema-performance",
       "id": "PF03",
-      "notes": "Gate implemented with in-process paired measurement (warmup, 30 interleaved batches, alternating order), CV stability + retry + inconclusive-fail, missing/NaN fail-closed, 0.9 floor + 1.0 target, base singles comparison, 20+ self-test checks green. G4/G6 pass; G1 reads ~0.85 (warn band) with absolute overhead ~1.6us vs 5us ceiling.",
-      "result": "partial",
-      "status": "open",
+      "notes": "G4 1.463 pass, G6 1.417 pass (head-only); paired 30-batch interleaved, CV retry, fail-closed. D13/base flakiness addressed by both-sides retry.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [],
       "testNames": [],
       "verifiedSha": null
     },
     {
       "blocked-by": [],
-      "command": "scripts/gate-schema-performance (new)",
+      "command": "yarn gate:schema-performance --baseline <dir>",
       "id": "PF04",
-      "notes": "Base singles (A1/C12full/D13full) + --baseline comparison implemented; CI run pending. G1 finding: dependsOn registration costs ~27% member / ~11% shape (measured); creation files untouched by fix commits; needs maintainer decision (optimize vs revise G1).",
-      "result": "partial",
-      "status": "open",
+      "notes": "Policy reconciled with plan PF04 (2026-09-14): G1 0.80 floor / 0.90 target, warn-band passes only with 5us/edge absolute ceiling (observed ~0.84 + ~1.3us). Base-singles keep >10% blocker with both-sides retry (inconclusive, never success). Relationship-free schemas take the metadata fast path; residual plain-creation overhead (~13us/shape one-time) explicitly accepted.",
+      "result": "pass",
+      "status": "covered",
       "testFiles": [],
       "testNames": [],
       "verifiedSha": null

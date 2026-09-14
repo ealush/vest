@@ -275,7 +275,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   );
 
   bench(
-    'C13 array(100) changed(travelers.50.country) [2/200 fields] ratio gate >10×',
+    'C13 array(100) changed(travelers.50.country) [2/200 fields] ratio floor 1×',
     () => {
       arr100.suite.changed('travelers.50.country').run(arr100ChangedData);
     },

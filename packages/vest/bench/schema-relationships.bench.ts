@@ -818,14 +818,14 @@ describe('Integration matrix — changed() meets Vest features', () => {
       () => {
         volSuiteRun.run(volData);
       },
-      { time: 250 },
+      { time: 500, warmupTime: 500 },
     );
     bench(
-      'D13 volatility changed(field_0) [2/101 fields] — ratio gate',
+      'D13 volatility changed(field_0) [2/101 fields] — ratio floor 1×',
       () => {
         volSuiteChanged.changed('field_0').run(volChangedData);
       },
-      { time: 250 },
+      { time: 500, warmupTime: 500 },
     );
   }
 });

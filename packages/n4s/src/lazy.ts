@@ -62,49 +62,6 @@ type TCustomLazyRules = {
   >;
 };
 
-/**
- * Whether any kept member carries relationship metadata (inline unresolved
- * deps, resolved edges, or item schemas that may hide nested edges).
- * Plain scalar schemas short-circuit before any scope-proxy or traversal
- * work so relationship-free creation stays near baseline cost.
- */
-function hasRelationshipMetadata(
-  schema: Record<string, unknown>,
-  keyFilter?: (key: string) => boolean,
-): boolean {
-  for (const key of Object.keys(schema)) {
-    if (keyFilter && !keyFilter(key)) continue;
-    const fieldRule = schema[key] as unknown as Record<
-      PropertyKey,
-      unknown
-    > | null;
-    // RuleInstances are callable proxies (typeof 'function'), not plain
-    // objects — both carry symbol slots.
-    if (
-      isNullish(fieldRule) ||
-      (typeof fieldRule !== 'object' && typeof fieldRule !== 'function')
-    )
-      continue;
-    if (
-      Array.isArray(fieldRule[UNRESOLVED_DEPS as unknown as PropertyKey]) &&
-      (fieldRule[UNRESOLVED_DEPS as unknown as PropertyKey] as unknown[])
-        .length > 0
-    )
-      return true;
-    if (
-      Array.isArray(
-        fieldRule[RESOLVED_RELATIONSHIPS as unknown as PropertyKey],
-      ) &&
-      (fieldRule[RESOLVED_RELATIONSHIPS as unknown as PropertyKey] as unknown[])
-        .length > 0
-    )
-      return true;
-    if (fieldRule[ITEM_SCHEMA as unknown as PropertyKey] !== undefined)
-      return true;
-  }
-  return false;
-}
-
 function collectSchemaRelationships(
   schema: Record<string, unknown>,
   keyFilter?: (key: string) => boolean,
@@ -113,10 +70,6 @@ function collectSchemaRelationships(
   // graph has already produced the selective plan. Recompiling relationships
   // here would force dependency providers back into executable fragments.
   if (isSchemaExecutionProjection()) return [];
-  // Fast path for plain schemas: relationship-free creation must not pay
-  // graph-collection overhead (scope proxies, inline resolution, item
-  // traversal). A1 vs base showed ~11x plain-shape regression without it.
-  if (!hasRelationshipMetadata(schema, keyFilter)) return [];
   // Pick/omit combinators ignore validation constraints on excluded fields:
   // resolve inline deps against the kept top-level keys only, so a dangling
   // ref on a dropped field cannot throw. Edges touching excluded keys are

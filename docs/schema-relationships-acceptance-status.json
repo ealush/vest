@@ -40,7 +40,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "EX03",
-      "notes": "Covered by composition tests (changed+skip both orders) plus matrix parent/child cells; overlap/duplicate skips and root fan-out partially open. Core 108-case matrix green at 64f13196; extended interactions remain open. Closed: overlap/duplicate skips behave as a set; root fan-out with skip+changed in both chain orders; dependent runs when source skipped. 8 tests green. only+skip both fluent orders on plain and composed schemas; tuple/array placements; skip-all/empty/nonexistent behavior.",
+      "notes": "Covered by composition tests (changed+skip both orders) plus matrix parent/child cells; overlap/duplicate skips and root fan-out partially open. Core 108-case matrix green at 64f13196; extended interactions remain open. Closed: overlap/duplicate skips behave as a set; root fan-out with skip+changed in both chain orders; dependent runs when source skipped. 8 tests green. only+skip both fluent orders on plain and composed schemas; tuple/array placements; skip-all/empty/nonexistent behavior. Nested skip-only on plain containers added to the route matrix (6 tests).",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -100,7 +100,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
       "id": "EX07a",
-      "notes": "Concrete index, whole-item, and keyed-reorder index tracking green.",
+      "notes": "Concrete index, whole-item, and keyed-reorder index tracking green. Array-index skip-only on positional arrays fails closed with stable code (unrepresentable as rebuilt schema); index selection remains a changed-route supplement behavior.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -179,7 +179,7 @@
       "blocked-by": ["C03"],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
       "id": "EX10",
-      "notes": "Moved-chain (.message drift) skip throws SchemaExclusionError with zero excluded calls; unwitnessed union throws FocusedSchemaMappingError. Cause-preservation for injected throwing parsers/getters stays with C11/step 3.",
+      "notes": "Moved-chain (.message drift) skip throws SchemaExclusionError with zero excluded calls; unwitnessed union throws FocusedSchemaMappingError. Cause-preservation for injected throwing parsers/getters stays with C11/step 3. Foreign parse route narrowed to isValidation protocol only with getter-safe classification; parse/run stages separated so run exceptions never retry as parse failures (throwing-getter test pins identity + zero fallback).",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -965,7 +965,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts",
       "id": "DD05",
-      "notes": "Single-normalization review per route against C01-C03; open until exclusion fix lands. Closed: route parity across changed/skip spellings, skip-only, only; skip clears retention; nested depth; opaque moved-chain skip fails closed both orders. R1 follow-up: composed skip-only parity added to the route loop (skipped 0, selected 1, root 1) via the omission walker; composed only() inclusion distinction pinned (runs unselected once by design).",
+      "notes": "Single-normalization review per route against C01-C03; open until exclusion fix lands. Closed: route parity across changed/skip spellings, skip-only, only; skip clears retention; nested depth; opaque moved-chain skip fails closed both orders. R1 follow-up: composed skip-only parity added to the route loop (skipped 0, selected 1, root 1) via the omission walker; composed only() inclusion distinction pinned (runs unselected once by design). P1 follow-up: plain nested skip-only (shape/partial/loose) and only(profile)+skip(profile.a) omit recursively with zero excluded calls; scalar-descending skips are safe no-ops; array-index skip-only fails closed; composed only() keeps inclusion semantics (pinned).",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -978,7 +978,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts",
       "id": "DD06",
-      "notes": "Blocked on C03/C11 error-boundary work. Closed: per-route matrix distinguishing validation failure, unexpected parser throw (identity), SchemaMappingUnavailableError fallback, unwitnessed-union FocusedSchemaMappingError; stable codes. R2 follow-up: mapping fallback removed \u2014 faults of any class propagate by identity with no fabricated input (SchemaMappingUnavailableError deleted); execution catches match only SchemaProjectionError (code/name, throwing getters safe); foreign parse keeps isValidation protocol only; safe route pinned for genuine projection signals.",
+      "notes": "Blocked on C03/C11 error-boundary work. Closed: per-route matrix distinguishing validation failure, unexpected parser throw (identity), SchemaMappingUnavailableError fallback, unwitnessed-union FocusedSchemaMappingError; stable codes. R2 follow-up: mapping fallback removed \u2014 faults of any class propagate by identity with no fabricated input (SchemaMappingUnavailableError deleted); execution catches match only SchemaProjectionError (code/name, throwing getters safe); foreign parse keeps isValidation protocol only; safe route pinned for genuine projection signals. R2 follow-up: execution-time fallback catches removed entirely \u2014 structural gaps route via planning (projection null, supplement gaps, exclusion errors) before user execution, so every unexpected exception propagates with single execution. Former SchemaProjectionError class and mapping fallback deleted; lookalike-name tests prove names confer no authority; throwing classifier getters cannot mask the original fault.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1015,7 +1015,7 @@
       "blocked-by": [],
       "command": "yarn gate:schema-coverage",
       "id": "COV",
-      "notes": "Floors green on gate run: selectiveRun 85.70/85, dependencyResolver 100/85, runner 91.47/90, clone 95.12/95. Outer-API branch tests only; changed-line coverage tracked per plan.",
+      "notes": "Floors green on gate run: selectiveRun 85.77/85, dependencyResolver 100/85, runner 91.09/90, clone 95.12/95. Outer-API branch tests only; changed-line coverage tracked per plan.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1091,7 +1091,7 @@
       "blocked-by": [],
       "command": "yarn gate:schema-performance",
       "id": "PF03",
-      "notes": "Head-only enforces G4/G6/G1-relative/G1-absolute/A1-absolute. Minimum 7 batches; timing length/positivity validation; injected baseline files byte-restored; subprocess failures print captured samples; relative budget exactly 10% latency growth; both-sides retry; benchmark workflow uploads evidence always and marks failed comments.",
+      "notes": "Head-only enforces G4/G6/G1-relative/G1-absolute/A1-absolute. Minimum 7 batches (pairs and singles); ratios derived from raw timings; mismatched/non-positive evidence fails closed; absolute and relative singles both evaluate without short-circuit; injected baseline files byte-restored; subprocess failures print captured samples; exact 10% latency definition; both-sides retry; gate writes schema-perf-results.json (uploaded always) separately from the benchmark report.",
       "result": "pass",
       "status": "covered",
       "testFiles": [],

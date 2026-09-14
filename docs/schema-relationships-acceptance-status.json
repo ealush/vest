@@ -1,6 +1,6 @@
 {
   "generated": "2026-09-12",
-  "head": "8557b105",
+  "head": "698c4228",
   "note": "Living manifest for docs/schema-relationships-production-acceptance-plan.md. Statuses: open, covered, blocked, unsupported-documented. verifiedSha is set only by an executed green run on that exact SHA. covered requires checking assertions, not file greenness.",
   "rows": [
     {
@@ -854,7 +854,7 @@
         "M5-buffer-reuse",
         "M6-rebuild-error-swallow"
       ],
-      "verifiedSha": null
+      "verifiedSha": "698c4228"
     },
     {
       "blocked-by": [],

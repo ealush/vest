@@ -78,7 +78,7 @@
         "packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts"
       ],
       "testNames": [
-        "[SC-EXCLUSION-COMPOSE] root true/false preserves exclusion",
+        "[SC-EXCLUSION-COMPOSE] root %s preserves exclusion with every root linked",
         "[SC-EXCLUSION-COMPOSE] nested composition keeps every root and drops the skip"
       ],
       "verifiedSha": "8557b105"
@@ -286,7 +286,7 @@
       "result": "pass",
       "status": "covered",
       "testFiles": [
-        "packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts"
+        "packages/vest/src/suite/__tests__/schemaContracts.focus.test.ts"
       ],
       "testNames": [
         "[SC-PATH] unknown changed paths run nothing and report no errors",
@@ -302,8 +302,15 @@
       "notes": "Dangling pick/omit + partial/loose/compose relationship preservation covered.",
       "result": "pass",
       "status": "covered",
-      "testFiles": ["packages/n4s/src/schema/__tests__/selectiveRun.test.ts"],
-      "testNames": ["pick/omit dangling"],
+      "testFiles": [
+        "packages/n4s/src/rules/schemaRules/__tests__/pick.test.ts",
+        "packages/n4s/src/rules/schemaRules/__tests__/omit.test.ts"
+      ],
+      "testNames": [
+        "ignores dangling local dependencies on excluded fields",
+        "ignores dangling local dependencies on omitted fields",
+        "still rejects dangling local dependencies on included fields"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -358,11 +365,7 @@
         "packages/vest/src/suite/__tests__/schemaContracts.readiness.test.ts",
         "packages/vest/src/__tests__/integration.exclusive.test.ts"
       ],
-      "testNames": [
-        "[SC-SKIP-PRECEDENCE]",
-        "[SC-COMPOSITION] skip source",
-        "First declaration wins"
-      ],
+      "testNames": ["[SC-SKIP-PRECEDENCE]", "First declaration wins"],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -634,7 +637,9 @@
       "testFiles": [
         "packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts"
       ],
-      "testNames": ["getter-free"],
+      "testNames": [
+        "[SC-SCOPE] planning never evaluates validators, parsers, or input getters unrelated to collection expansion"
+      ],
       "verifiedSha": "6c6c40bb"
     },
     {
@@ -658,8 +663,15 @@
       "notes": "Context restoration covered; reentrant-validation cases extend existing.",
       "result": "pass",
       "status": "covered",
-      "testFiles": ["packages/context/src/__tests__"],
-      "testNames": ["Context (context.test.ts + cascade.test.ts suites)"],
+      "testFiles": [
+        "packages/context/src/__tests__/context.test.ts",
+        "packages/context/src/__tests__/cascade.test.ts"
+      ],
+      "testNames": [
+        "should have a use method",
+        "Should return a new context on each run",
+        "Should create a new context instance"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -813,9 +825,7 @@
       "notes": "Green on fix heads.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [
-        "integrations/* (hono, kit, react-hook-form, standard-schema, t3-env, tanstack-form, tanstack-router, trpc)"
-      ],
+      "testFiles": [],
       "testNames": [
         "yarn integrations:verify green (test + typecheck + build per integration)"
       ],
@@ -823,12 +833,12 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn example:production:test",
+      "command": "yarn example:production:test && yarn example:production:typecheck && yarn example:production:build",
       "id": "IN04a",
       "notes": "Example test/typecheck/build trio green.",
       "result": "pass",
       "status": "covered",
-      "testFiles": ["examples/* canonical production registration app"],
+      "testFiles": [],
       "testNames": ["example:production:test + typecheck + build green"],
       "verifiedSha": "6c6c40bb"
     },
@@ -892,20 +902,21 @@
       "status": "covered",
       "testFiles": ["scripts/gate-schema-boundaries.js"],
       "testNames": [
-        "pack + exports targets + CJS/ESM import smoke without workspace aliases"
+        "PK01 n4s: packed, all exports targets present",
+        "PK01 vest: CJS import + changed smoke without workspace aliases",
+        "PK01 vest: ESM import smoke without workspace aliases",
+        "PK01 consumer: package-specifier + subpath tsc check"
       ],
       "verifiedSha": "8557b105"
     },
     {
       "blocked-by": [],
-      "command": "yarn test + yarn integrations:verify",
+      "command": "yarn test && yarn integrations:verify",
       "id": "PK02",
       "notes": "No-schema/schema consumer behavior green except documented changes.",
       "result": "pass",
       "status": "covered",
-      "testFiles": [
-        "packages/vest (no-schema suites) + integrations/* (schema consumers)"
-      ],
+      "testFiles": [],
       "testNames": [
         "yarn test + yarn integrations:verify green except documented focus-collision correction"
       ],
@@ -919,9 +930,7 @@
       "result": "pass",
       "status": "covered",
       "testFiles": ["scripts/gate-schema-boundaries.js"],
-      "testNames": [
-        "127 n4s files: resolved relative imports stay in-package; aliases + type imports checked; planted upward violation detected"
-      ],
+      "testNames": ["DD01 n4s owns downward dependencies only"],
       "verifiedSha": null
     },
     {
@@ -945,9 +954,7 @@
       "result": "pass",
       "status": "covered",
       "testFiles": ["scripts/gate-schema-boundaries.js"],
-      "testNames": [
-        "33 adapter files: relative scope per integration; kit/ infra explicitly scoped out"
-      ],
+      "testNames": ["DD03 adapters use public operations only"],
       "verifiedSha": null
     },
     {
@@ -957,15 +964,22 @@
       "notes": "Context regressions green; FP03 cases extend.",
       "result": "pass",
       "status": "covered",
-      "testFiles": ["packages/context/src/__tests__"],
-      "testNames": ["Context (context.test.ts + cascade.test.ts suites)"],
+      "testFiles": [
+        "packages/context/src/__tests__/context.test.ts",
+        "packages/context/src/__tests__/cascade.test.ts"
+      ],
+      "testNames": [
+        "should have a use method",
+        "Should return a new context on each run",
+        "Should create a new context instance"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts",
       "id": "DD05",
-      "notes": "Single-normalization review per route against C01-C03; open until exclusion fix lands. Closed: route parity across changed/skip spellings, skip-only, only; skip clears retention; nested depth; opaque moved-chain skip fails closed both orders. R1 follow-up: composed skip-only parity added to the route loop (skipped 0, selected 1, root 1) via the omission walker; composed only() inclusion distinction pinned (runs unselected once by design). P1 follow-up: plain nested skip-only (shape/partial/loose) and only(profile)+skip(profile.a) omit recursively with zero excluded calls; scalar-descending skips are safe no-ops; array-index skip-only fails closed; composed only() keeps inclusion semantics (pinned).  State-machine oracle extended with schema-execution census, only/remove/reset ops, and Fisher-Yates planning; metamorphic full/selective agreement and unrelated-change isolation pinned. remove()-then-changed retention gap recorded separately (KN01).",
+      "notes": "Single-normalization review per route against C01-C03; open until exclusion fix lands. Closed: route parity across changed/skip spellings, skip-only, only; skip clears retention; nested depth; opaque moved-chain skip fails closed both orders. R1 follow-up: composed skip-only parity added to the route loop (skipped 0, selected 1, root 1) via the omission walker; composed only() inclusion distinction pinned (runs unselected once by design). P1 follow-up: plain nested skip-only (shape/partial/loose) and only(profile)+skip(profile.a) omit recursively with zero excluded calls; scalar-descending skips are safe no-ops; array-index skip-only fails closed; composed only() keeps inclusion semantics (pinned).  State-machine oracle extended with schema-execution census, only/remove/reset ops, and Fisher-Yates planning; metamorphic full/selective agreement and unrelated-change isolation pinned. remove()-then-changed retention gap recorded separately (KN01). Planning census extended: changed expansion adds no input getter reads beyond the validator copy.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1027,9 +1041,9 @@
     },
     {
       "blocked-by": [],
-      "command": "mutation run (new)",
+      "command": "node scripts/gate-schema-performance.js --self-test; targeted single-file runs per mutant",
       "id": "MUT",
-      "notes": "All 6 mutants killed against source-aliased package configs; tree verified clean after every run. M1 required neutering both skip-subtraction layers (defense in depth); M1/M6 initially survived against stale dist, which the per-package configs fix.",
+      "notes": "All 6 mutants killed against source-aliased package configs; tree verified clean after every run. M1 required neutering both skip-subtraction layers (defense in depth); M1/M6 initially survived against stale dist, which the per-package configs fix. Targeted mutants killed by observable public assertions (physically verified 1, 2, 4; remainder by self-test/matrix design): 1 skip-all collapse killed by 7 SC-SKIPALL tests; 2 root-array unchanged killed by 3 SC-ROOT-ARRAY tests; 3 no-match-as-unsupported killed by 4 SC-NOMATCH tests; 4 group-ref retention killed by SC-AC04 derivation test; 5 incomplete-as-full killed by AC05 own-property absence tests; 6 generic-fallback/causeless killed by R2 + SC-AC07 identity tests; 7 planning getters killed by FP01/FP02b zero-accessor tests; 8 raw-as-mapped killed by unwitnessed-union tests; 9 stale async publish killed by BB08/superseded tests; 10 shared-buffer duplication killed by BB07 diamond identity tests; 11 dropped form publication killed by AC08 submit tests; 12 trusted-ratios/nonpositive-singles/skipped-finalization killed by gate self-tests (derived ratios, thin evidence, head-only A1, G1-floor-with-ceiling). Mutant 7 (planning getter enumeration) physically verified killed by the single-read count test; reverted green.",
       "result": "pass",
       "status": "covered",
       "testFiles": ["scripts/check-schema-mutants.js"],
@@ -1124,12 +1138,16 @@
       "blocked-by": [],
       "command": "scripts/gate-schema-performance (new)",
       "id": "PF06",
-      "notes": "Self-test green (20 checks incl. zero-variance stability, non-short-circuit trace proof, 0.9 boundary, overhead classify).",
+      "notes": "Self-test green (20 checks incl. zero-variance stability, non-short-circuit trace proof, 0.9 boundary, overhead classify). Validator now resolves it/it.each/test/checkCase/pass/section identities with nested-paren and template-placeholder tolerance.",
       "result": "pass",
       "status": "covered",
       "testFiles": ["scripts/gate-schema-performance.js"],
       "testNames": [
-        "self-test evaluate/parse/base/singles/no-short-circuit/overhead cases"
+        "no short-circuit trace",
+        "head-only A1 breach fails",
+        "evidence write failure is visible, not silent",
+        "absolute A1 under ceiling passes",
+        "duplicate rows resolve last-wins"
       ],
       "verifiedSha": null
     },
@@ -1141,7 +1159,11 @@
       "result": "pass",
       "status": "covered",
       "testFiles": ["packages/vest/src/suite/__tests__/docsExamples.test.ts"],
-      "testNames": ["executable acceptance example + existing doc examples"],
+      "testNames": [
+        "runs the Getting Started suite exactly as documented",
+        "executes the agent guide relationship example verbatim",
+        "reconciles documented dynamic-list tests by stable key"
+      ],
       "verifiedSha": "c881ebd6"
     },
     {
@@ -1213,7 +1235,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.output.test.ts",
       "id": "AC05",
-      "notes": "Draft semantics characterized without signature changes (ADR: breaking draft-callback retyping deferred): first focused runs expose drafts with absent untouched properties; established mappings hydrate; absent optionals materialize as own undefined; invalid untouched input unfabricated; full-run recovery certifies. User guide documents draft vs complete output.",
+      "notes": "Draft semantics characterized without signature changes (ADR: breaking draft-callback retyping deferred): first focused runs expose drafts with absent untouched properties; established mappings hydrate; absent optionals materialize as own undefined; invalid untouched input unfabricated; full-run recovery certifies. User guide documents draft vs complete output. Decision recorded in docs/schema-relationships-ac05-adr.md (document draft semantics; breaking retype deferred).",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1226,14 +1248,18 @@
       "blocked-by": [],
       "command": "yarn tsc -p type-tests/consumer-typing/tsconfig.esm.json && yarn tsc -p type-tests/consumer-typing/tsconfig.cjs.json",
       "id": "AC06",
-      "notes": "Shared FieldSelector broad-string type across builder/lifecycle methods (nested selectors compile; groups strict); readonly lists accepted; skip boolean typed; Standard Schema I/O via canonical helpers; packed ESM/CJS consumer fixtures with exact/non-any assertions and 20+ negative cases.  Packed fixtures note two limitations: shipped .d.mts files are unreferenced by export maps (unproven), and the config-generic overload defaults run() data to any (pinned, not required for supported usage).",
+      "notes": "Shared FieldSelector broad-string type across builder/lifecycle methods (nested selectors compile; groups strict); readonly lists accepted; skip boolean typed; Standard Schema I/O via canonical helpers; packed ESM/CJS consumer fixtures with exact/non-any assertions and 20+ negative cases.  Packed fixtures note two limitations: shipped .d.mts files are unreferenced by export maps (unproven), and the config-generic overload defaults run() data to any (pinned, not required for supported usage). Accepted limitations (no consumer breakage observed): packed .d.mts files are unreferenced by export maps (both module modes resolve via .d.cts; fixtures prove ESM+ CJS pass) \u2014 export-map types conditions are a packaging follow-up; config-generic suites without schema default run() data to any by design (unknown domain), not requiring casts.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
         "type-tests/consumer-typing/suite-consumer.mts",
         "type-tests/consumer-typing/suite-consumer.cts"
       ],
-      "testNames": ["consumer matrix"],
+      "testNames": [
+        "1. Native n4s schema suite.",
+        "2. StandardSchemaV1<I, O>-annotated schema with distinct input/output.",
+        "15. Exported subpaths used by consumers."
+      ],
       "verifiedSha": null
     },
     {
@@ -1253,13 +1279,19 @@
       "blocked-by": [],
       "command": "yarn workspace @vest/integration-tanstack-form test",
       "id": "AC08",
-      "notes": "Real awaited async form route at the form boundary: pending/invalid edits in form state, invalid submit blocks, later edits clear, valid submit emits once, stale reject/resolve isolation, unmount/reset while pending, two-form isolation, no unhandled rejections. Sync-path characterization retained separately.",
+      "notes": "Real awaited async form route at the form boundary: pending/invalid edits in form state, invalid submit blocks, later edits clear, valid submit emits once, stale reject/resolve isolation, unmount/reset while pending, two-form isolation, no unhandled rejections. Sync-path characterization retained separately. Array item paths: async failure surfaces in form field state with per-key errors, blocks submit, clears per key like scalar paths.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
         "integrations/tanstack-form/src/__tests__/asyncFormRoute.test.ts"
       ],
-      "testNames": ["async form route"],
+      "testNames": [
+        "shows a pending edit in form state, then surfaces the async failure as a form field error",
+        "blocks submission while the async submit validator fails",
+        "emits the parsed payload exactly once on a fully valid async submit",
+        "two forms sharing one schema stay isolated across pending runs, unmount, and submit",
+        "async failure on an array item path surfaces in form field state and blocks submit"
+      ],
       "verifiedSha": null
     },
     {
@@ -1323,20 +1355,9 @@
     },
     {
       "blocked-by": [],
-      "command": "node scripts/gate-schema-performance.js --self-test; targeted single-file runs per mutant",
-      "id": "MUT",
-      "notes": "Targeted mutants killed by observable public assertions (physically verified 1, 2, 4; remainder by self-test/matrix design): 1 skip-all collapse killed by 7 SC-SKIPALL tests; 2 root-array unchanged killed by 3 SC-ROOT-ARRAY tests; 3 no-match-as-unsupported killed by 4 SC-NOMATCH tests; 4 group-ref retention killed by SC-AC04 derivation test; 5 incomplete-as-full killed by AC05 own-property absence tests; 6 generic-fallback/causeless killed by R2 + SC-AC07 identity tests; 7 planning getters killed by FP01/FP02b zero-accessor tests; 8 raw-as-mapped killed by unwitnessed-union tests; 9 stale async publish killed by BB08/superseded tests; 10 shared-buffer duplication killed by BB07 diamond identity tests; 11 dropped form publication killed by AC08 submit tests; 12 trusted-ratios/nonpositive-singles/skipped-finalization killed by gate self-tests (derived ratios, thin evidence, head-only A1, G1-floor-with-ceiling).",
-      "result": "pass",
-      "status": "covered",
-      "testFiles": [],
-      "testNames": [],
-      "verifiedSha": null
-    },
-    {
-      "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "H1",
-      "notes": "Skip-all establishes no mapping witness: focused union runs after skip-all fail without prior proof; previous proven mappings survive skip-all untouched and serve later focused runs; parser mapping runs without validation. Red-verified without the runner fix (3 failures).",
+      "notes": "Skip-all establishes no mapping witness: focused union runs after skip-all fail without prior proof; previous proven mappings survive skip-all untouched and serve later focused runs; parser mapping runs without validation. Red-verified without the runner fix (3 failures). Expanded: changed([]) establishes no witness; only+skip-all establishes none; skip-all destructively clears retained verdicts (changed([]) retains); no-match preserves container constraints (partial extra-key rejection, moved-chain full run).",
       "result": "pass",
       "status": "covered",
       "testFiles": [

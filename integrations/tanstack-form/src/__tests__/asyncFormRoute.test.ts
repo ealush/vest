@@ -624,3 +624,110 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     }
   });
 });
+
+describe('Vest with TanStack Form: array field paths (AC08)', () => {
+  type ArrayValues = { travelers: { passport: string }[] };
+
+  function createArrayForm() {
+    const gates = new Map<string, Gate>();
+    const calls: string[] = [];
+    const schema = enforce.shape({
+      travelers: enforce.isArrayOf(
+        enforce.shape({ passport: enforce.isString() }),
+      ),
+    });
+    const makeSuite = () =>
+      create((data: ArrayValues) => {
+        mode(Modes.ALL);
+        data.travelers.forEach((row, index) => {
+          test(`travelers.${index}.passport`, TAKEN_MESSAGE, async () => {
+            calls.push(`travelers.${index}.passport:start`);
+            const gate = gates.get(row.passport);
+            const available = gate ? await gate.promise : true;
+            calls.push(`travelers.${index}.passport:settled`);
+            enforce(available).isTruthy();
+          });
+        });
+      }, schema);
+    const onSubmit = vi.fn();
+    const onSubmitInvalid = vi.fn();
+    const form = new FormApi({
+      defaultValues: { travelers: [{ passport: 'Taken' }] },
+      onSubmit: ({ value }) => {
+        onSubmit(value);
+      },
+      onSubmitInvalid: () => {
+        onSubmitInvalid();
+      },
+      validators: { onChangeAsync: makeSuite(), onBlurAsync: makeSuite() },
+    });
+    return { calls, form, gates, onSubmit, onSubmitInvalid };
+  }
+
+  function arrayFieldMetaOf(
+    form: { state: unknown },
+    field: string,
+  ): FieldMetaView | undefined {
+    const state = form.state as unknown as {
+      fieldMeta: Record<string, unknown>;
+    };
+    return state.fieldMeta[field] as FieldMetaView | undefined;
+  }
+
+  it('async failure on an array item path surfaces in form field state and blocks submit', async () => {
+    const fx = createArrayForm();
+    const unmount = fx.form.mount();
+    try {
+      fx.gates.set('Taken', deferred<boolean>());
+      const submitted = fx.form.handleSubmit();
+      await pollFor(
+        () => fx.calls.includes('travelers.0.passport:start'),
+        'array item validator start',
+      );
+      fx.gates.get('Taken')?.resolve(false);
+      await submitted;
+      await tick();
+      const meta = arrayFieldMetaOf(fx.form, 'travelers[0].passport');
+      expect(meta?.isValid).toBe(false);
+      // Submit runs both the change and blur async validators, so the
+      // same failure is reported once per validation key.
+      expect(meta?.errors).toHaveLength(2);
+      for (const error of meta?.errors ?? []) {
+        expect(error).toMatchObject({
+          message: TAKEN_MESSAGE,
+          path: ['travelers', '0', 'passport'],
+        });
+      }
+      expect(fx.onSubmit).not.toHaveBeenCalled();
+      expect(fx.onSubmitInvalid).toHaveBeenCalledTimes(1);
+
+      // A clean value at the same array path clears the onChange key;
+      // the stale onBlur verdict still blocks, exactly like scalar paths.
+      fx.form.setFieldValue('travelers[0].passport', 'Ada', {
+        dontValidate: true,
+      });
+      fx.gates.set('Ada', deferred<boolean>());
+      const changeEdit = fx.form.validate('change');
+      fx.gates.get('Ada')?.resolve(true);
+      await changeEdit;
+      await tick();
+      const afterChange = arrayFieldMetaOf(fx.form, 'travelers[0].passport');
+      expect(afterChange?.errorMap.onChange).toBeUndefined();
+      expect(afterChange?.errorMap.onBlur).toBeDefined();
+      expect(fx.form.state.isValid).toBe(false);
+
+      // A clean blur validation clears the remaining key.
+      fx.gates.set('Ada', deferred<boolean>());
+      const blurEdit = fx.form.validate('blur');
+      fx.gates.get('Ada')?.resolve(true);
+      await blurEdit;
+      await tick();
+      expect(
+        arrayFieldMetaOf(fx.form, 'travelers[0].passport')?.errors,
+      ).toEqual([]);
+      expect(fx.form.state.isValid).toBe(true);
+    } finally {
+      unmount();
+    }
+  });
+});

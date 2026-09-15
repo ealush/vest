@@ -1375,3 +1375,85 @@ describe('schema contracts: no-match preserves container constraints (H2)', () =
     expect(root).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('schema contracts: empty-focus witness behavior (H1 expansion)', () => {
+  function unionSuite() {
+    const callback = vi.fn();
+    const suite = create(
+      (data: unknown) => {
+        callback(data);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce.isArrayOf(
+          enforce.condition(() => true),
+          enforce.condition(() => true),
+        ),
+        b: enforce.isString(),
+      }),
+    );
+    return { callback, suite };
+  }
+
+  it('[SC-SKIPALL-WITNESS] changed([]) establishes no witness', () => {
+    const { suite } = unionSuite();
+    suite.changed([]).run({ a: [2], b: 'ok' } as never);
+    let thrown: unknown;
+    try {
+      suite.changed('b').run({ a: [2], b: 'ok' } as never);
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
+  });
+
+  it('[SC-SKIPALL-WITNESS] changed([]) preserves a proven witness', () => {
+    const { callback, suite } = unionSuite();
+    const full = suite.run({ a: [2], b: 'ok' });
+    expect(full.isValid()).toBe(true);
+    suite.changed([]).run({ a: [99], b: 'ok' } as never);
+    const focused = suite.changed('b').run({ a: [2], b: 'ok' } as never);
+    expect(focused.isValid()).toBe(true);
+    expect(callback).toHaveBeenCalledTimes(3);
+  });
+
+  it('[SC-SKIPALL-WITNESS] only+skip-all establishes no witness', () => {
+    const { suite } = unionSuite();
+    suite
+      .only('b')
+      .focus({ skip: true })
+      .run({ a: [2], b: 'ok' } as never);
+    let thrown: unknown;
+    try {
+      suite.changed('b').run({ a: [2], b: 'ok' } as never);
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
+  });
+
+  it('[SC-SKIPALL-WITNESS] skip-all destructively clears retained errors without revalidating', () => {
+    const predicates: string[] = [];
+    const suite: any = create(
+      (_data: unknown) => {},
+      enforce.shape({
+        a: enforce.condition(() => {
+          predicates.push('a');
+          return false;
+        }),
+        b: enforce.isString(),
+      }) as never,
+    );
+    const failed = suite.run({ a: 'x', b: 'y' });
+    expect(failed.hasErrors('a')).toBe(true);
+    expect(predicates).toEqual(['a']);
+    // Destructive field-skip semantics cover skip-all: the skipped fields'
+    // retained verdicts clear, and no validator re-runs to restore them.
+    const skipped = suite.focus({ skip: true }).run({ a: 'x', b: 'y' });
+    expect(skipped.hasErrors('a')).toBe(false);
+    expect(predicates).toEqual(['a']);
+    const recovered = suite.run({ a: 'x', b: 'y' });
+    expect(recovered.hasErrors('a')).toBe(true);
+    expect(predicates).toEqual(['a', 'a']);
+  });
+});

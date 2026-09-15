@@ -142,6 +142,26 @@ describe('schema contracts: execution coverage and paths', () => {
     expect(getter).not.toHaveBeenCalled();
   });
 
+  it('[SC-SCOPE] changed expansion adds no input getter reads beyond validation', () => {
+    const getter = vi.fn(() => 'value');
+    const schema = enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.a),
+    });
+    // The getter lives on an extra key the schema never declares. Exactly
+    // one read occurs — the validator's own shallow input copy — so any
+    // planning-time data enumeration (e.g. a read loop in changed
+    // expansion) fails this count. Through the production entry, not
+    // resolveAffectedPaths directly.
+    const data = Object.defineProperty({ a: 'ok', b: 'ok' }, 'extra', {
+      get: getter,
+      enumerable: true,
+    });
+    const results = runSchemaPaths(schema, data, { affected: ['b'] });
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(getter).toHaveBeenCalledTimes(1);
+  });
+
   it('[SC-SCOPE] projection privileges do not leak into a nested schema constructed by a validator', () => {
     const schema = enforce.shape({
       a: enforce.condition(() => {

@@ -149,6 +149,14 @@ export function runSchemaPaths(
       'EnforceSchemaError: runSchemaPaths requires a schema',
     );
   }
+  // Boolean skip-all is a semantic state, not an empty name list: no
+  // schema validator executes. It short-circuits before affected expansion
+  // and projection (which would otherwise convert `true` into `[]` and run
+  // the full schema). The pass-through carries input data without
+  // manufacturing a full-validation witness.
+  if (options.skip === true) {
+    return [{ pass: true, type: data }];
+  }
   const focus = selectiveFocusOf({
     ...options,
     affected:
@@ -932,13 +940,41 @@ function omitSkippedDeep(
 ): SelectiveSchema {
   const skipSegs = parsedSkipSegs(skipProp);
   if (skipSegs.length === 0) return rule;
-  return omitSkippedSegs(rule, skipSegs);
+  const outcome = omitSkippedSegs(rule, skipSegs);
+  // No match names no executable validator: return the original schema
+  // untouched (constraints preserved, no pointless rebuild). A match that
+  // could not be omitted is unrepresentable at this root: fail closed
+  // instead of executing excluded validators.
+  if (!outcome.matched) return rule;
+  if (outcome.rule === rule) {
+    throw new SchemaExclusionError(
+      `Selective execution cannot exclude [${skipSegs.map(formatSkipSegs).join(', ')}] without ` +
+        `executing excluded validators: the path cannot be omitted faithfully.`,
+    );
+  }
+  return outcome.rule;
 }
+
+function formatSkipSegs(segs: AffectedSeg[]): string {
+  return segs.map(seg => String(seg)).join('.');
+}
+
+/**
+ * Omission planning outcome. `matched` reports whether any skip named an
+ * executable validator beneath this rule: unchanged/no-match, rebuilt, and
+ * unsupported (matched but identical rule) stay distinct so callers never
+ * confuse "nothing to omit" with "cannot omit". Unexpected exceptions
+ * propagate unchanged.
+ */
+type OmissionOutcome = {
+  readonly matched: boolean;
+  readonly rule: SelectiveSchema;
+};
 
 function omitSkippedSegs(
   rule: SelectiveSchema,
   skipSegs: AffectedSeg[][],
-): SelectiveSchema {
+): OmissionOutcome {
   const children = omissionChildrenOf(rule);
   if (children.length > 0) {
     return omitSkippedComposition(rule, children, skipSegs);
@@ -949,36 +985,68 @@ function omitSkippedSegs(
 function omitSkippedContainerElse(
   rule: SelectiveSchema,
   skipSegs: AffectedSeg[][],
-): SelectiveSchema {
+): OmissionOutcome {
   const members = containerMembersOf(rule);
-  if (members === null) return rule;
+  if (members === null) {
+    // Index/key selections under item containers (array/tuple/record)
+    // name real elements executing the shared member rule: matched but
+    // unrepresentable as an object rebuild. Anything else matches nothing.
+    return { matched: selectsItemEntries(rule, skipSegs), rule };
+  }
   const plan = partitionSkips(members, skipSegs);
-  if (plan === null) return rule;
+  if (plan === null) return { matched: false, rule };
   assertRebuildableContainer(rule, plan.exact);
   const rebuilt = rebuildNestedMembers(members, plan.nested);
-  return rebuildContainer(rule, rebuilt, plan.exact);
+  return {
+    matched: true,
+    rule: rebuildContainer(rule, rebuilt, plan.exact),
+  };
+}
+
+/**
+ * Whether any skip addresses entries of an item container by index or key.
+ * Positional selections always resolve to the shared member rule, so they
+ * match even though no object rebuild can omit them.
+ */
+function selectsItemEntries(
+  rule: SelectiveSchema,
+  skipSegs: AffectedSeg[][],
+): boolean {
+  const slots = rule as unknown as Record<symbol, unknown>;
+  if (slots[ITEM_SCHEMA] === undefined) return false;
+  return skipSegs.some(segs => segs.length > 0);
 }
 
 function omitSkippedComposition(
   rule: SelectiveSchema,
   children: unknown[],
   skipSegs: AffectedSeg[][],
-): SelectiveSchema {
+): OmissionOutcome {
   let changed = false;
+  let matched = false;
   const next = children.map(child => {
-    const omitted = isRuleLike(child)
-      ? omitSkippedSegs(child, skipSegs)
-      : child;
-    if (omitted !== child) changed = true;
-    return omitted;
+    if (!isRuleLike(child)) return child;
+    const omitted = omitSkippedSegs(child, skipSegs);
+    if (omitted.matched) matched = true;
+    if (omitted.rule !== child) changed = true;
+    return omitted.rule;
   });
-  if (!changed) return rule;
+  // Matched but unrebuilt means a child met executable validators it cannot
+  // omit (e.g. an array index under composition): the composition cannot
+  // honor the exclusion either.
+  if (matched && !changed) {
+    return { matched: true, rule };
+  }
+  if (!changed) return { matched: false, rule };
   // Intentionally no catch: a rebuild failure is a programmer error, not
   // a signal to silently run the original schema (which would execute
   // skipped predicates and only filter their errors afterward).
-  return compose(
-    ...(next as unknown as Parameters<typeof compose>),
-  ) as unknown as SelectiveSchema;
+  return {
+    matched: true,
+    rule: compose(
+      ...(next as unknown as Parameters<typeof compose>),
+    ) as unknown as SelectiveSchema,
+  };
 }
 
 /**
@@ -1065,35 +1133,22 @@ function rebuildNestedMembers(
     // member) carry slots like object rules; only non-rules are tolerated
     // as unknown paths.
     if (!isRuleLike(member)) continue;
-    // A skip descending beneath a scalar leaf matches no executable
-    // validator, so it is a safe no-op (like an unknown top-level skip).
-    // Beneath a container (shape/array/tuple/record/composition) real
-    // validators may hide: an unrepresentable omission fails closed
-    // instead of executing excluded work.
-    if (!hasOmissibleChildren(member)) continue;
     const omitted = omitSkippedSegs(member, tails);
-    if (omitted === member) {
+    // Unmatched tails name no executable validator beneath this member
+    // (scalar descent, unknown keys): safe no-op, like an unknown
+    // top-level skip. Matched-but-identical means a container the member
+    // cannot omit: fail closed instead of executing excluded work.
+    if (!omitted.matched) continue;
+    if (omitted.rule === member) {
       throw new SchemaExclusionError(
         `Selective execution cannot exclude [${key}] children without ` +
           `executing excluded validators: the nested container cannot ` +
           `be rebuilt faithfully.`,
       );
     }
-    defineMember(rebuilt, key, omitted);
+    defineMember(rebuilt, key, omitted.rule);
   }
   return rebuilt;
-}
-
-/**
- * Whether a member rule can contain nested executable validators: named
- * shape members, array/tuple/record item schemas, or composition children.
- * Scalar leaves match nothing beneath them.
- */
-function hasOmissibleChildren(rule: SelectiveSchema): boolean {
-  if (omissionChildrenOf(rule).length > 0) return true;
-  if (containerMembersOf(rule) !== null) return true;
-  const slots = rule as unknown as Record<symbol, unknown>;
-  return slots[ITEM_SCHEMA] !== undefined;
 }
 
 /**

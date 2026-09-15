@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { compose, EnforceSchemaError, enforce } from '../../n4s';
 import {
@@ -1054,3 +1054,109 @@ function depOn(resolver: (scope: unknown) => unknown) {
 function dangling() {
   return enforce.isString().dependsOn(($: any) => $.missing);
 }
+
+describe('dependencyResolver resolver failure cause (AC07)', () => {
+  function shapeWithThrowingResolver(thrown: unknown) {
+    return enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn(() => {
+        throw thrown;
+      }),
+    });
+  }
+
+  it.each([
+    ['Error', new Error('sentinel')],
+    ['subclass', new TypeError('sentinel-type')],
+    ['string', 'sentinel-string'],
+    ['null', null],
+    ['undefined', undefined],
+    ['plain object', { reason: 'sentinel-object' }],
+  ])(
+    '[SC-AC07] %s resolver fault preserves cause identity',
+    (_label, thrown) => {
+      let caught: unknown;
+      try {
+        shapeWithThrowingResolver(thrown);
+      } catch (error) {
+        caught = error;
+      }
+      expect(caught).toBeInstanceOf(EnforceSchemaError);
+      expect((caught as { cause?: unknown }).cause).toBe(thrown);
+      expect(typeof (caught as Error).message).toBe('string');
+    },
+  );
+
+  it('[SC-AC07] throwing message getter yields the original fault, not the getter error', () => {
+    const fault = Object.create(Error.prototype, {
+      message: {
+        get() {
+          throw new Error('getter boom');
+        },
+      },
+    });
+    let caught: unknown;
+    try {
+      shapeWithThrowingResolver(fault);
+    } catch (error) {
+      caught = error;
+    }
+    expect(caught).toBeInstanceOf(EnforceSchemaError);
+    expect((caught as { cause?: unknown }).cause).toBe(fault);
+    expect(typeof (caught as Error).message).toBe('string');
+  });
+
+  it('[SC-AC07] throwing toString on a non-Error yields a safe fixed message', () => {
+    const fault = {
+      toString() {
+        throw new Error('toString boom');
+      },
+    };
+    let caught: unknown;
+    try {
+      shapeWithThrowingResolver(fault);
+    } catch (error) {
+      caught = error;
+    }
+    expect(caught).toBeInstanceOf(EnforceSchemaError);
+    expect((caught as { cause?: unknown }).cause).toBe(fault);
+    expect(typeof (caught as Error).message).toBe('string');
+  });
+
+  it('[SC-AC07] sibling and nested scopes preserve cause without executing predicates', () => {
+    const predicate = vi.fn(() => true);
+    const fault = new Error('scoped sentinel');
+    const makers = [
+      () =>
+        enforce.shape({
+          a: enforce.condition(predicate),
+          b: enforce.isString().dependsOn(() => {
+            throw fault;
+          }),
+        }),
+      () =>
+        enforce.shape({
+          nested: enforce.shape({
+            a: enforce.condition(predicate),
+            b: enforce.isString().dependsOn(() => {
+              throw fault;
+            }),
+          }),
+        }),
+    ];
+    for (const make of makers) {
+      let caught: unknown;
+      try {
+        make();
+      } catch (error) {
+        caught = error;
+      }
+      expect(caught).toBeInstanceOf(EnforceSchemaError);
+      expect((caught as { cause?: unknown }).cause).toBe(fault);
+    }
+    // Construction throws before any predicate executes.
+    expect(predicate).not.toHaveBeenCalled();
+    // A healthy schema still constructs afterwards.
+    expect(() => enforce.shape({ a: enforce.isString() })).not.toThrow();
+  });
+});

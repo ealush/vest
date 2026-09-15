@@ -238,18 +238,21 @@ function useCreateFocus<
 }
 
 // A focus builder captures its configuration when called: caller-owned
-// field lists are copied at the public boundary so a later caller mutation
-// cannot reselect a previously derived runner. Groups are already captured
-// downstream as Sets; this gives field lists the same boundary. The
-// caller's own array is never frozen. Downstream spreads share the
-// builder-owned copy read-only (no in-place mutation exists on these
-// lists), which keeps derived runners independent.
+// field AND group lists are copied at the public boundary so a later
+// caller mutation cannot reselect a previously derived runner (a runner
+// created after the mutation would otherwise read the mutated array when
+// it snapshots Sets at creation). The caller's own array is never frozen.
+// Downstream spreads share the builder-owned copy read-only (no in-place
+// mutation exists on these lists), which keeps derived runners independent
+// while sharing the suite's retained execution history by design.
 function copyFieldLists<F extends TFieldName, G extends TGroupName>(
   config: SuiteModifiers<F, G>,
 ): SuiteModifiers<F, G> {
   const copied = { ...config };
   if (Array.isArray(copied.only)) copied.only = [...copied.only];
   if (Array.isArray(copied.skip)) copied.skip = [...copied.skip];
+  if (Array.isArray(copied.onlyGroup)) copied.onlyGroup = [...copied.onlyGroup];
+  if (Array.isArray(copied.skipGroup)) copied.skipGroup = [...copied.skipGroup];
   return copied;
 }
 

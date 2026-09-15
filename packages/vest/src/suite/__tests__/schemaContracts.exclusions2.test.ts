@@ -925,3 +925,231 @@ describe('schema contracts: plain nested skip-only (P1)', () => {
     },
   );
 });
+
+describe('schema contracts: omission no-match versus unsupported (AC02/AC03)', () => {
+  function shapeSuite() {
+    const aCalls: string[] = [];
+    const schema = enforce.shape({
+      profile: enforce.shape({
+        a: enforce.condition((value: unknown) => {
+          aCalls.push(String(value));
+          return true;
+        }),
+        b: enforce.isString(),
+      }),
+      other: enforce.isString(),
+    });
+    return { aCalls, schema };
+  }
+
+  it.each(['profile.nope', 'unknown', 'profile.a.nope.deeper'] as const)(
+    '[SC-NOMATCH] unknown skip %s is a no-op preserving full execution',
+    skip => {
+      const calls: string[] = [];
+      const suite: any = create(
+        (_data: unknown) => {
+          calls.push('callback');
+        },
+        enforce.shape({
+          a: enforce.condition(() => {
+            calls.push('a');
+            return true;
+          }),
+          b: enforce.isString(),
+        }) as never,
+      );
+      const result = suite.focus({ skip }).run({ a: 'x', b: 'y' } as never);
+      expect(result.hasErrors()).toBe(false);
+      expect(calls).toEqual(['a', 'callback']);
+    },
+  );
+
+  it('[SC-NOMATCH] unknown nested skip preserves constraints and executes all', () => {
+    const { aCalls, schema } = shapeSuite();
+    const seen: unknown[] = [];
+    const suite: any = create((_data: unknown) => {
+      seen.push(_data);
+    }, schema as never);
+    const result = suite
+      .focus({ skip: 'profile.nope' })
+      .run({ profile: { a: 'x', b: 'y' }, other: 'o' } as never);
+    expect(result.hasErrors()).toBe(false);
+    expect(aCalls).toEqual(['x']);
+    expect(seen).toHaveLength(1);
+  });
+
+  it('[SC-NOMATCH] mixed unknown and real skips omit the real one only', () => {
+    const { aCalls, schema } = shapeSuite();
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    const result = suite
+      .focus({ skip: ['profile.nope', 'other'] })
+      .run({ profile: { a: 'x', b: 'y' }, other: 'o' } as never);
+    expect(result.hasErrors()).toBe(false);
+    expect(aCalls).toEqual(['x']);
+  });
+
+  it('[SC-NOMATCH] duplicate skips behave as one omission', () => {
+    const { aCalls, schema } = shapeSuite();
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    const result = suite
+      .focus({ skip: ['other', 'other'] })
+      .run({ profile: { a: 'x', b: 'y' }, other: 'o' } as never);
+    expect(result.hasErrors()).toBe(false);
+    expect(aCalls).toEqual(['x']);
+  });
+
+  it.each(['0', '1'] as const)(
+    '[SC-ROOT-ARRAY] root array index skip %s fails closed before predicates',
+    skip => {
+      const calls: string[] = [];
+      const suite: any = create(
+        (_data: unknown) => {
+          calls.push('callback');
+        },
+        enforce.isArrayOf(
+          enforce.condition((value: unknown) => {
+            calls.push(`e:${String(value)}`);
+            return true;
+          }),
+        ) as never,
+      );
+      let thrown: unknown;
+      try {
+        suite.focus({ skip }).run(['a', 'b'] as never);
+      } catch (error) {
+        thrown = error;
+      }
+      expect(thrown).toBeInstanceOf(SchemaExclusionError);
+      expect((thrown as SchemaExclusionError).code).toBe(
+        'SCHEMA_EXCLUSION_UNSUPPORTED',
+      );
+      expect(calls).toEqual([]);
+    },
+  );
+
+  it('[SC-ROOT-ARRAY] root tuple index skip fails closed before predicates', () => {
+    const calls: string[] = [];
+    const suite: any = create(
+      (_data: unknown) => {},
+      enforce.tuple(
+        enforce.condition(() => {
+          calls.push('t0');
+          return true;
+        }),
+        enforce.condition(() => {
+          calls.push('t1');
+          return true;
+        }),
+      ) as never,
+    );
+    let thrown: unknown;
+    try {
+      suite.focus({ skip: '1' }).run(['a', 'b'] as never);
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
+    expect(calls).toEqual([]);
+  });
+});
+
+describe('schema contracts: boolean skip-all semantic state (AC01)', () => {
+  function skipAllFixture() {
+    const schemaPredicates: string[] = [];
+    const schema = enforce.shape({
+      a: enforce.condition((value: unknown) => {
+        schemaPredicates.push(`a:${String(value)}`);
+        return true;
+      }),
+      b: enforce.isString(),
+    });
+    return { schema, schemaPredicates };
+  }
+
+  it('[SC-SKIPALL] plain skip-all executes zero schema predicates', () => {
+    const { schema, schemaPredicates } = skipAllFixture();
+    const imperative: string[] = [];
+    const suite: any = create((_data: unknown) => {
+      imperative.push('callback');
+      test('a', () => {
+        imperative.push('test-a');
+        return true;
+      });
+    }, schema as never);
+    const result = suite.focus({ skip: true }).run({ a: 'x', b: 'y' });
+    // No schema validators run; the suite callback keeps its declaration
+    // role (imperative tests observe Vest focus, not schema execution).
+    expect(schemaPredicates).toEqual([]);
+    expect(imperative).toContain('callback');
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it.each(['pass', 'fail', 'throw'] as const)(
+    '[SC-SKIPALL] excluded %s predicates never execute under skip-all',
+    behavior => {
+      const excluded = skippedPredicate(behavior);
+      const schema = enforce.shape({
+        a: enforce.condition(excluded),
+        b: enforce.isString(),
+      });
+      const suite: any = create((_data: unknown) => {}, schema as never);
+      const result = suite.focus({ skip: true }).run({ a: 'x', b: 'y' });
+      expect(excluded).not.toHaveBeenCalled();
+      expect(result.hasErrors()).toBe(false);
+    },
+  );
+
+  it('[SC-SKIPALL] skip true versus false versus [] versus undefined', () => {
+    function runWithSkip(skip: unknown) {
+      const seen: string[] = [];
+      const suite: any = create(
+        (_data: unknown) => {},
+        enforce.shape({
+          a: enforce.condition(() => {
+            seen.push('a');
+            return true;
+          }),
+        }) as never,
+      );
+      const result = suite.focus({ skip: skip as never }).run({ a: 'x' });
+      return { result, seen };
+    }
+    // true: semantic skip-all, nothing executes.
+    expect(runWithSkip(true).seen).toEqual([]);
+    // false: no focus, full run executes.
+    expect(runWithSkip(false).seen).toEqual(['a']);
+    // []: empty name list skips nothing, full run executes.
+    expect(runWithSkip([]).seen).toEqual(['a']);
+    // undefined: no focus, full run executes.
+    expect(runWithSkip(undefined).seen).toEqual(['a']);
+  });
+
+  it('[SC-SKIPALL] composed and partial/loose skip-all execute nothing', () => {
+    for (const shape of [
+      enforce.shape({ a: enforce.condition(() => true) }),
+      enforce.partial({ a: enforce.condition(() => true) }),
+      enforce.loose({ a: enforce.condition(() => true) }),
+    ]) {
+      const excluded = vi.fn(() => true);
+      const composed = compose(
+        enforce.shape({ a: enforce.condition(excluded) }),
+        enforce.condition(() => true),
+      );
+      const plain: any = create((_data: unknown) => {}, shape as never);
+      plain.focus({ skip: true }).run({ a: 'x' });
+      const suite: any = create((_data: unknown) => {}, composed as never);
+      suite.focus({ skip: true }).run({ a: 'x' });
+      expect(excluded).not.toHaveBeenCalled();
+    }
+  });
+
+  it('[SC-SKIPALL] later full run recovers after skip-all', () => {
+    const { schema, schemaPredicates } = skipAllFixture();
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    suite.focus({ skip: true }).run({ a: 'x', b: 'y' });
+    expect(schemaPredicates).toEqual([]);
+    const result = suite.run({ a: 'x', b: 'y' });
+    expect(result.hasErrors()).toBe(false);
+    expect(schemaPredicates).toEqual(['a:x']);
+  });
+});

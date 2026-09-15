@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { SchemaExclusionError, enforce } from 'n4s';
 
-import { create, mode, Modes, test } from '../../vest';
+import { create, group, mode, Modes, test } from '../../vest';
 
 // AP01b: builder reuse cannot accumulate stale focus. A derived builder is a
 // snapshot: running it twice repeats the same selection, forking two
@@ -159,5 +159,76 @@ describe('schema contracts: builder reuse does not accumulate focus (AP01b)', ()
     const { suite: plain } = reuseSuite();
     const valid = plain.changed('b').run({ a: 'x', b: 'y' });
     expect(valid.hasErrors()).toBe(false);
+  });
+});
+
+describe('schema contracts: builder snapshots caller configuration (AC04)', () => {
+  function groupSuite() {
+    const calls: string[] = [];
+    const suite = create(
+      () => {
+        group('g1', () => test('a', () => void calls.push('a')));
+        group('g2', () => test('b', () => void calls.push('b')));
+      },
+      enforce.shape({ a: enforce.isString(), b: enforce.isString() }),
+    );
+    return { calls, suite };
+  }
+
+  it('[SC-AC04] mutating a group array after focus does not reselect derived builders', () => {
+    const { calls, suite } = groupSuite();
+    const groups = ['g1'];
+    const parent = suite.focus({ onlyGroup: groups }) as any;
+    groups[0] = 'g2';
+    const child = parent.changed(['a', 'b']);
+    parent.run({ a: 'a', b: 'b' });
+    expect(calls).toEqual(['a']);
+    calls.length = 0;
+    child.run({ a: 'a', b: 'b' });
+    expect(calls).toEqual(['a']);
+  });
+
+  it('[SC-AC04] mutating only/skip arrays after focus does not reselect', () => {
+    const { suite } = reuseSuite();
+    const only = ['a'];
+    const skip: string[] = [];
+    const parent = suite.focus({ only, skip } as never) as any;
+    only.push('b');
+    skip.push('a');
+    const data = { a: 'x', b: 'y' };
+    const result = parent.run(data);
+    expect(result.hasErrors('b')).toBe(false);
+    expect(result.hasErrors('a')).toBe(false);
+  });
+
+  it('[SC-AC04] skipGroup arrays are snapshotted at the boundary', () => {
+    const { calls, suite } = groupSuite();
+    const groups = ['g1'];
+    const builder = suite.focus({ skipGroup: groups }) as any;
+    groups.push('g2');
+    builder.run({ a: 'a', b: 'b' });
+    // Snapshot kept ['g1']: g1 skipped, g2 runs.
+    expect(calls).toEqual(['b']);
+  });
+
+  it('[SC-AC04] reorder and clear after derivation keep the snapshot', () => {
+    const { calls, suite } = groupSuite();
+    const groups = ['g1', 'g2'];
+    const builder = suite.focus({ onlyGroup: groups }) as any;
+    groups.reverse();
+    groups.length = 0;
+    builder.run({ a: 'a', b: 'b' });
+    expect(calls.sort()).toEqual(['a', 'b']);
+  });
+
+  it('[SC-AC04] caller arrays are never frozen or mutated', () => {
+    const { suite } = reuseSuite();
+    const only = ['a'];
+    const groups = ['g1'];
+    suite.focus({ only, onlyGroup: groups } as never);
+    expect(Object.isFrozen(only)).toBe(false);
+    expect(Object.isFrozen(groups)).toBe(false);
+    expect(only).toEqual(['a']);
+    expect(groups).toEqual(['g1']);
   });
 });

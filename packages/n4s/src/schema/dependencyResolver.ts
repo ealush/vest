@@ -71,10 +71,11 @@ export function resolveInlineDeps(
       try {
         result = dep.resolver(scopeProxy);
       } catch (e) {
-        // Resolver threw — treat as error
-        throw new EnforceSchemaError(
-          `Failed to resolve dependency for "${String(fieldKey)}": ${(e as Error).message}`,
-        );
+        // Resolver threw: keep the contextual field information and the
+        // established diagnostic text, attach the original thrown value as
+        // cause by identity, and never invoke untrusted getters merely to
+        // format the message.
+        throw resolverFailure(String(fieldKey), e);
       }
 
       if (result === undefined) {
@@ -169,6 +170,30 @@ export function resolveInlineDeps(
   // path) and Vest suites via the createSuite() finalizer.
 
   return relationships;
+}
+
+/**
+ * Wraps a resolver fault with field context while preserving the original
+ * thrown value as `cause` by identity. Message reads are guarded: a
+ * throwing message/toString accessor yields a fixed fallback instead of
+ * replacing the original fault.
+ */
+function resolverFailure(field: string, thrown: unknown): EnforceSchemaError {
+  const error = new EnforceSchemaError(
+    `Failed to resolve dependency for "${field}": ${safeResolverMessage(thrown)}`,
+  );
+  (error as { cause?: unknown }).cause = thrown;
+  return error;
+}
+
+function safeResolverMessage(thrown: unknown): string {
+  try {
+    if (typeof thrown === 'string') return thrown;
+    if (thrown instanceof Error) return String(thrown.message);
+  } catch {
+    // A hostile accessor threw while reading: fall through to fixed text.
+  }
+  return 'unknown resolver failure';
 }
 
 /**

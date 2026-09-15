@@ -115,3 +115,76 @@ describe('cloneDataTree', () => {
     expect([...new Uint8Array(input.buffer)]).toEqual([3, 4]);
   });
 });
+
+describe('cloneDataTree snapshot containers (BB07)', () => {
+  it('[SC-BB07] preserves null prototypes, diamonds, and RegExp', () => {
+    const shared = { value: 1 };
+    const input = {
+      empty: Object.assign(Object.create(null), { a: 1 }),
+      left: shared,
+      right: shared,
+      pattern: /ab+c/gi,
+    };
+    const snapshot = cloneDataTree(input, true) as typeof input;
+    expect(Object.getPrototypeOf(snapshot.empty)).toBe(null);
+    expect(snapshot.empty).toEqual({ a: 1 });
+    // Diamonds stay shared within the copy, detached from the caller.
+    expect(snapshot.left).toBe(snapshot.right);
+    expect(snapshot.left).not.toBe(shared);
+    expect(snapshot.left).toEqual({ value: 1 });
+    expect(snapshot.pattern).not.toBe(input.pattern);
+    expect(snapshot.pattern.source).toBe('ab+c');
+    expect(snapshot.pattern.flags).toContain('g');
+    expect(Object.isFrozen(snapshot.pattern)).toBe(true);
+    // Stateful use of a frozen global regex rejects: snapshots preserve
+    // the pattern, not a usable matcher.
+    expect(() => snapshot.pattern.test('xxABCxx')).toThrow(TypeError);
+  });
+
+  it('[SC-BB07] keeps overlapping buffer views aliased with offsets inside the copy', () => {
+    const buffer = new ArrayBuffer(8);
+    const bytes = new Uint8Array(buffer);
+    bytes.set([1, 2, 3, 4, 5, 6, 7, 8]);
+    const input = {
+      buffer,
+      first: new Uint16Array(buffer, 0, 2),
+      second: new DataView(buffer, 2, 4),
+    };
+    const snapshot = cloneDataTree(input, true) as typeof input;
+    expect(snapshot.buffer).not.toBe(buffer);
+    // Overlapping views alias the copied buffer (not the caller buffer)
+    // with offsets preserved.
+    expect(snapshot.first.buffer).toBe(snapshot.buffer);
+    expect(snapshot.second.buffer).toBe(snapshot.buffer);
+    expect(snapshot.first.byteOffset).toBe(0);
+    expect(snapshot.second.byteOffset).toBe(2);
+    expect([...new Uint8Array(snapshot.buffer)]).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8,
+    ]);
+    new Uint8Array(snapshot.buffer)[0] = 9;
+    expect(bytes[0]).toBe(1);
+  });
+
+  it('[SC-BB07] never invokes setter-only properties and preserves getters', () => {
+    let setterCalls = 0;
+    const input = { plain: 1 };
+    Object.defineProperty(input, 'setterOnly', {
+      configurable: true,
+      enumerable: true,
+      set() {
+        setterCalls += 1;
+      },
+    });
+    Object.defineProperty(input, 'getter', {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return 42;
+      },
+    });
+    const snapshot = cloneDataTree(input, true) as Record<string, unknown>;
+    expect(setterCalls).toBe(0);
+    expect(snapshot.plain).toBe(1);
+    expect(Object.hasOwn(snapshot, 'getter')).toBe(true);
+  });
+});

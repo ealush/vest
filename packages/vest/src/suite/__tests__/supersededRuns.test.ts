@@ -101,3 +101,73 @@ describe('superseded suite.run() ownership', () => {
     }
   });
 });
+
+describe('superseded ownership across three generations (BB08)', () => {
+  it('[SC-BB08] three pending runs all settle with the latest outcome', async () => {
+    const gates = [createDeferred(), createDeferred(), createDeferred()];
+    const suite = create((data: { tag: string }) => {
+      test('tag', async () => {
+        if (data.tag === 'first') await gates[0].promise;
+        if (data.tag === 'second') await gates[1].promise;
+        enforce(data.tag).isNotBlank();
+      });
+    });
+    const first = suite.run({ tag: 'first' });
+    const second = suite.run({ tag: 'second' });
+    const third = suite.run({ tag: 'third' });
+    const thirdResult = await third;
+    gates[0].release();
+    gates[1].release();
+    await flushAsyncWork();
+    // Transitive chaining: twice-superseded handles follow to the latest.
+    expect(await first).toBe(thirdResult);
+    expect(await second).toBe(thirdResult);
+    expect(thirdResult.hasErrors('tag')).toBe(false);
+  });
+
+  it('[SC-BB08] rejected late work never resurrects after reset', async () => {
+    const gate = createDeferred();
+    const suite = create((data: { tag: string }) => {
+      test('tag', async () => {
+        await gate.promise;
+        if (data.tag === 'stale') throw new Error('stale failure');
+        enforce(data.tag).isNotBlank();
+      });
+    });
+    const stale = suite.run({ tag: 'stale' });
+    const staleSettled = Promise.resolve(stale).then(
+      () => 'settled' as const,
+      () => 'rejected' as const,
+    );
+    suite.reset();
+    gate.release();
+    await flushAsyncWork();
+    // The reset suite shows no failure either way; a stale handle that
+    // never settles must not publish into the cleared state.
+    const outcome = await Promise.race([
+      staleSettled,
+      new Promise<'pending'>(resolve => setImmediate(() => resolve('pending'))),
+    ]);
+    expect(['settled', 'rejected', 'pending']).toContain(outcome);
+    expect(suite.get().hasErrors('tag')).toBe(false);
+    const recovery = suite.run({ tag: 'fresh' });
+    expect(recovery.hasErrors('tag')).toBe(false);
+  });
+
+  it('[SC-BB08] new-first resolve before old-first leaves latest authoritative', async () => {
+    const oldGate = createDeferred();
+    const suite = create((data: { tag: string }) => {
+      test('tag', async () => {
+        if (data.tag === 'old') await oldGate.promise;
+        enforce(data.tag).isNotBlank();
+      });
+    });
+    const old = suite.run({ tag: 'old' });
+    const latest = suite.run({ tag: 'new' });
+    const latestResult = await latest;
+    oldGate.release();
+    await flushAsyncWork();
+    expect(await old).toBe(latestResult);
+    expect(suite.get().hasErrors('tag')).toBe(false);
+  });
+});

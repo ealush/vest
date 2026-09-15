@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { SchemaExclusionError, compose } from 'n4s';
 
+import { each } from '../../isolates/each';
 import { create, enforce, group, mode, Modes, test, warn } from '../../vest';
 
 type SkippedBehavior = 'pass' | 'fail' | 'throw';
@@ -1151,5 +1152,100 @@ describe('schema contracts: boolean skip-all semantic state (AC01)', () => {
     const result = suite.run({ a: 'x', b: 'y' });
     expect(result.hasErrors()).toBe(false);
     expect(schemaPredicates).toEqual(['a:x']);
+  });
+});
+
+describe('schema contracts: focus algebra triple and clearing (BB01)', () => {
+  it('[SC-BB01] only+changed+skip runs the union minus the skip', () => {
+    const calls: string[] = [];
+    const suite: any = create(
+      (_data: unknown) => {
+        for (const name of ['a', 'b', 'c']) {
+          test(name, () => {
+            calls.push(name);
+            return true;
+          });
+        }
+      },
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString(),
+        c: enforce.isString(),
+      }) as never,
+    );
+    const result = suite
+      .only('a')
+      .changed(['b'])
+      .focus({ skip: 'c' })
+      .run({ a: 'a', b: 'b', c: 'c' } as never);
+    expect(calls.sort()).toEqual(['a', 'b']);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-BB01] clearing focus restores the full run', () => {
+    const calls: string[] = [];
+    const suite: any = create(
+      (_data: unknown) => {
+        for (const name of ['a', 'b']) {
+          test(name, () => {
+            calls.push(name);
+            return true;
+          });
+        }
+      },
+      enforce.shape({ a: enforce.isString(), b: enforce.isString() }) as never,
+    );
+    const focused = suite.only('a');
+    focused.run({ a: 'a', b: 'b' });
+    expect(calls).toEqual(['a']);
+    calls.length = 0;
+    suite.run({ a: 'a', b: 'b' });
+    expect(calls.sort()).toEqual(['a', 'b']);
+  });
+});
+
+describe('schema contracts: array shrink and reorder stability (BB05)', () => {
+  it('[SC-BB05] array shrink revalidates the retained shape without stale members', () => {
+    const seen: unknown[] = [];
+    const suite: any = create(
+      (data: unknown) => {
+        seen.push(data);
+        test('rows', () => true);
+      },
+      enforce.shape({ rows: enforce.isArrayOf(enforce.isString()) }) as never,
+    );
+    suite.run({ rows: ['a', 'b', 'c'] });
+    const result = suite.changed('rows').run({ rows: ['a'] } as never);
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[seen.length - 1]).toEqual({ rows: ['a'] });
+  });
+
+  it('[SC-BB05] keyed reorder keeps attribution on current indices', () => {
+    const calls: string[] = [];
+    const suite: any = create(
+      (data: any) => {
+        each(data.rows, (row: any, index: number) => {
+          test(
+            `rows.${index}.v`,
+            () => {
+              calls.push(`v:${row.v}`);
+              return true;
+            },
+            row.v,
+          );
+        });
+      },
+      enforce.shape({
+        rows: enforce.isArrayOf(enforce.shape({ v: enforce.isString() })),
+      }) as never,
+    );
+    suite.run({ rows: [{ v: 'a' }, { v: 'b' }] });
+    calls.length = 0;
+    const result = suite
+      .changed('rows')
+      .run({ rows: [{ v: 'b' }, { v: 'a' }] } as never);
+    expect(result.hasErrors()).toBe(false);
+    expect(calls).toContain('v:a');
+    expect(calls).toContain('v:b');
   });
 });

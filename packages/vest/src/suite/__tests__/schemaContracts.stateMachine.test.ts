@@ -28,7 +28,9 @@ type Op =
   | { kind: 'full'; invalid: Field[] }
   | { kind: 'changed'; changed: Field[]; invalid: Field[] }
   | { kind: 'skip'; skip: Field[]; invalid: Field[] }
-  | { kind: 'resetField'; field: Field };
+  | { kind: 'only'; only: Field[]; invalid: Field[] }
+  | { kind: 'resetField'; field: Field }
+  | { kind: 'reset' };
 
 function planOperations(seed: number): { edges: [Field, Field][]; ops: Op[] } {
   const rand = rng(seed);
@@ -38,24 +40,36 @@ function planOperations(seed: number): { edges: [Field, Field][]; ops: Op[] } {
       if (source !== target && rand() < 0.25) edges.push([source, target]);
     }
   }
+  // Deterministic Fisher-Yates (cross-engine seed replay): random-sort
+  // shuffling biases permutations and varies by engine.
   const pick = (count: number): Field[] => {
-    const shuffled = [...FIELDS].sort(() => rand() - 0.5);
+    const shuffled = [...FIELDS];
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(rand() * (i + 1));
+      const swap = shuffled[i] as Field;
+      shuffled[i] = shuffled[j] as Field;
+      shuffled[j] = swap;
+    }
     return shuffled.slice(0, count);
   };
   const invalid = (): Field[] => FIELDS.filter(() => rand() < 0.3);
   const ops: Op[] = [];
   for (let i = 0; i < 20; i += 1) {
     const roll = rand();
-    if (roll < 0.35) ops.push({ kind: 'full', invalid: invalid() });
-    else if (roll < 0.7)
+    if (roll < 0.3) ops.push({ kind: 'full', invalid: invalid() });
+    else if (roll < 0.6)
       ops.push({
         kind: 'changed',
         changed: pick(1 + (rand() < 0.5 ? 1 : 0)),
         invalid: invalid(),
       });
-    else if (roll < 0.85)
+    else if (roll < 0.72)
       ops.push({ kind: 'skip', skip: pick(1), invalid: invalid() });
-    else ops.push({ kind: 'resetField', field: pick(1)[0] as Field });
+    else if (roll < 0.82)
+      ops.push({ kind: 'only', only: pick(1), invalid: invalid() });
+    else if (roll < 0.9)
+      ops.push({ kind: 'resetField', field: pick(1)[0] as Field });
+    else ops.push({ kind: 'reset' });
   }
   return { edges, ops };
 }
@@ -74,8 +88,12 @@ describe('schema contracts: deterministic state machine', () => {
     seed => {
       const { edges, ops } = planOperations(seed);
       const calls: Field[] = [];
+      const schemaCalls: Field[] = [];
       const member = (field: Field) => {
-        const rule = enforce.condition(() => true);
+        const rule = enforce.condition(() => {
+          schemaCalls.push(field);
+          return true;
+        });
         const sources = edges
           .filter(([, target]) => target === field)
           .map(([source]) => source);
@@ -131,16 +149,43 @@ describe('schema contracts: deterministic state machine', () => {
           expectState(where);
           continue;
         }
+        if (op.kind === 'reset') {
+          suite.reset();
+          errors = new Set();
+          expectState(where);
+          continue;
+        }
         calls.length = 0;
+        schemaCalls.length = 0;
         const data = dataOf(op.invalid);
         if (op.kind === 'full') {
           suite.run(data);
           check([...calls].sort(), [...FIELDS].sort(), where);
+          check([...schemaCalls].sort(), [...FIELDS].sort(), `${where} schema`);
           errors = new Set(op.invalid);
         } else if (op.kind === 'changed') {
           suite.changed(op.changed).run(data);
           const executed = targetsOf(edges, op.changed);
           check([...calls].sort(), [...executed].sort(), where);
+          check(
+            [...schemaCalls].sort(),
+            [...executed].sort(),
+            `${where} schema`,
+          );
+          errors = new Set(
+            [...errors]
+              .filter(field => !executed.has(field))
+              .concat(op.invalid.filter(field => executed.has(field))),
+          );
+        } else if (op.kind === 'only') {
+          suite.only(op.only).run(data);
+          const executed = new Set(op.only);
+          check([...calls].sort(), [...executed].sort(), where);
+          check(
+            [...schemaCalls].sort(),
+            [...executed].sort(),
+            `${where} schema`,
+          );
           errors = new Set(
             [...errors]
               .filter(field => !executed.has(field))
@@ -152,6 +197,11 @@ describe('schema contracts: deterministic state machine', () => {
             FIELDS.filter(field => !op.skip.includes(field)),
           );
           check([...calls].sort(), [...executed].sort(), where);
+          check(
+            [...schemaCalls].sort(),
+            [...executed].sort(),
+            `${where} schema`,
+          );
           errors = new Set(op.invalid.filter(field => executed.has(field)));
         }
         expectState(where);

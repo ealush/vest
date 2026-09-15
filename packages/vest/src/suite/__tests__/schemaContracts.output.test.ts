@@ -735,3 +735,98 @@ describe('schema contracts: MP04b supported parser combinations', () => {
     expect(second.value).toEqual({ rows: ['d!', 'b!'], note: 'first' });
   });
 });
+
+describe('schema contracts: draft versus complete output (AC05 characterization)', () => {
+  // ADR (maintainer ruling embedded): focused-run callback data and result
+  // value are DRAFTS with per-field provenance, not certified complete
+  // output. Only full runs certify complete InferSchemaOutput. No signature
+  // changes ship in this patch: these tests pin the current observable
+  // semantics (own-property presence, validity, recovery) so a future
+  // draft-typed callback can be judged against recorded behavior. Unreported
+  // changes to retained fields remain caller invalidation responsibility.
+  function draftSuite() {
+    const seen: unknown[] = [];
+    const suite = create(
+      (data: unknown) => {
+        seen.push(data);
+        test('note', () => true);
+      },
+      enforce.shape({
+        n: enforce.isNumeric().toNumber(),
+        note: enforce.isString(),
+      }),
+    );
+    return { seen, suite };
+  }
+
+  it('[SC-AC05] first focused run exposes draft data without the untouched required property', () => {
+    const { seen, suite } = draftSuite();
+    const result = suite.changed('note').run({ note: 'ok' } as never);
+    expect(seen).toHaveLength(1);
+    expect(Object.hasOwn(seen[0] as object, 'note')).toBe(true);
+    // The untouched schema-only field has no mapping yet: absence (not
+    // undefined) marks the draft.
+    expect(Object.hasOwn(seen[0] as object, 'n')).toBe(false);
+    expect(result.isValid()).toBe(true);
+    expect(Object.hasOwn((result.value ?? {}) as object, 'n')).toBe(false);
+  });
+
+  it('[SC-AC05] established mapping hydrates retained fields into later drafts', () => {
+    const { seen, suite } = draftSuite();
+    const full = suite.run({ n: '42', note: 'ok' });
+    expect(full.isValid()).toBe(true);
+    expect(full.value).toEqual({ n: 42, note: 'ok' });
+    const focused = suite.changed('note').run({ note: 'next' } as never);
+    expect(focused.isValid()).toBe(true);
+    expect(focused.value).toEqual({ n: 42, note: 'next' });
+    expect(seen[1]).toEqual({ n: 42, note: 'next' });
+  });
+
+  it('[SC-AC05] absent optional materializes as own undefined everywhere', () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      (data: unknown) => {
+        seen.push(data);
+        test('note', () => true);
+      },
+      enforce.shape({
+        opt: enforce.optional(enforce.isString()),
+        note: enforce.isString(),
+      }),
+    );
+    const full = suite.run({ note: 'ok' });
+    // Absent optional input is consistently present-undefined (never
+    // absent) in full output, focused output, and callback data alike.
+    expect(Object.hasOwn((full.value ?? {}) as object, 'opt')).toBe(true);
+    const focused = suite.changed('note').run({ note: 'next' } as never);
+    expect(focused.isValid()).toBe(true);
+    expect(Object.hasOwn((focused.value ?? {}) as object, 'opt')).toBe(true);
+    expect(Object.hasOwn(seen[1] as object, 'opt')).toBe(true);
+    expect(seen[1]).toEqual({ note: 'next', opt: undefined });
+  });
+
+  it('[SC-AC05] invalid parser input on an untouched field stays a draft without fabrication', () => {
+    const { seen, suite } = draftSuite();
+    const result = suite.changed('note').run({ note: 'ok' } as never);
+    expect(result.isValid()).toBe(true);
+    // No parser ran for n (present nowhere): nothing fabricated.
+    expect(seen[0]).toEqual({ note: 'ok' });
+  });
+
+  it('[SC-AC05] full-run recovery certifies complete output after drafts', () => {
+    const { seen, suite } = draftSuite();
+    suite.changed('note').run({ note: 'ok' } as never);
+    const full = suite.run({ n: '7', note: 'ok' });
+    expect(full.isValid()).toBe(true);
+    expect(full.value).toEqual({ n: 7, note: 'ok' });
+    expect(Object.hasOwn((full.value ?? {}) as object, 'n')).toBe(true);
+    expect(seen[seen.length - 1]).toEqual({ n: 7, note: 'ok' });
+  });
+
+  it('[SC-AC05] changed([]) exposes declaration data without validation or witness', () => {
+    const { seen, suite } = draftSuite();
+    const result = suite.changed([]).run({ note: 'ok' } as never);
+    expect(result.hasErrors()).toBe(false);
+    expect(seen[0]).toEqual({ note: 'ok' });
+  });
+});

@@ -253,6 +253,7 @@ function copyFieldLists<F extends TFieldName, G extends TGroupName>(
   if (Array.isArray(copied.skip)) copied.skip = [...copied.skip];
   if (Array.isArray(copied.onlyGroup)) copied.onlyGroup = [...copied.onlyGroup];
   if (Array.isArray(copied.skipGroup)) copied.skipGroup = [...copied.skipGroup];
+
   return copied;
 }
 

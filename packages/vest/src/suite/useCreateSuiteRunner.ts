@@ -419,12 +419,13 @@ function mappedFocusPaths<F extends TFieldName, G extends TGroupName>(
   const skipped = new Set(
     modifiers.skip
       ? asArray(modifiers.skip).filter(
-          (entry): entry is F => typeof entry === 'string',
+          (entry): entry is string => typeof entry === 'string',
         )
       : [],
   );
   return asArray(modifiers.only).filter(
-    (entry): entry is F => typeof entry === 'string' && !skipped.has(entry),
+    (entry): entry is string =>
+      typeof entry === 'string' && !skipped.has(entry),
   );
 }
 
@@ -1280,9 +1281,10 @@ function useRunSuiteCallback<
 
   return () => {
     // Focused modifiers are applied before user callback so every test in this run
-    // observes the same focus context.
-    only(modifiers.only);
-    skip(modifiers.__skipAll || modifiers.skip);
+    // observes the same focus context. Caller-owned readonly lists normalize
+    // to mutable copies at this runtime boundary (see copyFieldLists).
+    only(mutableOnlyList(modifiers.only));
+    skip(modifiers.__skipAll || mutableSkipList(modifiers.skip));
     (suiteCallback as CB)(...args);
 
     IsolateReorderable(
@@ -1302,6 +1304,29 @@ function useRunSuiteCallback<
     useEmit('SUITE_CALLBACK_RUN_FINISHED');
     return useResolver();
   };
+}
+
+/**
+ * Normalizes a caller-owned inclusion list for the runtime focus hooks:
+ * readonly arrays become mutable copies, non-string entries drop out.
+ */
+function mutableOnlyList(value: unknown): FieldExclusion<string> | undefined {
+  if (value == null) return undefined;
+  if (Array.isArray(value)) {
+    return value.filter((entry): entry is string => typeof entry === 'string');
+  }
+  return typeof value === 'string' ? value : undefined;
+}
+
+function mutableSkipList(
+  value: unknown,
+): FieldExclusion<string> | boolean | undefined {
+  if (value == null) return undefined;
+  if (typeof value === 'boolean') return value;
+  if (Array.isArray(value)) {
+    return value.filter((entry): entry is string => typeof entry === 'string');
+  }
+  return typeof value === 'string' ? value : undefined;
 }
 
 /**
@@ -1362,8 +1387,8 @@ function runSchemaValidation<S extends TSchema = undefined>(
   schemaRunResult?: SchemaRunResult[],
   retained: SchemaRunResult[] = [],
   modifiers?: {
-    only?: FieldExclusion<string>;
-    skip?: FieldExclusion<string>;
+    only?: unknown;
+    skip?: unknown;
     __skipAll?: boolean;
   },
 ) {
@@ -1379,7 +1404,7 @@ function runSchemaValidation<S extends TSchema = undefined>(
     only(
       schemaRunResult.filter(result => !result.pass).map(schemaFailureField),
     );
-    skip(modifiers?.__skipAll || modifiers?.skip);
+    skip(modifiers?.__skipAll || mutableSkipList(modifiers?.skip));
     // Fresh results come first and are authoritative: a retained verdict
     // identical to an already-synthesized failure (e.g. a root failure the
     // fresh run also reports) adds no information, and the tree forbids

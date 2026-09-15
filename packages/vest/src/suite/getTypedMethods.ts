@@ -4,7 +4,12 @@ import { TIsolate, IsolateKey } from 'vestjs-runtime';
 import { TIsolateTest } from '../core/isolate/IsolateTest/IsolateTest';
 import { TestFn, TestMessage } from '../core/test/TestTypes';
 import { test } from '../core/test/test';
-import { FieldExclusion, only, skip } from '../hooks/focused/focused';
+import {
+  FieldExclusion,
+  FieldSelector,
+  only,
+  skip,
+} from '../hooks/focused/focused';
 import { include } from '../hooks/include';
 import { OptionalsInput } from '../hooks/optional/OptionalTypes';
 import { optional } from '../hooks/optional/optional';
@@ -35,28 +40,32 @@ export function getTypedMethods<
 
 export type TTypedMethods<F extends TFieldName, G extends TGroupName> = {
   include: (fieldName: F) => {
-    when: (condition: F | TDraftCondition<F, G>) => void;
+    when: (condition: string | F | TDraftCondition<F, G>) => void;
   };
 
   omitWhen: (conditional: TDraftCondition<F, G>, callback: CB) => void;
   only: {
-    (item: FieldExclusion<F>): void;
+    (item: FieldExclusion<F> | FieldSelector<F>): void;
   };
   optional: (optionals: OptionalsInput<F>) => void;
   skip: {
-    (item: FieldExclusion<F>): void;
+    (item: FieldExclusion<F> | FieldSelector<F>): void;
   };
   skipWhen: (condition: TDraftCondition<F, G>, callback: CB) => void;
   test: {
-    (fieldName: F, message: TestMessage, cb: TestFn): TIsolateTest;
-    (fieldName: F, cb: TestFn): TIsolateTest;
     (
-      fieldName: F,
+      fieldName: FieldSelector<F>,
+      message: TestMessage,
+      cb: TestFn,
+    ): TIsolateTest;
+    (fieldName: FieldSelector<F>, cb: TestFn): TIsolateTest;
+    (
+      fieldName: FieldSelector<F>,
       message: TestMessage,
       cb: TestFn,
       key: IsolateKey,
     ): TIsolateTest;
-    (fieldName: F, cb: TestFn, key: IsolateKey): TIsolateTest;
+    (fieldName: FieldSelector<F>, cb: TestFn, key: IsolateKey): TIsolateTest;
   };
   group: {
     (callback: () => void): TIsolate;

@@ -1222,7 +1222,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.builderReuse.test.ts",
       "id": "AC04",
-      "notes": "Builders snapshot all four config list kinds at the focus boundary (mutate/reorder/clear/append before/after run and derivation, forks, frozen inputs); caller arrays never frozen or mutated; retained history still shared by design.",
+      "notes": "Builders snapshot all four config list kinds at the focus boundary (mutate/reorder/clear/append before/after run and derivation, forks, frozen inputs); caller arrays never frozen or mutated; retained history still shared by design. Frozen arrays accepted without mutation; readonly changed lists execute untouched (no casts).",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1320,7 +1320,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/supersededRuns.test.ts",
       "id": "BB08",
-      "notes": "Three-generation transitive ownership settlement; stale rejection without resurrection plus recovery; new-first/old-first ordering leaves latest authoritative. Suite-level last-finish-wins pinned: stale failure settling after a focused run publishes; fresh full recovery clears. Stale async failure settling after a focused run publishes last-finish-wins; fresh full recovery clears.",
+      "notes": "Three-generation transitive ownership settlement; stale rejection without resurrection plus recovery; new-first/old-first ordering leaves latest authoritative. Suite-level last-finish-wins pinned: stale failure settling after a focused run publishes; fresh full recovery clears. Stale async failure settling after a focused run publishes last-finish-wins; fresh full recovery clears. Stale failure settling after an only() run publishes last-finish-wins, matching changed() routes.",
       "result": "pass",
       "status": "covered",
       "testFiles": ["packages/vest/src/suite/__tests__/supersededRuns.test.ts"],
@@ -1357,7 +1357,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "H1",
-      "notes": "Skip-all establishes no mapping witness: focused union runs after skip-all fail without prior proof; previous proven mappings survive skip-all untouched and serve later focused runs; parser mapping runs without validation. Red-verified without the runner fix (3 failures). Expanded: changed([]) establishes no witness; only+skip-all establishes none; skip-all destructively clears retained verdicts (changed([]) retains); no-match preserves container constraints (partial extra-key rejection, moved-chain full run). skipAll flag narrowed to boolean skip (changed([]) already preserves via its empty-affected path). Expansion: changed([]) and only+skip-all establish no witness; skip-all destructively clears retained verdicts (changed([]) retains); only+skip-all composes layered selection with zero schema validation.",
+      "notes": "Skip-all establishes no mapping witness: focused union runs after skip-all fail without prior proof; previous proven mappings survive skip-all untouched and serve later focused runs; parser mapping runs without validation. Red-verified without the runner fix (3 failures). Expanded: changed([]) establishes no witness; only+skip-all establishes none; skip-all destructively clears retained verdicts (changed([]) retains); no-match preserves container constraints (partial extra-key rejection, moved-chain full run). skipAll flag narrowed to boolean skip (changed([]) already preserves via its empty-affected path). Expansion: changed([]) and only+skip-all establish no witness; skip-all destructively clears retained verdicts (changed([]) retains); only+skip-all composes layered selection with zero schema validation. only+skip-all composes layered selection (imperative only wins, schema suppressed) with no witness.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1377,6 +1377,19 @@
         "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
       ],
       "testNames": ["[SC-BB12]"],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
+      "id": "BB03",
+      "notes": "Cyclic changed runs terminate with the exact one-hop set (no transitive walk, no hang); self-dependencies are no-ops. Unexecuted fields read invalid per established focused-run semantics.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
+      ],
+      "testNames": ["[SC-BB03]"],
       "verifiedSha": null
     }
   ]

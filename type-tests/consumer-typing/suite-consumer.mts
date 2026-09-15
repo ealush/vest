@@ -308,6 +308,14 @@ userSuite.only(changedFields).run({ username: 'ann', age: 30 });
 userSuite.changed('username').run({ username: 'ann', age: 30 });
 userSuite.changed(['username', 'age']).run({ username: 'ann', age: 30 });
 
+// Literal tuples (readonly by construction) plug in without casts.
+userSuite
+  .changed(['username', 'age'] as const)
+  .run({ username: 'ann', age: 30 });
+userSuite
+  .focus({ skip: ['username'] as const })
+  .run({ username: 'ann', age: 30 });
+
 // ---------------------------------------------------------------------------
 // 7. Nested dotted selectors.
 // ---------------------------------------------------------------------------

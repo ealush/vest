@@ -231,4 +231,22 @@ describe('schema contracts: builder snapshots caller configuration (AC04)', () =
     expect(only).toEqual(['a']);
     expect(groups).toEqual(['g1']);
   });
+
+  it('[SC-AC04] frozen arrays are accepted and snapshotted without mutation', () => {
+    const { calls, suite } = groupSuite();
+    const groups = Object.freeze(['g1']);
+    const builder = suite.focus({ onlyGroup: groups }) as any;
+    builder.run({ a: 'a', b: 'b' });
+    expect(calls).toEqual(['a']);
+    expect(groups).toEqual(['g1']);
+  });
+
+  it('[SC-AC04] readonly changed lists execute and stay untouched', () => {
+    const { calls, suite } = groupSuite();
+    const fields: readonly string[] = ['a', 'b'];
+    const builder = suite.changed(fields) as any;
+    builder.run({ a: 'a', b: 'b' });
+    expect(calls.sort()).toEqual(['a', 'b']);
+    expect(fields).toEqual(['a', 'b']);
+  });
 });

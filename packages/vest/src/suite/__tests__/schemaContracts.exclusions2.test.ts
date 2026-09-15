@@ -1563,3 +1563,52 @@ describe('schema contracts: only combined with skip-all (H1 expansion)', () => {
     expect(result.hasErrors()).toBe(false);
   });
 });
+
+describe('schema contracts: dependency cycles terminate with one-hop closure (BB03)', () => {
+  it('[SC-BB03] cyclic changed run executes the one-hop set exactly once and terminates', () => {
+    const calls: string[] = [];
+    const suite: any = create(
+      (_data: unknown) => {
+        for (const name of ['a', 'b', 'c']) {
+          test(name, () => {
+            calls.push(name);
+            return true;
+          });
+        }
+      },
+      enforce.shape({
+        a: enforce.condition(() => true).dependsOn(($: any) => $.b),
+        b: enforce.condition(() => true).dependsOn(($: any) => $.a),
+        c: enforce.isString(),
+      }) as never,
+    );
+    const result = suite.changed('a').run({ a: 'x', b: 'y', c: 'z' } as never);
+    // One-hop closure of a in a<->b is {a, b}: no transitive walk, no hang.
+    expect(calls.sort()).toEqual(['a', 'b']);
+    expect(result.tests.c.testCount).toBe(0);
+    expect(result.hasErrors()).toBe(false);
+  });
+
+  it('[SC-BB03] self-dependency is a no-op without execution change', () => {
+    const calls: string[] = [];
+    const suite: any = create(
+      (_data: unknown) => {
+        test('a', () => {
+          calls.push('a');
+          return true;
+        });
+        test('b', () => {
+          calls.push('b');
+          return true;
+        });
+      },
+      enforce.shape({
+        a: enforce.condition(() => true).dependsOn(($: any) => $.self),
+        b: enforce.isString(),
+      }) as never,
+    );
+    const result = suite.changed('a').run({ a: 'x', b: 'y' } as never);
+    expect(result.hasErrors()).toBe(false);
+    expect(calls).toEqual(['a']);
+  });
+});

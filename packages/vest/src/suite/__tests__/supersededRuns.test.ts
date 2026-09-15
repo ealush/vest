@@ -206,3 +206,39 @@ describe('superseded ownership across focused runs (BB08)', () => {
     expect(recovery.hasErrors('a')).toBe(false);
   });
 });
+
+describe('superseded ownership across only runs (BB08)', () => {
+  function deferred() {
+    let release: () => void = () => {};
+    const promise = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    return { promise, release };
+  }
+  it('[SC-BB08] stale failure settling after an only run publishes last-finish-wins', async () => {
+    const gate = deferred();
+    const suite = create((data: { a: string; b: string }) => {
+      test('a', async () => {
+        if (data.a === 'bad') await gate.promise;
+        enforce(data.a).notEquals('bad');
+      });
+      test('b', () => {
+        enforce(data.b).isString();
+      });
+    });
+    const slow = suite.run({ a: 'bad', b: 'x' });
+    const staleSettled = Promise.resolve(slow).then(
+      () => 'settled' as const,
+      () => 'rejected' as const,
+    );
+    suite.only('b').run({ a: 'ok', b: 'y' });
+    gate.release();
+    await staleSettled;
+    await new Promise(resolve => setImmediate(resolve));
+    // Same ownership as changed runs: the focused run does not fence the
+    // pending validation, so the stale failure publishes on settlement.
+    expect(suite.get().hasErrors('a')).toBe(true);
+    expect(suite.get().hasErrors('b')).toBe(false);
+    expect(suite.run({ a: 'ok', b: 'y' }).hasErrors('a')).toBe(false);
+  });
+});

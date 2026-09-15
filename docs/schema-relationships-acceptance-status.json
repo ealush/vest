@@ -1,7 +1,7 @@
 {
   "generated": "2026-09-14",
-  "head": "9e760cd6",
-  "note": "Content finalized in 9e760cd6; rows verified locally on that tree. verifiedSha is set only by an executed green CI run on that exact SHA (pending). Statuses: open, covered.",
+  "head": "b147ab08",
+  "note": "Content finalized in b147ab08; rows verified locally on that tree. verifiedSha is set only by an executed green CI run on that exact SHA (pending). Statuses: open, covered.",
   "rows": [
     {
       "blocked-by": [],

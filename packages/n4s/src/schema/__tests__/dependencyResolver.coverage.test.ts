@@ -1072,6 +1072,8 @@ describe('dependencyResolver resolver failure cause (AC07)', () => {
     ['null', null],
     ['undefined', undefined],
     ['plain object', { reason: 'sentinel-object' }],
+    ['number', 42],
+    ['symbol', Symbol('sentinel')],
   ])(
     '[SC-AC07] %s resolver fault preserves cause identity',
     (_label, thrown) => {

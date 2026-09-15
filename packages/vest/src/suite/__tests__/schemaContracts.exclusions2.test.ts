@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { SchemaExclusionError, compose } from 'n4s';
+import { FocusedSchemaMappingError, SchemaExclusionError, compose } from 'n4s';
 
 import { each } from '../../isolates/each';
 import { create, enforce, group, mode, Modes, test, warn } from '../../vest';
@@ -1247,5 +1247,131 @@ describe('schema contracts: array shrink and reorder stability (BB05)', () => {
     expect(result.hasErrors()).toBe(false);
     expect(calls).toContain('v:a');
     expect(calls).toContain('v:b');
+  });
+});
+
+describe('schema contracts: skip-all establishes no mapping witness (H1)', () => {
+  function unionSuite() {
+    const callback = vi.fn();
+    const suite = create(
+      (data: unknown) => {
+        callback(data);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce.isArrayOf(
+          enforce.condition(() => true),
+          enforce.condition(() => true),
+        ),
+        b: enforce.isString(),
+      }),
+    );
+    return { callback, suite };
+  }
+
+  it('[SC-SKIPALL-WITNESS] focused union run after skip-all still fails without a witness', () => {
+    const { suite } = unionSuite();
+    suite.focus({ skip: true }).run({ a: [2], b: 'ok' } as never);
+    let thrown: unknown;
+    try {
+      suite.changed('b').run({ a: [2], b: 'ok' } as never);
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
+  });
+
+  it('[SC-SKIPALL-WITNESS] skip-all preserves previous mapping without inventing coverage', () => {
+    const { callback, suite } = unionSuite();
+    const full = suite.run({ a: [2], b: 'ok' });
+    expect(full.isValid()).toBe(true);
+    // Full validation genuinely witnessed branch a[0] (predicates ran on
+    // that data). The skip-all run executes nothing, so it must preserve
+    // that proof untouched: the focused run reuses the full run's witness,
+    // not the unvalidated skip-all data.
+    suite.focus({ skip: true }).run({ a: [99], b: 'ok' } as never);
+    const focused = suite.changed('b').run({ a: [2], b: 'ok' } as never);
+    expect(focused.isValid()).toBe(true);
+    expect(callback).toHaveBeenCalledTimes(3);
+    expect(focused.value).toEqual({ a: [2], b: 'ok' });
+  });
+
+  it('[SC-SKIPALL-WITNESS] skip-all reuses a proven parser witness', () => {
+    const callback = vi.fn();
+    const suite: any = create(
+      (data: unknown) => {
+        callback(data);
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce.isArrayOf(enforce.isString(), enforce.isNumber()),
+        b: enforce.isString(),
+      }) as never,
+    );
+    const full = suite.run({ a: ['x'], b: 'ok' });
+    expect(full.isValid()).toBe(true);
+    // Full validation proved branch 0: that witness survives a skip-all
+    // run and serves the next focused run.
+    suite.focus({ skip: true }).run({ a: ['y'], b: 'ok' });
+    const focused = suite.changed('b').run({ a: ['x'], b: 'ok' });
+    expect(focused.isValid()).toBe(true);
+    expect(callback).toHaveBeenCalledTimes(3);
+  });
+
+  it('[SC-SKIPALL-WITNESS] skip-all callback receives parser mapping without validation', () => {
+    const callback = vi.fn();
+    const suite: any = create(
+      callback,
+      enforce.shape({
+        n: enforce.isNumeric().toNumber(),
+        note: enforce.isString(),
+      }) as never,
+    );
+    const result = suite.focus({ skip: true }).run({ n: '42', note: 'ok' });
+    // Best-effort parser mapping still runs (no validator does): the
+    // callback observes mapped output, but the run certifies nothing.
+    expect(callback.mock.calls[0][0]).toEqual({ n: 42, note: 'ok' });
+    expect(result.hasErrors()).toBe(false);
+  });
+});
+
+describe('schema contracts: no-match preserves container constraints (H2)', () => {
+  it('[SC-NOMATCH-CONSTRAINT] unknown skip on partial keeps extra-key rejection', () => {
+    const seen: unknown[] = [];
+    const suite: any = create(
+      (_data: unknown) => {
+        seen.push(_data);
+      },
+      enforce.partial({
+        a: enforce.isString(),
+        b: enforce.isString(),
+      }) as never,
+    );
+    // An unknown skip must not rebuild the container (which could drop
+    // strictness): the extra key still fails exactly as a fresh full run.
+    const result = suite
+      .focus({ skip: 'nope' })
+      .run({ a: 'x', extra: 1 } as never);
+    expect(result.hasErrors()).toBe(true);
+    expect(seen).toHaveLength(1);
+  });
+
+  it('[SC-NOMATCH-CONSTRAINT] unknown skip next to a moved chain runs full', () => {
+    const root = vi.fn(() => true);
+    const calls: string[] = [];
+    const schema = compose(
+      enforce.shape({
+        a: enforce.condition(() => {
+          calls.push('a');
+          return true;
+        }),
+      }),
+      enforce.condition(root),
+    );
+    const suite: any = create((_data: unknown) => {}, schema as never);
+    const result = suite.focus({ skip: 'unknown' }).run({ a: 'x' } as never);
+    expect(result.hasErrors()).toBe(false);
+    expect(calls).toEqual(['a']);
+    expect(root).toHaveBeenCalledTimes(1);
   });
 });

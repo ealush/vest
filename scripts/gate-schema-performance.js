@@ -750,6 +750,7 @@ function selfTest() {
   const results = [
     ...selfTestEvaluate(),
     ...selfTestParse(),
+    ...selfTestDuplicateRows(),
     ...selfTestBase(),
     ...selfTestPairEvidence(),
     ...selfTestSingles(),
@@ -757,6 +758,7 @@ function selfTest() {
     ...selfTestNoShortCircuit(),
     ...selfTestHeadOnlyAbsolute(),
     ...selfTestInjectedFileRestore(),
+    ...selfTestEvidenceWriteFailure(),
     ...selfTestEvidenceFile(),
   ];
   const ok = results.every(Boolean);
@@ -824,6 +826,20 @@ function selfTestEvaluate() {
     ),
   );
   return results;
+}
+
+function selfTestDuplicateRows() {
+  // Duplicate row labels resolve deterministically (last row wins): the
+  // measurement file must still emit each label exactly once per run.
+  const parsed = parsePairs(
+    'PERF_SINGLE {"label":"A1","times":[100]}\nPERF_SINGLE {"label":"A1","times":[200]}\n',
+  );
+  return [
+    checkCase(
+      'duplicate rows resolve last-wins',
+      parsed.singles.get('A1')?.times?.[0] === 200,
+    ),
+  ];
 }
 
 function selfTestParse() {
@@ -994,6 +1010,21 @@ function selfTestHeadOnlyAbsolute() {
     ),
     checkCase('head-only A1 breach fails', outcome.failed === true),
     checkCase('head-only A1 within ceiling passes', outcomeOk.failed === false),
+  ];
+}
+
+function selfTestEvidenceWriteFailure() {
+  let thrown = null;
+  try {
+    writeEvidenceFile(
+      '/nonexistent-dir-xyz/evidence.json',
+      buildEvidence({ failed: true, trace: [] }, null),
+    );
+  } catch (error) {
+    thrown = error;
+  }
+  return [
+    checkCase('evidence write failure is visible, not silent', thrown !== null),
   ];
 }
 

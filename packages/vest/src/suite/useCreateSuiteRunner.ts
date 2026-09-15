@@ -236,6 +236,9 @@ export function useCreateSuiteRunner<
       previous: usePreviousMappedSchemaOutput(),
       schema,
       schemaRunResult,
+      skipAll:
+        transformedModifiers.skip === true ||
+        transformedModifiers.__skipAll === true,
       skipped: skippedFocusPaths(transformedModifiers.skip),
     });
     const callbackInput = callbackMapping.input;
@@ -463,6 +466,7 @@ type CallbackInputParams = {
   previous: MappedSchemaOutput | undefined;
   schema: unknown;
   schemaRunResult: SchemaRunResult[] | undefined;
+  skipAll?: boolean;
   skipped: readonly string[] | null;
 };
 
@@ -479,15 +483,36 @@ type CallbackMapping = {
  * This keeps the callback's schema-output type truthful without changing the
  * intentionally per-run semantics of SuiteResult.run.data.parsed.
  * Validation failures keep the established raw-input fallback and do not
- * poison the last successful mapped value.
+ * poison the last successful mapped value. Skip-all runs executed no
+ * validators, so they likewise deliver raw input and preserve (never
+ * establish) the retained mapping: a skip-all run must not manufacture a
+ * branch witness from unvalidated data.
  */
 function getCallbackMapping(params: CallbackInputParams): CallbackMapping {
-  const { affected, fallback, previous, schema, schemaRunResult, skipped } =
-    params;
+  const {
+    affected,
+    fallback,
+    previous,
+    schema,
+    schemaRunResult,
+    skipAll,
+    skipped,
+  } = params;
   if (!schema) return { input: fallback };
   const successfulResult = successfulSchemaResult(schemaRunResult);
   if (successfulResult === null) {
     return failedCallbackMapping(affected, fallback, previous, schema);
+  }
+  if (skipAll === true) {
+    // No validators executed: deliver best-effort parser mapping as the
+    // callback input, and re-store the previous retained mapping unchanged.
+    // A skip-all run establishes no witness of its own, but it must not
+    // wipe a previously proven one either (each run replaces the stored
+    // isolate, so preservation is active, not automatic).
+    return {
+      input: cloneDetachedDataTree(mappedFailureInput(schema, fallback)),
+      ...(previous === undefined ? {} : { retained: previous }),
+    };
   }
   return successfulCallbackMapping({
     affected,

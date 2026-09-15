@@ -183,15 +183,11 @@ describe('schema performance pairs', () => {
   }, 120000);
 
   it('G1 creation with vs without dependsOn', () => {
-    measureSingle('A1', () => {
-      for (let i = 0; i < 20000; i += 1) {
-        enforce.shape({
-          a: enforce.isString(),
-          b: enforce.isString(),
-        });
-      }
-    });
+    // A1 emits exactly once per run: the baseline path emits it here and
+    // returns; the feature path emits it after the pair below. Duplicate
+    // rows would silently overwrite each other in the gate's sample map.
     if (!hasDependsOn()) {
+      measureSingle('A1', plainShapeBatch());
       skipPair('G1', 'no-dependsOn');
       return;
     }
@@ -214,17 +210,20 @@ describe('schema performance pairs', () => {
     // average out GC/JIT noise; the paired ratio cancels the rest.
     const sample = measure('G1', repeat(plain, 20000), repeat(related, 20000));
     assertSample(sample);
-    measureSingle(
-      'A1',
-      repeat(() => {
-        enforce.shape({
-          a: enforce.isString(),
-          b: enforce.isString(),
-        });
-      }, 20000),
-    );
+    measureSingle('A1', plainShapeBatch());
   }, 180000);
 });
+
+function plainShapeBatch(): () => void {
+  return () => {
+    for (let i = 0; i < 20000; i += 1) {
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString(),
+      });
+    }
+  };
+}
 
 function assertSample(sample: PairSample): void {
   expect(sample.ratios).toHaveLength(BATCHES);

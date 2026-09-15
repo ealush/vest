@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { create, enforce, mode, Modes, test } from '../../vest';
 
@@ -270,5 +270,85 @@ describe('schema contracts: metamorphic properties', () => {
     const b = second.suite.run(data);
     expect(b.getErrors()).toEqual(a.getErrors());
     expect(b.isValid()).toBe(a.isValid());
+  });
+});
+
+describe('schema contracts: full/selective agreement (metamorphic)', () => {
+  it('[SC-METAMORPHIC] full and selective runs agree on every executed validator verdict', () => {
+    function fixture() {
+      const calls: string[] = [];
+      const suite = create(
+        (data: Record<string, string>) => {
+          mode(Modes.ALL);
+          for (const field of ['a', 'b', 'c'] as const) {
+            test(field, () => {
+              calls.push(field);
+              enforce(data[field]).notEquals('bad');
+            });
+          }
+        },
+        enforce.shape({
+          a: enforce.isString(),
+          b: enforce.isString().dependsOn(($: any) => $.a),
+          c: enforce.isString(),
+        }),
+      );
+      return { calls, suite };
+    }
+    const data = { a: 'bad', b: 'ok', c: 'bad' };
+    const full = fixture();
+    const fullResult = full.suite.run(data);
+    const selective = fixture();
+    const selectiveResult = selective.suite.changed('a').run(data);
+    // changed('a') executes a and its dependent b; both runs must agree
+    // on those validators' verdicts and mapped values.
+    for (const field of ['a', 'b'] as const) {
+      expect(selectiveResult.hasErrors(field)).toBe(
+        fullResult.hasErrors(field),
+      );
+    }
+    expect(selectiveResult.hasErrors('a')).toBe(true);
+    expect(selectiveResult.hasErrors('b')).toBe(false);
+    expect(full.calls.sort()).toEqual(['a', 'b', 'c']);
+    expect(selective.calls.sort()).toEqual(['a', 'b']);
+  });
+
+  it('[SC-METAMORPHIC] changing only an unrelated field never executes a dependent', () => {
+    const dependent = vi.fn(() => true);
+    const fixture = () => {
+      const calls: string[] = [];
+      const suite = create(
+        (data: Record<string, string>) => {
+          mode(Modes.ALL);
+          test('target', () => {
+            calls.push('target');
+            enforce(data.target).isString();
+          });
+          test('unrelated', () => {
+            calls.push('unrelated');
+            enforce(data.unrelated).isString();
+          });
+        },
+        enforce.shape({
+          target: enforce.isString(),
+          dependent: enforce
+            .condition(dependent)
+            .dependsOn(($: any) => $.target),
+          unrelated: enforce.isString(),
+        }),
+      );
+      return { calls, suite };
+    };
+    const first = fixture();
+    first.suite.run({ target: 'ok', dependent: 'ok', unrelated: 'ok' });
+    dependent.mockClear();
+    first.calls.length = 0;
+    first.suite.changed('unrelated').run({
+      target: 'ok',
+      dependent: 'ok',
+      unrelated: 'changed',
+    });
+    expect(first.calls).toEqual(['unrelated']);
+    expect(dependent).not.toHaveBeenCalled();
   });
 });

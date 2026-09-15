@@ -277,3 +277,42 @@ describe('stale settlement across skip boundaries (BB08)', () => {
     expect(suite.get().hasErrors('b')).toBe(false);
   });
 });
+
+describe('reset races with pending focused runs (BB08)', () => {
+  function deferred() {
+    let release: () => void = () => {};
+    const promise = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    return { promise, release };
+  }
+  it('[SC-BB08] reset during pending then a focused run leaves no resurrection', async () => {
+    const gate = deferred();
+    const suite = create((data: { a: string; b: string }) => {
+      test('a', async () => {
+        if (data.a === 'slow') await gate.promise;
+        enforce(data.a).notEquals('bad');
+      });
+      test('b', () => {
+        enforce(data.b).isString();
+      });
+    });
+    const old = suite.run({ a: 'slow', b: 'x' });
+    const oldSettled = Promise.resolve(old).then(
+      () => 'settled' as const,
+      () => 'rejected' as const,
+    );
+    suite.reset();
+    // Unexecuted declarations read invalid per established focused-run
+    // semantics; the pending run is not fenced by the reset.
+    const fresh = suite.changed('b').run({ a: 'ok', b: 'y' });
+    expect(fresh.isValid()).toBe(false);
+    expect(fresh.hasErrors()).toBe(false);
+    gate.release();
+    await oldSettled;
+    await new Promise(resolve => setImmediate(resolve));
+    expect(suite.get().hasErrors('a')).toBe(false);
+    expect(suite.get().hasErrors('b')).toBe(false);
+    expect((await suite.run({ a: 'ok', b: 'y' })).isValid()).toBe(true);
+  });
+});

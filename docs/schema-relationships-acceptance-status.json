@@ -1320,7 +1320,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/supersededRuns.test.ts",
       "id": "BB08",
-      "notes": "Three-generation transitive ownership settlement; stale rejection without resurrection plus recovery; new-first/old-first ordering leaves latest authoritative. Suite-level last-finish-wins pinned: stale failure settling after a focused run publishes; fresh full recovery clears. Stale async failure settling after a focused run publishes last-finish-wins; fresh full recovery clears. Stale failure settling after an only() run publishes last-finish-wins, matching changed() routes. Stale failure settling after an only() run publishes last-finish-wins, matching changed() routes; skipped fields fence stale settlement.",
+      "notes": "Three-generation transitive ownership settlement; stale rejection without resurrection plus recovery; new-first/old-first ordering leaves latest authoritative. Suite-level last-finish-wins pinned: stale failure settling after a focused run publishes; fresh full recovery clears. Stale async failure settling after a focused run publishes last-finish-wins; fresh full recovery clears. Stale failure settling after an only() run publishes last-finish-wins, matching changed() routes. Stale failure settling after an only() run publishes last-finish-wins, matching changed() routes; skipped fields fence stale settlement. Reset-race pinned: reset during pending then a focused run leaves no resurrection; recovery settles valid.",
       "result": "pass",
       "status": "covered",
       "testFiles": ["packages/vest/src/suite/__tests__/supersededRuns.test.ts"],

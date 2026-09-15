@@ -1,6 +1,6 @@
 {
   "generated": "2026-09-14",
-  "head": "900bed39",
+  "head": "b1d26d28",
   "note": "Content finalized in 1020cf87; rows verified locally on that tree. verifiedSha is set only by an executed green CI run on that exact SHA (pending). Statuses: open, covered.",
   "rows": [
     {

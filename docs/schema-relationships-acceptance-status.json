@@ -1320,7 +1320,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/supersededRuns.test.ts",
       "id": "BB08",
-      "notes": "Three-generation transitive ownership settlement; stale rejection without resurrection plus recovery; new-first/old-first ordering leaves latest authoritative. Suite-level last-finish-wins pinned: stale failure settling after a focused run publishes; fresh full recovery clears. Stale async failure settling after a focused run publishes last-finish-wins; fresh full recovery clears. Stale failure settling after an only() run publishes last-finish-wins, matching changed() routes.",
+      "notes": "Three-generation transitive ownership settlement; stale rejection without resurrection plus recovery; new-first/old-first ordering leaves latest authoritative. Suite-level last-finish-wins pinned: stale failure settling after a focused run publishes; fresh full recovery clears. Stale async failure settling after a focused run publishes last-finish-wins; fresh full recovery clears. Stale failure settling after an only() run publishes last-finish-wins, matching changed() routes. Stale failure settling after an only() run publishes last-finish-wins, matching changed() routes; skipped fields fence stale settlement.",
       "result": "pass",
       "status": "covered",
       "testFiles": ["packages/vest/src/suite/__tests__/supersededRuns.test.ts"],
@@ -1344,7 +1344,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "BB05",
-      "notes": "Array shrink revalidates without stale members; keyed reorder keeps current-index attribution.",
+      "notes": "Array shrink revalidates without stale members; keyed reorder keeps current-index attribution. Indexed changed paths into unions validate with correct values; invalid members match full-run reporting exactly.",
       "result": "pass",
       "status": "covered",
       "testFiles": [

@@ -242,3 +242,38 @@ describe('superseded ownership across only runs (BB08)', () => {
     expect(suite.run({ a: 'ok', b: 'y' }).hasErrors('a')).toBe(false);
   });
 });
+
+describe('stale settlement across skip boundaries (BB08)', () => {
+  function deferred() {
+    let release: () => void = () => {};
+    const promise = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    return { promise, release };
+  }
+  it('[SC-BB08] skipped fields fence stale async failures; unskipped fields publish', async () => {
+    const gate = deferred();
+    const suite = create((data: { a: string; b: string }) => {
+      test('a', async () => {
+        if (data.a === 'bad') await gate.promise;
+        enforce(data.a).notEquals('bad');
+      });
+      test('b', () => {
+        enforce(data.b).isString();
+      });
+    });
+    const slow = suite.run({ a: 'bad', b: 'x' });
+    const staleSettled = Promise.resolve(slow).then(
+      () => 'settled' as const,
+      () => 'rejected' as const,
+    );
+    // The changed run skips the pending field: its late failure must not
+    // publish, while unskipped fields behave per last-finish-wins.
+    suite.changed('b').focus({ skip: 'a' }).run({ a: 'bad', b: 'y' });
+    gate.release();
+    await staleSettled;
+    await new Promise(resolve => setImmediate(resolve));
+    expect(suite.get().hasErrors('a')).toBe(false);
+    expect(suite.get().hasErrors('b')).toBe(false);
+  });
+});

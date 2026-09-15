@@ -1612,3 +1612,62 @@ describe('schema contracts: dependency cycles terminate with one-hop closure (BB
     expect(calls).toEqual(['a']);
   });
 });
+
+describe('schema contracts: indexed changed paths into unions (BB05)', () => {
+  function unionSuite() {
+    const suite: any = create(
+      (_data: unknown) => {
+        test('b', () => true);
+      },
+      enforce.shape({
+        a: enforce.isArrayOf(enforce.isString(), enforce.isNumber()),
+        b: enforce.isString(),
+      }) as never,
+    );
+    return suite;
+  }
+
+  it('[SC-BB05] indexed change into a union validates with member attribution', () => {
+    const suite = unionSuite();
+    suite.run({ a: ['x', 1], b: 'ok' });
+    const result = suite.changed('a[0]').run({ a: ['y', 1], b: 'ok' });
+    expect(result.hasErrors()).toBe(false);
+    expect(result.value).toEqual({ a: ['y', 1], b: 'ok' });
+  });
+
+  it('[SC-BB05] indexed change with an invalid member matches the full run exactly', () => {
+    const calls: string[] = [];
+    const member = () =>
+      enforce.shape({
+        v: enforce.condition((value: unknown) => {
+          calls.push(`v:${String(value)}`);
+          return value !== 'bad';
+        }),
+      });
+    const fixture = () =>
+      create(
+        (_data: unknown) => {
+          test('b', () => {
+            calls.push('b');
+            return true;
+          });
+        },
+        enforce.shape({
+          a: enforce.isArrayOf(member(), enforce.isNumber()),
+          b: enforce.isString(),
+        }) as never,
+      ) as any;
+    const data = { a: [{ v: 'bad' }], b: 'ok' };
+    const full = fixture().run(data);
+    const selective = fixture();
+    selective.run({ a: [{ v: 'ok' }], b: 'ok' });
+    calls.length = 0;
+    const result = selective.changed('a[0].v').run(data as never);
+    // Parity contract: the selective run executes the affected member and
+    // reports exactly what the full run reports for the same data.
+    expect(calls).toContain('v:bad');
+    expect(result.isValid()).toBe(full.isValid());
+    expect(result.getErrors()).toEqual(full.getErrors());
+    expect(result.hasErrors('a')).toBe(full.hasErrors('a'));
+  });
+});

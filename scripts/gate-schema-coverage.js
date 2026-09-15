@@ -73,13 +73,16 @@ function runPackageCoverage(pkg) {
 
 function main() {
   fs.rmSync(REPORT_DIR, { force: true, recursive: true });
+  // No cleanup wrapper here: package runs that throw leave raw reports
+  // from completed packages on disk for diagnosis by design.
   for (const pkg of PACKAGES) runPackageCoverage(pkg);
   const byFile = mergeReports();
   const failed = evaluateFloors(byFile);
-  fs.rmSync(REPORT_DIR, { force: true, recursive: true });
   if (failed) {
+    // Keep raw reports on failure for diagnosis; clean only on pass.
     throw new Error('gate:schema-coverage failed');
   }
+  fs.rmSync(REPORT_DIR, { force: true, recursive: true });
   console.log('gate:schema-coverage passed');
 }
 
@@ -92,22 +95,53 @@ function mergeReports() {
     }
     const raw = JSON.parse(fs.readFileSync(finalPath, 'utf8'));
     for (const [filePath, entry] of Object.entries(raw)) {
-      byFile.set(path.relative(REPO_ROOT, filePath), branchPercent(entry));
+      mergeFileEntry(byFile, path.relative(REPO_ROOT, filePath), entry);
     }
   }
   return byFile;
+}
+
+/**
+ * Merges one file's coverage across package reports. Each module is owned
+ * by exactly one package (packages/n4s/* by n4s, packages/vest/* by vest),
+ * so the owner's report is authoritative and a repeated file never has a
+ * later percentage silently overwrite an earlier one. Files outside both
+ * packages keep the first-seen report.
+ */
+function mergeFileEntry(byFile, suffix, entry) {
+  const owner = ownerPackageOf(suffix);
+  const existing = byFile.get(suffix);
+  if (existing === undefined || prefersOwnerReport(owner, existing)) {
+    byFile.set(suffix, { entry, owner });
+  }
+}
+
+function prefersOwnerReport(owner, existing) {
+  if (owner === null) return false;
+  return owner === existing.owner || existing.owner === null;
+}
+
+function ownerPackageOf(suffix) {
+  if (suffix === 'packages/n4s' || suffix.startsWith('packages/n4s/')) {
+    return 'packages/n4s';
+  }
+  if (suffix === 'packages/vest' || suffix.startsWith('packages/vest/')) {
+    return 'packages/vest';
+  }
+  return null;
 }
 
 function evaluateFloors(byFile) {
   let failed = false;
   console.log('module | branch % | floor % | verdict');
   for (const [suffix, floor] of FLOORS) {
-    const observed = byFile.get(suffix);
-    if (observed === undefined) {
+    const record = byFile.get(suffix);
+    if (record === undefined) {
       failed = true;
       console.log(`${suffix} | missing | ${floor} | FAIL (no row)`);
       continue;
     }
+    const observed = branchPercent(record.entry);
     const ok = observed >= floor;
     if (!ok) failed = true;
     console.log(

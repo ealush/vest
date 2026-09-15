@@ -146,3 +146,4 @@ benchmark-results-local.md
 schema-perf-results.json
 
 .turbo/
+type-tests/node_modules

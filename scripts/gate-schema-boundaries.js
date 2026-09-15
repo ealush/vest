@@ -318,6 +318,20 @@ function buildConsumer(tmp, packed) {
   for (const [name, dir] of Object.entries(packed)) {
     fs.cpSync(dir, path.join(modules, name), { recursive: true });
   }
+  // Registry (non-workspace) dependencies of the packed targets resolve
+  // from the lockfile installation: n4s/exports subpaths need validator
+  // code and @types/validator declarations in a clean consumer.
+  for (const name of ['validator', '@types/validator']) {
+    const installed = path.join(REPO_ROOT, 'node_modules', name);
+    const [scope, leaf] = name.split('/');
+    const dest = leaf === undefined ? name : path.join(scope, leaf);
+    if (fs.existsSync(installed)) {
+      fs.mkdirSync(path.dirname(path.join(modules, dest)), {
+        recursive: true,
+      });
+      fs.cpSync(installed, path.join(modules, dest), { recursive: true });
+    }
+  }
   return consumer;
 }
 
@@ -345,6 +359,60 @@ function smokeConsumer(consumer) {
   }
   smokeCjs(consumer, cjs);
   smokeEsm(consumer, mjs);
+  smokeTypes(consumer);
+}
+
+/**
+ * Clean-consumer typecheck: package-specifier imports (never absolute dist
+ * paths), a published subpath, and an actual tsc run — not just declaration
+ * file existence. A schema-inferred suite proves end-to-end type routing
+ * through the packed artifacts.
+ */
+function smokeTypes(consumer) {
+  const entry = path.join(consumer, 'consumer-check.ts');
+  fs.writeFileSync(
+    entry,
+    `import { create, test, enforce } from 'vest';
+import { compose } from 'n4s';
+import 'n4s/exports/email';
+
+const schema = enforce.shape({
+  name: enforce.isString(),
+  email: enforce.isEmail(),
+});
+const suite = create(
+  (data: { name: string; email: string }) => {
+    test('name', () => {
+      enforce(data.name).isNotBlank();
+    });
+  },
+  schema,
+);
+const composed = compose(schema);
+void composed;
+const result = suite.run({ name: 'Ada', email: 'a@x.y' });
+const valid: boolean = result.isValid();
+void valid;
+export { result, suite };
+`,
+  );
+  fs.writeFileSync(
+    path.join(consumer, 'tsconfig.check.json'),
+    JSON.stringify({
+      compilerOptions: {
+        module: 'NodeNext',
+        moduleResolution: 'NodeNext',
+        noEmit: true,
+        strict: true,
+      },
+      include: ['consumer-check.ts'],
+    }),
+  );
+  const tsc = path.join(REPO_ROOT, 'node_modules', '.bin', 'tsc');
+  execFileSync(tsc, ['-p', path.join(consumer, 'tsconfig.check.json')], {
+    cwd: consumer,
+  });
+  pass('PK01 consumer: package-specifier + subpath tsc check');
 }
 
 function smokeCjs(consumer, cjs) {

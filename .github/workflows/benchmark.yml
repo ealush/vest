@@ -47,6 +47,9 @@ jobs:
       - name: Run interlaced benchmarks and generate report
         run: npx tsx vx/scripts/benchmark-reporter.ts --interlace .benchmark-baseline
 
+      - name: Schema performance gate self-test
+        run: node scripts/gate-schema-performance.js --self-test
+
       - name: Schema performance gate
         run: yarn gate:schema-performance --baseline .benchmark-baseline
 

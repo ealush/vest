@@ -13,8 +13,8 @@
  * only with the 5us/edge absolute ceiling; A1 creation-vs-base bounded
  * absolutely at 500ms per 20k-shape batch), fails closed on missing rows,
  * thin samples (< 7 batches), mismatched lengths, non-positive samples,
- * NaN samples, and breached floors, and treats excess dispersion (after
- * retrying head and baseline) as inconclusive-fail. The relative base
+ * NaN samples, and breached floors, and treats excess dispersion (after up
+ * to two bounded head+baseline retries) as inconclusive-fail. The relative base
  * budget is exactly 10% latency growth (head <= base * 1.10). With
  * --baseline <dir> (a built checkout, e.g. CI's .benchmark-baseline), the
  * same file is copied there (pre-existing bytes restored afterward) and
@@ -570,6 +570,8 @@ function evaluateGatePair(pair, headSamples) {
   return pairFailed(entry);
 }
 
+const MAX_SINGLE_RETRIES = 2;
+
 function evaluateSingleGate(
   label,
   headSingles,
@@ -577,11 +579,12 @@ function evaluateSingleGate(
   remeasureSingles = null,
 ) {
   let result = checkSingle(label, headSingles, baseSingles);
-  let retried = false;
-  if (result.verdict === 'unstable') {
-    retried = true;
-    // Baseline instability cannot be fixed by remeasuring head alone:
-    // remeasure both sides so a noisy baseline gets a fresh sample.
+  let retries = 0;
+  // Bounded retries for inconclusive evidence only: stable breaches never
+  // retry. Baseline instability cannot be fixed by remeasuring head alone:
+  // remeasure both sides so a noisy baseline gets a fresh sample.
+  while (result.verdict === 'unstable' && retries < MAX_SINGLE_RETRIES) {
+    retries += 1;
     if (remeasureSingles) {
       const fresh = remeasureSingles();
       result = checkSingle(label, fresh.head.singles, fresh.base.singles);
@@ -590,7 +593,7 @@ function evaluateSingleGate(
       result = checkSingle(label, fresh.singles, baseSingles);
     }
   }
-  reportSingle(label, result, retried);
+  reportSingle(label, result, retries > 0);
   return result.verdict !== 'pass';
 }
 
@@ -798,6 +801,15 @@ function selfTestEvaluate() {
         floor: 0.8,
         target: 0.9,
       }).verdict === 'warn-below-target',
+    ),
+    checkCase(
+      'G1 below floor fails even with absolute ceiling passing',
+      pairFailed(
+        evaluatePair([0.75, 0.76, 0.74, 0.75, 0.77, 0.75, 0.76], {
+          floor: 0.8,
+          target: 0.9,
+        }),
+      ) === true && classifyOverhead(1.5) === 'pass',
     ),
     checkCase(
       'creation overhead within ceiling',

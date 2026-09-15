@@ -153,7 +153,7 @@ export function runSchemaPaths(
   // schema validator executes. It short-circuits before affected expansion
   // and projection (which would otherwise convert `true` into `[]` and run
   // the full schema). The pass-through carries input data without
-  // manufacturing a full-validation witness.
+  // manufacturing a full-validation/output witness.
   if (options.skip === true) {
     return [{ pass: true, type: data }];
   }

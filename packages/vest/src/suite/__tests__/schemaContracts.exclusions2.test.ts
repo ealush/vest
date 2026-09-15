@@ -1528,3 +1528,38 @@ describe('schema contracts: bounded deep and wide fixtures (BB12)', () => {
     expect(calls).toEqual(['field_199']);
   });
 });
+
+describe('schema contracts: only combined with skip-all (H1 expansion)', () => {
+  it('[SC-SKIPALL-WITNESS] only+skip-all runs the selected test with no schema validation', () => {
+    const calls: string[] = [];
+    const schemaCalls: string[] = [];
+    const suite: any = create(
+      (_data: unknown) => {
+        test('a', () => {
+          calls.push('a');
+          return true;
+        });
+        test('b', () => {
+          calls.push('b');
+          return true;
+        });
+      },
+      enforce.shape({
+        a: enforce.condition(() => {
+          schemaCalls.push('a');
+          return true;
+        }),
+        b: enforce.isString(),
+      }) as never,
+    );
+    // Layers compose independently: only() selects the imperative test,
+    // skip-all suppresses all schema validation.
+    const result = suite
+      .only('a')
+      .focus({ skip: true })
+      .run({ a: 'x', b: 'y' });
+    expect(calls).toEqual(['a']);
+    expect(schemaCalls).toEqual([]);
+    expect(result.hasErrors()).toBe(false);
+  });
+});

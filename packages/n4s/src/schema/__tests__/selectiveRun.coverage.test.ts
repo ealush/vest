@@ -1000,3 +1000,16 @@ describe('selectiveRun edge coverage', () => {
     expect(member).not.toHaveBeenCalled();
   });
 });
+
+describe('selectiveRun boolean skip-all (AC01)', () => {
+  it('resolves boolean skip-all to no paths without validation', () => {
+    const predicate = vi.fn(() => true);
+    const schema = enforce.shape({
+      a: enforce.condition(predicate),
+      b: enforce.isString(),
+    });
+    const results = runSchemaPaths(schema, { a: 'x', b: 'y' }, { skip: true });
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(predicate).not.toHaveBeenCalled();
+  });
+});

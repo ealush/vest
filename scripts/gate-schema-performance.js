@@ -426,20 +426,45 @@ const EVIDENCE_FILE = path.join(REPO_ROOT, 'schema-perf-results.json');
 
 function runGate(baselineDir) {
   resetEvidence();
-  const head = runMeasurement(REPO_ROOT);
-  const base = measureBaseline(baselineDir);
-  // Pairs and singles are always both evaluated: a breached pair must not
-  // hide base-regression evidence (or vice versa). Proven by the
-  // no-short-circuit self-test.
-  const remeasureSingles = () => ({
-    head: runMeasurement(REPO_ROOT),
-    base: measureBaseline(baselineDir),
-  });
-  const outcome = decideGateOutcome(head, base, [], remeasureSingles);
-  // Evidence persists on pass AND failure: the CI artifact carries gate
-  // measurements and verdicts separately from the earlier benchmark report.
-  writeEvidenceFile(EVIDENCE_FILE, buildEvidence(outcome, baselineDir));
-  return outcome.failed;
+  // Failure-safe finalization: a measurement exception (head, baseline, or
+  // retry) still writes a terminal record with status measurement-error and
+  // whatever evidence accumulated — never a stale success, never nothing.
+  // An artifact-write failure itself propagates visibly.
+  try {
+    const head = runMeasurement(REPO_ROOT);
+    const base = measureBaseline(baselineDir);
+    // Pairs and singles are always both evaluated: a breached pair must not
+    // hide base-regression evidence (or vice versa). Proven by the
+    // no-short-circuit self-test.
+    const remeasureSingles = () => ({
+      head: runMeasurement(REPO_ROOT),
+      base: measureBaseline(baselineDir),
+    });
+    const outcome = decideGateOutcome(head, base, [], remeasureSingles);
+    // Evidence persists on pass AND failure: the CI artifact carries gate
+    // measurements and verdicts separately from the earlier benchmark report.
+    writeEvidenceFile(EVIDENCE_FILE, buildEvidence(outcome, baselineDir));
+    return outcome.failed;
+  } catch (error) {
+    writeEvidenceFile(EVIDENCE_FILE, buildErrorEvidence(error, baselineDir));
+    throw error;
+  }
+}
+
+function buildErrorEvidence(error, baselineDir) {
+  return {
+    baseline: baselineDir,
+    error:
+      error instanceof Error ? (error.stack ?? error.message) : String(error),
+    failed: true,
+    generatedAt: new Date().toISOString(),
+    node: process.version,
+    pairs: evidence.pairs,
+    sha: revisionSha(REPO_ROOT),
+    singles: evidence.singles,
+    status: 'measurement-error',
+    trace: [],
+  };
 }
 
 function resetEvidence() {
@@ -782,6 +807,7 @@ function selfTest() {
     ...selfTestNoShortCircuit(),
     ...selfTestHeadOnlyAbsolute(),
     ...selfTestInjectedFileRestore(),
+    ...selfTestErrorEvidence(),
     ...selfTestEvidenceWriteFailure(),
     ...selfTestEvidenceFile(),
   ];
@@ -1034,6 +1060,20 @@ function selfTestHeadOnlyAbsolute() {
     ),
     checkCase('head-only A1 breach fails', outcome.failed === true),
     checkCase('head-only A1 within ceiling passes', outcomeOk.failed === false),
+  ];
+}
+
+function selfTestErrorEvidence() {
+  resetEvidence();
+  const payload = buildErrorEvidence(new Error('boom'), null);
+  return [
+    checkCase(
+      'measurement error assembles a terminal record',
+      payload.status === 'measurement-error' &&
+        payload.failed === true &&
+        Array.isArray(payload.pairs) &&
+        Array.isArray(payload.singles),
+    ),
   ];
 }
 

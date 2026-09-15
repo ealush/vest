@@ -38,17 +38,31 @@ function throwOnTranspileDiagnostics(output: ts.TranspileOutput): void {
   }
 }
 
-function readCodeBlock(relativePath: string, blockIndex: number): string {
+type CodeBlockSelector = number | { containing: string };
+
+function readCodeBlock(
+  relativePath: string,
+  selector: CodeBlockSelector,
+): string {
   const markdown = fs.readFileSync(path.join(REPO_ROOT, relativePath), 'utf8');
   const blocks = [
     ...markdown.matchAll(
       /```(?:js|jsx|ts|tsx|javascript|typescript)[^\n]*\n([\s\S]*?)```/g,
     ),
   ];
-  const block = blocks[blockIndex]?.[1];
+  const block =
+    typeof selector === 'number'
+      ? blocks[selector]?.[1]
+      : blocks.find(candidate =>
+          candidate[1].includes(selector.containing),
+        )?.[1];
 
   if (!block) {
-    throw new Error(`Missing code block ${blockIndex} in ${relativePath}`);
+    const description =
+      typeof selector === 'number'
+        ? String(selector)
+        : `containing ${JSON.stringify(selector.containing)}`;
+    throw new Error(`Missing code block ${description} in ${relativePath}`);
   }
 
   return block;
@@ -56,10 +70,10 @@ function readCodeBlock(relativePath: string, blockIndex: number): string {
 
 function executeCodeBlock(
   relativePath: string,
-  blockIndex: number,
+  selector: CodeBlockSelector,
   runtime: Runtime = {},
 ): Record<string, unknown> {
-  const source = readCodeBlock(relativePath, blockIndex);
+  const source = readCodeBlock(relativePath, selector);
   const output = ts.transpileModule(source, {
     compilerOptions: {
       esModuleInterop: true,
@@ -94,10 +108,10 @@ function executeCodeBlock(
 
 function executeTestBody(
   relativePath: string,
-  blockIndex: number,
+  selector: CodeBlockSelector,
   runtime: Runtime = {},
 ) {
-  const source = readCodeBlock(relativePath, blockIndex);
+  const source = readCodeBlock(relativePath, selector);
   const imports = source.match(/^import .*;$/gm) ?? [];
   const body = source.replace(/^import .*;\n?/gm, '');
   const wrapped = `${imports.join('\n')}\nimport { create } from 'vest';\nexport const docsSuite = create((data) => {\n${body}\n});`;
@@ -202,7 +216,7 @@ describe('executable documentation examples', () => {
     expect(shipping.hasErrors('street')).toBe(true);
   });
 
-  it('revalidates documented dependent password fields together', () => {
+  it('re-runs documented dependent password fields together', () => {
     const { passwordSuite } = executeCodeBlock(
       'website/docs/guides/dependent-fields.md',
       0,
@@ -218,6 +232,22 @@ describe('executable documentation examples', () => {
     });
 
     expect(changed.hasErrors('confirmPassword')).toBe(true);
+  });
+
+  it('executes the agent guide relationship example verbatim', () => {
+    const { relationshipSuite } = executeCodeBlock('AI_USAGE_GUIDE.md', {
+      containing: 'export const relationshipSuite',
+    }) as { relationshipSuite: ReturnType<typeof vest.create> };
+    expect(relationshipSuite.get().hasErrors('confirmPassword')).toBe(true);
+    expect(
+      relationshipSuite
+        .changed('confirmPassword')
+        .run({
+          password: 'second',
+          confirmPassword: 'second',
+        })
+        .hasErrors(),
+    ).toBe(false);
   });
 
   it('reconciles documented dynamic-list tests by stable key', () => {
@@ -362,7 +392,7 @@ describe('executable documentation examples', () => {
   it('runs the documented context-aware schema rule', () => {
     const { schema } = executeCodeBlock(
       'website/docs/enforce/creating_custom_rules.md',
-      4,
+      { containing: 'export const schema = enforce.shape' },
     ) as { schema: ReturnType<typeof vest.enforce.shape> };
     const suite = vest.create(() => {}, schema);
 
@@ -372,5 +402,23 @@ describe('executable documentation examples', () => {
     expect(
       suite.runStatic({ password: 'secret', confirm: 'different' }).hasErrors(),
     ).toBe(true);
+  });
+  it('[SC-DOCS] runs the schema relationships acceptance example verbatim', () => {
+    const { registrationAcceptance } = executeCodeBlock(
+      'website/docs/writing_your_suite/schema_relationships_acceptance.md',
+      { containing: 'export function registrationAcceptance' },
+    ) as {
+      registrationAcceptance: () => {
+        errorsAfterChange: Record<string, string[]>;
+        value: unknown;
+      };
+    };
+    expect(registrationAcceptance()).toEqual({
+      errorsAfterChange: {
+        confirm: ['Passwords must match'],
+        note: ['Note required'],
+      },
+      value: { password: 'new', confirm: 'new', note: 'ready' },
+    });
   });
 });

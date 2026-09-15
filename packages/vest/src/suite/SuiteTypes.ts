@@ -1,9 +1,9 @@
-import { CB } from 'vest-utils';
+import { CB, type DropFirst } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { Subscribe } from '../core/VestBus/VestBus';
 import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
-import { FieldExclusion } from '../hooks/focused/focused';
+import { FieldExclusion, FieldSelector } from '../hooks/focused/focused';
 import {
   SuiteResult,
   TFieldName,
@@ -16,12 +16,23 @@ import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
 import { TTypedMethods } from './getTypedMethods';
 
+type CallbackTail<T extends CB> =
+  DropFirst<Parameters<T>> extends never ? [] : DropFirst<Parameters<T>>;
+
+export type SuiteRunArguments<
+  S extends TSchema,
+  T extends CB,
+  Data = InferSchemaData<S>,
+> = S extends undefined
+  ? Parameters<T>
+  : [data: Data, ...args: CallbackTail<T>];
+
 export type SuiteCallbackWithSchema<
   S extends TSchema,
   T extends CB,
 > = S extends undefined
   ? T
-  : (data: InferSchemaOutput<S>, ...args: any[]) => void;
+  : (data: InferSchemaOutput<S>, ...args: CallbackTail<T>) => void;
 
 export type Suite<
   F extends TFieldName,
@@ -42,23 +53,20 @@ type SuiteMethods<
   get: CB<SuiteResult<F, G, S>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
-  remove: CB<void, [fieldName: F]>;
-  resetField: CB<void, [fieldName: F]>;
-  run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
-  runStatic: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
-  validate: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
+  remove: CB<void, [fieldName: FieldSelector<F>]>;
+  resetField: CB<void, [fieldName: FieldSelector<F>]>;
+  changed: CB<
+    FocusedMethods<F, G, T, S>,
+    [
+      changedField:
+        | FieldExclusion<F>
+        | FieldSelector<F>
+        | readonly FieldSelector<F>[],
+    ]
+  >;
+  run: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
+  runStatic: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
+  validate: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
   subscribe: Subscribe;
 } & AfterMethods<F, G, T, S> &
   TTypedMethods<F, G> &
@@ -71,15 +79,33 @@ type FocusedMethods<
   S extends TSchema,
 > = {
   afterEach: CB<FocusedMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  afterField: CB<
+    FocusedMethods<F, G, T, S>,
+    [fieldName: FieldSelector<F>, callback: CB]
+  >;
+  changed: CB<
+    FocusedMethods<F, G, T, S>,
+    [
+      changedField:
+        | FieldExclusion<F>
+        | FieldSelector<F>
+        | readonly FieldSelector<F>[],
+    ]
+  >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
-  only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
+  only: CB<
+    FocusedMethods<F, G, T, S>,
+    [
+      onlyField:
+        | FieldExclusion<F>
+        | FieldSelector<F>
+        | readonly FieldSelector<F>[],
+    ]
+  >;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
   run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: Partial<InferSchemaData<S>>, ...args: any[]]
+    ...args: SuiteRunArguments<S, T, Partial<InferSchemaData<S>>>
   ) => SuiteResult<F, G, S>;
 };
 
@@ -90,14 +116,30 @@ type AfterMethods<
   S extends TSchema,
 > = {
   afterEach: CB<AfterMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  afterField: CB<
+    AfterMethods<F, G, T, S>,
+    [fieldName: FieldSelector<F>, callback: CB]
+  >;
+  changed: CB<
+    FocusedMethods<F, G, T, S>,
+    [
+      changedField:
+        | FieldExclusion<F>
+        | FieldSelector<F>
+        | readonly FieldSelector<F>[],
+    ]
+  >;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
-  only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
-  run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
+  only: CB<
+    FocusedMethods<F, G, T, S>,
+    [
+      onlyField:
+        | FieldExclusion<F>
+        | FieldSelector<F>
+        | readonly FieldSelector<F>[],
+    ]
+  >;
+  run: (...args: SuiteRunArguments<S, T>) => SuiteResult<F, G, S>;
 };
 
 /**
@@ -118,8 +160,21 @@ export type SuiteModifiers<
   F extends TFieldName,
   G extends TGroupName = TGroupName,
 > = {
-  only?: FieldExclusion<F>;
-  onlyGroup?: G | G[];
-  skip?: FieldExclusion<F>;
-  skipGroup?: G | G[];
+  only?: FieldExclusion<F> | FieldSelector<F> | readonly FieldSelector<F>[];
+  onlyGroup?: G | readonly G[];
+  skip?:
+    | FieldExclusion<F>
+    | FieldSelector<F>
+    | readonly FieldSelector<F>[]
+    | boolean;
+  skipGroup?: G | readonly G[];
+};
+
+/** @internal Runtime-only state that must not leak into focus()'s public API. */
+export type InternalSuiteModifiers<
+  F extends TFieldName,
+  G extends TGroupName = TGroupName,
+> = SuiteModifiers<F, G> & {
+  __changed?: string[];
+  __skipAll?: boolean;
 };

@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { compose, enforce } from '../n4s';
+import {
+  callRuleWithValue,
+  runRuleWithValue,
+  testRuleWithValue,
+} from './runtimeTestUtils';
 
 describe('compose() - Rule Composition', () => {
   describe('Basic composition', () => {
@@ -11,7 +16,7 @@ describe('compose() - Rule Composition', () => {
       );
 
       expect(() => NumberAboveTen(5)).toThrow();
-      expect(() => NumberAboveTen('11')).toThrow();
+      expect(() => callRuleWithValue(NumberAboveTen, '11')).toThrow();
       expect(() => NumberAboveTen(10)).toThrow();
       expect(() => NumberAboveTen(11)).not.toThrow();
     });
@@ -22,7 +27,7 @@ describe('compose() - Rule Composition', () => {
         enforce.isString().longerThan(5),
       );
 
-      expect(() => StringLongerThanFive(123)).toThrow(); // Not a string
+      expect(() => callRuleWithValue(StringLongerThanFive, 123)).toThrow(); // Not a string
       expect(() => StringLongerThanFive('hi')).toThrow(); // Too short
       expect(() => StringLongerThanFive('hello world')).not.toThrow();
     });
@@ -39,6 +44,42 @@ describe('compose() - Rule Composition', () => {
   });
 
   describe('Lazy evaluation', () => {
+    it('preserves RuleInstance methods and passes parser output forward', () => {
+      const ParsedPositiveNumber = compose(
+        enforce.isNumeric().toNumber(),
+        enforce.isNumber().greaterThan(0),
+      );
+
+      expect(ParsedPositiveNumber.parse('12')).toBe(12);
+      expect(ParsedPositiveNumber.validate('12')).toEqual({ value: 12 });
+      expect(ParsedPositiveNumber['~standard'].validate('12')).toEqual({
+        value: 12,
+      });
+      expect(ParsedPositiveNumber['~standard'].vendor).toBe('n4s');
+    });
+
+    it('keeps dependencies added to the composed facade', () => {
+      const dependent = compose(
+        enforce.isString().dependsOn($ => $.firstSource),
+      ).dependsOn($ => $.secondSource);
+      const schema = enforce.shape({
+        firstSource: enforce.isString(),
+        secondSource: enforce.isString(),
+        dependent,
+      });
+
+      expect(schema.describe().relationships).toMatchObject([
+        {
+          source: [{ type: 'property', key: 'firstSource' }],
+          target: [{ type: 'property', key: 'dependent' }],
+        },
+        {
+          source: [{ type: 'property', key: 'secondSource' }],
+          target: [{ type: 'property', key: 'dependent' }],
+        },
+      ]);
+    });
+
     it('Should support .run() method', () => {
       const NumericStringBetweenThreeAndFive = compose(
         enforce.isNumeric(),
@@ -189,7 +230,7 @@ describe('compose() - Rule Composition', () => {
       const User = compose(Name, Entity);
 
       expect(
-        User.run({
+        runRuleWithValue(User, {
           id: '1',
           name: {
             first: 'John',
@@ -200,7 +241,7 @@ describe('compose() - Rule Composition', () => {
       ).toBe(true);
 
       expect(() =>
-        User({
+        callRuleWithValue(User, {
           id: '1',
           name: {
             first: 'John',
@@ -211,7 +252,7 @@ describe('compose() - Rule Composition', () => {
       ).not.toThrow();
 
       expect(
-        User.run({
+        runRuleWithValue(User, {
           id: '_',
           name: {
             first: 'John',
@@ -220,7 +261,7 @@ describe('compose() - Rule Composition', () => {
       ).toBe(false);
 
       expect(() =>
-        User({
+        callRuleWithValue(User, {
           name: {
             first: 'John',
           },
@@ -309,7 +350,7 @@ describe('compose() - Rule Composition', () => {
       expect(StringOrNumber.test('hello')).toBe(true);
       expect(StringOrNumber.test(123)).toBe(true);
       expect(StringOrNumber.test('')).toBe(false);
-      expect(StringOrNumber.test(true)).toBe(false);
+      expect(testRuleWithValue(StringOrNumber, true)).toBe(false);
     });
 
     it('Should compose with allOf', () => {
@@ -396,7 +437,7 @@ describe('compose() - Rule Composition', () => {
         enforce.isString().matches(/test/),
       );
 
-      expect(() => Validator(123)).toThrow(); // Fails on isString
+      expect(() => callRuleWithValue(Validator, 123)).toThrow(); // Fails on isString
       expect(() => Validator('hi')).toThrow(); // Fails on longerThan
       expect(() => Validator('hello world')).toThrow(); // Fails on matches
     });
@@ -407,7 +448,7 @@ describe('compose() - Rule Composition', () => {
         enforce.isNumber().greaterThan(10),
       );
 
-      const result = Validator.run('not a number');
+      const result = runRuleWithValue(Validator, 'not a number');
       expect(result.pass).toBe(false);
       // Message may or may not be defined depending on the rule
     });
@@ -418,7 +459,7 @@ describe('compose() - Rule Composition', () => {
       const JustNumber = compose(enforce.isNumber());
 
       expect(JustNumber.test(123)).toBe(true);
-      expect(JustNumber.test('123')).toBe(false);
+      expect(testRuleWithValue(JustNumber, '123')).toBe(false);
     });
 
     it('Should handle empty composition gracefully', () => {
@@ -565,7 +606,7 @@ describe('compose() - Rule Composition', () => {
 
       expect(StringOrNumberComposite.test('hello')).toBe(true);
       expect(StringOrNumberComposite.test(123)).toBe(true);
-      expect(StringOrNumberComposite.test(true)).toBe(false);
+      expect(testRuleWithValue(StringOrNumberComposite, true)).toBe(false);
     });
 
     it('Should preserve type information through compositions', () => {

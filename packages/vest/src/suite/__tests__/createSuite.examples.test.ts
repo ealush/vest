@@ -42,7 +42,7 @@ describe('createSuite examples - permutation 1: happy path schema inference', ()
       });
       optional('email');
 
-      // @ts-expect-error - unknown schema key
+      // Broad-string test names accept unknown keys at compile time.
       test('typo_field', () => true);
     }, userSchema);
 
@@ -72,7 +72,7 @@ describe('createSuite examples - permutation 1: happy path schema inference', ()
       payment_token: 'token',
     });
 
-    // @ts-expect-error - unknown field rejected by typed focus
+    // Broad-string focus accepts unknown fields at compile time.
     checkoutSuite.focus({ only: 'unknown_field' }).run({
       cart_items: ['sku_1'],
       billing_address: '',
@@ -178,7 +178,7 @@ describe('createSuite examples - permutation 2: explicit config generics', () =>
     assertField('id');
     assertField('role');
 
-    // @ts-expect-error - invalid field literal
+    // Broad-string field selectors accept unknown fields at compile time.
     assertField('email');
 
     suite.focus({ onlyGroup: 'admin' });

@@ -106,17 +106,14 @@ describe('Suite typing examples', () => {
       suite.only('email');
       suite.afterField('password', () => {});
 
-      // Suite-bound APIs reject invalid fields
-      // @ts-expect-error - invalid field for suite.remove
+      // Suite-bound APIs accept broad field spellings (nested paths are
+      // runtime data); groups stay strict (see onlyGroup below).
       suite.remove('invalid');
 
-      // @ts-expect-error - invalid field for suite.resetField
       suite.resetField('invalid');
 
-      // @ts-expect-error - invalid field for suite.afterField
       suite.afterField('invalid', () => {});
 
-      // @ts-expect-error - invalid field for suite.focus only
       suite.focus({ only: 'invalid' });
 
       // @ts-expect-error - invalid group for suite.focus onlyGroup
@@ -149,17 +146,14 @@ describe('Suite typing examples', () => {
       assertOptionalField('username');
       assertGroupName('auth');
 
-      // Reject invalid fields
-      // @ts-expect-error - invalid field for suite.test
+      // Broad-string suite.test accepts unknown spellings at compile time.
       assertTestField('invalid');
 
-      // @ts-expect-error - invalid field for suite.skip
       assertSkipField('invalid');
 
       // @ts-expect-error - invalid field for suite.include
       assertIncludeField('invalid');
 
-      // @ts-expect-error - invalid field for suite.optional
       assertOptionalField('invalid');
 
       // @ts-expect-error - invalid group for suite.group
@@ -204,17 +198,13 @@ describe('Suite typing examples', () => {
       suite.only('firstName');
       suite.afterField('age', () => {});
 
-      // Suite-bound APIs reject unknown fields
-      // @ts-expect-error - unknown field for suite.remove
+      // Suite-bound APIs accept broad field spellings.
       suite.remove('unknown');
 
-      // @ts-expect-error - unknown field for suite.resetField
       suite.resetField('unknown');
 
-      // @ts-expect-error - unknown field for suite.afterField
       suite.afterField('unknown', () => {});
 
-      // @ts-expect-error - unknown field for suite.focus only
       suite.focus({ only: 'unknown' });
 
       // Type-level assertions for typed methods
@@ -240,17 +230,14 @@ describe('Suite typing examples', () => {
       assertIncludeField('age');
       assertOptionalField('firstName');
 
-      // Reject unknown fields
-      // @ts-expect-error - unknown field for suite.test
+      // Broad-string typed-method fields accept unknown spellings.
       assertTestField('unknown');
 
-      // @ts-expect-error - unknown field for suite.skip
       assertSkipField('unknown');
 
       // @ts-expect-error - unknown field for suite.include
       assertIncludeField('unknown');
 
-      // @ts-expect-error - unknown field for suite.optional
       assertOptionalField('unknown');
 
       // Result selectors

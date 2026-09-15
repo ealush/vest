@@ -12,3 +12,14 @@ describe('asArray', () => {
     expect(asArray(arr)).not.toBe(arr);
   });
 });
+
+describe('asArray readonly inputs', () => {
+  it('accepts readonly arrays and returns a mutable copy', () => {
+    const input: readonly string[] = ['a', 'b'];
+    const output = asArray(input);
+    expect(output).toEqual(['a', 'b']);
+    expect(output).not.toBe(input);
+    output.push('c');
+    expect(input).toEqual(['a', 'b']);
+  });
+});

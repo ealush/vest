@@ -1,4 +1,9 @@
-import { greaterThan, isFunction, longerThan } from 'vest-utils';
+import {
+  greaterThan,
+  hasOwnProperty,
+  isFunction,
+  longerThan,
+} from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
@@ -76,8 +81,9 @@ function validateElements(value: any[], rules: any[]): RuleRunReturn<any> {
 
     if (!res.pass) return elementFailure(value, res, i);
 
-    // Use the parsed value (res.type) if the rule transformed it, otherwise keep the original
-    parsedTuple.push(res.type ?? value[i]);
+    // Presence decides output existence: a declared null/undefined element
+    // output is a value, never a missing one.
+    parsedTuple.push(hasOwnProperty(res, 'type') ? res.type : value[i]);
   }
 
   return RuleRunReturn.Passing(parsedTuple);

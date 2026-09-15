@@ -15,6 +15,16 @@ export type FieldExclusion<F extends string = TFieldName> = Maybe<
 >;
 
 /**
+ * A field selector for suite-level focus/lifecycle APIs. Literal field
+ * names keep autocomplete; any other string is also accepted (broad-string
+ * contract) because nested dotted paths (`profile.state`) and root-index
+ * spellings are runtime data, not compile-time keys. `$` paths are
+ * explicitly not typo-safe by documentation. Prefer this over bare `F`
+ * wherever the runtime observes names beyond the top-level vocabulary.
+ */
+export type FieldSelector<F extends string = TFieldName> = F | (string & {});
+
+/**
  * Adds a field or a list of fields into the inclusion list
  *
  * @example

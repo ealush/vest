@@ -261,13 +261,12 @@ describe('schema inferred suite typing coverage', () => {
     assertOptionalField('age');
     assertIncludeField('profile');
 
-    // @ts-expect-error - schema-inferred fields should reject unknown keys
+    // Broad-string schema-inferred fields accept unknown keys at compile time.
     assertTestField('email');
 
-    // @ts-expect-error - schema-inferred fields should reject unknown keys
     assertOptionalField('email');
 
-    // @ts-expect-error - schema-inferred fields should reject unknown keys
+    // @ts-expect-error - include keeps exact field vocabulary
     assertIncludeField('email');
 
     // @ts-expect-error - schema-inferred run requires full typed payload
@@ -341,7 +340,7 @@ describe('escape hatch and config overload typing', () => {
     assertField('id');
     assertField('role');
 
-    // @ts-expect-error - invalid field should fail for config overload
+    // Broad-string fields accept unknown keys at compile time.
     assertField('email');
 
     const assertGroup = <
@@ -544,7 +543,7 @@ describe('callback-level only() typing', () => {
 
     assertSkipField('a');
 
-    // @ts-expect-error - invalid field should fail on suite.skip
+    // Broad-string skip accepts unknown fields at compile time.
     assertSkipField('invalid');
   });
 
@@ -570,7 +569,7 @@ describe('callback-level only() typing', () => {
 
     assertSkipField('username');
 
-    // @ts-expect-error - invalid field should fail on suite.skip
+    // Broad-string skip accepts unknown fields at compile time.
     assertSkipField('email');
   });
 
@@ -619,17 +618,13 @@ describe('comprehensive typed API coverage', () => {
     suite.resetField('a');
     suite.afterField('a', () => {});
 
-    // Suite-bound APIs reject invalid fields
-    // @ts-expect-error - invalid field for suite.remove
+    // Suite-bound APIs accept broad field spellings.
     suite.remove('invalid');
 
-    // @ts-expect-error - invalid field for suite.resetField
     suite.resetField('invalid');
 
-    // @ts-expect-error - invalid field for suite.afterField
     suite.afterField('invalid', () => {});
 
-    // @ts-expect-error - invalid field for suite.focus only
     suite.focus({ only: 'invalid' });
 
     // Type-level assertions for suite typed methods
@@ -659,16 +654,14 @@ describe('comprehensive typed API coverage', () => {
     assertOptionalField('a');
     assertGroupName('g1');
 
-    // @ts-expect-error - invalid field for suite.test
+    // Broad-string typed-method fields accept unknown spellings.
     assertTestField('invalid');
 
-    // @ts-expect-error - invalid field for suite.skip
     assertSkipField('invalid');
 
-    // @ts-expect-error - invalid field for suite.include
+    // @ts-expect-error - include keeps exact field vocabulary
     assertIncludeField('invalid');
 
-    // @ts-expect-error - invalid field for suite.optional
     assertOptionalField('invalid');
 
     // @ts-expect-error - invalid group for suite.group
@@ -711,17 +704,13 @@ describe('comprehensive typed API coverage', () => {
     suite.resetField('count');
     suite.afterField('email', () => {});
 
-    // Suite-bound APIs reject unknown fields
-    // @ts-expect-error - unknown field for suite.remove
+    // Suite-bound APIs accept broad field spellings.
     suite.remove('unknown');
 
-    // @ts-expect-error - unknown field for suite.resetField
     suite.resetField('unknown');
 
-    // @ts-expect-error - unknown field for suite.afterField
     suite.afterField('unknown', () => {});
 
-    // @ts-expect-error - unknown field for suite.focus only
     suite.focus({ only: 'unknown' });
 
     // Type-level assertions for suite typed methods
@@ -745,16 +734,15 @@ describe('comprehensive typed API coverage', () => {
     assertIncludeField('email');
     assertOptionalField('count');
 
-    // @ts-expect-error - unknown field for suite.test
+    // Broad-string test/skip/optional accept unknown spellings at compile
+    // time; include keeps its exact field vocabulary (see directive below).
     assertTestField('unknown');
 
-    // @ts-expect-error - unknown field for suite.skip
     assertSkipField('unknown');
 
     // @ts-expect-error - unknown field for suite.include
     assertIncludeField('unknown');
 
-    // @ts-expect-error - unknown field for suite.optional
     assertOptionalField('unknown');
 
     // Result selectors reject unknown fields

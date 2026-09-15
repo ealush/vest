@@ -3,7 +3,10 @@ import { IsolateInspector, Reconciler } from 'vestjs-runtime';
 import type { TIsolate } from 'vestjs-runtime';
 
 import { ErrorStrings } from '../../../errors/ErrorStrings';
-import { useIsExcluded } from '../../../hooks/focused/useIsExcluded';
+import {
+  useIsExcluded,
+  useIsExcludedByFieldSkip,
+} from '../../../hooks/focused/useIsExcluded';
 import { useVerifyTestRun } from '../../test/testLevelFlowControl/verifyTestRun';
 
 import type { TIsolateTest } from './IsolateTest';
@@ -56,15 +59,33 @@ function usePickNode(
     return newNodeResult;
   }
 
-  // Re-run previously omitted tests to avoid stale "optional" identification.
-  // An omitted test has no result, so reusing it would cause the optional
-  // system to incorrectly treat the field as optional (since no test ran).
-  // Re-evaluation is conservative but correct.
-  if (VestTest.isOmitted(prevNode).unwrap()) {
+  // Re-run previously omitted tests to avoid stale "optional" identification,
+  // and drop history for explicit builder field skips (destructive skip).
+  // All other exclusions retain history.
+  if (useNextNodeWithoutHistory(newNode, prevNode)) {
     return newNodeResult;
   }
 
   return makeResult.Ok(prevNode);
+}
+
+function useNextNodeWithoutHistory(
+  newNode: TIsolateTest,
+  prevNode: TIsolateTest,
+): boolean {
+  if (VestTest.isOmitted(prevNode).unwrap()) {
+    return true;
+  }
+  return useIsDestructiveFieldSkip(newNode);
+}
+
+/**
+ * Explicit builder field skip is destructive: the skipped field clears its
+ * retained verdict instead of reusing history. Only-exclusion, group
+ * exclusion, skipWhen, and __skipAll retain history.
+ */
+function useIsDestructiveFieldSkip(newNode: TIsolateTest): boolean {
+  return useIsExcludedByFieldSkip(newNode);
 }
 
 function useHandleTestWithKey(newNode: TIsolateTest): Result<TIsolateTest> {
@@ -75,13 +96,37 @@ function useHandleTestWithKey(newNode: TIsolateTest): Result<TIsolateTest> {
         return true;
       }
 
+      // Explicit field skip clears retained verdicts; all other exclusions
+      // (only, group, skipWhen) retain history.
+      if (useIsExcludedByFieldSkip(newNode)) {
+        return true;
+      }
+
       if (useIsExcluded(newNode)) {
+        retainCurrentFieldName(prevNode, newNode);
         return false;
       }
 
       return true;
     }),
   );
+}
+
+/**
+ * A keyed test keeps its previous verdict when focused out, but its declaration
+ * may have moved inside a reorderable container. Retain the verdict under the
+ * field name declared by the current run so selectors and registries follow
+ * item identity instead of the item's former array index.
+ */
+function retainCurrentFieldName(
+  retainedNode: TIsolateTest,
+  currentNode: TIsolateTest,
+): void {
+  const currentFieldName = VestTest.getData(currentNode).fieldName;
+  VestTest.setData(retainedNode, retainedData => ({
+    ...retainedData,
+    fieldName: currentFieldName,
+  }));
 }
 
 function cancelOverriddenPendingTestOnTestReRun(

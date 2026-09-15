@@ -1,7 +1,16 @@
-import { enforce } from 'n4s';
+import { compose, enforce } from 'n4s';
 import { describe, it, expect } from 'vitest';
 
 import { create, test } from '../../vest';
+
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      undefOutputRoot: (value: unknown) => { pass: boolean; type: undefined };
+      undefOutputMember: (value: unknown) => { pass: boolean; type: undefined };
+    }
+  }
+}
 
 describe('Schema Runtime Validation', () => {
   const schema = enforce.shape({
@@ -10,14 +19,22 @@ describe('Schema Runtime Validation', () => {
     tags: enforce.isArray(),
   });
 
-  const suite = create(data => {
-    test('name', 'Name must be present', () => {
-      enforce(data.name).isNotBlank();
-    });
-  }, schema);
+  // Suite instances accumulate run state (retained failures, focus), so
+  // each test builds its own: sharing one across tests would make later
+  // assertions depend on earlier runs. Tests that assert retention seed
+  // their history with an explicit in-test full run. The shape definition
+  // itself is stateless and safe to share.
+  function createSuite() {
+    return create(data => {
+      test('name', 'Name must be present', () => {
+        enforce(data.name).isNotBlank();
+      });
+    }, schema);
+  }
 
   describe('run() validation behavior', () => {
     it('should validate schema when no focus criteria is active', () => {
+      const suite = createSuite();
       // Valid data
       expect(suite.run({ name: 'John', age: 30, tags: [] }).isValid()).toBe(
         true,
@@ -31,29 +48,43 @@ describe('Schema Runtime Validation', () => {
     });
 
     it('should validate only the focused fields when "only" is active', () => {
-      // Invalid data for schema (age is string), but we focus on 'name'
-      // The schema validation should pick 'name' and skip 'age'
+      const suite = createSuite();
+      // Seed: a full run records the `age` schema failure as history.
+      // @ts-expect-error - Invalid data
+      suite.run({ name: 'John', age: '30' });
+
+      // Invalid data for schema (age is string), but we focus on 'name'.
+      // Only 'name' revalidates: the seeded 'age' failure is retained, not
+      // a fresh validation — the result stays invalid until 'age' itself
+      // is revalidated.
       const result = suite
         .focus({ only: 'name' })
         // @ts-expect-error - Invalid data
         .run({ name: 'John', age: '30' });
 
-      expect(result.hasErrors('age')).toBe(false);
-      expect(result.isValid()).toBe(true);
+      expect(result.hasErrors('age')).toBe(true);
+      expect(result.isValid()).toBe(false);
     });
 
     it('should validate only the focused fields when "only" is active via suite.focus().run()', () => {
-      // Invalid data for schema
+      const suite = createSuite();
+      // Seed: a full run records the `age` schema failure as history.
+      // @ts-expect-error - Invalid data
+      suite.run({ name: 'John', age: '30' });
+
+      // Invalid data for schema. Same retention contract as above: 'age'
+      // is not revalidated, so its seeded failure survives the focused run.
       const result = suite
         .focus({ only: ['name'] })
         // @ts-expect-error - Invalid data
         .run({ name: 'John', age: '30' });
 
-      expect(result.hasErrors('age')).toBe(false);
-      expect(result.isValid()).toBe(true);
+      expect(result.hasErrors('age')).toBe(true);
+      expect(result.isValid()).toBe(false);
     });
 
     it('should drop intersected fields and parse schemas securely when only and skip intersect', () => {
+      const suite = createSuite();
       // Only runs fields uniquely listed in `only` missing from `skip` natively.
       // Expected execution: 'name' evaluates. 'age' and 'tags' bypass safely.
       const result = suite
@@ -72,6 +103,7 @@ describe('Schema Runtime Validation', () => {
 
   describe('runStatic() validation behavior', () => {
     it('should always run schema validation', () => {
+      const suite = createSuite();
       // Valid data
       expect(
         suite.runStatic({ name: 'John', age: 30, tags: [] }).isValid(),
@@ -85,7 +117,9 @@ describe('Schema Runtime Validation', () => {
     });
 
     it('should run schema validation even after focusing the main suite', () => {
-      // Focus the main suite
+      const suite = createSuite();
+      // Focus the suite under test (a per-test instance, so the focus
+      // cannot leak into other tests).
       suite.focus({ only: 'name' });
 
       // runStatic should still validate schema (it creates a fresh suite)
@@ -395,6 +429,81 @@ describe('Schema Runtime Validation', () => {
       expect(callbackRan).toBe(true);
       expect(result.run.data.parsed).toEqual({ score: 42 });
       expect(Object.isFrozen(result.run.data.parsed)).toBe(true);
+    });
+
+    it('isolates nested callback mutations from results and future focused runs', () => {
+      const nestedSchema = enforce.shape({
+        profile: enforce.shape({ name: enforce.isString() }),
+        score: enforce.isNumeric().toNumber(),
+      });
+      const callbackNames: string[] = [];
+      let runCount = 0;
+      const suite = create(data => {
+        callbackNames.push(data.profile.name);
+        if (runCount++ === 0) data.profile.name = 'callback-mutated';
+      }, nestedSchema);
+
+      const first = suite.run({
+        profile: { name: 'original' },
+        score: '1',
+      });
+
+      expect(first.types?.output).toEqual({
+        profile: { name: 'original' },
+        score: 1,
+      });
+      expect(first.run.data.parsed).toEqual(first.types?.output);
+      expect(Object.isFrozen(first.run.data.parsed?.profile)).toBe(true);
+
+      const second = suite.changed('score').run({
+        profile: { name: 'new-raw-value' },
+        score: '2',
+      });
+
+      // The focused run retains the last successfully mapped untouched field,
+      // but never the callback's mutation of that field.
+      expect(callbackNames).toEqual(['original', 'original']);
+      expect(second.types?.output).toEqual({
+        profile: { name: 'original' },
+        score: 2,
+      });
+      expect(second.run.data.parsed).toEqual({
+        profile: { name: 'new-raw-value' },
+        score: 2,
+      });
+    });
+
+    it('prevents mutation through Map, Set, and Date parsed snapshots', () => {
+      const originalDate = new Date('2026-01-02T00:00:00.000Z');
+      const containerSchema = enforce.shape({
+        date: enforce.condition(
+          (value: Date): boolean => value instanceof Date,
+        ),
+        map: enforce.condition(
+          (value: Map<string, number>): boolean => value instanceof Map,
+        ),
+        set: enforce.condition(
+          (value: Set<string>): boolean => value instanceof Set,
+        ),
+      });
+      const containerSuite = create(() => {}, containerSchema);
+
+      const result = containerSuite.run({
+        date: originalDate,
+        map: new Map([['a', 1]]),
+        set: new Set(['a']),
+      });
+      const parsed = result.run.data.parsed;
+      if (parsed === undefined) {
+        throw new Error('Expected a parsed container snapshot');
+      }
+
+      expect(() => parsed.map.set('b', 2)).toThrow(TypeError);
+      expect(() => parsed.set.add('b')).toThrow(TypeError);
+      expect(() => parsed.date.setUTCFullYear(2030)).toThrow(TypeError);
+      expect([...parsed.map]).toEqual([['a', 1]]);
+      expect([...parsed.set]).toEqual(['a']);
+      expect(parsed.date.toISOString()).toBe('2026-01-02T00:00:00.000Z');
     });
   });
 
@@ -779,6 +888,115 @@ describe('Schema input vs output type inference', () => {
 
       const parsed = schema.parse({ name: '  hello  ', score: '7' });
       expect(parsed).toEqual({ name: 'HELLO', score: 7 });
+    });
+  });
+
+  describe('root retention coverage', () => {
+    it('clears a retained root failure the focused run re-evaluated clean', async () => {
+      // A composed root condition cannot project: the changed run executes
+      // the full schema. Freshly passing proves the root anew, so the
+      // retained root failure must clear instead of holding the suite
+      // invalid.
+      const schema = compose(
+        enforce.shape({ a: enforce.isString() }),
+        enforce.condition((value: { a: string }) => value.a !== 'bad'),
+      );
+      const suite = create(() => {
+        test('x', () => true);
+      }, schema);
+      const before = suite.run({ a: 'bad' });
+      expect(before.isValid()).toBe(false);
+
+      const after = await suite.changed('a').run({ a: 'ok' });
+      expect(after.isValid()).toBe(true);
+      expect(after.hasErrors()).toBe(false);
+    });
+  });
+
+  describe('empty inclusion focus', () => {
+    it('validates the full schema when only is an empty list', () => {
+      // A plain empty `only` is the established runtime no-op: it restricts
+      // nothing, so schema execution runs un-narrowed — unlike changed([]),
+      // which is explicit zero-field scope and runs nothing.
+      const localSchema = enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isNumber(),
+      });
+      const localSuite = create(() => {
+        test('a', () => true);
+      }, localSchema);
+      // @ts-expect-error - Invalid data
+      const result = localSuite.focus({ only: [] }).run({ a: 'ok', b: 'bad' });
+
+      expect(result.hasErrors('b')).toBe(true);
+      expect(result.isValid()).toBe(false);
+    });
+  });
+
+  describe('failing-run callback mapping', () => {
+    it('delivers mapped output so output-typed operations do not throw', () => {
+      const schema = enforce.shape({
+        age: enforce.isNumeric().toNumber(),
+        note: enforce.isString(),
+      });
+      let seen: unknown = 'unset';
+      const suite = create((data: { age: number }) => {
+        seen = data;
+      }, schema);
+      // @ts-expect-error - Invalid data
+      const result = suite.run({ age: '42', note: 42 });
+
+      expect(result.isValid()).toBe(false);
+      expect(seen).toEqual({ age: 42, note: 42 });
+      expect(() => (seen as { age: number }).age.toFixed()).not.toThrow();
+    });
+  });
+
+  describe('explicit undefined parser output', () => {
+    it('delivers undefined through the callback and the result value', () => {
+      // Presence decides: a parser returning an own 'type' of undefined
+      // produces undefined output, not a raw-input fallback.
+      enforce.extend(
+        { undefOutputRoot: () => ({ pass: true, type: undefined }) },
+        { parsers: ['undefOutputRoot'] },
+      );
+      const schema = enforce.undefOutputRoot();
+      const native = schema.run('raw');
+      expect(Object.prototype.hasOwnProperty.call(native, 'type')).toBe(true);
+      let seen: unknown = 'unset';
+      const suite = create(data => {
+        seen = data;
+        test('x', () => true);
+      }, schema);
+      const result = suite.run('raw');
+
+      expect(result.isValid()).toBe(true);
+      expect(seen).toBe(undefined);
+      expect(result.run.data.parsed).toBe(undefined);
+      expect(result.value).toBe(undefined);
+    });
+
+    it('restores a mapped undefined at skipped paths instead of raw input', () => {
+      enforce.extend(
+        { undefOutputMember: () => ({ pass: true, type: undefined }) },
+        { parsers: ['undefOutputMember'] },
+      );
+      const schema = enforce.shape({
+        a: enforce.undefOutputMember(),
+        b: enforce.isString(),
+      });
+      let seen: unknown = 'unset';
+      const suite = create(data => {
+        seen = data;
+        test('b', () => true);
+      }, schema);
+      const result = suite.focus({ skip: 'a' }).run({ a: 'raw-a', b: 'ok' });
+
+      expect(result.isValid()).toBe(true);
+      const record = seen as Record<string, unknown>;
+      expect(Object.prototype.hasOwnProperty.call(record, 'a')).toBe(true);
+      expect(record.a).toBe(undefined);
+      expect(record.b).toBe('ok');
     });
   });
 });

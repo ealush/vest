@@ -83,18 +83,14 @@ export type GetFailuresResponse = FailureMessages | string[];
 export type FailureMessages = Record<string, string[]>;
 export type TSchema = any;
 
-export type InferSchemaData<S> = S extends {
-  '~standard': { types: { input: infer I } };
-}
-  ? I
+export type InferSchemaData<S> = S extends StandardSchemaV1
+  ? StandardSchemaV1.InferInput<S>
   : S extends { infer: infer T }
     ? { [K in keyof T]: T[K] } & NonNullable<unknown>
     : any;
 
-export type InferSchemaOutput<S> = S extends {
-  '~standard': { types: { output: infer O } };
-}
-  ? O
+export type InferSchemaOutput<S> = S extends StandardSchemaV1
+  ? StandardSchemaV1.InferOutput<S>
   : S extends { infer: infer T }
     ? { [K in keyof T]: T[K] } & NonNullable<unknown>
     : any;

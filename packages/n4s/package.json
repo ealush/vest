@@ -22,11 +22,11 @@
     "./dist/exports/*.cjs"
   ],
   "dependencies": {
+    "@types/validator": "^13.15.10",
     "context": "^4.0.17",
     "vest-utils": "^2.0.17"
   },
   "devDependencies": {
-    "@types/validator": "^13.15.10",
     "validator": "13.9.0"
   },
   "vxAllowResolve": [
@@ -42,6 +42,11 @@
       "types": "./types/exports/email.d.cts",
       "require": "./dist/exports/email.cjs",
       "import": "./dist/exports/email.mjs"
+    },
+    "./exports/internal": {
+      "types": "./types/exports/internal.d.cts",
+      "require": "./dist/exports/internal.cjs",
+      "import": "./dist/exports/internal.mjs"
     },
     "./exports/isURL": {
       "types": "./types/exports/isURL.d.cts",
@@ -72,6 +77,11 @@
       "types": "./types/exports/email.d.cts",
       "require": "./dist/exports/email.cjs",
       "import": "./dist/exports/email.mjs"
+    },
+    "./internal": {
+      "types": "./types/exports/internal.d.cts",
+      "require": "./dist/exports/internal.cjs",
+      "import": "./dist/exports/internal.mjs"
     },
     "./isURL": {
       "types": "./types/exports/isURL.d.cts",

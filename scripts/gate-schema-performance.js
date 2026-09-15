@@ -476,25 +476,36 @@ const evidence = { pairs: [], singles: [] };
 
 function recordPairEvidence(pair, entry) {
   evidence.pairs.push({
+    changed: rawSampleArray(entry.sample, 'changed'),
     changedMs: entry.changedMs,
     cv: entry.cv,
     floor: pair.floor,
+    full: rawSampleArray(entry.sample, 'full'),
     fullMs: entry.fullMs,
     id: pair.id,
     label: pair.label,
     median: entry.median,
+    ratios: rawSampleArray(entry.sample, 'ratios'),
     retried: entry.retried,
     target: pair.target,
     verdict: entry.verdict,
   });
 }
 
+function rawSampleArray(sample, key) {
+  if (!sample || !Array.isArray(sample[key])) return null;
+  return [...sample[key]];
+}
+
 function recordSingleEvidence(label, result, retried, kind) {
   evidence.singles.push({
+    attempts: result.attempts ?? null,
     baseCv: result.baseCv,
     baseMs: result.baseMs,
+    baseTimes: result.baseTimes ?? null,
     headCv: result.headCv,
     headMs: result.headMs,
+    headTimes: result.headTimes ?? null,
     kind,
     label,
     retried,
@@ -504,6 +515,7 @@ function recordSingleEvidence(label, result, retried, kind) {
 
 function buildEvidence(outcome, baselineDir) {
   return {
+    baseSha: baselineDir === null ? null : revisionSha(baselineDir),
     baseline: baselineDir,
     failed: outcome.failed,
     generatedAt: new Date().toISOString(),
@@ -603,7 +615,9 @@ function evaluateSingleGate(
   baseSingles,
   remeasureSingles = null,
 ) {
+  const attempts = [];
   let result = checkSingle(label, headSingles, baseSingles);
+  attempts.push(summarizeAttempt(result));
   let retries = 0;
   // Bounded retries for inconclusive evidence only: stable breaches never
   // retry. Baseline instability cannot be fixed by remeasuring head alone:
@@ -617,9 +631,21 @@ function evaluateSingleGate(
       const fresh = runMeasurement(REPO_ROOT);
       result = checkSingle(label, fresh.singles, baseSingles);
     }
+    attempts.push(summarizeAttempt(result));
   }
+  result = { ...result, attempts };
   reportSingle(label, result, retries > 0);
   return result.verdict !== 'pass';
+}
+
+function summarizeAttempt(result) {
+  return {
+    baseCv: result.baseCv,
+    baseMs: result.baseMs,
+    headCv: result.headCv,
+    headMs: result.headMs,
+    verdict: result.verdict,
+  };
 }
 
 /**
@@ -643,6 +669,7 @@ function evaluateAbsoluteSingle(label, headSingles) {
     ceiling,
     sample.retried,
     verdict,
+    sample.times ?? first.times,
   );
   return verdict !== 'pass';
 }
@@ -653,10 +680,15 @@ function readAbsoluteSample(headSingles, label) {
 
 function stabilizeAbsoluteSample(first, label) {
   if (!isUnstableTimes(first.times)) {
-    return { ...describeTimes(first.times), retried: false };
+    return {
+      ...describeTimes(first.times),
+      retried: false,
+      times: first.times,
+    };
   }
   const fresh = runMeasurement(REPO_ROOT);
-  return { ...describeTimes(timesOf(fresh.singles, label)), retried: true };
+  const times = timesOf(fresh.singles, label);
+  return { ...describeTimes(times), retried: true, times };
 }
 
 function isUnstableTimes(times) {
@@ -694,6 +726,7 @@ function reportAbsoluteSingle(
   ceiling,
   retried,
   verdict,
+  headTimes,
 ) {
   console.log(
     `single ${label}: head ${fmt(headMs)}ms (cv ${fmt(headCv)}) ` +
@@ -702,7 +735,7 @@ function reportAbsoluteSingle(
   );
   recordSingleEvidence(
     label,
-    { baseCv: NaN, baseMs: NaN, headCv, headMs, verdict },
+    { baseCv: NaN, baseMs: NaN, headCv, headMs, headTimes, verdict },
     retried,
     'absolute',
   );
@@ -713,14 +746,12 @@ function checkSingle(label, headSingles, baseSingles) {
   const baseTimes = timesOf(baseSingles, label);
   if (!headTimes || !baseTimes) {
     return {
-      baseCv: NaN,
-      baseMs: NaN,
-      headCv: NaN,
-      headMs: NaN,
-      verdict: 'fail-missing',
+      ...missingSingleResult(),
+      baseTimes,
+      headTimes,
     };
   }
-  return checkSingleTimes(headTimes, baseTimes);
+  return { ...checkSingleTimes(headTimes, baseTimes), baseTimes, headTimes };
 }
 
 function missingSingleResult() {
@@ -1092,6 +1123,31 @@ function selfTestEvidenceWriteFailure() {
   ];
 }
 
+function evidenceFixtureEntry() {
+  return {
+    changedMs: 1,
+    cv: 0.1,
+    fullMs: 2,
+    median: 2,
+    retried: false,
+    sample: { changed: [1, 1], full: [2, 2], label: 'C13', ratios: [2, 2] },
+    verdict: 'pass',
+  };
+}
+
+function evidenceFileAssertions(parsed) {
+  return [
+    checkCase(
+      'evidence file carries pair verdicts',
+      evidencePairVerdictOk(parsed),
+    ),
+    checkCase(
+      'evidence file carries raw samples',
+      evidenceRawSamplesOk(parsed),
+    ),
+  ];
+}
+
 function selfTestEvidenceFile() {
   const fs = require('node:fs');
   const os = require('node:os');
@@ -1102,14 +1158,7 @@ function selfTestEvidenceFile() {
   resetEvidence();
   recordPairEvidence(
     { floor: 0.9, id: 'G4', label: 'C13', target: 1.0 },
-    {
-      changedMs: 1,
-      cv: 0.1,
-      fullMs: 2,
-      median: 2,
-      retried: false,
-      verdict: 'pass',
-    },
+    evidenceFixtureEntry(),
   );
   writeEvidenceFile(
     filePath,
@@ -1117,16 +1166,25 @@ function selfTestEvidenceFile() {
   );
   const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
   resetEvidence();
-  return [
-    checkCase(
-      'evidence file carries pair verdicts',
-      parsed.failed === false &&
-        parsed.pairs.length === 1 &&
-        parsed.pairs[0].id === 'G4' &&
-        parsed.pairs[0].verdict === 'pass' &&
-        Array.isArray(parsed.trace),
-    ),
-  ];
+  return evidenceFileAssertions(parsed);
+}
+
+function evidencePairVerdictOk(parsed) {
+  return (
+    parsed.failed === false &&
+    parsed.pairs.length === 1 &&
+    parsed.pairs[0].id === 'G4' &&
+    parsed.pairs[0].verdict === 'pass' &&
+    Array.isArray(parsed.trace)
+  );
+}
+
+function evidenceRawSamplesOk(parsed) {
+  return (
+    Array.isArray(parsed.pairs[0].full) &&
+    Array.isArray(parsed.pairs[0].changed) &&
+    Array.isArray(parsed.pairs[0].ratios)
+  );
 }
 
 function selfTestInjectedFileRestore() {

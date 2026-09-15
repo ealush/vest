@@ -1457,3 +1457,74 @@ describe('schema contracts: empty-focus witness behavior (H1 expansion)', () => 
     expect(predicates).toEqual(['a', 'a']);
   });
 });
+
+describe('schema contracts: bounded deep and wide fixtures (BB12)', () => {
+  function deepShape(depth: number): any {
+    let inner: any = enforce.isString();
+    for (let level = depth; level >= 1; level -= 1) {
+      inner = enforce.shape({ [`l${level}`]: inner });
+    }
+    return inner;
+  }
+
+  function deepData(depth: number, leaf: string): any {
+    let data: any = leaf;
+    for (let level = depth; level >= 1; level -= 1) {
+      data = { [`l${level}`]: data };
+    }
+    return data;
+  }
+
+  function deepPath(depth: number): string {
+    return Array.from({ length: depth }, (_, i) => `l${i + 1}`).join('.');
+  }
+
+  it('[SC-BB12] ten-level nested changed run validates only the leaf path', () => {
+    const calls: string[] = [];
+    const leafPath = deepPath(10);
+    const suite: any = create(
+      (_data: unknown) => {
+        test('other', () => {
+          calls.push('other');
+          return true;
+        });
+      },
+      enforce.shape({
+        nested: deepShape(10),
+        other: enforce.isString(),
+      }) as never,
+    );
+    const result = suite
+      .changed(`nested.${leafPath}`)
+      .run({ nested: deepData(10, 'ok'), other: 'o' } as never);
+    expect(result.hasErrors()).toBe(false);
+    // Only the affected deep path validates: the unrelated imperative
+    // test never executes at depth 10 either.
+    expect(calls).toEqual([]);
+  });
+
+  it('[SC-BB12] two-hundred-field changed run executes only the affected field', () => {
+    const members: Record<string, unknown> = {};
+    for (let i = 0; i < 200; i += 1) {
+      members[`field_${i}`] = enforce.isString();
+    }
+    const calls: string[] = [];
+    const suite: any = create(
+      (_data: unknown) => {
+        for (let i = 0; i < 200; i += 1) {
+          const name = `field_${i}`;
+          test(name, () => {
+            calls.push(name);
+            return true;
+          });
+        }
+      },
+      enforce.shape(members as never) as never,
+    );
+    const data: Record<string, string> = {};
+    for (let i = 0; i < 200; i += 1) data[`field_${i}`] = `v${i}`;
+    const result = suite.changed('field_199').run(data as never);
+    expect(result.hasErrors()).toBe(false);
+    expect(calls).toEqual(['field_199']);
+  });
+});

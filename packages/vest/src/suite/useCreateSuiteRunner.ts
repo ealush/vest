@@ -236,9 +236,10 @@ export function useCreateSuiteRunner<
       previous: usePreviousMappedSchemaOutput(),
       schema,
       schemaRunResult,
-      skipAll:
-        transformedModifiers.skip === true ||
-        transformedModifiers.__skipAll === true,
+      // Only boolean skip-all reaches the unfocused mapping path with this
+      // flag: changed([]) carries __skipAll with an explicitly empty (non-
+      // null) affected set, which already preserves history by contract.
+      skipAll: transformedModifiers.skip === true,
       skipped: skippedFocusPaths(transformedModifiers.skip),
     });
     const callbackInput = callbackMapping.input;

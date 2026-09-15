@@ -1320,7 +1320,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/supersededRuns.test.ts",
       "id": "BB08",
-      "notes": "Three-generation transitive ownership settlement; stale rejection without resurrection plus recovery; new-first/old-first ordering leaves latest authoritative.",
+      "notes": "Three-generation transitive ownership settlement; stale rejection without resurrection plus recovery; new-first/old-first ordering leaves latest authoritative. Suite-level last-finish-wins pinned: stale failure settling after a focused run publishes; fresh full recovery clears.",
       "result": "pass",
       "status": "covered",
       "testFiles": ["packages/vest/src/suite/__tests__/supersededRuns.test.ts"],
@@ -1331,7 +1331,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "BB01",
-      "notes": "Focus algebra triple (only+changed+skip) and clearing restore full runs; route matrices in EX/DD rows.",
+      "notes": "Focus algebra triple (only+changed+skip) and clearing restore full runs; route matrices in EX/DD rows. Declaration stability: adding an unrelated schema field preserves the dependency closure and execution set.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1357,13 +1357,26 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
       "id": "H1",
-      "notes": "Skip-all establishes no mapping witness: focused union runs after skip-all fail without prior proof; previous proven mappings survive skip-all untouched and serve later focused runs; parser mapping runs without validation. Red-verified without the runner fix (3 failures). Expanded: changed([]) establishes no witness; only+skip-all establishes none; skip-all destructively clears retained verdicts (changed([]) retains); no-match preserves container constraints (partial extra-key rejection, moved-chain full run).",
+      "notes": "Skip-all establishes no mapping witness: focused union runs after skip-all fail without prior proof; previous proven mappings survive skip-all untouched and serve later focused runs; parser mapping runs without validation. Red-verified without the runner fix (3 failures). Expanded: changed([]) establishes no witness; only+skip-all establishes none; skip-all destructively clears retained verdicts (changed([]) retains); no-match preserves container constraints (partial extra-key rejection, moved-chain full run). skipAll flag narrowed to boolean skip (changed([]) already preserves via its empty-affected path).",
       "result": "pass",
       "status": "covered",
       "testFiles": [
         "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
       ],
       "testNames": ["[SC-SKIPALL-WITNESS]", "[SC-NOMATCH-CONSTRAINT]"],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
+      "id": "BB12",
+      "notes": "Bounded deep/wide fixtures: ten-level nested changed run validates only the leaf path; 200-field changed run executes only the affected field.",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
+      ],
+      "testNames": ["[SC-BB12]"],
       "verifiedSha": null
     }
   ]

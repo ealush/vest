@@ -171,3 +171,38 @@ describe('superseded ownership across three generations (BB08)', () => {
     expect(suite.get().hasErrors('tag')).toBe(false);
   });
 });
+
+describe('superseded ownership across focused runs (BB08)', () => {
+  it('[SC-BB08] stale failure settling after a focused run publishes last-finish-wins', async () => {
+    let release!: () => void;
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    const suite = create((data: { a: string; b: string }) => {
+      test('a', async () => {
+        if (data.a === 'bad') await gate;
+        enforce(data.a).notEquals('bad');
+      });
+      test('b', () => {
+        enforce(data.b).isString();
+      });
+    });
+    // Full run starts slow failing validation of a field the later
+    // focused run does not revalidate. Last-finish-wins: the stale
+    // failure publishes when it settles; a focused run does not fence it.
+    const slow = suite.run({ a: 'bad', b: 'x' });
+    const staleSettled = Promise.resolve(slow).then(
+      () => 'settled' as const,
+      () => 'rejected' as const,
+    );
+    suite.changed('b').run({ a: 'ok', b: 'y' });
+    release();
+    await staleSettled;
+    await flushAsyncWork();
+    expect(suite.get().hasErrors('a')).toBe(true);
+    expect(suite.get().hasErrors('b')).toBe(false);
+    // A fresh full run with good data clears the stale verdict.
+    const recovery = suite.run({ a: 'ok', b: 'y' });
+    expect(recovery.hasErrors('a')).toBe(false);
+  });
+});

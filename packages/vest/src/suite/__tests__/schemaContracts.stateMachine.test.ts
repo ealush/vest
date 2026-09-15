@@ -352,3 +352,47 @@ describe('schema contracts: full/selective agreement (metamorphic)', () => {
     expect(dependent).not.toHaveBeenCalled();
   });
 });
+
+describe('schema contracts: declaration stability (metamorphic)', () => {
+  it('[SC-METAMORPHIC] adding an unrelated schema field preserves the dependency closure', () => {
+    const calls: string[] = [];
+    const base = {
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn(($: any) => $.a),
+    };
+    const withoutExtra: any = create(
+      (_data: unknown) => {
+        test('a', () => {
+          calls.push('a');
+          return true;
+        });
+        test('b', () => {
+          calls.push('b');
+          return true;
+        });
+      },
+      enforce.shape(base) as never,
+    );
+    const withExtra: any = create(
+      (_data: unknown) => {
+        test('a', () => {
+          calls.push('a');
+          return true;
+        });
+        test('b', () => {
+          calls.push('b');
+          return true;
+        });
+      },
+      enforce.shape({ ...base, unrelated: enforce.isString() }) as never,
+    );
+    const data = { a: 'x', b: 'y', unrelated: 'z' };
+    withoutExtra.changed('a').run({ a: 'x', b: 'y' });
+    const before = [...calls].sort();
+    calls.length = 0;
+    withExtra.changed('a').run(data as never);
+    // The unrelated field participates in no edge: identical execution.
+    expect([...calls].sort()).toEqual(before);
+    expect(before).toEqual(['a', 'b']);
+  });
+});

@@ -965,7 +965,7 @@
       "blocked-by": [],
       "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.closure.test.ts",
       "id": "DD05",
-      "notes": "Single-normalization review per route against C01-C03; open until exclusion fix lands. Closed: route parity across changed/skip spellings, skip-only, only; skip clears retention; nested depth; opaque moved-chain skip fails closed both orders. R1 follow-up: composed skip-only parity added to the route loop (skipped 0, selected 1, root 1) via the omission walker; composed only() inclusion distinction pinned (runs unselected once by design). P1 follow-up: plain nested skip-only (shape/partial/loose) and only(profile)+skip(profile.a) omit recursively with zero excluded calls; scalar-descending skips are safe no-ops; array-index skip-only fails closed; composed only() keeps inclusion semantics (pinned).",
+      "notes": "Single-normalization review per route against C01-C03; open until exclusion fix lands. Closed: route parity across changed/skip spellings, skip-only, only; skip clears retention; nested depth; opaque moved-chain skip fails closed both orders. R1 follow-up: composed skip-only parity added to the route loop (skipped 0, selected 1, root 1) via the omission walker; composed only() inclusion distinction pinned (runs unselected once by design). P1 follow-up: plain nested skip-only (shape/partial/loose) and only(profile)+skip(profile.a) omit recursively with zero excluded calls; scalar-descending skips are safe no-ops; array-index skip-only fails closed; composed only() keeps inclusion semantics (pinned).  State-machine oracle extended with schema-execution census, only/remove/reset ops, and Fisher-Yates planning; metamorphic full/selective agreement and unrelated-change isolation pinned. remove()-then-changed retention gap recorded separately (KN01).",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1015,7 +1015,7 @@
       "blocked-by": [],
       "command": "yarn gate:schema-coverage",
       "id": "COV",
-      "notes": "Floors green on gate run: selectiveRun 85.57/85, dependencyResolver 100/85, runner 90.81/90, clone 97.56/95. Per-package authoritative merge; reports retained on failure. Outer-API branch tests only.",
+      "notes": "Floors green on gate run: selectiveRun 85.57/85, dependencyResolver 100/85, runner 91.01/90, clone 97.56/95. Per-package authoritative merge; reports retained on failure. Outer-API branch tests only.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1091,7 +1091,7 @@
       "blocked-by": [],
       "command": "yarn gate:schema-performance",
       "id": "PF03",
-      "notes": "Head-only enforces G4/G6/G1-relative/G1-absolute/A1-absolute. Minimum 7 batches (pairs and singles); ratios derived from raw timings; mismatched/non-positive evidence fails closed; absolute and relative singles both evaluate without short-circuit; injected baseline files byte-restored; subprocess failures print captured samples; exact 10% latency definition; both-sides retry; gate writes schema-perf-results.json (uploaded always) separately from the benchmark report.",
+      "notes": "Head-only enforces G4/G6/G1-relative/G1-absolute/A1-absolute. Minimum 7 batches (pairs and singles); ratios derived from raw timings; mismatched/non-positive evidence fails closed; absolute and relative singles both evaluate without short-circuit; injected baseline files byte-restored; subprocess failures print captured samples; exact 10% latency definition; both-sides retry; gate writes schema-perf-results.json (uploaded always) separately from the benchmark report.  Singles retries bounded at two (three attempts); duplicate-row policy last-wins with single-emission measurement; evidence-write failure is visibly fatal.",
       "result": "pass",
       "status": "covered",
       "testFiles": [],
@@ -1226,7 +1226,7 @@
       "blocked-by": [],
       "command": "yarn tsc -p type-tests/consumer-typing/tsconfig.esm.json && yarn tsc -p type-tests/consumer-typing/tsconfig.cjs.json",
       "id": "AC06",
-      "notes": "Shared FieldSelector broad-string type across builder/lifecycle methods (nested selectors compile; groups strict); readonly lists accepted; skip boolean typed; Standard Schema I/O via canonical helpers; packed ESM/CJS consumer fixtures with exact/non-any assertions and 20+ negative cases.",
+      "notes": "Shared FieldSelector broad-string type across builder/lifecycle methods (nested selectors compile; groups strict); readonly lists accepted; skip boolean typed; Standard Schema I/O via canonical helpers; packed ESM/CJS consumer fixtures with exact/non-any assertions and 20+ negative cases.  Packed fixtures note two limitations: shipped .d.mts files are unreferenced by export maps (unproven), and the config-generic overload defaults run() data to any (pinned, not required for supported usage).",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1330,6 +1330,19 @@
       "status": "covered",
       "testFiles": [],
       "testNames": [],
+      "verifiedSha": null
+    },
+    {
+      "blocked-by": [],
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts",
+      "id": "H1",
+      "notes": "Skip-all establishes no mapping witness: focused union runs after skip-all fail without prior proof; previous proven mappings survive skip-all untouched and serve later focused runs; parser mapping runs without validation. Red-verified without the runner fix (3 failures).",
+      "result": "pass",
+      "status": "covered",
+      "testFiles": [
+        "packages/vest/src/suite/__tests__/schemaContracts.exclusions2.test.ts"
+      ],
+      "testNames": ["[SC-SKIPALL-WITNESS]", "[SC-NOMATCH-CONSTRAINT]"],
       "verifiedSha": null
     }
   ]

@@ -1091,7 +1091,7 @@
       "blocked-by": [],
       "command": "yarn gate:schema-performance",
       "id": "PF03",
-      "notes": "Head-only enforces G4/G6/G1-relative/G1-absolute/A1-absolute. Minimum 7 batches (pairs and singles); ratios derived from raw timings; mismatched/non-positive evidence fails closed; absolute and relative singles both evaluate without short-circuit; injected baseline files byte-restored; subprocess failures print captured samples; exact 10% latency definition; both-sides retry; gate writes schema-perf-results.json (uploaded always) separately from the benchmark report.  Singles retries bounded at two (three attempts); duplicate-row policy last-wins with single-emission measurement; evidence-write failure is visibly fatal.",
+      "notes": "Head-only enforces G4/G6/G1-relative/G1-absolute/A1-absolute. Minimum 7 batches (pairs and singles); ratios derived from raw timings; mismatched/non-positive evidence fails closed; absolute and relative singles both evaluate without short-circuit; injected baseline files byte-restored; subprocess failures print captured samples; exact 10% latency definition; both-sides retry; gate writes schema-perf-results.json (uploaded always) separately from the benchmark report.  Singles retries bounded at two (three attempts); duplicate-row policy last-wins with single-emission measurement; evidence-write failure is visibly fatal. Singles use 60 batches for tighter dispersion at unchanged budgets.",
       "result": "pass",
       "status": "covered",
       "testFiles": [],

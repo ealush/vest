@@ -13,6 +13,10 @@ import { each } from '../src/isolates/each';
 
 const BATCHES = 30;
 const WARMUP = 5;
+// Singles compare absolute medians across two checkouts, so they need
+// tighter dispersion estimates than interleaved pairs: twice the batches
+// at the same budgets (floors, CV limit, and retry policy unchanged).
+const SINGLE_BATCHES = 60;
 
 type PairSample = {
   changed: number[];
@@ -44,7 +48,7 @@ function hasDependsOn(): boolean {
 function measureSingle(label: string, fn: () => void): SingleSample {
   for (let i = 0; i < WARMUP; i += 1) fn();
   const times: number[] = [];
-  for (let i = 0; i < BATCHES; i += 1) times.push(timed(fn));
+  for (let i = 0; i < SINGLE_BATCHES; i += 1) times.push(timed(fn));
   const sample: SingleSample = { label, times };
   printSample(sample);
   return sample;

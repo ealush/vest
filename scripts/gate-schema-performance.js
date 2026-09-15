@@ -639,7 +639,11 @@ function isUnstableTimes(times) {
 }
 
 function describeTimes(times) {
-  if (times === null || times.length < MIN_PAIR_BATCHES) {
+  if (
+    times === null ||
+    times.length < MIN_PAIR_BATCHES ||
+    !times.every(validTiming)
+  ) {
     return { headCv: NaN, headMs: NaN };
   }
   return { headCv: cv(times), headMs: median(times) };
@@ -694,20 +698,36 @@ function checkSingle(label, headSingles, baseSingles) {
   return checkSingleTimes(headTimes, baseTimes);
 }
 
+function missingSingleResult() {
+  return {
+    baseCv: NaN,
+    baseMs: NaN,
+    headCv: NaN,
+    headMs: NaN,
+    verdict: 'fail-missing',
+  };
+}
+
+function hasEnoughSingleSamples(headTimes, baseTimes) {
+  return (
+    headTimes.length >= MIN_PAIR_BATCHES && baseTimes.length >= MIN_PAIR_BATCHES
+  );
+}
+
+function hasValidSingleSamples(headTimes, baseTimes) {
+  return headTimes.every(validTiming) && baseTimes.every(validTiming);
+}
+
 function checkSingleTimes(headTimes, baseTimes) {
   // Thin evidence fails closed: a single timing per side cannot establish
-  // stability, even when the medians agree.
+  // stability, even when the medians agree. Every timing is validated
+  // finite, numeric, and strictly positive before any statistics: one zero
+  // among stable values must fail closed, never pass on a healthy median.
   if (
-    headTimes.length < MIN_PAIR_BATCHES ||
-    baseTimes.length < MIN_PAIR_BATCHES
+    !hasEnoughSingleSamples(headTimes, baseTimes) ||
+    !hasValidSingleSamples(headTimes, baseTimes)
   ) {
-    return {
-      baseCv: NaN,
-      baseMs: NaN,
-      headCv: NaN,
-      headMs: NaN,
-      verdict: 'fail-missing',
-    };
+    return missingSingleResult();
   }
   const headCv = cv(headTimes);
   const baseCv = cv(baseTimes);
@@ -727,6 +747,10 @@ function checkSingleTimes(headTimes, baseTimes) {
 
 function unstableCv(value) {
   return !Number.isFinite(value) || value > STABILITY_MAX_CV;
+}
+
+function validTiming(value) {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0;
 }
 
 function timesOf(singles, label) {
@@ -1118,6 +1142,11 @@ function selfTestSingles() {
       checkSingle('S', thin(100), thin(100)).verdict === 'fail-missing',
     ),
     checkCase(
+      'singles nonpositive timing fails closed despite healthy median',
+      checkSingle('S', steadyWithOne(100, 0), steadyTestSingles(100))
+        .verdict === 'fail-missing',
+    ),
+    checkCase(
       'absolute A1 under ceiling passes',
       evaluateAbsoluteSingle('A1', absoluteTestSingles(290)) === false,
     ),
@@ -1179,6 +1208,10 @@ function selfTestNoShortCircuit() {
 
 function steadyTestSingles(ms) {
   return new Map([['S', { label: 'S', times: [ms, ms, ms, ms, ms, ms, ms] }]]);
+}
+
+function steadyWithOne(ms, odd) {
+  return new Map([['S', { label: 'S', times: [ms, ms, ms, odd, ms, ms, ms] }]]);
 }
 
 function absoluteTestSingles(ms) {

@@ -29,7 +29,8 @@
     "gate:schema-relationships": "yarn test:schema-relationships && yarn workspace @vest/integration-tanstack-form test && yarn vx typecheck-tests && yarn workspace @vest/integration-tanstack-form typecheck && yarn docs:examples:test",
     "gate:schema-coverage": "node scripts/gate-schema-coverage.js",
     "gate:schema-boundaries": "node scripts/gate-schema-boundaries.js",
-    "gate:schema-performance": "node scripts/gate-schema-performance.js"
+    "gate:schema-performance": "node scripts/gate-schema-performance.js",
+    "gate:schema-manifest": "node scripts/validate-schema-manifest.js"
   },
   "homepage": "https://vestjs.dev",
   "prettier": {

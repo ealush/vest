@@ -3849,14 +3849,18 @@ function buildIntersectedSchemaInstance(
     string,
     SchemaMemberRule
   >;
+  // Nested only-names expand to their top-level parents for the pick, with
+  // unselected siblings synthesized as skips; explicit top-level skips
+  // still win by exact match below.
+  const expanded = expandNestedOnlySelections(members, only);
   const picked = enforceLazy.pick(
     members,
-    only.filter(f => !skipSet.has(f)),
+    expanded.topOnly.filter(f => !skipSet.has(f)),
   ) as unknown as SelectiveSchema;
   // Nested skips under kept top-level keys (e.g. only('profile') with
   // skip('profile.a')) omit through the same kind-preserving walker as
   // every other exclusion route instead of running excluded validators.
-  return omitSkippedDeep(picked, skip);
+  return omitSkippedDeep(picked, [...skip, ...expanded.synthSkip]);
 }
 
 function buildFocusedSchemaInstance(
@@ -3869,9 +3873,8 @@ function buildFocusedSchemaInstance(
     SchemaMemberRule
   >;
   if (only) {
-    return skip
-      ? buildIntersectedSchemaInstance(schema, only, skip)
-      : (enforceLazy.pick(members, only) as unknown as SelectiveSchema);
+    if (!skip) return buildPlainNestedOnly(members, only);
+    return buildIntersectedSchemaInstance(schema, only, skip);
   }
 
   if (!skip) return schema;
@@ -3881,6 +3884,239 @@ function buildFocusedSchemaInstance(
   // top-level-only omit() left nested skips (e.g. 'profile.a' on a plain
   // shape) executing excluded validators.
   return omitSkippedDeep(schema, skip);
+}
+
+function buildPlainNestedOnly(
+  members: Record<string, SchemaMemberRule>,
+  only: readonly string[],
+): SelectiveSchema {
+  // Plain nested only() (e.g. only('box.b')) selects the parent and
+  // omits unselected siblings, so the selected leaf executes exactly
+  // once without running excluded predicates.
+  const expanded = expandNestedOnlySelections(members, only);
+  const picked = enforceLazy.pick(
+    members,
+    expanded.topOnly,
+  ) as unknown as SelectiveSchema;
+  if (expanded.synthSkip.length === 0) return picked;
+  return omitSkippedDeep(picked, expanded.synthSkip);
+}
+
+/**
+ * Expands nested `only()` selectors to the top-level keys `pick()` can
+ * match, synthesizing skips for declared siblings outside the selection.
+ * Top-level names, unknown paths, and scalar descents pass through
+ * unchanged (preserving the established empty-selection behavior for
+ * unresolvable selectors). Selections descending into array, tuple,
+ * record, union, or composed-opaque containers fail closed: positional or
+ * shared-rule members cannot be split by an object rebuild.
+ */
+function expandNestedOnlySelections(
+  members: Record<string, unknown>,
+  only: readonly string[],
+): { synthSkip: string[]; topOnly: string[] } {
+  const topOnly: string[] = [];
+  const synthSkip: string[] = [];
+  for (const name of only) expandOneOnlyName(members, name, topOnly, synthSkip);
+  // Explicit whole-parent selections win over synthesized sibling skips.
+  // Sibling skips that are themselves selected by another only() entry
+  // (e.g. only(['box.a', 'box.b'])) must not cancel the selection.
+  const wholeParents = collectWholeParents(only);
+  const selected = collectSelectedPaths(only);
+  return {
+    synthSkip: synthSkip.filter(
+      skip =>
+        !wholeParents.has(skip.split('.')[0] as string) && !selected.has(skip),
+    ),
+    topOnly,
+  };
+}
+
+function expandOneOnlyName(
+  members: Record<string, unknown>,
+  name: string,
+  topOnly: string[],
+  synthSkip: string[],
+): void {
+  const segs = safeAffectedSegs(name);
+  if (!isNestedOnlySegs(segs)) {
+    // Top-level, unparseable, or empty names pass through unchanged,
+    // preserving established pick() behavior (including empty selection
+    // for unresolvable selectors).
+    pushUniqueName(topOnly, name);
+    return;
+  }
+  const [head] = segs;
+  if (typeof head !== 'string') {
+    pushUniqueName(topOnly, name);
+    return;
+  }
+  commitNestedOnlySkips(members, segs, head, topOnly, synthSkip);
+}
+
+function isNestedOnlySegs(
+  segs: readonly AffectedSeg[] | null,
+): segs is readonly AffectedSeg[] {
+  return segs !== null && segs.length > 1;
+}
+
+function commitNestedOnlySkips(
+  members: Record<string, unknown>,
+  segs: readonly AffectedSeg[],
+  head: string,
+  topOnly: string[],
+  synthSkip: string[],
+): void {
+  // Structural projection failures propagate: unsupported topologies
+  // fail the run loudly instead of degrading to an empty selection.
+  const skips = planNestedOnlySkips(members, segs);
+  if (skips === null) return;
+  pushUniqueName(topOnly, head);
+  synthSkip.push(...skips);
+}
+
+function collectWholeParents(only: readonly string[]): Set<string> {
+  return new Set(
+    only.filter(name => {
+      const segs = safeAffectedSegs(name);
+      return segs !== null && segs.length === 1 && typeof segs[0] === 'string';
+    }),
+  );
+}
+
+function collectSelectedPaths(only: readonly string[]): Set<string> {
+  const selected = new Set<string>();
+  for (const name of only) {
+    const segs = safeAffectedSegs(name);
+    if (segs === null) {
+      selected.add(name);
+      continue;
+    }
+    selected.add(segs.map(seg => String(seg)).join('.'));
+  }
+  return selected;
+}
+
+function pushUniqueName(list: string[], name: string): void {
+  if (!list.includes(name)) list.push(name);
+}
+
+/**
+ * Plans omission skips for a nested selection: the top-level key is picked
+ * while declared siblings at every level beneath the selection become
+ * skips. Top-level siblings are never synthesized (pick() drops them).
+ * Returns null when the path resolves to nothing executable (scalar
+ * descent, unknown keys: unresolvable, preserving empty-selection
+ * behavior). Throws SchemaExclusionError when the path descends into
+ * array, tuple, record, union, or composed-opaque containers, whose
+ * members no object rebuild can split.
+ */
+function planNestedOnlySkips(
+  topMembers: Record<string, unknown>,
+  segs: readonly AffectedSeg[],
+): string[] | null {
+  const state = {
+    container: null as SelectiveSchema | null,
+    members: topMembers,
+    prefix: [] as string[],
+    skips: [] as string[],
+  };
+  for (let index = 0; index < segs.length; index += 1) {
+    const step = planNestedOnlyStep(state, segs, index);
+    if (step !== undefined) return step;
+  }
+  return state.skips;
+}
+
+type NestedOnlyState = {
+  container: SelectiveSchema | null;
+  members: Record<string, unknown>;
+  prefix: string[];
+  skips: string[];
+};
+
+function planNestedOnlyStep(
+  state: NestedOnlyState,
+  segs: readonly AffectedSeg[],
+  index: number,
+): string[] | null | undefined {
+  const seg = segs[index] as AffectedSeg;
+  const isLast = index === segs.length - 1;
+  if (typeof seg !== 'string' || !hasOwnProperty(state.members, seg)) {
+    return planNestedOnlyMissing(state, index);
+  }
+  const member = state.members[seg] as SelectiveSchema;
+  if (!isRuleLike(member)) return null;
+  if (isLast) return planNestedOnlyLeaf(state, seg);
+  return planNestedOnlyDescend(state, member, seg);
+}
+
+function planNestedOnlyMissing(
+  state: NestedOnlyState,
+  index: number,
+): string[] | null {
+  // Positional selection or unknown key: unrepresentable when the
+  // enclosing container executes shared members for it, otherwise
+  // unresolvable (top-level misses were already passed through).
+  if (index === 0 || state.container === null) return null;
+  return nestedOnlyContainerBoundary(state.container, state.prefix);
+}
+
+function planNestedOnlyLeaf(
+  state: NestedOnlyState,
+  seg: string,
+): string[] | null {
+  // Leaf selected (index > 0 always here: top-level names never
+  // reach this planner): skip declared siblings at this level.
+  for (const sibling of Object.keys(state.members)) {
+    if (sibling !== seg) state.skips.push([...state.prefix, sibling].join('.'));
+  }
+  return state.skips;
+}
+
+function planNestedOnlyDescend(
+  state: NestedOnlyState,
+  member: SelectiveSchema,
+  seg: string,
+): string[] | null | undefined {
+  const childMembers = containerMembersOf(member);
+  if (childMembers === null) {
+    return nestedOnlyContainerBoundary(member, [...state.prefix, seg]);
+  }
+  // Intermediate level on the selected path: siblings here are outside
+  // the selection (top-level siblings stay for pick()).
+  for (const sibling of Object.keys(state.members)) {
+    if (sibling !== seg) state.skips.push([...state.prefix, sibling].join('.'));
+  }
+  state.prefix.push(seg);
+  state.container = member;
+  state.members = childMembers as Record<string, unknown>;
+  return undefined;
+}
+
+/**
+ * Decides an unresolvable-or-container descent beneath matched structure:
+ * item containers and compositions fail closed (their members execute
+ * through shared rules), scalar leaves and unknown shapes are unresolvable
+ * (null) and preserve empty-selection behavior.
+ */
+function nestedOnlyContainerBoundary(
+  member: unknown,
+  path: readonly string[],
+): string[] | null {
+  if (!isRuleLike(member)) return null;
+  const slots = member as unknown as Record<symbol, unknown>;
+  if (
+    slots[ITEM_SCHEMA] !== undefined ||
+    omissionChildrenOf(member as SelectiveSchema).length > 0
+  ) {
+    throw new SchemaExclusionError(
+      `Selective execution cannot select [${path.join('.')}] children without ` +
+        `executing unselected validators: positional and shared-rule ` +
+        `members cannot be split by an object rebuild.`,
+    );
+  }
+  return null;
 }
 
 /**

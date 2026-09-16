@@ -1013,3 +1013,136 @@ describe('selectiveRun boolean skip-all (AC01)', () => {
     expect(predicate).not.toHaveBeenCalled();
   });
 });
+
+describe('selectiveRun nested only() planning', () => {
+  function nestedShape(
+    selectedImpl: () => boolean,
+    excludedImpl: () => boolean,
+  ) {
+    const excluded = vi.fn(excludedImpl);
+    const selected = vi.fn(selectedImpl);
+    const schema = enforce.shape({
+      box: enforce.shape({
+        a: enforce.condition(excluded),
+        b: enforce.condition(selected),
+      }),
+    });
+    return { excluded, selected, schema };
+  }
+
+  it('plain nested only selects the leaf once', () => {
+    const { excluded, selected, schema } = nestedShape(
+      () => false,
+      () => true,
+    );
+    const results = runSchemaPaths(
+      schema,
+      { box: { a: 1, b: 2 } },
+      { only: ['box.b'] },
+    );
+    expect(excluded).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(results.some(r => !r.pass)).toBe(true);
+  });
+
+  it('nested only+skip selects the leaf once', () => {
+    const { excluded, selected, schema } = nestedShape(
+      () => false,
+      () => {
+        throw new Error('excluded ran');
+      },
+    );
+    const results = runSchemaPaths(
+      schema,
+      { box: { a: 1, b: 2 } },
+      { only: ['box.b'], skip: ['box.a'] },
+    );
+    expect(excluded).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(results.some(r => !r.pass)).toBe(true);
+  });
+
+  it('unknown top-level only runs nothing', () => {
+    const selected = vi.fn(() => false);
+    const schema = enforce.shape({ a: enforce.condition(selected) });
+    const results = runSchemaPaths(schema, { a: 1 }, { only: ['unknown'] });
+    expect(selected).not.toHaveBeenCalled();
+    expect(results.every(r => r.pass)).toBe(true);
+  });
+
+  it('unknown nested only runs nothing', () => {
+    const selected = vi.fn(() => false);
+    const schema = enforce.shape({
+      box: enforce.shape({ b: enforce.condition(selected) }),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { box: { b: 1 } },
+      { only: ['unknown.b'] },
+    );
+    expect(selected).not.toHaveBeenCalled();
+    expect(results.every(r => r.pass)).toBe(true);
+  });
+
+  it('unknown leaf under known parent runs nothing', () => {
+    const selected = vi.fn(() => false);
+    const schema = enforce.shape({
+      box: enforce.shape({ b: enforce.condition(selected) }),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { box: { b: 1 } },
+      { only: ['box.unknown'] },
+    );
+    expect(selected).not.toHaveBeenCalled();
+    expect(results.every(r => r.pass)).toBe(true);
+  });
+
+  it('scalar descent is unresolvable', () => {
+    const selected = vi.fn(() => false);
+    const schema = enforce.shape({
+      n: enforce.isNumeric(),
+      note: enforce.condition(selected),
+    });
+    const results = runSchemaPaths(
+      schema,
+      { n: 1, note: 2 },
+      { only: ['n.foo'] },
+    );
+    expect(selected).not.toHaveBeenCalled();
+    expect(results.every(r => r.pass)).toBe(true);
+  });
+
+  it('array index selection fails closed', async () => {
+    const { SchemaExclusionError } = await import('../../exports/internal');
+    const schema = enforce.shape({
+      rows: enforce.isArrayOf(enforce.isString()),
+    });
+    expect(() =>
+      runSchemaPaths(schema, { rows: ['a'] }, { only: ['rows.0'] }),
+    ).toThrow(SchemaExclusionError);
+  });
+
+  it('record child selection fails closed', async () => {
+    const { SchemaExclusionError } = await import('../../exports/internal');
+    const schema = enforce.shape({ rec: enforce.record(enforce.isString()) });
+    expect(() =>
+      runSchemaPaths(schema, { rec: { key: 'v' } }, { only: ['rec.key'] }),
+    ).toThrow(SchemaExclusionError);
+  });
+
+  it('whole parent wins over synthesized leaf skips', () => {
+    const { excluded, selected, schema } = nestedShape(
+      () => false,
+      () => true,
+    );
+    const results = runSchemaPaths(
+      schema,
+      { box: { a: 1, b: 2 } },
+      { only: ['box', 'box.b'] },
+    );
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(excluded).toHaveBeenCalledTimes(1);
+    expect(results.some(r => !r.pass)).toBe(true);
+  });
+});

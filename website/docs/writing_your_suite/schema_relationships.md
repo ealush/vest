@@ -285,6 +285,36 @@ Container validators and schemas without recognizable metadata can require a ful
 
 Focused callback data and result values are drafts with per-field provenance, not certified complete output. A first focused run exposes only the fields it executed — untouched required properties are absent (never fabricated), and only a full run certifies complete schema output. Later focused runs hydrate retained fields from the last complete mapping. An absent optional input materializes as an own `undefined` consistently across full output, focused output, and callback data. Unreported changes to retained fields remain caller invalidation responsibility: `changed()` reports invalidation for the fields you name, it does not deep-diff your data.
 
+Types enforce the distinction: the suite callback receives draft output, so unsafe reads fail to compile until narrowed; focused `value` after `if (result.valid)` is likewise a draft, while full-run `value` after `if (result.valid)` is complete:
+
+```ts
+const suite = create(
+  data => {
+    // @ts-expect-error: no output witness on a draft
+    data.n.toFixed();
+    if (typeof data.n === 'number') data.n.toFixed();
+    test('note', () => {});
+  },
+  enforce.shape({
+    n: enforce.isNumeric().toNumber(),
+    note: enforce.isString(),
+  }),
+);
+
+const focused = suite.changed('note').run({ note: 'ok' });
+if (focused.valid) {
+  // @ts-expect-error: valid does not prove complete output
+  focused.value.n.toFixed();
+  if (focused.value && typeof focused.value.n === 'number')
+    focused.value.n.toFixed();
+}
+
+const full = suite.run({ n: '7', note: 'ok' });
+if (full.valid) full.value.n.toFixed(); // complete: compiles
+```
+
+Nested `only()` selects known nested leaves in shape/partial/loose hierarchies: `only('box.b').focus({ skip: ['box.a'] })` (and plain `only('box.b')`) validates `box.b` exactly once while `box.a` never executes; `only(['box.a','box.b'])` runs both. Parent `only('box')` keeps existing inclusion semantics and wins over synthesized sibling skips. Numeric brackets (`rows[0]`) normalize to dotted form; quoted-string brackets (`box["b"]`) are not supported and preserve empty-selection. Array, tuple, and record descents fail closed with `SchemaExclusionError` before excluded work executes. Union and composed-opaque descents are currently unresolvable (empty selection, open follow-up to make fail-closed); unknown paths and scalar descents preserve the established empty-selection behavior.
+
 Projection reads construction-time metadata and never probes validators with synthetic data. Partial fragments preserve the distinction between an absent property and an own property holding `undefined`, including declared non-enumerable properties. A shape of `optional()` members has different semantics from `partial()`.
 
 Vest retains previously reported schema errors on untouched fields, just as it retains user-test errors. A changed run clears a retained error when that field is revalidated successfully; `resetField()`, `remove()`, and `reset()` also clear the corresponding state. `changed([])` performs no revalidation and does not clear previous failures. This history belongs to the suite, not the n4s schema or its serializable relationship graph.

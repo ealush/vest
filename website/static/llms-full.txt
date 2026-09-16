@@ -4706,13 +4706,13 @@ export type AccountOutput = ReturnType<typeof accountSchema.parse>;
 export const accountSuite = create(data => {
   mode(Modes.ALL);
   test('profile.name', 'Name must contain at least 2 characters', () => {
-    enforce(data.profile.name.trim()).longerThanOrEquals(2);
+    enforce(data.profile?.name?.trim()).longerThanOrEquals(2);
   });
   test('email', 'Email must contain an @ sign', () => {
-    enforce(data.email.trim().toLowerCase()).matches(/@/);
+    enforce(data.email?.trim().toLowerCase()).matches(/@/);
   });
   test('email', 'Email must use the example.com domain', () => {
-    enforce(data.email.trim().toLowerCase()).endsWith('@example.com');
+    enforce(data.email?.trim().toLowerCase()).endsWith('@example.com');
   });
 }, accountSchema);
 
@@ -4728,7 +4728,8 @@ export function createUsernameSuite(
 ) {
   return create(data => {
     test('username', 'Username is already taken', async () => {
-      enforce(await isAvailable(data.username)).isTruthy();
+      const username = typeof data.username === 'string' ? data.username : '';
+      enforce(await isAvailable(username)).isTruthy();
     });
   }, usernameSchema);
 }
@@ -4975,10 +4976,10 @@ const usernameSchema = enforce.shape({
 
 export const accountSuite = create(data => {
   test('profile.age', 'Must be at least 18', () => {
-    enforce(Number(data.profile.age)).greaterThanOrEquals(18);
+    enforce(Number(data.profile?.age)).greaterThanOrEquals(18);
   });
   test('email', 'Use an example.com email', () => {
-    enforce(data.email.trim().toLowerCase()).endsWith('@example.com');
+    enforce(data.email?.trim()?.toLowerCase()).endsWith('@example.com');
   });
 }, accountSchema);
 
@@ -5004,7 +5005,8 @@ export function createAsyncRouter(
 ) {
   const usernameSuite = create(data => {
     test('username', 'Username is already taken', async () => {
-      enforce(await isAvailable(data.username)).isTruthy();
+      const username = typeof data.username === 'string' ? data.username : '';
+      enforce(await isAvailable(username)).isTruthy();
     });
   }, usernameSchema);
 
@@ -9783,6 +9785,36 @@ Affected-path planning never invokes input accessors, including concrete array-i
 Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators — explicitly skipped fields are still excluded (composed chains omit skipped top-level keys and keep the root chain, including skip-only runs over composed schemas) — and failures are then narrowed to the affected paths. Skips that descend inside a `record()` region cannot be honored (every key shares one value rule) and fail closed with a `SchemaExclusionError` before any validator runs; skipping the whole record remains supported. An untouched dependency source does not, by itself, require full execution: ordinary object-schema projections can validate a dependent without revalidating its sources. Relationships describe invalidation, not execution prerequisites. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
 
 Focused callback data and result values are drafts with per-field provenance, not certified complete output. A first focused run exposes only the fields it executed — untouched required properties are absent (never fabricated), and only a full run certifies complete schema output. Later focused runs hydrate retained fields from the last complete mapping. An absent optional input materializes as an own `undefined` consistently across full output, focused output, and callback data. Unreported changes to retained fields remain caller invalidation responsibility: `changed()` reports invalidation for the fields you name, it does not deep-diff your data.
+
+Types enforce the distinction: the suite callback receives draft output, so unsafe reads fail to compile until narrowed; focused `value` after `if (result.valid)` is likewise a draft, while full-run `value` after `if (result.valid)` is complete:
+
+```ts
+const suite = create(
+  data => {
+    // @ts-expect-error: no output witness on a draft
+    data.n.toFixed();
+    if (typeof data.n === 'number') data.n.toFixed();
+    test('note', () => {});
+  },
+  enforce.shape({
+    n: enforce.isNumeric().toNumber(),
+    note: enforce.isString(),
+  }),
+);
+
+const focused = suite.changed('note').run({ note: 'ok' });
+if (focused.valid) {
+  // @ts-expect-error: valid does not prove complete output
+  focused.value.n.toFixed();
+  if (focused.value && typeof focused.value.n === 'number')
+    focused.value.n.toFixed();
+}
+
+const full = suite.run({ n: '7', note: 'ok' });
+if (full.valid) full.value.n.toFixed(); // complete: compiles
+```
+
+Nested `only()` selects known nested leaves: `only('box.b').focus({ skip: ['box.a'] })` (and plain `only('box.b')`) validates `box.b` exactly once while `box.a` never executes. Parent `only('box')` keeps existing inclusion semantics. Selections descending into array, tuple, record, union, or composed-opaque containers fail closed with a stable error before excluded work executes; unknown paths and scalar descents preserve the established empty-selection behavior.
 
 Projection reads construction-time metadata and never probes validators with synthetic data. Partial fragments preserve the distinction between an absent property and an own property holding `undefined`, including declared non-enumerable properties. A shape of `optional()` members has different semantics from `partial()`.
 

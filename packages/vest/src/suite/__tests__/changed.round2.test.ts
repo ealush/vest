@@ -161,7 +161,7 @@ describe('round 2 regression contracts', () => {
       });
       const suite = create(data => {
         test('p.a' as TFieldName, () => {
-          calls.push(data.p.a);
+          calls.push(data.p?.a);
           return false;
         });
       }, schema);
@@ -179,7 +179,7 @@ describe('round 2 regression contracts', () => {
         other: enforce.isString(),
       });
       const suite = create(data => {
-        test('p.a' as TFieldName, () => data.p.a === 'ok');
+        test('p.a' as TFieldName, () => data.p?.a === 'ok');
         test('other', () => true);
       }, schema);
 
@@ -195,7 +195,7 @@ describe('round 2 regression contracts', () => {
         other: enforce.isString(),
       });
       const suite = create(data => {
-        test('p.a' as TFieldName, () => data.p.a === 'ok');
+        test('p.a' as TFieldName, () => data.p?.a === 'ok');
         test('other', () => true);
       }, schema);
 

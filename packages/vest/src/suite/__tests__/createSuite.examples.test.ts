@@ -58,7 +58,7 @@ describe('createSuite examples - permutation 1: happy path schema inference', ()
   it('example 2: validates nested-ish checkout usage with inferred focus/remove keys', () => {
     const checkoutSuite = create(data => {
       test('cart_items', () => {
-        enforce(data.cart_items.length).greaterThan(0);
+        enforce(data.cart_items?.length).greaterThan(0);
       });
       test('billing_address', () => {
         enforce(data.billing_address).isNotBlank();
@@ -115,7 +115,10 @@ describe('createSuite examples - permutation 1: happy path schema inference', ()
 
     const suite = create(data => {
       void (0 as unknown as AssertTrue<
-        IsEqual<typeof data, { status: string; retries: number }>
+        IsEqual<
+          typeof data,
+          { status?: string | undefined; retries?: number | undefined }
+        >
       >);
 
       test('status', () => {

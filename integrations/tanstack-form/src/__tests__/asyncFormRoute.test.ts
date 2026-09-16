@@ -112,7 +112,7 @@ function createGatedSuite(
   calls: string[],
   schema: ReturnType<typeof buildSchema>,
 ) {
-  return create((data: AsyncFormValues) => {
+  return create(data => {
     mode(Modes.ALL);
     test('email', 'Enter an email address', () => {
       calls.push('email');
@@ -120,7 +120,7 @@ function createGatedSuite(
     });
     test('profile.name', TAKEN_MESSAGE, async () => {
       calls.push('profile.name:start');
-      const gate = gates.get(data.profile.name);
+      const gate = gates.get(data.profile?.name ?? '');
       const available = gate ? await gate.promise : true;
       calls.push('profile.name:settled');
       enforce(available).isTruthy();
@@ -626,8 +626,6 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
 });
 
 describe('Vest with TanStack Form: array field paths (AC08)', () => {
-  type ArrayValues = { travelers: { passport: string }[] };
-
   function createArrayForm() {
     const gates = new Map<string, Gate>();
     const calls: string[] = [];
@@ -637,12 +635,12 @@ describe('Vest with TanStack Form: array field paths (AC08)', () => {
       ),
     });
     const makeSuite = () =>
-      create((data: ArrayValues) => {
+      create(data => {
         mode(Modes.ALL);
-        data.travelers.forEach((row, index) => {
+        (data.travelers ?? []).forEach((row, index) => {
           test(`travelers.${index}.passport`, TAKEN_MESSAGE, async () => {
             calls.push(`travelers.${index}.passport:start`);
-            const gate = gates.get(row.passport);
+            const gate = gates.get(row?.passport ?? '');
             const available = gate ? await gate.promise : true;
             calls.push(`travelers.${index}.passport:settled`);
             enforce(available).isTruthy();

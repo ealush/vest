@@ -79,7 +79,7 @@ const nestedSuite: PersonSuite = create(data => {
   // data.address.zipCode: string
 
   test('city', () => {
-    enforce(data.address.city).isNotEmpty();
+    enforce(data.address?.city).isNotEmpty();
   });
 }, personSchema);
 

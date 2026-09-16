@@ -64,7 +64,11 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     });
     const log = createExecutionLog();
     const suite = create(
-      (data: { password: string; confirmPassword: string; email?: string }) => {
+      (data: {
+        password?: string;
+        confirmPassword?: string;
+        email?: string;
+      }) => {
         test('password', () => {
           log.record('password');
           enforce(data.password).longerThanOrEquals(8);
@@ -165,12 +169,12 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     const suite = create(data => {
       test('profile.country', () => {
         log.record('profile.country');
-        enforce(data.profile.country).isNotBlank();
+        enforce(data.profile?.country).isNotBlank();
       });
       test('profile.state', () => {
         log.record('profile.state');
-        if (data.profile.country === 'US')
-          enforce(data.profile.state).isNotBlank();
+        if (data.profile?.country === 'US')
+          enforce(data.profile?.state).isNotBlank();
       });
     }, schema);
     await suite.run({ profile: { country: 'CA', state: '' } });
@@ -197,21 +201,21 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       group('billing', () => {
         test('billing.country', () => {
           log.record('billing.country');
-          enforce(data.billing.country).isNotBlank();
+          enforce(data.billing?.country).isNotBlank();
         });
         test('billing.state', () => {
           log.record('billing.state');
-          enforce(data.billing.state).isNotBlank();
+          enforce(data.billing?.state).isNotBlank();
         });
       });
       group('shipping', () => {
         test('shipping.country', () => {
           log.record('shipping.country');
-          enforce(data.shipping.country).isNotBlank();
+          enforce(data.shipping?.country).isNotBlank();
         });
         test('shipping.state', () => {
           log.record('shipping.state');
-          enforce(data.shipping.state).isNotBlank();
+          enforce(data.shipping?.state).isNotBlank();
         });
       });
     }, schema);
@@ -239,14 +243,14 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     });
     const log = createExecutionLog();
     const suite = create(data => {
-      each(data.travelers, (traveler, index) => {
+      each(data.travelers ?? [], (traveler, index) => {
         test(`travelers.${index}.country`, () => {
           log.record(`travelers.${index}.country`);
-          enforce(traveler.country).isNotBlank();
+          enforce(traveler?.country).isNotBlank();
         });
         test(`travelers.${index}.passportNumber`, () => {
           log.record(`travelers.${index}.passportNumber`);
-          enforce(traveler.passportNumber).isNotBlank();
+          enforce(traveler?.passportNumber).isNotBlank();
         });
       });
     }, schema);
@@ -501,11 +505,11 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
         enforce(available).isTruthy();
       });
       test('profile.country', () => {
-        enforce(data.profile.country).isNotBlank();
+        enforce(data.profile?.country).isNotBlank();
       });
       test('profile.state', () => {
-        if (data.profile.country === 'US')
-          enforce(data.profile.state).isNotBlank();
+        if (data.profile?.country === 'US')
+          enforce(data.profile?.state).isNotBlank();
       });
     }, schema);
 
@@ -620,14 +624,14 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     });
     const log = createExecutionLog();
     const suite = create(data => {
-      each(data.travelers, (traveler, i) => {
+      each(data.travelers ?? [], (traveler, i) => {
         test(`travelers.${i}.country`, () => {
           log.record(`travelers.${i}.country`);
-          enforce(traveler.country).isNotBlank();
+          enforce(traveler?.country).isNotBlank();
         });
         test(`travelers.${i}.passport`, () => {
           log.record(`travelers.${i}.passport`);
-          enforce(traveler.passport).isNotBlank();
+          enforce(traveler?.passport).isNotBlank();
         });
       });
     }, schema);
@@ -670,20 +674,20 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     });
     const suite = create(
       data => {
-        each(data.travelers, (traveler, index) => {
+        each(data.travelers ?? [], (traveler, index) => {
           test(
             `travelers.${index}.country`,
             () => {
-              enforce(traveler.country).isNotBlank();
+              enforce(traveler?.country).isNotBlank();
             },
-            `${traveler.id}:country`,
+            `${traveler?.id}:country`,
           );
           test(
             `travelers.${index}.passport`,
             () => {
-              enforce(traveler.passport).isNotBlank();
+              enforce(traveler?.passport).isNotBlank();
             },
-            `${traveler.id}:passport`,
+            `${traveler?.id}:passport`,
           );
         });
       },
@@ -727,15 +731,15 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
     });
     const log = createExecutionLog();
     const suite = create(data => {
-      each(data.orders, (orderData, oi) => {
-        each(orderData.items, (it, ii) => {
+      each(data.orders ?? [], (orderData, oi) => {
+        each(orderData?.items ?? [], (it, ii) => {
           test(`orders.${oi}.items.${ii}.name`, () => {
             log.record(`orders.${oi}.items.${ii}.name`);
-            enforce(it.name).isNotBlank();
+            enforce(it?.name).isNotBlank();
           });
           test(`orders.${oi}.items.${ii}.discount`, () => {
             log.record(`orders.${oi}.items.${ii}.discount`);
-            enforce(it.discount).isNotBlank();
+            enforce(it?.discount).isNotBlank();
           });
         });
       });
@@ -770,9 +774,6 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
   });
 
   it('17. 3-level transitive a.b.c -> a.b.d (deep nested sibling)', async () => {
-    type DataWithOther = {
-      a: { b: { c: string; d: string; other?: string } };
-    };
     const inner = enforce.shape({
       c: enforce.isString(),
       d: enforce.isString().dependsOn($ => $.c),
@@ -784,20 +785,23 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       a: middle,
     });
     const log = createExecutionLog();
-    const suite = create((data: DataWithOther) => {
-      test('a.b.c', () => {
-        log.record('a.b.c');
-        enforce(data.a.b.c).isNotBlank();
-      });
-      test('a.b.d', () => {
-        log.record('a.b.d');
-        enforce(data.a.b.d).isNotBlank();
-      });
-      test('a.b.other', () => {
-        log.record('a.b.other');
-        enforce(data.a.b.other).isNotBlank();
-      });
-    }, schema);
+    const suite = create(
+      (data: { a?: { b?: { c?: string; d?: string; other?: string } } }) => {
+        test('a.b.c', () => {
+          log.record('a.b.c');
+          enforce(data.a?.b?.c).isNotBlank();
+        });
+        test('a.b.d', () => {
+          log.record('a.b.d');
+          enforce(data.a?.b?.d).isNotBlank();
+        });
+        test('a.b.other', () => {
+          log.record('a.b.other');
+          enforce(data.a?.b?.other).isNotBlank();
+        });
+      },
+      schema,
+    );
 
     await invokeWithUnknown(suite.run, {
       a: { b: { c: 'x', d: 'y', other: 'z' } },
@@ -828,11 +832,11 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       });
       test('company.country', () => {
         log.record('company.country');
-        enforce(data.company.country).isNotBlank();
+        enforce(data.company?.country).isNotBlank();
       });
       test('company.taxId', () => {
         log.record('company.taxId');
-        enforce(data.company.taxId).isNotBlank();
+        enforce(data.company?.taxId).isNotBlank();
       });
     }, schema);
 
@@ -866,7 +870,7 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
       b: enforce.isString().dependsOn($ => $.a),
     });
     const log = createExecutionLog();
-    const suite = create((data: { a: string; b: string; c?: string }) => {
+    const suite = create((data: { a?: string; b?: string; c?: string }) => {
       test('a', () => {
         log.record('a');
         enforce(data.a).isNotBlank();

@@ -14,7 +14,7 @@ describe('schema contracts: public API surface', () => {
       password: enforce.isString(),
       confirm: enforce.isString().dependsOn($ => $.password),
     });
-    const suite = create((data: { password: string; confirm: string }) => {
+    const suite = create(data => {
       test('password', () => {
         enforce(data.password).isNotBlank();
       });

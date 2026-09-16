@@ -33,7 +33,7 @@ describe('changed() strict-shape extra-key parity', () => {
     // name it — the untyped getErrors() map pins the failure instead.
     const suite = create(data => {
       test('profile.state', () => {
-        enforce(data.profile.state).isString();
+        enforce(data.profile?.state).isString();
       });
     }, topSchema);
 
@@ -49,7 +49,7 @@ describe('changed() strict-shape extra-key parity', () => {
   it('nested extra key fails the changed run like the full run', async () => {
     const suite = create(data => {
       test('profile.state.city', () => {
-        enforce(data.profile.state.city).isString();
+        enforce(data.profile?.state?.city).isString();
       });
     }, nestedSchema);
 
@@ -63,7 +63,7 @@ describe('changed() strict-shape extra-key parity', () => {
   it('absent top-level key passes the changed run', async () => {
     const suite = create(data => {
       test('profile.state', () => {
-        enforce(data.profile.state).isString();
+        enforce(data.profile?.state).isString();
       });
     }, topSchema);
 
@@ -78,7 +78,7 @@ describe('changed() strict-shape extra-key parity', () => {
   it('absent nested key passes the changed run', async () => {
     const suite = create(data => {
       test('profile.state.city', () => {
-        enforce(data.profile.state.city).isString();
+        enforce(data.profile?.state?.city).isString();
       });
     }, nestedSchema);
 

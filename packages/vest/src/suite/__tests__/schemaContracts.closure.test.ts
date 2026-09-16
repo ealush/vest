@@ -305,7 +305,7 @@ describe('schema contracts: two-suite isolation with shared-schema inspection', 
     });
     const before = Object.getOwnPropertyNames(schema as unknown as object);
     const make = () =>
-      create((data: { source: string; target: string; note: string }) => {
+      create(data => {
         mode(Modes.ALL);
         test('source', () => {
           enforce(data.source).isNotBlank();

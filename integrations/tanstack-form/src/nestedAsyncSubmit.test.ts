@@ -29,33 +29,27 @@ describe('Vest with TanStack Form: nested async edit with sync submit (IN04b)', 
       profile: enforce.shape({ name: enforce.isString() }),
     });
 
-    const editSuite = create(
-      (data: { email: string; profile: { name: string } }) => {
-        mode(Modes.ALL);
-        test('email', () => {
-          calls('email');
-          enforce(data.email).matches(/@/);
-        });
-        test('profile.name', 'Name is already taken', async () => {
-          calls('profile.name');
-          const available = await gate;
-          enforce(available).isTruthy();
-        });
-      },
-      schema,
-    );
-    const submitSuite = create(
-      (data: { email: string; profile: { name: string } }) => {
-        mode(Modes.ALL);
-        test('email', 'Enter an email address', () => {
-          enforce(data.email).matches(/@/);
-        });
-        test('profile.name', 'Enter a name', () => {
-          enforce(data.profile.name).isNotBlank();
-        });
-      },
-      schema,
-    );
+    const editSuite = create(data => {
+      mode(Modes.ALL);
+      test('email', () => {
+        calls('email');
+        enforce(data.email).matches(/@/);
+      });
+      test('profile.name', 'Name is already taken', async () => {
+        calls('profile.name');
+        const available = await gate;
+        enforce(available).isTruthy();
+      });
+    }, schema);
+    const submitSuite = create(data => {
+      mode(Modes.ALL);
+      test('email', 'Enter an email address', () => {
+        enforce(data.email).matches(/@/);
+      });
+      test('profile.name', 'Enter a name', () => {
+        enforce(data.profile?.name).isNotBlank();
+      });
+    }, schema);
 
     const form = new FormApi({
       defaultValues: { email: 'dev@example.com', profile: { name: 'Ada' } },

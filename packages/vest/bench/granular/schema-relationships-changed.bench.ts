@@ -117,10 +117,10 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   const makeNestedSuite = () =>
     create(data => {
       test('profile.country', () => {
-        enforce(data.profile.country).isString();
+        enforce(data.profile?.country).isString();
       });
       test('profile.state', () => {
-        enforce(data.profile.state).isString();
+        enforce(data.profile?.state).isString();
       });
       test('email', () => {
         enforce(data.email).isString();
@@ -169,18 +169,18 @@ describe('changed() vs only() vs run() — minimality proof', () => {
     create(data => {
       group('billing' as TGroupName, () => {
         test('billing.country' as TFieldName, () => {
-          enforce(data.billing.country).isString();
+          enforce(data.billing?.country).isString();
         });
         test('billing.state' as TFieldName, () => {
-          enforce(data.billing.state).isString();
+          enforce(data.billing?.state).isString();
         });
       });
       group('shipping' as TGroupName, () => {
         test('shipping.country' as TFieldName, () => {
-          enforce(data.shipping.country).isString();
+          enforce(data.shipping?.country).isString();
         });
         test('shipping.state' as TFieldName, () => {
-          enforce(data.shipping.state).isString();
+          enforce(data.shipping?.state).isString();
         });
       });
     }, reuseSchema);
@@ -221,12 +221,12 @@ describe('changed() vs only() vs run() — minimality proof', () => {
   const makeArraySuite = (n: number) => {
     const data = { travelers: travelersData(n) };
     const suite = create(d => {
-      each(d.travelers, (t, i) => {
+      each(d.travelers ?? [], (t, i) => {
         test(`travelers.${i}.country` as TFieldName, () => {
-          enforce(t.country).isString();
+          enforce(t?.country).isString();
         });
         test(`travelers.${i}.passportNumber` as TFieldName, () => {
-          enforce(t.passportNumber).isString();
+          enforce(t?.passportNumber).isString();
         });
       });
     }, arraySchema);

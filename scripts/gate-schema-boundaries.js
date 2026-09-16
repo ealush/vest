@@ -381,7 +381,7 @@ const schema = enforce.shape({
   email: enforce.isEmail(),
 });
 const suite = create(
-  (data: { name: string; email: string }) => {
+  data => {
     test('name', () => {
       enforce(data.name).isNotBlank();
     });

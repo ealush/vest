@@ -24,10 +24,10 @@ describe('focused schema callback mapping', () => {
       },
       { parsers: ['focusedAppend'] },
     );
-    const seen: string[] = [];
+    const seen: Array<string | undefined> = [];
     const suite = create(
       data => {
-        seen.push(data.profile.label);
+        seen.push(data.profile?.label);
       },
       enforce.shape({
         profile: compose(enforce.shape({ label: enforce.focusedAppend() })),
@@ -55,7 +55,7 @@ describe('focused schema callback mapping', () => {
       data => {
         seen.push(data);
         test('rows.0', () => {
-          enforce(data.rows[0]).equals('c!');
+          enforce(data.rows?.[0]).equals('c!');
         });
       },
       enforce.shape({
@@ -71,7 +71,7 @@ describe('focused schema callback mapping', () => {
 
   it('maps untouched fields before the first-ever focused callback without validating them', async () => {
     const validationCalls: unknown[] = [];
-    const seenAges: number[] = [];
+    const seenAges: Array<number | undefined> = [];
     const schema = enforce.shape({
       age: enforce.isNumeric().toNumber(),
       guard: enforce.condition((value: unknown): boolean => {
@@ -107,7 +107,7 @@ describe('focused schema callback mapping', () => {
       },
       { parsers: ['focusedToNumber'] },
     );
-    const seenAges: number[] = [];
+    const seenAges: Array<number | undefined> = [];
     const suite = create(
       data => {
         seenAges.push(data.age);
@@ -254,14 +254,14 @@ describe('focused schema callback mapping', () => {
   });
 
   it('preserves the declared output type when an untouched parser fails during initial focused mapping', async () => {
-    const seen: number[] = [];
+    const seen: Array<number | undefined> = [];
     const suite = create(
       data => {
         seen.push(data.age);
         // The schema contract promises a number here even when the focused
         // field is elsewhere. This must never throw because raw input leaked
         // through the parser-only mapping path.
-        data.age.toFixed();
+        data.age?.toFixed();
       },
       enforce.shape({
         age: enforce.isNumeric().toNumber(),

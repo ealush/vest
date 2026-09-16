@@ -6,9 +6,11 @@ import { TIsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { FieldExclusion, FieldSelector } from '../hooks/focused/focused';
 import {
   SuiteResult,
+  FocusedSuiteResult,
   TFieldName,
   TGroupName,
   InferSchemaData,
+  DraftSchemaOutput,
   InferSchemaOutput,
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
@@ -32,7 +34,7 @@ export type SuiteCallbackWithSchema<
   T extends CB,
 > = S extends undefined
   ? T
-  : (data: InferSchemaOutput<S>, ...args: CallbackTail<T>) => void;
+  : (data: DraftSchemaOutput<S>, ...args: CallbackTail<T>) => void;
 
 export type Suite<
   F extends TFieldName,
@@ -50,7 +52,7 @@ type SuiteMethods<
 > = {
   dump: CB<TIsolateSuite>;
 
-  get: CB<SuiteResult<F, G, S>>;
+  get: CB<FocusedSuiteResult<F, G, S>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
   remove: CB<void, [fieldName: FieldSelector<F>]>;
@@ -104,9 +106,10 @@ type FocusedMethods<
   >;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
+  // Focused valid certifies only the executed region: value is a draft.
   run: (
     ...args: SuiteRunArguments<S, T, Partial<InferSchemaData<S>>>
-  ) => SuiteResult<F, G, S>;
+  ) => FocusedSuiteResult<F, G, S>;
 };
 
 type AfterMethods<

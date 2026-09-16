@@ -165,11 +165,11 @@ describe('changed() source-retaining projection', () => {
     const suite = create(data => {
       test('dictionary.home.country', () => {
         seen.push('dictionary.home.country');
-        enforce(data.dictionary.home.country).isString();
+        enforce(data.dictionary?.home?.country).isString();
       });
       test('dictionary.home.state', () => {
         seen.push('dictionary.home.state');
-        enforce(data.dictionary.home.state).isString();
+        enforce(data.dictionary?.home?.state).isString();
       });
     }, schema);
 
@@ -205,11 +205,11 @@ describe('changed() source-retaining projection', () => {
     const suite = create(data => {
       test('rows.0.country', () => {
         seen.push('rows.0.country');
-        enforce(data.rows[0].country).isString();
+        enforce(data.rows?.[0]?.country).isString();
       });
       test('rows.1.country', () => {
         seen.push('rows.1.country');
-        enforce(data.rows[1].country).isString();
+        enforce(data.rows?.[1]?.country).isString();
       });
     }, schema);
 
@@ -245,7 +245,7 @@ describe('changed() source-retaining projection', () => {
     const suite = create(data => {
       test('dictionary.b.country', () => {
         seen.push('dictionary.b.country');
-        enforce(data.dictionary.b.country).isString();
+        enforce(data.dictionary?.b?.country).isString();
       });
     }, schema);
 
@@ -281,7 +281,7 @@ describe('changed() source-retaining projection', () => {
     const suite = create(data => {
       test('group.rows.1.country', () => {
         seen.push('group.rows.1.country');
-        enforce(data.group.rows[1].country).isString();
+        enforce(data.group?.rows?.[1]?.country).isString();
       });
     }, schema);
 
@@ -337,7 +337,7 @@ describe('changed() source-retaining projection', () => {
     });
     const suite = create(data => {
       test('profile.country', () => {
-        enforce(data.profile.country).isString();
+        enforce(data.profile?.country).isString();
       });
     }, schema);
 
@@ -367,7 +367,7 @@ describe('changed() source-retaining projection', () => {
     const suite = create(data => {
       test('dictionary.1.country', () => {
         seen.push('dictionary.1.country');
-        enforce(data.dictionary['1'].country).isString();
+        enforce(data.dictionary?.['1']?.country).isString();
       });
     }, schema);
 
@@ -440,7 +440,7 @@ describe('changed() source-retaining projection', () => {
     const suite = create(data => {
       test('tags.1', () => {
         seen.push('tags.1');
-        enforce(data.tags[1]).isString();
+        enforce(data.tags?.[1]).isString();
       });
     }, schema);
 
@@ -482,7 +482,7 @@ describe('changed() source-retaining projection', () => {
     const suite = create(data => {
       test('profile.country', () => {
         seen.push('profile.country');
-        enforce(data.profile.country).isString();
+        enforce(data.profile?.country).isString();
       });
     }, schema);
 

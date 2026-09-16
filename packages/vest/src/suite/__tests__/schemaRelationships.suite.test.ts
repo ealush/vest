@@ -141,7 +141,7 @@ describe('Schema Relationships — vest suite V1 boundary', () => {
     const schema = enforce.shape({ billingAddress: addressSchema });
     const suite = create(data => {
       test('billingAddress.state', () => {
-        enforce(data.billingAddress.state).isNotBlank();
+        enforce(data.billingAddress?.state).isNotBlank();
       });
     }, schema);
 

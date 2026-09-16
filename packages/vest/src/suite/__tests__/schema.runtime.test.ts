@@ -436,11 +436,12 @@ describe('Schema Runtime Validation', () => {
         profile: enforce.shape({ name: enforce.isString() }),
         score: enforce.isNumeric().toNumber(),
       });
-      const callbackNames: string[] = [];
+      const callbackNames: Array<string | undefined> = [];
       let runCount = 0;
       const suite = create(data => {
-        callbackNames.push(data.profile.name);
-        if (runCount++ === 0) data.profile.name = 'callback-mutated';
+        callbackNames.push(data.profile?.name);
+        if (runCount++ === 0 && data.profile)
+          data.profile.name = 'callback-mutated';
       }, nestedSchema);
 
       const first = suite.run({
@@ -940,7 +941,7 @@ describe('Schema input vs output type inference', () => {
         note: enforce.isString(),
       });
       let seen: unknown = 'unset';
-      const suite = create((data: { age: number }) => {
+      const suite = create(data => {
         seen = data;
       }, schema);
       // @ts-expect-error - Invalid data

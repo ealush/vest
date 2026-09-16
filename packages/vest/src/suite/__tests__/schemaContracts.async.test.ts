@@ -36,10 +36,10 @@ describe('schema contracts: async interactions', () => {
       const suite = create(data => {
         mode(Modes.ALL);
         test('p.target', async () => {
-          entered(data.p.source);
-          if (data.p.source === 'old') await gate.promise;
+          entered(data.p?.source);
+          if (data.p?.source === 'old') await gate.promise;
           enforce(
-            data.p.source === 'old' ? !latestValid : latestValid,
+            data.p?.source === 'old' ? !latestValid : latestValid,
           ).isTruthy();
         });
         test('other', () => true);
@@ -128,8 +128,8 @@ describe('schema contracts: async interactions', () => {
     const make = () =>
       create(data => {
         test('p.target', async () => {
-          if (data.p.source === 'slow') await gate.promise;
-          enforce(data.p.source).notEquals('slow');
+          if (data.p?.source === 'slow') await gate.promise;
+          enforce(data.p?.source).notEquals('slow');
         });
       }, schema);
     const slow = make();
@@ -160,15 +160,15 @@ describe('schema contracts: async interactions', () => {
       country: enforce.isString(),
     });
     const suite = create(
-      (data: { travelers: { id: string; country: string }[] }) => {
-        each(data.travelers, (traveler, index) => {
+      data => {
+        each(data.travelers ?? [], (traveler, index) => {
           test(
             `travelers.${index}.country`,
             async () => {
-              if (traveler.id === 'a') await gate.promise;
-              enforce(traveler.country).isNotBlank();
+              if (traveler?.id === 'a') await gate.promise;
+              enforce(traveler?.country).isNotBlank();
             },
-            `${traveler.id}:country`,
+            `${traveler?.id}:country`,
           );
         });
       },

@@ -136,7 +136,7 @@ describe('schema contracts: focus and temporal state', () => {
   ] as const)(
     '[SC-SUBTREE] parent edit refreshes child verdict %s -> %s',
     (before, after, hasError) => {
-      const called = vi.fn((value: string) => value === 'good');
+      const called = vi.fn((value: unknown) => value === 'good');
       const schema = enforce.shape({
         p: enforce.shape({ a: enforce.isString() }),
         phone: enforce.isString(),
@@ -144,7 +144,7 @@ describe('schema contracts: focus and temporal state', () => {
       const unrelated = vi.fn(() => true);
       const suite = create(data => {
         mode(Modes.ALL);
-        test('p.a', () => called(data.p.a));
+        test('p.a', () => called(data.p?.a));
         test('phone', unrelated);
       }, schema);
       suite.run({ p: { a: before }, phone: 'ok' });
@@ -160,7 +160,7 @@ describe('schema contracts: focus and temporal state', () => {
   it('[SC-SUBTREE] newly declared child tests are selected on a parent edit', () => {
     const child = vi.fn(() => false);
     const suite = create(
-      (data: { enabled: boolean; p: { a: string } }) => {
+      data => {
         test('enabled', () => true);
         each(data.enabled ? ['p.a'] : [], field => {
           test(field, child, field);

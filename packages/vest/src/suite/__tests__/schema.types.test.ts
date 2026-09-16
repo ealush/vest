@@ -29,10 +29,17 @@ describe('schema driven suite types', () => {
 
     const suite = create(data => {
       void (0 as unknown as AssertTrue<
-        IsEqual<typeof data, { name: string; age: number }>
+        IsEqual<
+          typeof data,
+          { name?: string | undefined; age?: number | undefined }
+        >
       >);
-      void (0 as unknown as AssertTrue<IsEqual<(typeof data)['name'], string>>);
-      void (0 as unknown as AssertTrue<IsEqual<(typeof data)['age'], number>>);
+      void (0 as unknown as AssertTrue<
+        IsEqual<(typeof data)['name'], string | undefined>
+      >);
+      void (0 as unknown as AssertTrue<
+        IsEqual<(typeof data)['age'], number | undefined>
+      >);
     }, schema);
 
     void (0 as unknown as AssertTrue<
@@ -76,7 +83,10 @@ describe('schema driven suite types', () => {
 
     const suite = create(data => {
       void (0 as unknown as AssertTrue<
-        IsEqual<typeof data, { name: string; number: number }>
+        IsEqual<
+          typeof data,
+          { name?: string | undefined; number?: number | undefined }
+        >
       >);
     }, schema);
 
@@ -109,7 +119,7 @@ describe('schema driven suite types', () => {
       void (0 as unknown as AssertTrue<
         IsEqual<
           typeof data,
-          Simplify<{ title: string } & Record<string, unknown>>
+          Simplify<{ title?: string | undefined } & Record<string, unknown>>
         >
       >);
     }, looseSchema);
@@ -211,7 +221,7 @@ describe('schema inferred suite typing coverage', () => {
         enforce(data.age).greaterThan(17);
       });
       test('profile', () => {
-        enforce(data.profile.bio).isString();
+        enforce(data.profile?.bio).isString();
       });
     }, accountSchema);
 
@@ -369,10 +379,10 @@ describe('Schema Type Safety', () => {
 
     const suite = create(data => {
       test('username', () => {
-        enforce.isString().test(data.username);
+        enforce(data.username).isString();
       });
       test('age', () => {
-        enforce.isNumber().test(data.age);
+        enforce(data.age).isNumber();
       });
     }, schema);
 
@@ -389,17 +399,19 @@ describe('Schema Type Safety', () => {
 
     const suite = create(data => {
       // TypeScript knows data.email is a string
-      expect(data.email.length).toBeGreaterThan(0);
+      if (typeof data.email === 'string') {
+        expect(data.email.length).toBeGreaterThan(0);
+      }
 
       // TypeScript knows data.count is a number
       expect(data.count).toBeGreaterThan(0);
 
       test('email', () => {
-        enforce.isString().test(data.email);
+        enforce(data.email).isString();
       });
 
       test('count', () => {
-        enforce.isNumber().test(data.count);
+        enforce(data.count).isNumber();
       });
     }, schema);
 
@@ -419,10 +431,12 @@ describe('Schema Type Safety', () => {
 
     const suite = create(data => {
       // TypeScript knows data.address.city is a string
-      expect(data.address.city.length).toBeGreaterThan(0);
+      if (data.address && typeof data.address.city === 'string') {
+        expect(data.address.city.length).toBeGreaterThan(0);
+      }
 
       test('city', () => {
-        enforce.isString().test(data.address.city);
+        enforce(data.address?.city).isString();
       });
     }, schema);
 
@@ -447,10 +461,12 @@ describe('Schema Type Safety', () => {
     const suite = create(data => {
       // TypeScript knows about id and name
       expect(data.id).toBeGreaterThan(0);
-      expect(data.name.length).toBeGreaterThan(0);
+      if (typeof data.name === 'string') {
+        expect(data.name.length).toBeGreaterThan(0);
+      }
 
       test('id', () => {
-        enforce.isNumber().test(data.id);
+        enforce(data.id).isNumber();
       });
     }, schema);
 
@@ -491,10 +507,10 @@ describe('Schema Type Safety', () => {
     });
     const suite = create(data => {
       test('name', () => {
-        return enforce.isString().test(data.name);
+        enforce(data.name).isString();
       });
       test('number', () => {
-        return enforce.isNumber().test(data.number);
+        enforce(data.number).isNumber();
       });
     }, schema);
 
@@ -854,12 +870,25 @@ describe('lazy schema in suite types', () => {
       void (0 as unknown as AssertTrue<
         IsEqual<
           typeof data,
-          { name: string; metadata: { key: string; value: number } }
+          Simplify<{
+            name?: string | undefined;
+            metadata?:
+              | {
+                  key?: string | undefined;
+                  value?: number | undefined;
+                }
+              | undefined;
+          }>
         >
       >);
-      void (0 as unknown as AssertTrue<IsEqual<(typeof data)['name'], string>>);
       void (0 as unknown as AssertTrue<
-        IsEqual<(typeof data)['metadata'], { key: string; value: number }>
+        IsEqual<(typeof data)['name'], string | undefined>
+      >);
+      void (0 as unknown as AssertTrue<
+        IsEqual<
+          (typeof data)['metadata'],
+          { key?: string | undefined; value?: number | undefined } | undefined
+        >
       >);
     }, schema);
 

@@ -311,16 +311,23 @@ describe('Integration matrix — changed() meets Vest features', () => {
       nickname: string;
       omitNickname?: boolean;
     };
-    const d2Suite = create((data: D2Data) => {
-      test('country', () => {
-        enforce(data.country).isString();
-      });
-      omitWhen(data.omitNickname ?? false, () => {
-        test('nickname', () => {
-          enforce(data.nickname).isString();
+    const d2Suite = create(
+      (data: {
+        country?: string;
+        nickname?: string;
+        omitNickname?: boolean;
+      }) => {
+        test('country', () => {
+          enforce(data.country).isString();
         });
-      });
-    }, dOmitWhenSchema);
+        omitWhen(data.omitNickname ?? false, () => {
+          test('nickname', () => {
+            enforce(data.nickname).isString();
+          });
+        });
+      },
+      dOmitWhenSchema,
+    );
     const d2Initial: D2Data = {
       country: 'US',
       nickname: 'x',
@@ -437,12 +444,12 @@ describe('Integration matrix — changed() meets Vest features', () => {
     });
     const d6Suite = create(data => {
       group('travelers' as TGroupName, () => {
-        each(data.travelers, (t, i) => {
+        each(data.travelers ?? [], (t, i) => {
           test(`travelers.${i}.country` as TFieldName, () => {
-            enforce(t.country).isString();
+            enforce(t?.country).isString();
           });
           test(`travelers.${i}.passport` as TFieldName, () => {
-            enforce(t.passport).isString();
+            enforce(t?.passport).isString();
           });
         });
       });
@@ -476,13 +483,13 @@ describe('Integration matrix — changed() meets Vest features', () => {
       ),
     });
     const d7Suite = create(data => {
-      each(data.items, (item, index) => {
+      each(data.items ?? [], (item, index) => {
         group(`item_${index}` as TGroupName, () => {
           test(`items.${index}.label` as TFieldName, () => {
-            enforce(item.label).isString();
+            enforce(item?.label).isString();
           });
           test(`items.${index}.value` as TFieldName, () => {
-            enforce(item.value).isString();
+            enforce(item?.value).isString();
           });
         });
       });
@@ -598,7 +605,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     for (let i = 0; i < d10Count; i++) d10Data[`field_${i}`] = `v${i}`;
     d10Data['dependent'] = 'x';
 
-    const d10Suite = create((data: Record<string, string>) => {
+    const d10Suite = create(data => {
       for (let i = 0; i < d10Count; i++) {
         test(`field_${i}` as TFieldName, () => {
           enforce(data[`field_${i}`]).isString();
@@ -649,11 +656,11 @@ describe('Integration matrix — changed() meets Vest features', () => {
         enforce(available).isTruthy();
       });
       test('profile.country', () => {
-        enforce(data.profile.country).isNotBlank();
+        enforce(data.profile?.country).isNotBlank();
       });
       test('profile.state', () => {
-        if (data.profile.country === 'US')
-          enforce(data.profile.state).isNotBlank();
+        if (data.profile?.country === 'US')
+          enforce(data.profile?.state).isNotBlank();
       });
     }, regSchema);
     // initial warm run
@@ -733,26 +740,26 @@ describe('Integration matrix — changed() meets Vest features', () => {
     const checkoutSuite = create(data => {
       group('billing' as TGroupName, () => {
         test('billing.country' as TFieldName, () => {
-          enforce(data.billing.country).isString();
+          enforce(data.billing?.country).isString();
         });
         test('billing.state' as TFieldName, () => {
-          enforce(data.billing.state).isString();
+          enforce(data.billing?.state).isString();
         });
       });
       group('shipping' as TGroupName, () => {
         test('shipping.country' as TFieldName, () => {
-          enforce(data.shipping.country).isString();
+          enforce(data.shipping?.country).isString();
         });
         test('shipping.state' as TFieldName, () => {
-          enforce(data.shipping.state).isString();
+          enforce(data.shipping?.state).isString();
         });
       });
-      each(data.travelers, (t, i) => {
+      each(data.travelers ?? [], (t, i) => {
         test(`travelers.${i}.country` as TFieldName, () => {
-          enforce(t.country).isString();
+          enforce(t?.country).isString();
         });
         test(`travelers.${i}.passportNumber` as TFieldName, () => {
-          enforce(t.passportNumber).isString();
+          enforce(t?.passportNumber).isString();
         });
       });
     }, checkoutSchema);
@@ -787,7 +794,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     for (let i = 0; i < 100; i++) volData[`field_${i}`] = `v${i}`;
     volData['consumer'] = 'x';
 
-    const volSuiteRun = create((data: Record<string, string>) => {
+    const volSuiteRun = create(data => {
       for (let i = 0; i < 100; i++) {
         test(`field_${i}` as TFieldName, () => {
           enforce(data[`field_${i}`]).isString();
@@ -798,7 +805,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
       });
     }, volSchema);
 
-    const volSuiteChanged = create((data: Record<string, string>) => {
+    const volSuiteChanged = create(data => {
       for (let i = 0; i < 100; i++) {
         test(`field_${i}` as TFieldName, () => {
           enforce(data[`field_${i}`]).isString();

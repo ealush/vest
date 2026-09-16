@@ -132,7 +132,7 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
       "id": "EX08a",
       "notes": "Skipped parsed child maps honestly from retained parsing with zero validation.",
       "result": "pass",
@@ -161,7 +161,7 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.output.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
       "id": "EX09",
       "notes": "Same-branch witness reuse + skip-throw green. Branch-change invalidation stays MP03 (needs A4 provenance).",
       "result": "pass",
@@ -317,7 +317,7 @@
       "blocked-by": [],
       "command": "yarn test:schema-relationships",
       "id": "GR06",
-      "notes": "100 seeds x 20 ops green.",
+      "notes": "100 seeds x 20 ops green for full/changed/skip/only/resetField/reset. Operation generator does not include remove; remove coverage comes from FU-LIFE supported-removal controls, not this oracle.",
       "result": "pass",
       "status": "covered",
       "testFiles": [
@@ -1298,7 +1298,7 @@
       "blocked-by": [],
       "command": "",
       "id": "KN01",
-      "notes": "Known gap: remove() followed by changed() drops retained verdicts for untouched fields (minimal repro: full invalid c, remove a, changed d clears c). remove() alone and remove-then-full are correct. Reconciliation fix deferred by design; do not bless with a passing test.",
+      "notes": "Supported removal (declarations actually updated via remove() with keyed/unkeyed suites) preserves unaffected results; keyed/unkeyed controls green (FU-LIFE). The prior minimal unkeyed remove/redeclare probe raises the critical order-change exception for unsupported reordering and is not a supported-removal retention defect. Keyed reinsertion/reorder and a separate active-declaration model remain bounded follow-up; do not cite unsupported reordering as unconditional retention loss.",
       "result": "open",
       "status": "open",
       "testFiles": [],

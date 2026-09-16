@@ -48,15 +48,150 @@ function callPattern() {
 
 function collectItTitles(filePath) {
   const source = fs.readFileSync(filePath, 'utf8');
+  // Section markers come from comments, so they are read before comment
+  // stripping. Everything else must live in executed code: comments,
+  // commented tests, and uninvoked helpers never count as evidence.
+  const sections = collectMatchedGroups(source, /^\s*\/\/\s*(\d+\..*)$/gm);
+  const code = stripNonExecutedCode(source);
   return [
-    ...collectCallTitles(source),
-    ...collectMatchedGroups(source, /^\s*\/\/\s*(\d+\..*)$/gm),
-    ...collectMatchedGroups(source, /'([^'\n]{25,})'|"([^"\n]{25,})"/g),
+    ...collectCallTitles(code),
+    ...sections,
+    ...collectMatchedGroups(code, /\bid\s*:\s*'([^']+)'|\bid\s*:\s*"([^"]+)"/g),
     ...collectMatchedGroups(
-      source,
-      /\bid\s*:\s*'([^']+)'|\bid\s*:\s*"([^"]+)"/g,
+      code,
+      /\blabel\s*:\s*'([^']+)'|\blabel\s*:\s*"([^"]+)"/g,
     ),
   ];
+}
+
+/**
+ * Removes block comments, full-line comments, and uncalled function
+ * bodies. A function counts as called when its name is invoked anywhere
+ * besides its own declaration; uncalled bodies are cut out with
+ * balanced-brace scanning so quoted prose and commented tests inside them
+ * cannot masquerade as executed evidence.
+ */
+function stripNonExecutedCode(source) {
+  const withoutBlocks = source.replace(/\/\*[\s\S]*?\*\//g, '');
+  const lines = withoutBlocks.split('\n');
+  const kept = lines.filter(line => !/^\s*\/\//.test(line));
+  return stripUncalledFunctions(kept.join('\n'));
+}
+
+function declaredFunctionNames(source) {
+  const names = [];
+  const patterns = [
+    {
+      callsInDeclaration: 1,
+      pattern: /function\s+([A-Za-z_$][\w$]*)\s*\(/g,
+    },
+    {
+      callsInDeclaration: 0,
+      pattern:
+        /(?:^|[;{}\s])const\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\(/gm,
+    },
+  ];
+  for (const { callsInDeclaration, pattern } of patterns) {
+    const scanning = new RegExp(pattern.source, pattern.flags);
+    let match = null;
+    while ((match = scanning.exec(source)) !== null) {
+      names.push({
+        callsInDeclaration,
+        index: match.index,
+        name: match[1],
+      });
+    }
+  }
+  return names;
+}
+
+function callOccurrences(source, name) {
+  const pattern = new RegExp(`\\b${name}\\s*\\(`, 'g');
+  let count = 0;
+  while (pattern.exec(source) !== null) {
+    count += 1;
+  }
+  return count;
+}
+
+function skipBalancedBraces(source, openIndex) {
+  let depth = 0;
+  let quote = null;
+  let seenBrace = false;
+  for (let i = openIndex; i < source.length; i += 1) {
+    const stepped = stepBraceChar(source, i, depth, quote);
+    depth = stepped.depth;
+    quote = stepped.quote;
+    i = stepped.index;
+    // The declaration's own parameter parens must not terminate the scan:
+    // only a brace-balanced close ends the function body.
+    if (stepped.openedBrace === true) seenBrace = true;
+    if (seenBrace && depth === 0) return i + 1;
+  }
+  return -1;
+}
+
+function stepBraceChar(source, i, depth, quote) {
+  if (quote !== null) {
+    const stepped = stepQuotedBrace(source, i, depth, quote);
+    return { ...stepped, openedBrace: false };
+  }
+  return stepUnquotedBrace(source, i, depth, quote);
+}
+
+function stepUnquotedBrace(source, i, depth, quote) {
+  const char = source[i];
+  if (isQuoteChar(char)) {
+    return { depth, index: i, openedBrace: false, quote: char };
+  }
+  return stepBracketChar(char, i, depth, quote);
+}
+
+function stepBracketChar(char, i, depth, quote) {
+  if (char === '(' || char === '{') return stepOpenBrace(char, i, depth, quote);
+  if (char === ')' || char === '}') {
+    return { depth: depth - 1, index: i, openedBrace: false, quote };
+  }
+  return { depth, index: i, openedBrace: false, quote };
+}
+
+function isQuoteChar(char) {
+  return char === "'" || char === '"' || char === '`';
+}
+
+function stepOpenBrace(char, i, depth, quote) {
+  if (char === '{') {
+    return { depth: depth + 1, index: i, openedBrace: true, quote };
+  }
+  return { depth: depth + 1, index: i, openedBrace: false, quote };
+}
+
+function stepQuotedBrace(source, i, depth, quote) {
+  const char = source[i];
+  if (char === '\\') return { depth, index: i + 1, quote };
+  if (char === quote) return { depth, index: i, quote: null };
+  return { depth, index: i, quote };
+}
+
+function uncalledRanges(source) {
+  const ranges = [];
+  for (const { callsInDeclaration, index, name } of declaredFunctionNames(
+    source,
+  )) {
+    if (callOccurrences(source, name) > callsInDeclaration) continue;
+    const end = skipBalancedBraces(source, index);
+    if (end !== -1) ranges.push([index, end]);
+  }
+  return ranges;
+}
+
+function stripUncalledFunctions(source) {
+  const ranges = uncalledRanges(source).sort((a, b) => b[0] - a[0]);
+  let stripped = source;
+  for (const [start, end] of ranges) {
+    stripped = stripped.slice(0, start) + stripped.slice(end);
+  }
+  return stripped;
 }
 
 function collectCallTitles(source) {
@@ -121,6 +256,9 @@ function checkSkippedTests(filePath, rowId) {
     'describe.skip(',
     'it.only(',
     'describe.only(',
+    'test.skip(',
+    'test.todo(',
+    'test.only(',
     'xit(',
     'xdescribe(',
   ];
@@ -226,12 +364,47 @@ function commandEvidence(command) {
   return { hasCommand, hasKnownCommand };
 }
 
+function commandTestTargets(command) {
+  // File targets a command actually executes: quoted or bare *.test.*
+  // paths. A command naming a nonexistent target verifies nothing.
+  const targets = [];
+  const pattern =
+    /['"`]([^'"`]*\.test\.[cm]?[tj]s)['"`]|([\w\-./]+\.test\.[cm]?[tj]s)/g;
+  let match = null;
+  while ((match = pattern.exec(command)) !== null) {
+    targets.push(match[1] ?? match[2]);
+  }
+  return [...new Set(targets)];
+}
+
 function validateCoveredEvidence(row, files) {
+  assertCoveredCommand(row, files);
+  assertCoveredTargets(row);
+  assertCoveredStatus(row);
+}
+
+function assertCoveredCommand(row, files) {
   const { hasCommand, hasKnownCommand } = commandEvidence(row.command);
   if (!hasCommand) fail(`${row.id}: covered row without command`);
   if (files.length === 0 && !hasKnownCommand) {
     fail(
       `${row.id}: covered row without test files, gate command, or repo script`,
+    );
+  }
+}
+
+function assertCoveredTargets(row) {
+  for (const target of commandTestTargets(row.command ?? '')) {
+    if (!fs.existsSync(path.join(REPO_ROOT, target))) {
+      fail(`${row.id}: command target missing: ${target}`);
+    }
+  }
+}
+
+function assertCoveredStatus(row) {
+  if (row.status === 'covered' && row.result !== 'pass') {
+    fail(
+      `${row.id}: covered status contradicts result ${row.result}; use open status or record a passing run`,
     );
   }
 }

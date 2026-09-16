@@ -87,10 +87,20 @@ function measurementFileFor(cwd) {
   return path.join(cwd, PAIRS_FILE);
 }
 
+function vitestBinFor(cwd) {
+  const local = path.join(cwd, 'node_modules', '.bin', 'vitest');
+  try {
+    fs.accessSync(local, fs.constants.X_OK);
+    return local;
+  } catch {
+    return VITEST_BIN;
+  }
+}
+
 function runMeasurement(cwd) {
   try {
     const output = execFileSync(
-      VITEST_BIN,
+      vitestBinFor(cwd),
       ['run', '--config', vestConfigFor(cwd), measurementFileFor(cwd)],
       { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] },
     );
@@ -460,6 +470,7 @@ function buildErrorEvidence(error, baselineDir) {
     generatedAt: new Date().toISOString(),
     node: process.version,
     pairs: evidence.pairs,
+    policy: buildPolicy(),
     sha: revisionSha(REPO_ROOT),
     singles: evidence.singles,
     status: 'measurement-error',
@@ -513,6 +524,20 @@ function recordSingleEvidence(label, result, retried, kind) {
   });
 }
 
+function buildPolicy() {
+  const g1 = PAIRS.find(pair => pair.label === 'G1');
+  return {
+    a1AbsoluteMsPer20000: SINGLES_ABSOLUTE_MS.A1,
+    g1AbsoluteUsPerEdge: G1_ABSOLUTE_US_PER_EDGE,
+    g1Floor: g1.floor,
+    g1Target: g1.target,
+    maxCv: STABILITY_MAX_CV,
+    maxLatencyGrowth: BASE_LATENCY_GROWTH_LIMIT,
+    maxRelativeRetries: MAX_SINGLE_RETRIES,
+    minimumBatches: MIN_PAIR_BATCHES,
+  };
+}
+
 function buildEvidence(outcome, baselineDir) {
   return {
     baseSha: baselineDir === null ? null : revisionSha(baselineDir),
@@ -521,6 +546,7 @@ function buildEvidence(outcome, baselineDir) {
     generatedAt: new Date().toISOString(),
     node: process.version,
     pairs: evidence.pairs,
+    policy: buildPolicy(),
     sha: revisionSha(REPO_ROOT),
     singles: evidence.singles,
     trace: outcome.trace,
@@ -642,8 +668,10 @@ function summarizeAttempt(result) {
   return {
     baseCv: result.baseCv,
     baseMs: result.baseMs,
+    baseTimes: result.baseTimes ? [...result.baseTimes] : result.baseTimes,
     headCv: result.headCv,
     headMs: result.headMs,
+    headTimes: result.headTimes ? [...result.headTimes] : result.headTimes,
     verdict: result.verdict,
   };
 }

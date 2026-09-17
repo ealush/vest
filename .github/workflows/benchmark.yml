@@ -47,13 +47,33 @@ jobs:
       - name: Run interlaced benchmarks and generate report
         run: npx tsx vx/scripts/benchmark-reporter.ts --interlace .benchmark-baseline
 
+      - name: Schema performance gate self-test
+        run: node scripts/gate-schema-performance.js --self-test
+
+      - name: Schema performance gate
+        run: yarn gate:schema-performance --baseline .benchmark-baseline
+
+      - name: Upload performance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: schema-performance-evidence
+          path: |
+            benchmark-results.md
+            schema-perf-results.json
+          if-no-files-found: warn
+
       - name: Comment Benchmark Results
         uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         with:
           script: |
             const fs = require('fs');
+            const gateFailed = '${{ job.status }}' !== 'success';
             const results = fs.readFileSync('benchmark-results.md', 'utf8');
+            const banner = gateFailed
+              ? '> ⚠️ Schema performance gate failed on this head — numbers below are the failing evidence, not a stale success.\n\n'
+              : '';
 
             // Get existing comments
             const { data: comments } = await github.rest.issues.listComments({
@@ -82,7 +102,7 @@ jobs:
                 historical = historyEntries.slice(0, 5).join('\n\n---\n\n');
               }
               
-              const newBody = results + '\n\n' + prevMarker + '\n\n' + historical + '\n</details>';
+              const newBody = banner + results + '\n\n' + prevMarker + '\n\n' + historical + '\n</details>';
 
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
@@ -95,6 +115,6 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
-                body: results
+                body: banner + results
               });
             }

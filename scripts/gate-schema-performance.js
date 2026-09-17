@@ -429,7 +429,12 @@ function main() {
 
 function parseBaselineDir(args) {
   const baselineIndex = args.indexOf('--baseline');
-  return baselineIndex === -1 ? null : path.resolve(args[baselineIndex + 1]);
+  if (baselineIndex === -1) return null;
+  const target = args[baselineIndex + 1];
+  if (typeof target !== 'string' || target.length === 0) {
+    throw new Error('gate:schema-performance --baseline requires a directory');
+  }
+  return path.resolve(target);
 }
 
 const EVIDENCE_FILE = path.join(REPO_ROOT, 'schema-perf-results.json');
@@ -869,6 +874,7 @@ function selfTest() {
     ...selfTestErrorEvidence(),
     ...selfTestEvidenceWriteFailure(),
     ...selfTestEvidenceFile(),
+    ...selfTestBaselineDir(),
   ];
   const ok = results.every(Boolean);
   console.log(ok ? 'self-test passed' : 'self-test FAILED');
@@ -878,6 +884,24 @@ function selfTest() {
 function checkCase(label, pass) {
   console.log(`self-test ${label}: ${pass ? 'pass' : 'FAIL'}`);
   return pass;
+}
+
+function selfTestBaselineDir() {
+  const missing = (() => {
+    try {
+      parseBaselineDir(['--baseline']);
+      return false;
+    } catch (error) {
+      return /requires a directory/.test(String(error && error.message));
+    }
+  })();
+  return [
+    checkCase('baseline flag without directory raises a clear error', missing),
+    checkCase(
+      'absent baseline flag resolves to null',
+      parseBaselineDir([]) === null,
+    ),
+  ];
 }
 
 function selfTestEvaluate() {

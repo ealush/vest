@@ -56,11 +56,18 @@ const IMPORT_RE =
 
 // Workspace aliases resolved to package roots for direction checks. Bare
 // external imports (including vest-utils) are governed by the per-check
-// forbidden patterns, not by this map.
+// forbidden patterns, not by this map. `vast`/`anyone` have no imports in
+// the tree today; their entries keep the forbidResolved lists reachable.
+// `context` is intentionally unmapped: it is a legitimate downward
+// dependency of n4s/vest/vestjs-runtime, so resolving it would flag allowed
+// imports (its forbidResolved entries only meaningfully cover deep
+// subpaths, which no source uses).
 const ALIAS_ROOTS = new Map([
   ['n4s', path.join(REPO_ROOT, 'packages', 'n4s')],
   ['vest', path.join(REPO_ROOT, 'packages', 'vest')],
   ['vestjs-runtime', path.join(REPO_ROOT, 'packages', 'vestjs-runtime')],
+  ['vast', path.join(REPO_ROOT, 'packages', 'vast')],
+  ['anyone', path.join(REPO_ROOT, 'packages', 'anyone')],
 ]);
 
 function importsOf(file) {
@@ -147,7 +154,14 @@ function checkAliasedScope(file, spec, forbidResolved, label) {
 function resolveImport(fromFile, spec) {
   void fromFile;
   for (const [alias, root] of ALIAS_ROOTS) {
-    if (spec === alias || spec.startsWith(`${alias}/`)) return root;
+    if (spec === alias) return root;
+    // Preserve the alias subpath so resolved-direction checks can match
+    // package descendants (e.g. `vest/sub` resolves inside packages/vest
+    // instead of collapsing to the root, which no exact/descendant check
+    // could distinguish from the root itself).
+    if (spec.startsWith(`${alias}/`)) {
+      return path.join(root, spec.slice(alias.length + 1));
+    }
   }
   return null;
 }

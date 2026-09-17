@@ -22,7 +22,8 @@ for (const pkg of TARGETS) {
       '--coverage.provider=v8',
       '--coverage.reporter=json',
       `--coverage.reportsDirectory=${path.join(REPORT_DIR, pkg)}`,
-      '--coverage.all=true',
+      // Vitest 4 removed coverage.all; keep src/** parity with the gate.
+      '--coverage.include=src/**',
     ],
     { cwd: path.join(REPO_ROOT, pkg), stdio: 'ignore' },
   );

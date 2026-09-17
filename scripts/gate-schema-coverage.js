@@ -65,7 +65,10 @@ function runPackageCoverage(pkg) {
       '--coverage.provider=v8',
       '--coverage.reporter=json',
       `--coverage.reportsDirectory=${path.join(REPORT_DIR, pkg)}`,
-      '--coverage.all=true',
+      // Vitest 4 removed coverage.all: without an explicit include,
+      // unimported source files get no report row. Pin src/** so every
+      // production file counts (0% when untested) instead of vanishing.
+      '--coverage.include=src/**',
     ],
     { cwd: path.join(REPO_ROOT, pkg), stdio: 'inherit' },
   );

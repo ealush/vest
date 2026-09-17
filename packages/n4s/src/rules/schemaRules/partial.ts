@@ -98,37 +98,34 @@ function validateProvidedKeys<T extends Record<string, any>>(
  * updateSchema.test({ name: 'Jane', extra: 'x' }); // false (extra key not in schema)
  * ```
  */
-// eslint-disable-next-line complexity
+
 export function partial<T extends Record<string, any>>(
   value: T,
   schema: Record<string, any>,
+): RuleRunReturn<T> {
+  return runPartial(value, schema, true);
+}
+
+/** Internal projection: retain partial presence semantics while allowing untouched keys. */
+export function partialLoose<T extends Record<string, any>>(
+  value: T,
+  schema: Record<string, any>,
+): RuleRunReturn<T> {
+  return runPartial(value, schema, false);
+}
+
+function runPartial<T extends Record<string, any>>(
+  value: T,
+  schema: Record<string, any>,
+  rejectExtraKeys: boolean,
 ): RuleRunReturn<T> {
   if (!isObject(value)) {
     return RuleRunReturn.Failing(value);
   }
 
-  const dangerousSchemaKey = findDangerousOwnKey(schema);
-  if (dangerousSchemaKey) {
-    return {
-      ...RuleRunReturn.Failing(value),
-      path: [dangerousSchemaKey],
-    };
-  }
-
-  const dangerousValueKey = findDangerousOwnKey(value);
-  if (dangerousValueKey) {
-    return {
-      ...RuleRunReturn.Failing(value),
-      path: [dangerousValueKey],
-    };
-  }
-
-  const extraKey = getFirstExtraKey(value, schema);
-  if (extraKey) {
-    return {
-      ...RuleRunReturn.Failing(value),
-      path: [extraKey],
-    };
+  const invalidKey = invalidPartialKey(value, schema, rejectExtraKeys);
+  if (invalidKey) {
+    return { ...RuleRunReturn.Failing(value), path: [invalidKey] };
   }
 
   const parsedValue = safeShallowCopy(value);
@@ -141,6 +138,18 @@ export function partial<T extends Record<string, any>>(
     ...parsedValue,
     ...parsedEntriesOrFailure.parsedEntries,
   } as T);
+}
+
+function invalidPartialKey(
+  value: Record<string, unknown>,
+  schema: Record<string, unknown>,
+  rejectExtraKeys: boolean,
+): string | undefined | null {
+  return (
+    findDangerousOwnKey(schema) ??
+    findDangerousOwnKey(value) ??
+    (rejectExtraKeys ? getFirstExtraKey(value, schema) : null)
+  );
 }
 
 // Types colocated with partial rule

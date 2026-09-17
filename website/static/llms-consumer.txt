@@ -111,7 +111,42 @@ Use `suite.afterEach(callback)` when the UI must update after the synchronous pa
 
 ## Dependent fields
 
-Use `include` to run a related field when another focused field runs:
+For schema-backed suites, declare structural dependencies with `dependsOn`
+and use `changed` for interaction-driven updates:
+
+```js
+import { create, enforce, test } from 'vest';
+
+const passwordSchema = enforce.shape({
+  password: enforce.isString(),
+  confirmPassword: enforce.isString().dependsOn($ => $.password),
+});
+
+export const relationshipSuite = create(data => {
+  test('confirmPassword', 'Passwords do not match', () => {
+    enforce(data.confirmPassword).equals(data.password);
+  });
+}, passwordSchema);
+
+relationshipSuite.run({ password: 'first', confirmPassword: 'first' });
+relationshipSuite.changed('password').run({
+  password: 'second',
+  confirmPassword: 'first',
+}); // confirmPassword now fails
+```
+
+`dependsOn` declares invalidation, not an equality check. `$` names siblings;
+`$.root` addresses the composed root. Arrays bind sibling references within the
+same item. Expansion includes direct dependents only. `only` does not expand
+these edges; combining `only` with `changed` uses their union. Untouched suite
+results, including schema errors, remain until revalidated or reset.
+
+Use pure synchronous schema validators and parsers. Keep async checks in Vest
+`test` callbacks. A focused result does not validate all current input; await a
+full run before submission. `schema.describe()` exposes serializable structural
+metadata for tools, not validation verdicts or pending work.
+
+For suites without a schema, or explicit runtime inclusion, use `include` to run a related field when another focused field runs:
 
 ```js
 import { create, enforce, include, test } from 'vest';

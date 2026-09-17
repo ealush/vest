@@ -17,6 +17,8 @@ packages/*/*
 !packages/*/vitest.config.ts
 !packages/*/bench
 !packages/*/docs
+!packages/*/perf-gate
+!packages/*/perf-gate/*
 .env
 
 playground.*
@@ -141,5 +143,7 @@ dist
 
 benchmark-results-local.md
 .benchmark-baseline
+schema-perf-results.json
 
 .turbo/
+type-tests/node_modules

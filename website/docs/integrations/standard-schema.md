@@ -38,13 +38,13 @@ export type AccountOutput = ReturnType<typeof accountSchema.parse>;
 export const accountSuite = create(data => {
   mode(Modes.ALL);
   test('profile.name', 'Name must contain at least 2 characters', () => {
-    enforce(data.profile.name.trim()).longerThanOrEquals(2);
+    enforce(data.profile?.name?.trim()).longerThanOrEquals(2);
   });
   test('email', 'Email must contain an @ sign', () => {
-    enforce(data.email.trim().toLowerCase()).matches(/@/);
+    enforce(data.email?.trim().toLowerCase()).matches(/@/);
   });
   test('email', 'Email must use the example.com domain', () => {
-    enforce(data.email.trim().toLowerCase()).endsWith('@example.com');
+    enforce(data.email?.trim().toLowerCase()).endsWith('@example.com');
   });
 }, accountSchema);
 
@@ -60,7 +60,8 @@ export function createUsernameSuite(
 ) {
   return create(data => {
     test('username', 'Username is already taken', async () => {
-      enforce(await isAvailable(data.username)).isTruthy();
+      const username = typeof data.username === 'string' ? data.username : '';
+      enforce(await isAvailable(username)).isTruthy();
     });
   }, usernameSchema);
 }

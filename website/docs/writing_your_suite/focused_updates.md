@@ -136,6 +136,22 @@ When multiple modifiers are used, they are evaluated in the following order of p
 
 > **Note**: A test is run only if it passes _all_ active filters. For example, if you use `onlyGroup: 'A'` and `skip: 'field1'`, `field1` inside `Group A` will be skipped.
 
+### Dependency-Aware Focus with `suite.changed()`
+
+`only()` runs exactly the fields you name — nothing more. When your suite has a schema with [`dependsOn()`](./schema_relationships) relationships, `suite.changed()` goes one step further: it runs the named fields **plus every field the relationship graph marks as affected**, so dependents never go stale:
+
+```javascript
+// Re-runs `password` and, via dependsOn, `confirmPassword` too.
+suite.changed('password').run(formData);
+
+// Arrays, chaining, and nested paths all work.
+suite.changed(['password', 'country']).run(formData);
+suite.changed('password').only('confirmPassword').run(formData);
+suite.changed('travelers[1].passportCountry').run(formData);
+```
+
+Use `only()` for explicit execution selection and `changed()` for interaction-driven revalidation. See [Schema Relationships](./schema_relationships) for the full reference, including the affected-set rules and end-to-end examples.
+
 ## Fluent Chain API
 
 `focus()` returns a "runnable" interface, allowing you to chain it with `afterEach`, `afterField`, or `run`.
@@ -336,6 +352,7 @@ suite.focus({ onlyGroup: 'groupA' }).run(formData); // ✅
 
 ## Related
 
+- [Schema Relationships](./schema_relationships) - Dependency-aware revalidation with `suite.changed()` and `dependsOn()`
 - [Including and Excluding Fields](./including_and_excluding/skip_and_only) - Using `only()` and `skip()` inside suites
 - [Include](./including_and_excluding/include) - Link related fields to run together
 - [Test Groups](../writing_tests/advanced_test_features/grouping_tests) - Grouping tests together

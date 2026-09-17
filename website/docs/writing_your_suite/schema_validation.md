@@ -41,6 +41,8 @@ const suite = create(data => {
 }, userSchema);
 ```
 
+`dependsOn()` declarations are invalidation metadata. They do not compare field values or create validation failures. A relationship such as `confirmPassword.dependsOn($ => $.password)` still needs a `test('confirmPassword', ...)` or Enforce rule that checks whether the values match. See [Schema Relationships](./schema_relationships).
+
 ## How it works
 
 When you pass a schema to `create`:
@@ -99,11 +101,55 @@ result.value; // typed as { age: number; name: string }
 
 The first rule in a chain determines the input type, and the last parser in the chain determines the output type. This means you never need `@ts-expect-error` or `as any` for valid parser coercion inputs.
 
+Successful focused schema runs assemble mapped output for the suite callback. On a
+first focused run, Vest applies parser steps to untouched fields without
+running their validation predicates. Parser transforms should therefore be
+pure and must return their declared output type even when their `pass` verdict
+is false. An untouched parser's failure does not become part of that focused
+run's validation result. Mapping is not validation: missing or invalid untouched
+input is not proven to satisfy the schema. If schema validation fails, the
+callback can receive raw input at the failing paths. Guard values before using
+output-only operations, and use a full successful run before submission.
+If a custom `enforce.extend` rule is a parser, register it explicitly so
+focused mapping can recognize it:
+
+```typescript
+declare global {
+  namespace n4s {
+    interface EnforceMatchers {
+      normalizeId: (value: string) => { pass: boolean; type: string };
+    }
+  }
+}
+
+enforce.extend(
+  {
+    normalizeId: (value: string) => ({
+      pass: true,
+      type: value.trim().toUpperCase(),
+    }),
+  },
+  { parsers: ['normalizeId'] },
+);
+```
+
+Custom extension rules are treated as validators unless they are listed in
+`parsers`. The per-run `result.run.data.parsed` value still reflects only the
+schema work performed by that run; the callback receives the complete mapped
+output assembled for the suite.
+
+When a focused path enters an array, Vest refreshes that containing array from
+the current input. Array positions are not identities, so this prevents an
+insert, removal, or reorder from combining the current item with a stale array
+layout retained from an earlier run. Untouched members of that array are mapped
+from raw input without running their validation predicates. Parsers can run
+again to refresh this mapping and must be pure.
+
 ### What becomes typed from the schema
 
 With `create(callback, schema)`, TypeScript narrows:
 
-- callback data (`data`) to the schema input shape.
+- callback data (`data`) to the schema output shape.
 - `suite.run(...)` / `suite.runStatic(...)` first argument to the schema input shape.
 - the Standard Schema `~standard.validate(...)` input and output types.
 - field-oriented happy-path APIs (`test`, `optional`, `include`) to schema keys.
@@ -128,6 +174,7 @@ When using `create(callback, schema)`, the current TypeScript standard is:
   - `suite.remove(fieldName)`
   - `suite.resetField(fieldName)`
   - `suite.only(fieldName)`
+  - `suite.changed(fieldName)` (single name, array, or `undefined`; see [Schema Relationships](./schema_relationships#suitechanged-reference))
   - `suite.afterField(fieldName, callback)`
   - `only(fieldName)` / `skip(fieldName)` hooks
 
@@ -147,7 +194,7 @@ suite.focus({ onlyGroup: 'account' }); // typed group name
 ```
 
 :::note Focused runs
-When you focus the suite with `suite.only()`, `suite.skip()`, or `suite.focus()`, Vest intelligently subsets your validation schema under the hood using `enforce.pick` and `enforce.omit`. This ensures that schema validation still runs securely for the fields in focus—and provides correct types in the test callback!—while safely ignoring un-focused fields and allowing you to validate partial payloads effectively.
+Suite-level `only`, `skip`, and `focus` select schema fields as well as suite tests. Structural schemas can be narrowed using their metadata; rules with container validators may require a full-schema fallback. Focused validation does not establish the validity or presence of untouched input. Supply complete form data when the callback reads untouched fields.
 
 ```javascript
 // Validate only the username field, enforcing the schema for 'username' while ignoring 'age'
@@ -155,6 +202,8 @@ suite.only('username').run({
   username: 'example',
 });
 ```
+
+For interaction-driven revalidation that also refreshes dependent fields, use `suite.changed()` instead — see [Schema Relationships](./schema_relationships).
 
 :::
 
@@ -172,7 +221,7 @@ The suite result includes typed properties for accessing validated and parsed da
 - `result.value` — The parsed output when the suite is valid. Typed as the schema's output type. `undefined` when invalid.
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
 - `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
-- `result.run.data.raw` — The current run data passed into the suite callback (parsed when schema validation succeeds; original input when it fails).
+- `result.run.data.raw` — The current run's parsed chunk when schema validation succeeds, or its original input when validation fails. A focused callback may receive a fuller retained mapped output than this per-run metadata.
 - `result.run.data.parsed` — Parsed data for the current run.
 
 ```typescript

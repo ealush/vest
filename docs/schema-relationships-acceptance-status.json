@@ -69,7 +69,7 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
       "id": "EX05",
       "notes": "root-first/triple/nested composition green; skipped zero, all roots once.",
       "result": "pass",
@@ -98,7 +98,7 @@
     },
     {
       "blocked-by": [],
-      "command": "yarn vitest run packages/n4s/src/schema/__tests__/schemaContracts.execution.test.ts",
+      "command": "yarn vitest run packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts",
       "id": "EX07a",
       "notes": "Concrete index, whole-item, and keyed-reorder index tracking green. Array-index skip-only on positional arrays fails closed with stable code (unrepresentable as rebuilt schema); index selection remains a changed-route supplement behavior.",
       "result": "pass",

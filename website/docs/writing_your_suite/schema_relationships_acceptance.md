@@ -225,7 +225,7 @@ fixes. Counts describe the reviewed baseline and will change as fixes land.
 
 ### Follow-up verification (2026-09-12, head `13dbe733`)
 
-The 10 readiness failures above are closed by four fix commits, verified on
+The 12 readiness failures above are closed by four fix commits, verified on
 `13dbe73317f8e5c9ac177a64ab3d9d5a38ea180a`:
 
 - `13e11a77 fix(vest)`: builder field skip is authoritative and destructive

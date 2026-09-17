@@ -87,8 +87,18 @@ const userSchema = enforce.shape({
 
 type UserData = { username: string; age: number };
 
+// Vest 7 draft contract: the shared callback runs on full AND focused runs,
+// so its parameter is the deep draft (every output property optional).
+// Identity containers (arrays, Date, Map, Set) stay whole; only object
+// properties become optional.
+type UserDraft = { username?: string | undefined; age?: number | undefined };
+
 const userSuite = create(data => {
-  type CallbackDataIsExact = AssertTrue<IsEqual<typeof data, UserData>>;
+  type CallbackDataIsDraft = AssertTrue<IsEqual<typeof data, UserDraft>>;
+  // Unsafe reads fail until narrowed; narrowing restores the method.
+  // @ts-expect-error - DELIBERATE MISUSE: draft fields need narrowing
+  data.username.toUpperCase();
+  if (typeof data.username === 'string') data.username.toUpperCase();
   test('username', () => {
     enforce(data.username).isNotBlank();
   });
@@ -125,6 +135,10 @@ void strictSuite;
 type CoinInput = { label: string; amount: string };
 type CoinOutput = { label: string; amount: number };
 
+// Foreign Standard Schemas follow the same draft contract: the callback may
+// observe a focused run, so output properties are optional there.
+type CoinDraft = { label?: string | undefined; amount?: number | undefined };
+
 const coinSchema: StandardSchemaV1<CoinInput, CoinOutput> = {
   '~standard': {
     version: 1,
@@ -149,7 +163,7 @@ const coinSchema: StandardSchemaV1<CoinInput, CoinOutput> = {
 };
 
 const coinSuite = create(data => {
-  type CallbackReceivesOutput = AssertTrue<IsEqual<typeof data, CoinOutput>>;
+  type CallbackReceivesDraft = AssertTrue<IsEqual<typeof data, CoinDraft>>;
   test('amount', () => {
     enforce(data.amount).greaterThan(0);
   });
@@ -328,7 +342,7 @@ const profileSchema = enforce.shape({
 
 const profileSuite = create(data => {
   test('profile', () => {
-    enforce(data.profile.state).isString();
+    enforce(data.profile?.state).isString();
   });
 }, profileSchema);
 
@@ -364,16 +378,13 @@ tagSuite.run({ tags: ['a'] });
 // 9. Callbacks with extra args thread through run().
 // ---------------------------------------------------------------------------
 
-const extraSuite = create(
-  (data: { username: string }, greeting: string, count: number) => {
-    test('username', () => {
-      enforce(data.username).isNotBlank();
-    });
-    void greeting;
-    void count;
-  },
-  userSchema,
-);
+const extraSuite = create((data, greeting: string, count: number) => {
+  test('username', () => {
+    enforce(data.username).isNotBlank();
+  });
+  void greeting;
+  void count;
+}, userSchema);
 
 extraSuite.run({ username: 'ann', age: 30 }, 'hello', 3);
 

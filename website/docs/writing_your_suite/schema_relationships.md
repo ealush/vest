@@ -338,7 +338,7 @@ Behavior notes:
 
 - Returns a focused suite, so it chains with the other focus APIs: `suite.changed('password').only('confirmPassword').run(data)`. Combining `only()` with `changed()` runs the union — the `only()` base fields plus the affected set.
 - Changing a whole object selects its descendants; changing a descendant also invalidates rules that depend on that whole object. Expansion remains direct, not transitive.
-- Changed names accept dotted or bracket spelling. Vest normalizes `travelers[1].passportCountry` to the canonical dotted form `travelers.1.passportCountry` before planning and reporting focus. Literal property names containing dots and all-numeric record keys are ambiguous in this string API and cannot be targeted as single segments.
+- Changed names accept dotted or bracket spelling. Vest normalizes `travelers[1].passportCountry` to the canonical dotted form `travelers.1.passportCountry` before planning and reporting focus. Literal property names containing dots and all-numeric record keys are ambiguous in this string API and cannot be targeted as single segments — this concerns string-path addressing only; declared numeric record keys keep exact graph identity as described above.
 - Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
 
 ### Focus Composition

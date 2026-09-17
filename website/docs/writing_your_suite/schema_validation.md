@@ -77,7 +77,7 @@ suite.run({ username: 'john', age: 42 });
 
 ### Input vs output types with parsers
 
-When a schema uses [data parsers](../enforce/builtin-enforce-plugins/data_parsers.md), Vest distinguishes between the **input type** (what `suite.run()` accepts) and the **output type** (what the callback receives and what `result.value` contains).
+When a schema uses [data parsers](../enforce/builtin-enforce-plugins/data_parsers.md), Vest distinguishes between the **input type** (what `suite.run()` accepts), the **draft output type** (what the callback may receive on focused runs), and the **complete output type** (what a successful full run certifies in `result.value`).
 
 ```typescript
 const schema = enforce.shape({
@@ -86,7 +86,8 @@ const schema = enforce.shape({
 });
 
 const suite = create(data => {
-  // data.age is typed as `number` (the output type)
+  // data.age is typed as `number | undefined` (draft output): narrow before
+  // output-only use, e.g. `if (typeof data.age === 'number')`.
   test('age', () => {
     enforce(data.age).greaterThan(0);
   });
@@ -96,7 +97,7 @@ const suite = create(data => {
 suite.run({ age: '25', name: '  alice  ' }); // ✅ No type error
 
 const result = suite.run({ age: '25', name: '  alice  ' });
-result.value; // typed as { age: number; name: string }
+result.value; // typed as { age: number; name: string } after a successful full run
 ```
 
 The first rule in a chain determines the input type, and the last parser in the chain determines the output type. This means you never need `@ts-expect-error` or `as any` for valid parser coercion inputs.
@@ -149,7 +150,7 @@ again to refresh this mapping and must be pure.
 
 With `create(callback, schema)`, TypeScript narrows:
 
-- callback data (`data`) to the schema output shape.
+- callback data (`data`) to the schema draft output shape (every output property optional: focused runs may omit untouched fields; narrow before output-only use).
 - `suite.run(...)` / `suite.runStatic(...)` first argument to the schema input shape.
 - the Standard Schema `~standard.validate(...)` input and output types.
 - field-oriented happy-path APIs (`test`, `optional`, `include`) to schema keys.
@@ -218,7 +219,7 @@ For interaction-driven revalidation that also refreshes dependent fields, use `s
 
 The suite result includes typed properties for accessing validated and parsed data:
 
-- `result.value` — The parsed output when the suite is valid. Typed as the schema's output type. `undefined` when invalid.
+- `result.value` — The parsed output when the suite is valid. Typed as the schema's complete output type after a successful full run, and as the draft output type after a focused run (required properties may be absent). `undefined` when invalid.
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
 - `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
 - `result.run.data.raw` — The current run's parsed chunk when schema validation succeeds, or its original input when validation fails. A focused callback may receive a fuller retained mapped output than this per-run metadata.

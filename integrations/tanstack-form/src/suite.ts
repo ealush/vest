@@ -13,12 +13,12 @@ export function createRegistrationSuite() {
   return create<
     RegistrationField,
     string,
-    (data: RegistrationOutput) => void,
+    (data: Partial<RegistrationOutput>) => void,
     typeof registrationSchema
   >(data => {
     mode(Modes.ALL);
     test('profile.name', 'Enter at least 2 characters', () => {
-      enforce(data.profile.name.trim()).longerThanOrEquals(2);
+      enforce(data.profile?.name?.trim()).longerThanOrEquals(2);
     });
     test('email', 'Enter an email address', () => {
       enforce(data.email).matches(/@/);

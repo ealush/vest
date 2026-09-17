@@ -104,18 +104,31 @@ export type InferSchemaOutput<S> = S extends StandardSchemaV1
  * callback runs on full and focused runs, so its parameter must admit
  * every permitted invocation — hence the draft.
  *
- * Deep partiality is soundness, not precision: nested siblings outside
- * the selection are also absent, optional output stays present-undefined
+ * Partiality applies per object property: nested siblings outside the
+ * selection are also absent, optional output stays present-undefined
  * when materialized, and complete values remain assignable to the draft.
- * Callers narrow with `typeof` / `in` / `Object.hasOwn` before use.
+ * Values with identity semantics (arrays, tuples, Date, Map, Set,
+ * promises) are kept whole — focused mapping replaces them wholesale
+ * rather than splitting them, so an absent array is the missing property,
+ * never a partial array. Custom class instances still recurse; treat
+ * their methods as possibly-absent and narrow before use. Callers narrow
+ * with `typeof` / `in` / `Object.hasOwn` before use.
  */
 export type DeepDraft<T> = T extends (...args: any[]) => any
   ? T
   : T extends readonly unknown[]
-    ? { [K in keyof T]?: DeepDraft<T[K]> }
-    : T extends object
-      ? { [K in keyof T]?: DeepDraft<T[K]> }
-      : T;
+    ? T
+    : T extends
+          | Date
+          | Map<any, any>
+          | Set<any>
+          | WeakMap<any, any>
+          | WeakSet<any>
+          | Promise<any>
+      ? T
+      : T extends object
+        ? { [K in keyof T]?: DeepDraft<T[K]> }
+        : T;
 
 export type DraftSchemaOutput<S> = S extends undefined
   ? any

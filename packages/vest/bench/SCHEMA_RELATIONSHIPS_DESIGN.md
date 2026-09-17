@@ -309,13 +309,13 @@ D11 is the single most valuable bench for stakeholders — run the full registra
 
 ### 5.5 Summary counts
 
-| Group          | Count  | File                                               |
-| -------------- | ------ | -------------------------------------------------- |
-| A creation     | 12     | top-level                                          |
-| B describe     | 6      | top-level                                          |
-| C head-to-head | 18     | top-level (split to granular if too long)          |
-| D integration  | 13     | granular (`schema-relationships-changed.bench.ts`) |
-| **Total**      | **49** |                                                    |
+| Group          | Count  | File                                                        |
+| -------------- | ------ | ----------------------------------------------------------- |
+| A creation     | 12     | top-level                                                   |
+| B describe     | 6      | top-level                                                   |
+| C head-to-head | 18     | granular (`granular/schema-relationships-changed.bench.ts`) |
+| D integration  | 13     | top-level (`schema-relationships.bench.ts`)                 |
+| **Total**      | **49** |                                                             |
 
 49 rows covers all 23 scenarios with multi-angle depth. Reporter currently emits ~60 rows total — so this adds ~80% more rows, doubling CI time. Mitigation: mark heavy rows (`array 100`, `flow`, `volatility`) with `time: 1000` so tinybench converges quickly; fast rows dominate 150 ms each → estimated **extra CI wall-time ~25–35 s** (acceptable).
 
@@ -403,7 +403,7 @@ describe('changed() vs only() vs run() — minimality proof', () => {
 });
 
 // packages/vest/bench/granular/schema-relationships-changed.bench.ts
-// ... Group D only — imports from '../../../src/vest' (granular depth)
+// ... Group C only — imports from '../../src/vest' (granular depth)
 ```
 
 Benchmark creation pattern to keep naming CI-friendly: append field-count hint in bench name, e.g. `'array(100): changed(travelers.50.country) [2/200 fields]'`. Reporter concatenates `suite :: name`, so `describe` + bench name are both visible in `benchmark-results.md`.
@@ -480,8 +480,8 @@ Keep rows **additive** — never rename existing bench names. Baseline checkout 
 
 ## 9 — Next Steps (not executed in this design task)
 
-1. **Author `schema-relationships.bench.ts`** per skeleton §6, Groups A–C.
-2. **Author `granular/schema-relationships-changed.bench.ts`** for Group D.
+1. **Author `schema-relationships.bench.ts`** per skeleton §6, Groups A–B and D.
+2. **Author `granular/schema-relationships-changed.bench.ts`** for Group C.
 3. Run `yarn vitest bench --run packages/vest/bench/schema-relationships.bench.ts --no-color` locally, sanity-check `rme < 10%`.
 4. Run full `npx tsx vx/scripts/benchmark-reporter.ts` and confirm ~49 new rows in local `benchmark-results-local.md`.
 5. Open PR — confirm `.github/workflows/benchmark.yml` posts table with `Diff (Abs) | Diff (%)` columns.

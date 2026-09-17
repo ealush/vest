@@ -14,6 +14,8 @@ declare global {
       contractSuffix: (value: string) => { pass: boolean; type: string };
       matrixSuffix: (value: string) => { pass: boolean; type: string };
       matrixFailEmit: (value: string) => { pass: boolean; type: string };
+      exclBeforeCount: (value: string) => { pass: boolean; type: string };
+      exclAfterCount: (value: string) => { pass: boolean; type: string };
     }
   }
 }
@@ -29,6 +31,14 @@ enforce.extend(
       value === 'bad'
         ? { pass: false, type: 'MAPPED' }
         : { pass: true, type: value },
+    exclBeforeCount: (value: string) => {
+      exclBeforeCalls += 1;
+      return { pass: true, type: `${value}<` };
+    },
+    exclAfterCount: (value: string) => {
+      exclAfterCalls += 1;
+      return { pass: true, type: `${value}>` };
+    },
   },
   {
     parsers: [
@@ -36,9 +46,17 @@ enforce.extend(
       'contractSuffix',
       'matrixSuffix',
       'matrixFailEmit',
+      'exclBeforeCount',
+      'exclAfterCount',
     ],
   },
 );
+
+// Module-scoped parser invocation counters: registration above runs once at
+// import time so every test (including isolated `-t` runs) can chain the
+// parsers. Tests that assert counts reset them first.
+let exclBeforeCalls = 0;
+let exclAfterCalls = 0;
 
 const outputs = [
   { name: 'null', value: null },
@@ -481,21 +499,6 @@ describe('schema contracts: parser before/after container with skip (T1 parser p
   });
 
   it('[SC-PARSER-CONTAINER] custom parsers before/after on a skipped field map honestly with explicit counts', () => {
-    let beforeCalls = 0;
-    let afterCalls = 0;
-    (enforce as any).extend(
-      {
-        exclBeforeCount: (value: string) => {
-          beforeCalls += 1;
-          return { pass: true, type: `${value}<` };
-        },
-        exclAfterCount: (value: string) => {
-          afterCalls += 1;
-          return { pass: true, type: `${value}>` };
-        },
-      },
-      { parsers: ['exclBeforeCount', 'exclAfterCount'] },
-    );
     const validated = vi.fn(() => true);
     const schema = enforce.shape({
       deep: compose(
@@ -508,15 +511,17 @@ describe('schema contracts: parser before/after container with skip (T1 parser p
     const suite = create((_data: unknown) => {
       seen.push(_data);
     }, schema as never);
+    exclBeforeCalls = 0;
+    exclAfterCalls = 0;
     suite.run({ deep: 'x', note: 'first' } as never);
     expect(seen[0]).toEqual({ deep: 'x<>', note: 'first' });
     expect(validated).toHaveBeenCalledTimes(1);
-    expect(beforeCalls).toBe(1);
-    expect(afterCalls).toBe(1);
+    expect(exclBeforeCalls).toBe(1);
+    expect(exclAfterCalls).toBe(1);
 
     validated.mockClear();
-    beforeCalls = 0;
-    afterCalls = 0;
+    exclBeforeCalls = 0;
+    exclAfterCalls = 0;
     seen.length = 0;
     const result = suite
       .changed('note')
@@ -529,8 +534,8 @@ describe('schema contracts: parser before/after container with skip (T1 parser p
     // mapping without validation.
     expect(seen[0]).toEqual({ deep: 'x<>', note: 'second' });
     expect(validated).not.toHaveBeenCalled();
-    expect(beforeCalls).toBe(1);
-    expect(afterCalls).toBe(1);
+    expect(exclBeforeCalls).toBe(1);
+    expect(exclAfterCalls).toBe(1);
   });
 
   it('[SC-PARSER-CONTAINER] custom parsers before/after on a selected field validate once with fresh output', () => {
@@ -828,5 +833,31 @@ describe('schema contracts: draft versus complete output (AC05 characterization)
     const result = suite.changed([]).run({ note: 'ok' } as never);
     expect(result.hasErrors()).toBe(false);
     expect(seen[0]).toEqual({ note: 'ok' });
+  });
+
+  it('[SC-PARSER-TOTALITY] malformed parser input fails validation instead of throwing', () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      (data: unknown) => {
+        seen.push(data);
+      },
+      enforce.shape({
+        email: enforce.isString().trim().toLower(),
+      }),
+    );
+    for (const run of [
+      () => suite.run({ email: 123 } as never),
+      () => suite.changed('email').run({ email: 123 } as never),
+    ]) {
+      let result:
+        | ReturnType<typeof suite.run>
+        | ReturnType<ReturnType<typeof suite.changed>['run']>
+        | undefined;
+      expect(() => {
+        result = run();
+      }).not.toThrow();
+      expect(result?.hasErrors('email')).toBe(true);
+    }
+    expect(seen.length).toBe(2);
   });
 });

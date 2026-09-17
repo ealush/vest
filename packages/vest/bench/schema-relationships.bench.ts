@@ -296,9 +296,9 @@ describe('Integration matrix — changed() meets Vest features', () => {
     }, dSkipWhenSchema);
     d1Suite.run({ country: 'CA', state: '' });
     bench(
-      'D1 skipWhen changed(country) CA→US [candidate but Vest skips]',
+      'D1 skipWhen changed(country) CA→MX [candidate but Vest skips]',
       () => {
-        d1Suite.changed('country').run({ country: 'US', state: '' });
+        d1Suite.changed('country').run({ country: 'MX', state: '' });
       },
       { time: 250 },
     );
@@ -565,7 +565,7 @@ describe('Integration matrix — changed() meets Vest features', () => {
     const d9Schema = enforce.shape({
       organizationId: enforce.isString(),
       username: enforce.isString().dependsOn($ => $.organizationId),
-      email: enforce.isString(),
+      email: enforce.isString().dependsOn($ => $.organizationId),
     });
     const d9Suite = create(data => {
       test('organizationId', () => {

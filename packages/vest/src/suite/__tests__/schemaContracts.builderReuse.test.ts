@@ -189,7 +189,7 @@ describe('schema contracts: builder snapshots caller configuration (AC04)', () =
   });
 
   it('[SC-AC04] mutating only/skip arrays after focus does not reselect', () => {
-    const { suite } = reuseSuite();
+    const { suite, pa, pb } = reuseSuite();
     const only = ['a'];
     const skip: string[] = [];
     const parent = suite.focus({ only, skip } as never) as any;
@@ -199,6 +199,10 @@ describe('schema contracts: builder snapshots caller configuration (AC04)', () =
     const result = parent.run(data);
     expect(result.hasErrors('b')).toBe(false);
     expect(result.hasErrors('a')).toBe(false);
+    // Snapshot kept only:['a']: the selected predicate ran, the pushed
+    // sibling and the pushed skip never executed their validators.
+    expect(pa).toHaveBeenCalledTimes(1);
+    expect(pb).not.toHaveBeenCalled();
   });
 
   it('[SC-AC04] skipGroup arrays are snapshotted at the boundary', () => {

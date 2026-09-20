@@ -405,7 +405,7 @@ describe('executable documentation examples', () => {
   });
   it('[SC-DOCS] runs the schema relationships acceptance example verbatim', () => {
     const { registrationAcceptance } = executeCodeBlock(
-      'website/docs/writing_your_suite/schema_relationships_acceptance.md',
+      'website/docs/writing_your_suite/schema_relationships.md',
       { containing: 'export function registrationAcceptance' },
     ) as {
       registrationAcceptance: () => {

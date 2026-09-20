@@ -84,6 +84,7 @@ Vest composes with schema validators and form managers; these categories are not
 - [Handling Suite Completion](https://vestjs.dev/docs/writing_your_suite/handling_completion)
 - [conditionally omit tests from the suite](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/omitWhen)
 - [Optional fields](https://vestjs.dev/docs/writing_your_suite/optional_fields)
+- [Schema Relationships](https://vestjs.dev/docs/writing_your_suite/schema_relationships)
 - [Execution Modes](https://vestjs.dev/docs/writing_your_suite/execution_modes)
 - [Linking fields together](https://vestjs.dev/docs/writing_your_suite/including_and_excluding/include)
 - [Handling User Interaction](https://vestjs.dev/docs/writing_your_suite/dirty_checking)

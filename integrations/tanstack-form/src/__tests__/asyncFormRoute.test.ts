@@ -48,28 +48,27 @@ function deferred<T>(): {
   return { promise, resolve, reject };
 }
 
-type Gate = ReturnType<typeof deferred<boolean>>;
+type Gate = ReturnType<typeof validationGate>;
+
+function validationGate() {
+  const outcome = deferred<boolean>();
+  const start = deferred<void>();
+  let didStart = false;
+  return {
+    ...outcome,
+    markStarted() {
+      if (didStart) return;
+      didStart = true;
+      start.resolve();
+    },
+    started: start.promise,
+  };
+}
 
 const tick = () =>
   new Promise<void>(resolve => {
     setImmediate(resolve);
   });
-
-// Bounded macrotask polling (no wall-clock sleeps): waits until vest's
-// deferred test body actually starts awaiting a gate.
-async function pollFor(
-  condition: () => boolean,
-  label: string,
-  cap = 500,
-): Promise<void> {
-  for (let i = 0; i < cap; i += 1) {
-    if (condition()) {
-      return;
-    }
-    await tick();
-  }
-  throw new Error(`Timed out waiting for ${label}`);
-}
 
 // Safety net only: fails loudly instead of hanging on vitest's test timeout
 // if overlapping runs ever stop settling.
@@ -94,6 +93,10 @@ async function withSafetyTimeout<T>(
       clearTimeout(timer);
     }
   }
+}
+
+function waitForStart(gate: Gate, label: string): Promise<void> {
+  return withSafetyTimeout(gate.started, 2000, label);
 }
 
 function buildSchema() {
@@ -121,6 +124,7 @@ function createGatedSuite(
     test('profile.name', TAKEN_MESSAGE, async () => {
       calls.push('profile.name:start');
       const gate = gates.get(data.profile?.name ?? '');
+      gate?.markStarted();
       const available = gate ? await gate.promise : true;
       calls.push('profile.name:settled');
       enforce(available).isTruthy();
@@ -213,7 +217,7 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const fx = createAsyncForm(takenValues, buildSchema());
     const unmount = fx.form.mount();
     try {
-      const gate = deferred<boolean>();
+      const gate = validationGate();
       fx.gates.set('Taken', gate);
 
       let settled = false;
@@ -223,10 +227,7 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
           return result;
         },
       );
-      await pollFor(
-        () => fx.calls.includes('profile.name:start'),
-        'edit validator start',
-      );
+      await waitForStart(gate, 'edit validator start');
       // The async route is genuinely engaged: the validate() promise is still
       // open and the form reports itself as validating.
       expect(settled).toBe(false);
@@ -254,14 +255,11 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const fx = createAsyncForm(takenValues, buildSchema());
     const unmount = fx.form.mount();
     try {
-      const gate = deferred<boolean>();
+      const gate = validationGate();
       fx.gates.set('Taken', gate);
 
       const submitted = fx.form.handleSubmit();
-      await pollFor(
-        () => fx.calls.includes('profile.name:start'),
-        'submit validator start',
-      );
+      await waitForStart(gate, 'submit validator start');
       gate.resolve(false);
       await submitted;
       await tick();
@@ -286,7 +284,7 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const fx = createAsyncForm(takenValues, buildSchema());
     const unmount = fx.form.mount();
     try {
-      fx.gates.set('Taken', deferred<boolean>());
+      fx.gates.set('Taken', validationGate());
       const blocked = fx.form.handleSubmit();
       fx.gates.get('Taken')?.resolve(false);
       await blocked;
@@ -296,7 +294,7 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
       // A clean change edit clears only the onChange key; the stale onBlur
       // verdict still blocks the form.
       fx.setNameQuiet('Ada');
-      fx.gates.set('Ada', deferred<boolean>());
+      fx.gates.set('Ada', validationGate());
       const changeEdit = fx.form.validate('change');
       fx.gates.get('Ada')?.resolve(true);
       await changeEdit;
@@ -308,7 +306,7 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
       expect(fx.form.state.isValid).toBe(false);
 
       // A clean blur validation clears the remaining key.
-      fx.gates.set('Ada', deferred<boolean>());
+      fx.gates.set('Ada', validationGate());
       const blurEdit = fx.form.validate('blur');
       fx.gates.get('Ada')?.resolve(true);
       await blurEdit;
@@ -324,14 +322,11 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const fx = createAsyncForm(validValues, buildSchema());
     const unmount = fx.form.mount();
     try {
-      const gate = deferred<boolean>();
+      const gate = validationGate();
       fx.gates.set('Ada', gate);
 
       const submitted = fx.form.handleSubmit();
-      await pollFor(
-        () => fx.calls.includes('profile.name:start'),
-        'submit validator start',
-      );
+      await waitForStart(gate, 'submit validator start');
       gate.resolve(true);
       await submitted;
       await tick();
@@ -355,7 +350,7 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const fx = createAsyncForm(takenValues, buildSchema());
     const unmount = fx.form.mount();
     try {
-      const gate = deferred<boolean>();
+      const gate = validationGate();
       fx.gates.set('Taken', gate);
 
       let editSettled = false;
@@ -363,10 +358,7 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
         editSettled = true;
         return result;
       });
-      await pollFor(
-        () => fx.calls.includes('profile.name:start'),
-        'edit validator start',
-      );
+      await waitForStart(gate, 'edit validator start');
 
       // Submit while the edit run is still in flight. TanStack aborts only
       // validators that have not started yet, so the in-flight edit run keeps
@@ -401,21 +393,15 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const unmountStale = stale.form.mount();
     const unmountNewer = newer.form.mount();
     try {
-      const takenGate = deferred<boolean>();
+      const takenGate = validationGate();
       stale.gates.set('Taken', takenGate);
-      const adaGate = deferred<boolean>();
+      const adaGate = validationGate();
       newer.gates.set('Ada', adaGate);
 
       const staleRun = Promise.resolve(stale.form.validate('change'));
-      await pollFor(
-        () => stale.calls.includes('profile.name:start'),
-        'stale run start',
-      );
+      await waitForStart(takenGate, 'stale run start');
       const newerRun = Promise.resolve(newer.form.validate('change'));
-      await pollFor(
-        () => newer.calls.includes('profile.name:start'),
-        'newer run start',
-      );
+      await waitForStart(adaGate, 'newer run start');
 
       // The newer valid run completes first.
       adaGate.resolve(true);
@@ -456,21 +442,15 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const unmountStale = stale.form.mount();
     const unmountNewer = newer.form.mount();
     try {
-      const takenGate = deferred<boolean>();
+      const takenGate = validationGate();
       stale.gates.set('Taken', takenGate);
-      const adaGate = deferred<boolean>();
+      const adaGate = validationGate();
       newer.gates.set('Ada', adaGate);
 
       const staleRun = Promise.resolve(stale.form.validate('change'));
-      await pollFor(
-        () => stale.calls.includes('profile.name:start'),
-        'stale run start',
-      );
+      await waitForStart(takenGate, 'stale run start');
       const newerRun = Promise.resolve(newer.form.validate('change'));
-      await pollFor(
-        () => newer.calls.includes('profile.name:start'),
-        'newer run start',
-      );
+      await waitForStart(adaGate, 'newer run start');
 
       adaGate.resolve(true);
       await newerRun;
@@ -502,14 +482,11 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const unmount = fx.form.mount();
     let unmounted = false;
     try {
-      const gate = deferred<boolean>();
+      const gate = validationGate();
       fx.gates.set('Taken', gate);
 
       const pending = Promise.resolve(fx.form.validate('change'));
-      await pollFor(
-        () => fx.calls.includes('profile.name:start'),
-        'edit validator start',
-      );
+      await waitForStart(gate, 'edit validator start');
 
       unmount();
       unmounted = true;
@@ -536,14 +513,11 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const unmount = fx.form.mount();
     try {
       fx.setNameQuiet('Taken');
-      const gate = deferred<boolean>();
+      const gate = validationGate();
       fx.gates.set('Taken', gate);
 
       const pending = Promise.resolve(fx.form.validate('change'));
-      await pollFor(
-        () => fx.calls.includes('profile.name:start'),
-        'edit validator start',
-      );
+      await waitForStart(gate, 'edit validator start');
 
       fx.form.reset();
       expect(fx.form.state.values).toEqual(validValues);
@@ -562,7 +536,7 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
       expectTakenIssue(fieldMetaOf(fx.form, 'profile.name')?.errors[0]);
 
       // Recovery is one fresh clean validation away.
-      fx.gates.set('Ada', deferred<boolean>());
+      fx.gates.set('Ada', validationGate());
       const recovery = fx.form.validate('change');
       fx.gates.get('Ada')?.resolve(true);
       await recovery;
@@ -581,22 +555,16 @@ describe('Vest with TanStack Form: real async form-validator route (AC08)', () =
     const unmountInvalid = invalidForm.form.mount();
     const unmountValid = validForm.form.mount();
     try {
-      const takenGate = deferred<boolean>();
+      const takenGate = validationGate();
       invalidForm.gates.set('Taken', takenGate);
-      const adaGate = deferred<boolean>();
+      const adaGate = validationGate();
       validForm.gates.set('Ada', adaGate);
 
       // Overlapping pendings on separate instances never share runner state.
       const invalidRun = Promise.resolve(invalidForm.form.validate('change'));
       const validRun = Promise.resolve(validForm.form.validate('change'));
-      await pollFor(
-        () => invalidForm.calls.includes('profile.name:start'),
-        'invalid run start',
-      );
-      await pollFor(
-        () => validForm.calls.includes('profile.name:start'),
-        'valid run start',
-      );
+      await waitForStart(takenGate, 'invalid run start');
+      await waitForStart(adaGate, 'valid run start');
 
       adaGate.resolve(true);
       takenGate.resolve(false);
@@ -641,6 +609,7 @@ describe('Vest with TanStack Form: array field paths (AC08)', () => {
           test(`travelers.${index}.passport`, TAKEN_MESSAGE, async () => {
             calls.push(`travelers.${index}.passport:start`);
             const gate = gates.get(row?.passport ?? '');
+            gate?.markStarted();
             const available = gate ? await gate.promise : true;
             calls.push(`travelers.${index}.passport:settled`);
             enforce(available).isTruthy();
@@ -676,13 +645,11 @@ describe('Vest with TanStack Form: array field paths (AC08)', () => {
     const fx = createArrayForm();
     const unmount = fx.form.mount();
     try {
-      fx.gates.set('Taken', deferred<boolean>());
+      const gate = validationGate();
+      fx.gates.set('Taken', gate);
       const submitted = fx.form.handleSubmit();
-      await pollFor(
-        () => fx.calls.includes('travelers.0.passport:start'),
-        'array item validator start',
-      );
-      fx.gates.get('Taken')?.resolve(false);
+      await waitForStart(gate, 'array item validator start');
+      gate.resolve(false);
       await submitted;
       await tick();
       const meta = arrayFieldMetaOf(fx.form, 'travelers[0].passport');
@@ -704,7 +671,7 @@ describe('Vest with TanStack Form: array field paths (AC08)', () => {
       fx.form.setFieldValue('travelers[0].passport', 'Ada', {
         dontValidate: true,
       });
-      fx.gates.set('Ada', deferred<boolean>());
+      fx.gates.set('Ada', validationGate());
       const changeEdit = fx.form.validate('change');
       fx.gates.get('Ada')?.resolve(true);
       await changeEdit;
@@ -715,7 +682,7 @@ describe('Vest with TanStack Form: array field paths (AC08)', () => {
       expect(fx.form.state.isValid).toBe(false);
 
       // A clean blur validation clears the remaining key.
-      fx.gates.set('Ada', deferred<boolean>());
+      fx.gates.set('Ada', validationGate());
       const blurEdit = fx.form.validate('blur');
       fx.gates.get('Ada')?.resolve(true);
       await blurEdit;

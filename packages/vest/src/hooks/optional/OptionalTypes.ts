@@ -3,7 +3,7 @@ import { DynamicValue, OneOrMoreOf } from 'vest-utils';
 export type OptionalFields = Record<string, OptionalFieldDeclaration>;
 
 export type OptionalsInput<F extends string = string> =
-  | OneOrMoreOf<F>
+  | OneOrMoreOf<F | (string & {})>
   | OptionalsObject<F>;
 
 type OptionalsObject<F extends string> = Record<F, TOptionalRule | any>;

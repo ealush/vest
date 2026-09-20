@@ -1,3 +1,4 @@
+import { enforce } from 'n4s';
 import { describe, it, expect } from 'vitest';
 import wait from 'wait';
 
@@ -37,6 +38,26 @@ describe('runStatic', () => {
     expect(suite2.hasErrors('t2')).toBe(true);
     expect(suite2.hasErrors('t3')).toBe(false);
     expect(suite2.hasErrors('t4')).toBe(false);
+  });
+
+  it('restores mapped schema output for a focused run after static hydration', async () => {
+    const schema = enforce.shape({
+      age: enforce.isNumeric().toNumber(),
+      note: enforce.isString(),
+    });
+    const serverSuite = vest.create(() => {}, schema);
+    const serialized = SuiteSerializer.serialize(
+      serverSuite.runStatic({ age: '10', note: 'server' }),
+    );
+    const seen: unknown[] = [];
+    const clientSuite = vest.create(data => {
+      seen.push(data);
+    }, schema);
+
+    SuiteSerializer.resume(clientSuite, serialized);
+    await clientSuite.changed('note').run({ note: 'client' });
+
+    expect(seen).toEqual([{ age: 10, note: 'client' }]);
   });
 
   describe('runStatic (promise)', () => {

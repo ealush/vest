@@ -76,6 +76,28 @@ function useIsExcludedByGroup(testObject: TIsolateTest): boolean {
 }
 
 /**
+ * Whether an explicit builder field skip authoritatively excludes this test.
+ * Used for destructive skip semantics: a field-skipped test clears its
+ * retained verdict instead of reusing history. Checked against the builder
+ * `skip` list (not the isolate tree) so group-internal `skip(true)`
+ * isolates — which must retain history — never count as field skips.
+ * Group exclusion, implicit only, skipWhen, and the internal `__skipAll`
+ * zero-field focus all retain history and return false here.
+ */
+export function useIsExcludedByFieldSkip(testObject: TIsolateTest): boolean {
+  const { modifiers } = SuiteContext.useX() as {
+    modifiers: { __skipAll?: boolean; skip?: unknown };
+  };
+  if (modifiers.__skipAll) return false;
+  const { fieldName } = VestTest.getData(testObject);
+  const skip = modifiers.skip as string | readonly string[] | null | undefined;
+  if (typeof skip === 'string') return skip === fieldName;
+  if (Array.isArray(skip))
+    return (skip as readonly unknown[]).includes(fieldName);
+  return false;
+}
+
+/**
  * Checks if a specific test should be excluded by field-level focus rules.
  *
  * 1. Explicit focus: find the closest `IsolateFocused` sibling from the test's
@@ -86,6 +108,10 @@ function useIsExcludedByGroup(testObject: TIsolateTest): boolean {
  *    unless it has a matching `include()` rule.
  */
 function useIsExcludedByField(testObject: TIsolateTest): boolean {
+  // Builder field skip is authoritative independent of fluent order and
+  // isolate creation order. Nested imperative focus keeps its existing
+  // first-declaration-wins behavior via the isolate lookup below.
+  if (useIsExcludedByFieldSkip(testObject)) return true;
   const { fieldName } = VestTest.getData(testObject);
   const focusMatch = useClosestMatchingFocus(testObject, fieldName);
 

@@ -70,7 +70,15 @@ export class TestWalker {
   static resetField(fieldName: TFieldName): void {
     TestWalker.walkTests(testObject => {
       if (matchingFieldName(VestTest.getData(testObject), fieldName).unwrap()) {
-        VestTest.reset(testObject);
+        if (VestTest.isStartedStatus(testObject)) {
+          // A pending async test keeps a live completion that would resurrect
+          // the field after the reset. Canceling invalidates its authority to
+          // update state: the late settlement becomes a terminal no-op. The
+          // underlying work is not stopped; only its state updates are void.
+          VestTest.cancel(testObject);
+        } else {
+          VestTest.reset(testObject);
+        }
       }
     }, TestWalker.defaultRoot());
   }

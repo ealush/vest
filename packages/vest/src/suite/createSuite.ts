@@ -1,3 +1,4 @@
+import { assertSchemaRootPathsValid } from 'n4s/exports/internal';
 import { CB, makeResult, Result } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
@@ -5,6 +6,7 @@ import { useCreateVestState } from '../core/Runtime';
 import { useInitVestBus } from '../core/VestBus/VestBus';
 import { VestReconciler } from '../core/isolate/VestReconciler';
 import {
+  DraftSchemaOutput,
   InferSchemaOutput,
   TFieldName,
   TGroupName,
@@ -48,8 +50,8 @@ function createSuite<
 // @vx-allow use-use
 function createSuite<
   S extends TSchema,
-  T extends (data: InferSchemaOutput<S>, ...args: any[]) => void = (
-    data: InferSchemaOutput<S>,
+  T extends (data: DraftSchemaOutput<S>, ...args: any[]) => void = (
+    data: DraftSchemaOutput<S>,
     ...args: any[]
   ) => void,
 >(
@@ -71,6 +73,11 @@ function createSuite<
   S extends TSchema = undefined,
 >(suiteCallback: T, schema?: S): Suite<F, G, T, S> {
   const suiteCallbackResult = validateSuiteCallback(suiteCallback).unwrap();
+  if (schema) {
+    // Deferred ($.root) relationship endpoints are validated by n4s against
+    // the final mounted graph.
+    assertSchemaRootPathsValid(schema);
+  }
 
   const stateRef = useCreateVestState({ VestReconciler });
 

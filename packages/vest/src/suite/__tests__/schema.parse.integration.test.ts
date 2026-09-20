@@ -234,7 +234,7 @@ describe('suite schema integration', () => {
     expect(result.isValid()).toBe(true);
   });
 
-  it('uses original data in callback when parser chain fails in schema parse', () => {
+  it('uses parser mapping in callback when validation fails in schema parse', () => {
     const schema = n4sEnforce.shape({
       subscribed: n4sEnforce.isString().trim().toBoolean(),
     });
@@ -250,8 +250,58 @@ describe('suite schema integration', () => {
 
     const result = suite.run({ subscribed: 'unknown' });
 
-    expect(callbackData).toEqual({ subscribed: 'unknown' });
+    // The parser maps 'unknown' to false while validation still fails: the
+    // callback keeps the output type truthful instead of raw input.
+    expect(callbackData).toEqual({ subscribed: false });
     expect(result.value).toBeUndefined();
     expect(result.hasErrors('subscribed')).toBe(true);
+  });
+
+  it('propagates parser mapping throws instead of raw fallback', () => {
+    const mappingBoom = new Error('cannot map');
+    n4sEnforce.extend(
+      {
+        throwingParser: (value: unknown) => {
+          // Validation short-circuits on the failing field before this
+          // parser runs as a validator; failure mapping executes every
+          // parser stage, so it throws only there.
+          if (value === 'x') throw mappingBoom;
+          return { pass: true, type: value };
+        },
+      },
+      { parsers: ['throwingParser'] },
+    );
+    const schema = n4sEnforce.shape({
+      name: n4sEnforce.isString(),
+      mapped: (n4sEnforce as any).throwingParser(),
+    });
+
+    let callbackData: any;
+
+    const suite = create((data: any) => {
+      callbackData = data;
+      test('name', () => {
+        enforce(data.name).isString();
+      });
+    }, schema);
+
+    // Validation fails on 'name' before the throwing parser runs, so the
+    // run reports the failure; failure mapping then throws, and the
+    // unexpected parser exception propagates with its identity instead of
+    // delivering fabricated raw input to the schema-typed callback.
+    let thrown: unknown;
+    try {
+      // @ts-expect-error - Invalid data
+      suite.run({ name: 42, mapped: 'x' });
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBe(mappingBoom);
+    expect(callbackData).toBeUndefined();
+
+    const recovery = suite.run({ name: 'ok', mapped: 'y' });
+    expect(recovery.isValid()).toBe(true);
+    expect(callbackData).toEqual({ name: 'ok', mapped: 'y' });
   });
 });

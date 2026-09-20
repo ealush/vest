@@ -32,17 +32,32 @@ describe('afterEach', () => {
 
   describe('When both sync and async tests', () => {
     it('should call the `afterEach` callback once when the sync tests are done and again for each async test', async () => {
-      const afterCallback = vi.fn();
+      const gates = [0, 1].map(() => {
+        let reject!: (reason?: unknown) => void;
+        const promise = new Promise<void>((_resolve, rejectPromise) => {
+          reject = rejectPromise;
+        });
+        return { promise, reject };
+      });
+      let firstSettled!: () => void;
+      const afterFirst = new Promise<void>(resolve => {
+        firstSettled = resolve;
+      });
+      const afterCallback = vi.fn(() => {
+        if (afterCallback.mock.calls.length === 2) firstSettled();
+      });
       const suite = vest.create(() => {
         dummyTest.passing();
-        dummyTest.failingAsync('field_1', { time: 10 });
-        dummyTest.failingAsync('field_2', { time: 15 });
+        vest.test('field_1', () => gates[0].promise);
+        vest.test('field_2', () => gates[1].promise);
       });
-      suite.afterEach(afterCallback).run();
+      const result = suite.afterEach(afterCallback).run();
       expect(afterCallback).toHaveBeenCalledTimes(1);
-      await wait(10);
+      gates[0].reject('first failure');
+      await afterFirst;
       expect(afterCallback).toHaveBeenCalledTimes(2);
-      await wait(10);
+      gates[1].reject('second failure');
+      await result;
       expect(afterCallback).toHaveBeenCalledTimes(3);
     });
   });
@@ -80,13 +95,24 @@ describe('afterEach', () => {
 
   describe('When there are async tests', () => {
     it('should run after each async test finishes', async () => {
-      const afterCallback = vi.fn();
+      const deferred = () => {
+        let resolve!: () => void;
+        const promise = new Promise<void>(resolvePromise => {
+          resolve = resolvePromise;
+        });
+        return { promise, resolve };
+      };
+      const tests = [deferred(), deferred(), deferred()];
+      const afterSignals = [deferred(), deferred(), deferred()];
+      const afterCallback = vi.fn(() => {
+        afterSignals[afterCallback.mock.calls.length - 2]?.resolve();
+      });
       expect(afterCallback).toHaveBeenCalledTimes(0);
       const res = vest
         .create(() => {
-          dummyTest.passingAsync('field_1', { time: 0 });
-          dummyTest.failingAsync('field_2', { time: 20 });
-          dummyTest.passingAsync('field_3', { time: 40 });
+          vest.test('field_1', () => tests[0].promise);
+          vest.test('field_2', () => tests[1].promise);
+          vest.test('field_3', () => tests[2].promise);
           dummyTest.failing();
           dummyTest.passing();
         })
@@ -94,12 +120,14 @@ describe('afterEach', () => {
         .run();
 
       expect(afterCallback).toHaveBeenCalledTimes(1);
-      await wait(0);
+      tests[0].resolve();
+      await afterSignals[0].promise;
       expect(afterCallback).toHaveBeenCalledTimes(2);
-      await wait(20);
+      tests[1].resolve();
+      await afterSignals[1].promise;
       expect(afterCallback).toHaveBeenCalledTimes(3);
-
-      await wait(40);
+      tests[2].resolve();
+      await afterSignals[2].promise;
       expect(afterCallback).toHaveBeenCalledTimes(4);
 
       await res;

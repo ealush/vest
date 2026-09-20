@@ -13,10 +13,10 @@ const usernameSchema = enforce.shape({
 
 export const requestSuite = create(data => {
   test('profile.age', 'Must be at least 18', () => {
-    enforce(Number(data.profile.age)).greaterThanOrEquals(18);
+    enforce(Number(data.profile?.age)).greaterThanOrEquals(18);
   });
   test('email', 'Use an example.com email', () => {
-    enforce(data.email.trim().toLowerCase()).endsWith('@example.com');
+    enforce(data.email?.trim()?.toLowerCase()).endsWith('@example.com');
   });
 }, requestSchema);
 
@@ -34,7 +34,8 @@ export function createAsyncApp(
 ) {
   const suite = create(data => {
     test('username', 'Username is already taken', async () => {
-      enforce(await isAvailable(data.username)).isTruthy();
+      const username = typeof data.username === 'string' ? data.username : '';
+      enforce(await isAvailable(username)).isTruthy();
     });
   }, usernameSchema);
   return new Hono().post(

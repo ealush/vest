@@ -5062,10 +5062,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.17.21":
-  version: 4.17.21
-  resolution: "@types/lodash@npm:4.17.21"
-  checksum: e09e3eaf29b18b6c8e130fcbafd8e3c4ecc2110f35255079245e7d1bd310a5a8f93e4e70266533dce672f253bba899c721bc6870097e0a8c5448e0b628136d39
+"@types/lodash@npm:^4.17.24":
+  version: 4.17.24
+  resolution: "@types/lodash@npm:4.17.24"
+  checksum: 2b254973145ecdf9b052d83f00ebaa111245f319d45b217c78f81cea8892fda81180fc749bd50a99c08f4e5efceb834c774d3f74153a50a9c4a28648343dc9f3
   languageName: node
   linkType: hard
 
@@ -17360,7 +17360,7 @@ __metadata:
   resolution: "vest-monorepo@workspace:."
   dependencies:
     "@faker-js/faker": ^10.3.0
-    "@types/lodash": ^4.17.21
+    "@types/lodash": ^4.17.24
     "@typescript-eslint/eslint-plugin": ^7
     "@typescript-eslint/parser": ^7
     "@vitest/coverage-v8": 4.0.18

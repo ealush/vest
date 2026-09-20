@@ -551,7 +551,10 @@ function fullCallbackMapping(params: {
     assertSkippedUnionCoverage({ base, fallback, previous, skipped, unions });
     return mappedCallbackResult(repairSkippedPaths(current, base, skipped));
   }
-  return mappedCallbackResult(cloneDetachedDataTree(current));
+  // mappedCallbackResult already creates separate retained and callback
+  // copies. Passing the schema output directly avoids a third full-tree copy
+  // while preserving both ownership boundaries.
+  return mappedCallbackResult(current);
 }
 
 function failedCallbackMapping(

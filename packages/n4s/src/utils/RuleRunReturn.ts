@@ -1,4 +1,9 @@
-import { isBoolean, Stringable, dynamicValue } from 'vest-utils';
+import {
+  dynamicValue,
+  hasOwnProperty,
+  isBoolean,
+  Stringable,
+} from 'vest-utils';
 
 /**
  * Represents the result of a validation rule execution.
@@ -66,7 +71,14 @@ export class RuleRunReturn<T> {
 
     const resolvedPass = !!pass.pass;
 
-    const successType = pass.type === undefined ? type : pass.type;
+    // Explicit undefined is a supported parser output: fall back to the
+    // input only when the result carries no own 'type' at all. Class
+    // instances always carry the key, so they keep the legacy value check.
+    const carriesOutputType =
+      pass instanceof RuleRunReturn
+        ? pass.type !== undefined
+        : hasOwnProperty(pass, 'type');
+    const successType = carriesOutputType ? pass.type : type;
     const failureType = type === undefined ? pass.type : type;
     const resolvedType = (resolvedPass ? successType : failureType) as T;
 

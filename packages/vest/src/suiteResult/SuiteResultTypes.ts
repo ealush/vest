@@ -96,13 +96,13 @@ export type InferSchemaOutput<S> = S extends StandardSchemaV1
     : any;
 
 /**
- * Draft output delivered to the shared suite callback and to focused-run
- * results. Focused runs execute only their selected region: untouched
+ * Draft output exposed by changed-run results. Selective runs execute only
+ * their selected region: untouched
  * required fields are absent (own-property missing, never fabricated),
  * retained mappings may hydrate previously proven values, and a mapped
- * value never certifies validation of an untouched validator. The same
- * callback runs on full and focused runs, so its parameter must admit
- * every permitted invocation — hence the draft.
+ * value never certifies validation of an untouched validator. Vest 6 keeps
+ * the existing callback and legacy focus types for source compatibility;
+ * their draft-safe retype is tracked for Vest 7 in issue #1327.
  *
  * Partiality applies per object property: nested siblings outside the
  * selection are also absent, optional output stays present-undefined
@@ -207,9 +207,10 @@ type FocusedSuiteResultData<
       });
 
 /**
- * Focused-run result. `valid: true` certifies only the executed region;
- * `value` is a draft: required output may be absent. Full runs use
- * `SuiteResult`, whose `valid: true` certifies complete output.
+ * Selective changed-run result. `valid: true` certifies only the executed
+ * region; `value` is a draft because required output may be absent. Full runs
+ * use `SuiteResult`, whose `valid: true` certifies complete output. Existing
+ * only()/focus()/get() surfaces retain their Vest 6 result type until Vest 7.
  */
 export type FocusedSuiteResult<
   F extends string = TFieldName,

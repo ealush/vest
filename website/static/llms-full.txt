@@ -9786,14 +9786,14 @@ Container validators and schemas without recognizable metadata can require a ful
 
 Focused callback data and result values are drafts with per-field provenance, not certified complete output. A first focused run exposes only the fields it executed — untouched required properties are absent (never fabricated), and only a full run certifies complete schema output. Later focused runs hydrate retained fields from the last complete mapping. An absent optional input materializes as an own `undefined` consistently across full output, focused output, and callback data. Unreported changes to retained fields remain caller invalidation responsibility: `changed()` reports invalidation for the fields you name, it does not deep-diff your data.
 
-Types enforce the distinction: the suite callback receives draft output, so unsafe reads fail to compile until narrowed; focused `value` after `if (result.valid)` is likewise a draft, while full-run `value` after `if (result.valid)` is complete:
+For Vest 6 compatibility, the existing suite callback, `only()`, `focus()`, and `suite.get()` types keep their complete-output contract even though focused runtime data can be incomplete. The new `changed()` result is draft-typed, while a full-run result after `if (result.valid)` remains complete. Narrow callback reads defensively when the suite can run in a focused mode. The fully sound callback and existing-focused-result retype is planned for Vest 7 in [#1327](https://github.com/ealush/vest/issues/1327):
 
 ```ts
 const suite = create(
   data => {
-    // @ts-expect-error: no output witness on a draft
+    // Vest 6 preserves the complete callback type for compatibility.
+    // This can still be absent at runtime during a focused invocation.
     data.n.toFixed();
-    if (typeof data.n === 'number') data.n.toFixed();
     test('note', () => {});
   },
   enforce.shape({
@@ -9804,7 +9804,8 @@ const suite = create(
 
 const focused = suite.changed('note').run({ note: 'ok' });
 if (focused.valid) {
-  // @ts-expect-error: valid does not prove complete output
+  // changed() is new, so its result can honestly expose the draft contract.
+  // @ts-expect-error: changed valid does not prove complete output
   focused.value.n.toFixed();
   if (focused.value && typeof focused.value.n === 'number')
     focused.value.n.toFixed();
@@ -10203,7 +10204,7 @@ suite.run({ username: 'john', age: 42 });
 
 ### Input vs output types with parsers
 
-When a schema uses [data parsers](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/data_parsers), Vest distinguishes between the **input type** (what `suite.run()` accepts), the **draft output type** (what the callback may receive on focused runs), and the **complete output type** (what a successful full run certifies in `result.value`).
+When a schema uses [data parsers](https://vestjs.dev/docs/enforce/builtin-enforce-plugins/data_parsers), Vest distinguishes between the **input type** (what `suite.run()` accepts), the **draft output type** (what `suite.changed()` can return), and the **complete output type** (what a successful full run certifies in `result.value`).
 
 ```typescript
 const schema = enforce.shape({
@@ -10212,8 +10213,9 @@ const schema = enforce.shape({
 });
 
 const suite = create(data => {
-  // data.age is typed as `number | undefined` (draft output): narrow before
-  // output-only use, e.g. `if (typeof data.age === 'number')`.
+  // Vest 6 keeps the established complete callback type.
+  // Focused runtime data can still be incomplete, so defensive narrowing is
+  // recommended when this suite is run through a focus method.
   test('age', () => {
     enforce(data.age).greaterThan(0);
   });
@@ -10263,9 +10265,10 @@ enforce.extend(
 Custom extension rules are treated as validators unless they are listed in
 `parsers`. The per-run `result.run.data.parsed` value still reflects only the
 schema work performed by that run. Because the same callback can serve full
-and focused runs, it receives a draft mapped output: properties not witnessed
-by the current or retained mapping may be absent. A successful full-run result
-still carries the complete mapped output.
+and focused runs, properties not witnessed by the current or retained mapping
+may be absent at runtime. Vest 6 preserves the callback's complete-output type
+for compatibility; [the draft callback retype is planned for Vest 7](https://github.com/ealush/vest/issues/1327).
+A successful full-run result still carries the complete mapped output.
 
 When a focused path enters an array, Vest refreshes that containing array from
 the current input. Array positions are not identities, so this prevents an
@@ -10278,9 +10281,9 @@ again to refresh this mapping and must be pure.
 
 With `create(callback, schema)`, TypeScript narrows:
 
-- callback data (`data`) to the schema draft output shape (every output property optional: focused runs may omit untouched fields; narrow before output-only use).
+- callback data (`data`) to the schema output shape, preserving Vest 6 compatibility. Focused runs may still omit untouched fields at runtime, so narrow defensively when using focus APIs.
 - `suite.run(...)` / `suite.runStatic(...)` first argument to the schema input shape.
-- the Standard Schema `~standard.validate(...)` input and output types.
+- the suite's Standard Schema surface using its existing Vest 6 contract.
 - field-oriented happy-path APIs (`test`, `optional`, `include`) to schema keys.
 - `result.types.input` and `result.types.output` to schema input/output types.
 
@@ -10347,7 +10350,7 @@ For interaction-driven revalidation that also refreshes dependent fields, use `s
 
 The suite result includes typed properties for accessing validated and parsed data:
 
-- `result.value` — The parsed output when the suite is valid. Typed as the schema's complete output type after a successful full run, and as the draft output type after a focused run (required properties may be absent). `undefined` when invalid.
+- `result.value` — The parsed output when the suite is valid. Full runs and existing `only()` / `focus()` / `get()` surfaces retain Vest 6's complete-output type. The new `changed()` result uses the draft output type because required properties may be absent. `undefined` when invalid.
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
 - `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
 - `result.run.data.raw` — The current run's parsed chunk when schema validation succeeds, or its original input when validation fails. A focused callback may receive a fuller retained mapped output than this per-run metadata.

@@ -42,19 +42,18 @@ function typeChecks() {
   const suite = create(data => {
     // inferred data shape inside suite callback
     expectTypeOf(data).toEqualTypeOf<{
-      password?: string | undefined;
-      confirmPassword?: string | undefined;
-      profile?:
-        | { age?: number | undefined; displayName?: string | undefined }
-        | undefined;
+      password: string;
+      confirmPassword: string;
+      profile: { age: number; displayName: string };
     }>();
-    expectTypeOf(data.password).toEqualTypeOf<string | undefined>();
-    expectTypeOf(data.confirmPassword).toEqualTypeOf<string | undefined>();
-    expectTypeOf(data.profile).toEqualTypeOf<
-      { age?: number | undefined; displayName?: string | undefined } | undefined
-    >();
-    expectTypeOf(data.profile?.age).toEqualTypeOf<number | undefined>();
-    expectTypeOf(data.profile?.displayName).toEqualTypeOf<string | undefined>();
+    expectTypeOf(data.password).toEqualTypeOf<string>();
+    expectTypeOf(data.confirmPassword).toEqualTypeOf<string>();
+    expectTypeOf(data.profile).toEqualTypeOf<{
+      age: number;
+      displayName: string;
+    }>();
+    expectTypeOf(data.profile.age).toEqualTypeOf<number>();
+    expectTypeOf(data.profile.displayName).toEqualTypeOf<string>();
     test('password', () => {
       enforce(data.password).isString();
     });
@@ -62,7 +61,7 @@ function typeChecks() {
       enforce(data.confirmPassword).isString();
     });
     test('profile.displayName', () => {
-      enforce(data.profile?.displayName).isString();
+      enforce(data.profile.displayName).isString();
     });
   }, schema);
 

@@ -29,17 +29,10 @@ describe('schema driven suite types', () => {
 
     const suite = create(data => {
       void (0 as unknown as AssertTrue<
-        IsEqual<
-          typeof data,
-          { name?: string | undefined; age?: number | undefined }
-        >
+        IsEqual<typeof data, { name: string; age: number }>
       >);
-      void (0 as unknown as AssertTrue<
-        IsEqual<(typeof data)['name'], string | undefined>
-      >);
-      void (0 as unknown as AssertTrue<
-        IsEqual<(typeof data)['age'], number | undefined>
-      >);
+      void (0 as unknown as AssertTrue<IsEqual<(typeof data)['name'], string>>);
+      void (0 as unknown as AssertTrue<IsEqual<(typeof data)['age'], number>>);
     }, schema);
 
     void (0 as unknown as AssertTrue<
@@ -83,10 +76,7 @@ describe('schema driven suite types', () => {
 
     const suite = create(data => {
       void (0 as unknown as AssertTrue<
-        IsEqual<
-          typeof data,
-          { name?: string | undefined; number?: number | undefined }
-        >
+        IsEqual<typeof data, { name: string; number: number }>
       >);
     }, schema);
 
@@ -119,7 +109,7 @@ describe('schema driven suite types', () => {
       void (0 as unknown as AssertTrue<
         IsEqual<
           typeof data,
-          Simplify<{ title?: string | undefined } & Record<string, unknown>>
+          Simplify<{ title: string } & Record<string, unknown>>
         >
       >);
     }, looseSchema);
@@ -871,24 +861,17 @@ describe('lazy schema in suite types', () => {
         IsEqual<
           typeof data,
           Simplify<{
-            name?: string | undefined;
-            metadata?:
-              | {
-                  key?: string | undefined;
-                  value?: number | undefined;
-                }
-              | undefined;
+            name: string;
+            metadata: {
+              key: string;
+              value: number;
+            };
           }>
         >
       >);
+      void (0 as unknown as AssertTrue<IsEqual<(typeof data)['name'], string>>);
       void (0 as unknown as AssertTrue<
-        IsEqual<(typeof data)['name'], string | undefined>
-      >);
-      void (0 as unknown as AssertTrue<
-        IsEqual<
-          (typeof data)['metadata'],
-          { key?: string | undefined; value?: number | undefined } | undefined
-        >
+        IsEqual<(typeof data)['metadata'], { key: string; value: number }>
       >);
     }, schema);
 

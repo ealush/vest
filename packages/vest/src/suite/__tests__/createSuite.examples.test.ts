@@ -115,10 +115,7 @@ describe('createSuite examples - permutation 1: happy path schema inference', ()
 
     const suite = create(data => {
       void (0 as unknown as AssertTrue<
-        IsEqual<
-          typeof data,
-          { status?: string | undefined; retries?: number | undefined }
-        >
+        IsEqual<typeof data, { status: string; retries: number }>
       >);
 
       test('status', () => {

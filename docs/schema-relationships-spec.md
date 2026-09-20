@@ -3,14 +3,16 @@
 Declarative cross-field relationships for n4s schemas with
 dependency-aware selective `suite.changed()` runs in Vest.
 
-Status: intended **major** release (Vest 7). The shared suite callback and
-focused results are draft-typed; see `docs/schema-relationships-ac05-adr.md`
-for the decision record and migration path. This file describes the feature
-and where it is implemented; it replaces the PR-acceptance process
-documents (manifest, plans, readiness notes), which are deleted with this
-change. The remaining executable gates are `test`, `test:schema-relationships`,
-`gate:schema-coverage`, `gate:schema-boundaries`, and
-`gate:schema-performance`.
+Status: intended additive Vest 6 release. The new `changed()` result is
+draft-typed; existing callback, `get()`, `only()`, and `focus()` types retain
+their Vest 6 contract. The sound shared-callback retype is deferred to Vest 7
+in [#1327](https://github.com/ealush/vest/issues/1327); see
+`docs/schema-relationships-ac05-adr.md` for the decision record. This file
+describes the feature and where it is implemented; it replaces the
+PR-acceptance process documents (manifest, plans, readiness notes), which are
+deleted with this change. The remaining executable gates are `test`,
+`test:schema-relationships`, `gate:schema-coverage`,
+`gate:schema-boundaries`, and `gate:schema-performance`.
 
 ## 1. Feature
 
@@ -23,27 +25,24 @@ computed selection. `only()` keeps explicit inclusion semantics without
 dependency expansion. A full run validates everything and certifies complete
 output.
 
-## 2. Output model (draft vs complete)
+## 2. Output model (Vest 6 compatibility)
 
 - The suite callback (`SuiteCallbackWithSchema` in
-  `packages/vest/src/suite/SuiteTypes.ts`) receives
-  `DraftSchemaOutput<S>` (`DeepDraft<InferSchemaOutput<S>>` in
-  `packages/vest/src/suiteResult/SuiteResultTypes.ts`): every output
-  property is optional because the same callback runs on full and focused
-  runs. Unsafe reads fail compilation until narrowed (`typeof`, `in`,
-  `Object.hasOwn`).
+  `packages/vest/src/suite/SuiteTypes.ts`) retains its Vest 6
+  `InferSchemaOutput<S>` type. Focused runtime data can still be incomplete;
+  this pre-existing `only()` / `focus()` typing limitation is documented and
+  deferred to Vest 7 in #1327.
 - `DeepDraft` recurses into plain objects only. Identity containers
   (arrays, tuples, `Date`, `Map`, `Set`, promises, functions) stay whole:
   focused mapping replaces them wholesale, so an absent array is the
   missing property, never a partial array.
 - `Suite.run` / `runStatic` / `validate` return `SuiteResult`, whose
   `valid: true` arm carries complete `InferSchemaOutput<S>`.
-- Focused builders (`changed()` / `only()` / `focus()`) return
-  `FocusedSuiteResult`, whose `valid: true` arm carries the draft.
-  `valid` alone never narrows a focused value to complete output.
-- `suite.get()` returns the draft result (the last run may have been
-  focused). `result.types.input` / `result.types.output` still describe the
-  complete schema types.
+- The new `changed()` builder returns `FocusedSuiteResult`, whose `valid: true`
+  arm carries the draft. `valid` alone never narrows a changed-run value to
+  complete output.
+- Existing `only()` / `focus()` builders and `suite.get()` retain their Vest 6
+  `SuiteResult` type for source compatibility.
 - Runtime correspondence: first focused runs omit untouched required
   properties (own-property absent, never fabricated); later focused runs
   hydrate retained fields from the last complete mapping; absent optional
@@ -117,8 +116,8 @@ n4s and orchestration in Vest.
 - Types: `Suite`, `SuiteMethods`, `FocusedMethods`, `SuiteModifiers`
   (`SuiteTypes.ts`); `SuiteResult`, `FocusedSuiteResult`
   (`suiteResult/SuiteResultTypes.ts`); `createSuite` overloads
-  (`suite/createSuite.ts`) infer field keys from schema output and draft
-  the callback.
+  (`suite/createSuite.ts`) infer field keys from schema output while retaining
+  the Vest 6 callback type. The new `changed()` result alone is draft-typed.
 - Focus builders (`useCreateSuiteMethods.ts`): `changed()` defers
   affected-set expansion to run data (enabling root→array fan-out);
   `only()`/`focus()` snapshot caller lists at the builder boundary

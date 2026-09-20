@@ -52,8 +52,9 @@ self-policing. Supported examples use no `as any` / `as never`.
 
 ## Coverage map (sections in `suite-consumer.*`)
 
-1. Native n4s schema suite (`enforce.shape`, draft callback data, complete
-   `run`/`validate`/`runStatic` inputs and full-run result values).
+1. Native n4s schema suite (`enforce.shape`, Vest 6-compatible complete
+   callback data, complete `run`/`validate`/`runStatic` inputs and full-run
+   result values).
 2. Hand-written `StandardSchemaV1<I, O>` schema with distinct input/output;
    canonical-helper inference (`InferInput`/`InferOutput`) asserted EXACT and
    non-any via `IsAny` + local `expectTypeOf`.
@@ -65,8 +66,8 @@ self-policing. Supported examples use no `as any` / `as never`.
 7. Nested dotted selectors (`profile.state`) for remove/reset/focus/result.
 8. Root-array suites (`enforce.isArrayOf`).
 9. Callbacks with extra args threading through `run()`.
-10. `valid`-narrowing: complete `value` after a full run, draft `value` after
-    a focused run, and `issues` on invalid.
+10. `valid`-narrowing: complete `value` after a full or legacy focused run,
+    draft `value` after the new `changed()` path, and `issues` on invalid.
 11. `afterEach`/`afterField` chaining through `changed`/`focus`/`only`/`run`.
 12. Clear/empty selectors (`changed(undefined)`, `changed([])`, `focus({})`,
     `skip: true/false`).

@@ -77,7 +77,7 @@ suite.run({ username: 'john', age: 42 });
 
 ### Input vs output types with parsers
 
-When a schema uses [data parsers](../enforce/builtin-enforce-plugins/data_parsers.md), Vest distinguishes between the **input type** (what `suite.run()` accepts), the **draft output type** (what the callback may receive on focused runs), and the **complete output type** (what a successful full run certifies in `result.value`).
+When a schema uses [data parsers](../enforce/builtin-enforce-plugins/data_parsers.md), Vest distinguishes between the **input type** (what `suite.run()` accepts), the **draft output type** (what `suite.changed()` can return), and the **complete output type** (what a successful full run certifies in `result.value`).
 
 ```typescript
 const schema = enforce.shape({
@@ -86,8 +86,9 @@ const schema = enforce.shape({
 });
 
 const suite = create(data => {
-  // data.age is typed as `number | undefined` (draft output): narrow before
-  // output-only use, e.g. `if (typeof data.age === 'number')`.
+  // Vest 6 keeps the established complete callback type.
+  // Focused runtime data can still be incomplete, so defensive narrowing is
+  // recommended when this suite is run through a focus method.
   test('age', () => {
     enforce(data.age).greaterThan(0);
   });
@@ -137,9 +138,10 @@ enforce.extend(
 Custom extension rules are treated as validators unless they are listed in
 `parsers`. The per-run `result.run.data.parsed` value still reflects only the
 schema work performed by that run. Because the same callback can serve full
-and focused runs, it receives a draft mapped output: properties not witnessed
-by the current or retained mapping may be absent. A successful full-run result
-still carries the complete mapped output.
+and focused runs, properties not witnessed by the current or retained mapping
+may be absent at runtime. Vest 6 preserves the callback's complete-output type
+for compatibility; [the draft callback retype is planned for Vest 7](https://github.com/ealush/vest/issues/1327).
+A successful full-run result still carries the complete mapped output.
 
 When a focused path enters an array, Vest refreshes that containing array from
 the current input. Array positions are not identities, so this prevents an
@@ -152,9 +154,9 @@ again to refresh this mapping and must be pure.
 
 With `create(callback, schema)`, TypeScript narrows:
 
-- callback data (`data`) to the schema draft output shape (every output property optional: focused runs may omit untouched fields; narrow before output-only use).
+- callback data (`data`) to the schema output shape, preserving Vest 6 compatibility. Focused runs may still omit untouched fields at runtime, so narrow defensively when using focus APIs.
 - `suite.run(...)` / `suite.runStatic(...)` first argument to the schema input shape.
-- the Standard Schema `~standard.validate(...)` input and output types.
+- the suite's Standard Schema surface using its existing Vest 6 contract.
 - field-oriented happy-path APIs (`test`, `optional`, `include`) to schema keys.
 - `result.types.input` and `result.types.output` to schema input/output types.
 
@@ -221,7 +223,7 @@ For interaction-driven revalidation that also refreshes dependent fields, use `s
 
 The suite result includes typed properties for accessing validated and parsed data:
 
-- `result.value` — The parsed output when the suite is valid. Typed as the schema's complete output type after a successful full run, and as the draft output type after a focused run (required properties may be absent). `undefined` when invalid.
+- `result.value` — The parsed output when the suite is valid. Full runs and existing `only()` / `focus()` / `get()` surfaces retain Vest 6's complete-output type. The new `changed()` result uses the draft output type because required properties may be absent. `undefined` when invalid.
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
 - `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
 - `result.run.data.raw` — The current run's parsed chunk when schema validation succeeds, or its original input when validation fails. A focused callback may receive a fuller retained mapped output than this per-run metadata.

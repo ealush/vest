@@ -1,61 +1,55 @@
 # ADR: focused-run callback data and result value completeness (AC05)
 
-Status: **accepted and implemented (breaking retype).**
-Scope: `suite.changed()` / `only()` / `focus()` runs on schema suites. Full-run
-input and result-value guarantees are unaffected; the shared callback type is
-necessarily widened because it also handles focused runs.
+Status: **Vest 6 compatibility decision accepted; sound retype deferred to
+Vest 7.** Tracked by [#1327](https://github.com/ealush/vest/issues/1327).
 
-## Decision
+Scope: `suite.changed()` / `only()` / `focus()` runs on schema suites.
 
-Focused declaration data and focused results are drafts. A full successful
-run certifies complete output.
+## Vest 6 decision
 
-- The shared suite callback (`SuiteCallbackWithSchema`) receives
-  `DraftSchemaOutput<S>` (deep-partial output). The same callback runs on
-  full and focused runs, so its parameter admits everything delivered on
-  every permitted invocation.
-- `Suite.run` / `runStatic` / `validate` return `SuiteResult` whose
+Schema relationships ship without changing the established types of
+`create()`, its callback, `suite.get()`, `only()`, or `focus()`.
+
+- `SuiteCallbackWithSchema` continues to receive the complete
+  `InferSchemaOutput<S>` type.
+- `Suite.run`, `runStatic`, and `validate` return `SuiteResult`, whose
   `valid: true` arm carries complete `InferSchemaOutput<S>` in `value`.
-- `FocusedMethods.run` (via `changed()` / `only()` / `focus()`) returns
-  `FocusedSuiteResult` whose `valid: true` arm carries
-  `DraftSchemaOutput<S>` in `value`. `valid` alone never narrows a focused
-  value to complete output.
-- `suite.get()` returns the draft result (last run may have been focused).
-  `result.types.output` still describes the complete schema output.
-- `DeepDraft`, `DraftSchemaOutput`, and `FocusedSuiteResult` are exported from
-  `vest` so consumers do not need private-module imports. Identity containers
-  and atomic runtime values such as arrays, `Date`, `Map`, `Set`, `RegExp`,
-  `Error`, `ArrayBuffer`, `DataView`, and typed arrays keep their usable types
-  when present; draft partiality applies at their owning property.
+- Existing `only()` and `focus()` chains continue returning `SuiteResult`.
+- The new `changed()` chain returns `FocusedSuiteResult`; its `valid: true`
+  arm carries `DraftSchemaOutput<S>` because only the affected region is
+  certified.
+- `suite.get()` retains its Vest 6 `SuiteResult` type.
+- `DeepDraft`, `DraftSchemaOutput`, and `FocusedSuiteResult` are additive
+  exports for consumers of `changed()`.
 
-## Runtime witness
+This preserves source compatibility. It also deliberately preserves an
+existing type-system limitation: one suite callback is used by both full and
+focused runs, so its complete-output type can overstate data delivered by a
+focused invocation. The same limitation already exists for `only()` and
+`focus()`. Correcting it is a major-release change, not a requirement for the
+new invalidation graph.
 
-`packages/vest/src/suite/__tests__/schemaContracts.output.test.ts`
-(`[SC-AC05]`, 6 tests, green):
+## Runtime contract
 
-- First focused run over `{ n: toNumber, note }` with input `{ note: 'ok' }`
-  delivers callback data `{ note: 'ok' }` — own property `n` **absent** —
-  with `valid: true` and matching `result.value`.
-- After a full run, later focused runs hydrate retained fields
-  (`{ n: 42, note: 'next' }`).
-- Absent optional input materializes as own `undefined` consistently
-  across full output, focused output, and callback data.
+- A first focused run may omit untouched required properties.
+- A later focused run can hydrate untouched properties from the last successful
+  mapped output.
+- Absent optional input can materialize as an own `undefined` property.
 - Untouched invalid parser input is never fabricated into output.
-- A later full run certifies complete output; `changed([])` exposes
-  declaration data without validation or witness.
+- A later full run certifies complete output.
+- `changed([])` executes no fields and establishes no validation witness.
 
-## Compiler witness
+These behaviors are covered by the `[SC-AC05]` tests in
+`packages/vest/src/suite/__tests__/schemaContracts.output.test.ts`.
 
-`type-tests/consumer-typing/suite-consumer.{mts,cts}` (FU-TYPE, executed from
-packed artifacts under ESM and CJS resolution):
+## Vest 6 compiler contract
 
 ```ts
 const suite = create(
   data => {
-    // @ts-expect-error: no output witness; number methods are unsafe
+    // Preserved Vest 6 callback type. Runtime focused calls can still require
+    // defensive access; #1327 makes that requirement explicit in Vest 7.
     data.n.toFixed();
-    if (typeof data.n === 'number') data.n.toFixed();
-    test('note', () => {});
   },
   enforce.shape({
     n: enforce.isNumeric().toNumber(),
@@ -64,53 +58,28 @@ const suite = create(
 );
 
 const focused = suite.changed('note').run({ note: 'ok' });
-if (focused.valid) {
-  // @ts-expect-error: valid does not prove complete mapped output
+if (focused.valid && typeof focused.value?.n === 'number') {
   focused.value.n.toFixed();
-  if (focused.value && typeof focused.value.n === 'number')
-    focused.value.n.toFixed();
 }
 
 const full = suite.run({ n: '7', note: 'ok' });
-if (full.valid) full.value.n.toFixed(); // complete: compiles
-// @ts-expect-error: full input is still required
-suite.run({ note: 'ok' });
+if (full.valid) full.value.n.toFixed();
 ```
 
-A transformed value is not a validation witness: mapping an untouched
-field (`FU-OUTPUT`) runs no validator. Provenance, validation state, and
-structural completeness are separate facts. Own-property absence is
-preserved versus own `undefined`; missing required properties are never
-fabricated to satisfy the type.
+Packed ESM and CJS consumer fixtures pin both sides of this compromise: legacy
+callback and focused-method reads continue compiling, while new `changed()`
+result reads require narrowing.
 
-## Alternatives considered
+## Vest 7 target
 
-1. **Document draft semantics, keep full signatures (previous status).**
-   Zero compat breakage but leaves the demonstrated type unsoundness
-   (`data.n.toFixed()` compiles yet fails at runtime on focused runs).
-   Rejected: the FU-TYPE characterization proves unsafe reads compile.
-2. **Draft-typed focused callbacks and results (chosen).** Breaks focused
-   consumers at compile time; migration is narrowing (`typeof`, `in`,
-   `Object.hasOwn`) at each read. Preserves runtime behavior, `changed([])`
-   and skip-all semantics, retained hydration, and the full-run
-   `valid`/`value` guarantee.
-3. **Withhold `value`/callback data on incomplete runs.** Changes runtime
-   behavior relied upon for declaration data; breaks `changed([])` and
-   progressive hydration. Rejected.
+Issue [#1327](https://github.com/ealush/vest/issues/1327) records the complete
+solution already validated during development:
 
-## Compatibility impact and migration
+- type the shared callback as `DraftSchemaOutput<S>`;
+- return `FocusedSuiteResult` from `only()`, `focus()`, and `suite.get()`;
+- preserve complete results for full `run()`, `runStatic()`, and `validate()`;
+- retain atomic container behavior in `DeepDraft`; and
+- preserve callback trailing-argument types instead of widening them.
 
-- Schema callbacks that assumed complete output now see optional fields.
-  Replace `enforce.isString().test(data.foo)` with
-  `enforce(data.foo).isString()`, wrap direct reads
-  (`data.foo.length`, `data.profile.age`) in `typeof` narrowing or
-  optional chaining (`data.profile?.age`).
-- Focused `value` reads need the same narrowing; full-run `value` after
-  `if (result.valid)` is unchanged.
-- `suite.get()` is now draft-typed; narrow before reading output fields.
-- No `any` / `never` casts / non-null assertions were used for the retype.
-  Minimum TypeScript remains 5.4.5 (verified with 5.9.3 and 5.4.5
-  consumer fixtures).
-
-Unreported changes to retained fields remain caller invalidation
-responsibility in all options; no deep-diff semantics are proposed.
+The issue includes migration guidance and acceptance criteria so the soundness
+fix can ship intentionally with Vest 7.

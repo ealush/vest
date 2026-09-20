@@ -1,4 +1,4 @@
-import { CB, type DropFirst } from 'vest-utils';
+import { CB } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { Subscribe } from '../core/VestBus/VestBus';
@@ -10,7 +10,6 @@ import {
   TFieldName,
   TGroupName,
   InferSchemaData,
-  DraftSchemaOutput,
   InferSchemaOutput,
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
@@ -18,23 +17,18 @@ import { SuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 
 import { TTypedMethods } from './getTypedMethods';
 
-type CallbackTail<T extends CB> =
-  DropFirst<Parameters<T>> extends never ? [] : DropFirst<Parameters<T>>;
-
 export type SuiteRunArguments<
   S extends TSchema,
   T extends CB,
   Data = InferSchemaData<S>,
-> = S extends undefined
-  ? Parameters<T>
-  : [data: Data, ...args: CallbackTail<T>];
+> = S extends undefined ? Parameters<T> : [data: Data, ...args: any[]];
 
 export type SuiteCallbackWithSchema<
   S extends TSchema,
   T extends CB,
 > = S extends undefined
   ? T
-  : (data: DraftSchemaOutput<S>, ...args: CallbackTail<T>) => void;
+  : (data: InferSchemaOutput<S>, ...args: any[]) => void;
 
 export type Suite<
   F extends TFieldName,
@@ -42,7 +36,7 @@ export type Suite<
   T extends CB = CB,
   S extends TSchema = undefined,
 > = SuiteMethods<F, G, T, S> &
-  StandardSchemaV1<InferSchemaData<S>, InferSchemaOutput<S>>;
+  StandardSchemaV1<InferSchemaData<S>, InferSchemaData<S>>;
 
 type SuiteMethods<
   F extends TFieldName,
@@ -52,13 +46,13 @@ type SuiteMethods<
 > = {
   dump: CB<TIsolateSuite>;
 
-  get: CB<FocusedSuiteResult<F, G, S>>;
+  get: CB<SuiteResult<F, G, S>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
   remove: CB<void, [fieldName: FieldSelector<F>]>;
   resetField: CB<void, [fieldName: FieldSelector<F>]>;
   changed: CB<
-    FocusedMethods<F, G, T, S>,
+    ChangedMethods<F, G, T, S>,
     [
       changedField:
         | FieldExclusion<F>
@@ -86,7 +80,7 @@ type FocusedMethods<
     [fieldName: FieldSelector<F>, callback: CB]
   >;
   changed: CB<
-    FocusedMethods<F, G, T, S>,
+    ChangedMethods<F, G, T, S>,
     [
       changedField:
         | FieldExclusion<F>
@@ -106,7 +100,46 @@ type FocusedMethods<
   >;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
-  // Focused valid certifies only the executed region: value is a draft.
+  run: (
+    ...args: SuiteRunArguments<S, T, Partial<InferSchemaData<S>>>
+  ) => SuiteResult<F, G, S>;
+};
+
+/**
+ * The new changed() surface reports its selective result honestly without
+ * changing the established callback, get(), only(), or focus() contracts.
+ * The shared callback remains legacy-typed until the Vest 7 migration.
+ */
+type ChangedMethods<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB,
+  S extends TSchema,
+> = {
+  afterEach: CB<ChangedMethods<F, G, T, S>, [callback: CB]>;
+  afterField: CB<
+    ChangedMethods<F, G, T, S>,
+    [fieldName: FieldSelector<F>, callback: CB]
+  >;
+  changed: CB<
+    ChangedMethods<F, G, T, S>,
+    [
+      changedField:
+        | FieldExclusion<F>
+        | FieldSelector<F>
+        | readonly FieldSelector<F>[],
+    ]
+  >;
+  focus: CB<ChangedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
+  only: CB<
+    ChangedMethods<F, G, T, S>,
+    [
+      onlyField:
+        | FieldExclusion<F>
+        | FieldSelector<F>
+        | readonly FieldSelector<F>[],
+    ]
+  >;
   run: (
     ...args: SuiteRunArguments<S, T, Partial<InferSchemaData<S>>>
   ) => FocusedSuiteResult<F, G, S>;
@@ -124,7 +157,7 @@ type AfterMethods<
     [fieldName: FieldSelector<F>, callback: CB]
   >;
   changed: CB<
-    FocusedMethods<F, G, T, S>,
+    ChangedMethods<F, G, T, S>,
     [
       changedField:
         | FieldExclusion<F>

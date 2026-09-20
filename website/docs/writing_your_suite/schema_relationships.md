@@ -285,14 +285,14 @@ Container validators and schemas without recognizable metadata can require a ful
 
 Focused callback data and result values are drafts with per-field provenance, not certified complete output. A first focused run exposes only the fields it executed — untouched required properties are absent (never fabricated), and only a full run certifies complete schema output. Later focused runs hydrate retained fields from the last complete mapping. An absent optional input materializes as an own `undefined` consistently across full output, focused output, and callback data. Unreported changes to retained fields remain caller invalidation responsibility: `changed()` reports invalidation for the fields you name, it does not deep-diff your data.
 
-Types enforce the distinction: the suite callback receives draft output, so unsafe reads fail to compile until narrowed; focused `value` after `if (result.valid)` is likewise a draft, while full-run `value` after `if (result.valid)` is complete:
+For Vest 6 compatibility, the existing suite callback, `only()`, `focus()`, and `suite.get()` types keep their complete-output contract even though focused runtime data can be incomplete. The new `changed()` result is draft-typed, while a full-run result after `if (result.valid)` remains complete. Narrow callback reads defensively when the suite can run in a focused mode. The fully sound callback and existing-focused-result retype is planned for Vest 7 in [#1327](https://github.com/ealush/vest/issues/1327):
 
 ```ts
 const suite = create(
   data => {
-    // @ts-expect-error: no output witness on a draft
+    // Vest 6 preserves the complete callback type for compatibility.
+    // This can still be absent at runtime during a focused invocation.
     data.n.toFixed();
-    if (typeof data.n === 'number') data.n.toFixed();
     test('note', () => {});
   },
   enforce.shape({
@@ -303,7 +303,8 @@ const suite = create(
 
 const focused = suite.changed('note').run({ note: 'ok' });
 if (focused.valid) {
-  // @ts-expect-error: valid does not prove complete output
+  // changed() is new, so its result can honestly expose the draft contract.
+  // @ts-expect-error: changed valid does not prove complete output
   focused.value.n.toFixed();
   if (focused.value && typeof focused.value.n === 'number')
     focused.value.n.toFixed();

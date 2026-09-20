@@ -118,18 +118,10 @@ const userSchema = enforce.shape({
 
 type UserData = { username: string; age: number };
 
-// Vest 7 draft contract: the shared callback runs on full AND focused runs,
-// so its parameter is the deep draft (every output property optional).
-// Identity containers (arrays, Date, Map, Set) stay whole; only object
-// properties become optional.
-type UserDraft = { username?: string | undefined; age?: number | undefined };
-
 const userSuite = create(data => {
-  type CallbackDataIsDraft = AssertTrue<IsEqual<typeof data, UserDraft>>;
-  // Unsafe reads fail until narrowed; narrowing restores the method.
-  // @ts-expect-error - DELIBERATE MISUSE: draft fields need narrowing
+  // Vest 6 compatibility: existing schema callbacks retain complete output.
+  type CallbackDataIsComplete = AssertTrue<IsEqual<typeof data, UserData>>;
   data.username.toUpperCase();
-  if (typeof data.username === 'string') data.username.toUpperCase();
   test('username', () => {
     enforce(data.username).isNotBlank();
   });
@@ -162,16 +154,20 @@ const strictSuite = create(data => {
 }, userSchema);
 void strictSuite;
 
+// Consumers can opt into defensive callback typing without another factory
+// or configuration parameter. Both complete and partial callback annotations
+// remain assignable to create(callback, schema).
+const defensiveSuite = create((data: Partial<UserData>) => {
+  if (typeof data.username === 'string') data.username.toUpperCase();
+}, userSchema);
+defensiveSuite.changed('username').run({ username: 'ann' });
+
 // ---------------------------------------------------------------------------
 // 2. StandardSchemaV1<I, O>-annotated schema with distinct input/output.
 // ---------------------------------------------------------------------------
 
 type CoinInput = { label: string; amount: string };
 type CoinOutput = { label: string; amount: number };
-
-// Foreign Standard Schemas follow the same draft contract: the callback may
-// observe a focused run, so output properties are optional there.
-type CoinDraft = { label?: string | undefined; amount?: number | undefined };
 
 const coinSchema: StandardSchemaV1<CoinInput, CoinOutput> = {
   '~standard': {
@@ -197,7 +193,9 @@ const coinSchema: StandardSchemaV1<CoinInput, CoinOutput> = {
 };
 
 const coinSuite = create(data => {
-  type CallbackReceivesDraft = AssertTrue<IsEqual<typeof data, CoinDraft>>;
+  type CallbackReceivesCompleteOutput = AssertTrue<
+    IsEqual<typeof data, CoinOutput>
+  >;
   test('amount', () => {
     enforce(data.amount).greaterThan(0);
   });
@@ -225,8 +223,8 @@ type SuiteOutputKnown = AssertTrue<
   IsAny<CoinSuiteTypes['output']> extends false ? true : false
 >;
 
-// run() takes the complete INPUT shape. The shared callback receives a draft
-// OUTPUT because focus/only/changed can omit untouched output properties.
+// run() takes the complete INPUT shape. The shared callback retains Vest 6's
+// complete OUTPUT type; its draft-safe retype is deferred to Vest 7.
 coinSuite.run({ label: 'bus token', amount: '3.50' });
 
 // @ts-expect-error - DELIBERATE MISUSE: run takes input, not output
@@ -414,9 +412,7 @@ tagSuite.run({ tags: ['a'] });
 // ---------------------------------------------------------------------------
 
 const extraSuite = create((data, greeting: string, count: number) => {
-  type ExtraDataIsDraft = AssertTrue<
-    IsEqual<typeof data, DraftSchemaOutput<typeof userSchema>>
-  >;
+  type ExtraDataIsComplete = AssertTrue<IsEqual<typeof data, UserData>>;
   test('username', () => {
     enforce(data.username).isNotBlank();
   });
@@ -426,7 +422,7 @@ const extraSuite = create((data, greeting: string, count: number) => {
 
 extraSuite.run({ username: 'ann', age: 30 }, 'hello', 3);
 
-// @ts-expect-error - DELIBERATE MISUSE: extra args must match the callback tail
+// Vest 6 compatibility: schema-suite trailing arguments remain permissive.
 extraSuite.run({ username: 'ann', age: 30 }, 42);
 
 // ---------------------------------------------------------------------------
@@ -463,6 +459,26 @@ type FocusedCoinResult = FocusedSuiteResult<
 >;
 const focusedResultExport: FocusedCoinResult = focusedCoinRes;
 void focusedResultExport;
+
+const changedThenOnly = coinSuite
+  .changed('amount')
+  .only('label')
+  .run({ amount: '3.50' });
+const onlyThenChanged = coinSuite
+  .only('label')
+  .changed('amount')
+  .run({ amount: '3.50' });
+if (changedThenOnly.valid)
+  expectTypeOf(changedThenOnly.value).toEqualTypeOf<DeepDraft<CoinOutput>>();
+if (onlyThenChanged.valid)
+  expectTypeOf(onlyThenChanged.value).toEqualTypeOf<DeepDraft<CoinOutput>>();
+
+// Vest 6 compatibility: pre-existing focused methods and get() retain their
+// complete-result type. Only the new changed() result is draft-typed.
+const legacyFocusedCoinRes = coinSuite.only('amount').run({ amount: '3.50' });
+if (legacyFocusedCoinRes.valid) legacyFocusedCoinRes.value.amount.toFixed();
+const currentCoinRes = coinSuite.get();
+if (currentCoinRes.valid) currentCoinRes.value.amount.toFixed();
 
 // ---------------------------------------------------------------------------
 // 11. afterEach/afterField chaining.

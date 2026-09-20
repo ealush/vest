@@ -142,13 +142,19 @@ function checkRelativeScope(file, spec, label, scope) {
 function checkAliasedScope(file, spec, forbidResolved, label) {
   const resolved = resolveImport(file, spec);
   if (resolved === null) return false;
-  if (forbidResolved.some(root => resolved.startsWith(root + path.sep))) {
+  if (matchesResolvedRoot(resolved, forbidResolved)) {
     fail(
       `${label}: ${path.relative(REPO_ROOT, file)} reaches ${path.relative(REPO_ROOT, resolved)} via ${spec}`,
     );
     return true;
   }
   return false;
+}
+
+function matchesResolvedRoot(resolved, roots) {
+  return roots.some(
+    root => resolved === root || resolved.startsWith(root + path.sep),
+  );
 }
 
 function resolveImport(fromFile, spec) {
@@ -164,6 +170,26 @@ function resolveImport(fromFile, spec) {
     }
   }
   return null;
+}
+
+function checkAliasResolutionContract() {
+  for (const alias of ['vest', 'n4s', 'vestjs-runtime', 'vast', 'anyone']) {
+    const root = ALIAS_ROOTS.get(alias);
+    const exact = resolveImport(REPO_ROOT, alias);
+    const descendant = resolveImport(REPO_ROOT, `${alias}/src/internal`);
+    const valid = [
+      exact === root,
+      descendant === path.join(root, 'src', 'internal'),
+      matchesResolvedRoot(exact, [root]),
+      matchesResolvedRoot(descendant, [root]),
+      !matchesResolvedRoot(`${root}-sibling`, [root]),
+    ].every(Boolean);
+    if (!valid) {
+      fail(`alias resolution contract: ${alias}`);
+      continue;
+    }
+    pass(`alias resolution contract: ${alias}`);
+  }
 }
 
 function scopeRoots(scope, file) {
@@ -459,6 +485,7 @@ if (!r.isValid()) throw new Error('esm smoke failed');
 }
 
 try {
+  checkAliasResolutionContract();
   checkN4sDirection();
   checkAdapterBoundaries();
   checkPackaging();

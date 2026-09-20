@@ -136,5 +136,11 @@ describe('each', () => {
 
     expect(result.hasErrors('item.0' as TFieldName)).toBe(false);
     expect(result.hasErrors('item.1' as TFieldName)).toBe(true);
+    expect(result.tests['item.0'].testCount).toBe(1);
+    expect(result.tests['item.1'].testCount).toBe(1);
+
+    const registry = suite.dump().data.registry_all;
+    expect(registry?.get('item.0')?.size).toBe(1);
+    expect(registry?.get('item.1')?.size).toBe(1);
   });
 });

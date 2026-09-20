@@ -1829,6 +1829,8 @@ enforce.extend(
 
 Rules left out of `parsers` keep validator treatment. Field-level validators run when their field is in the affected set; validators attached to a retained container can also run when a descendant changes. See [Input vs output types with parsers](https://vestjs.dev/docs/writing_your_suite/schema_validation#input-vs-output-types-with-parsers) and [Custom Parsers and Selective Runs](https://vestjs.dev/docs/writing_your_suite/schema_relationships#custom-parsers-and-selective-runs).
 
+Parser registration is validated immediately: every parser name must appear exactly once as an own, callable rule in the same extension object. Unknown, inherited, duplicate, or non-callable entries throw `EnforceSchemaError` before any rule is registered. This catches configuration mistakes; it cannot prove purity, so parser functions must still be deterministic and side-effect free.
+
 ## Custom rules return value
 
 Rules can return a boolean or a rule-result object. `pass` indicates success, and `message` may be a string or a function that returns the failure message.
@@ -10269,6 +10271,10 @@ and focused runs, properties not witnessed by the current or retained mapping
 may be absent at runtime. Vest 6 preserves the callback's complete-output type
 for compatibility; [the draft callback retype is planned for Vest 7](https://github.com/ealush/vest/issues/1327).
 A successful full-run result still carries the complete mapped output.
+Parser names are checked when `enforce.extend()` runs: they must be unique own
+properties whose values are functions. Invalid registration throws
+`EnforceSchemaError` before any rule is installed. Purity remains the parser
+author's responsibility.
 
 When a focused path enters an array, Vest refreshes that containing array from
 the current input. Array positions are not identities, so this prevents an

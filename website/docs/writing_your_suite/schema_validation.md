@@ -142,6 +142,10 @@ and focused runs, properties not witnessed by the current or retained mapping
 may be absent at runtime. Vest 6 preserves the callback's complete-output type
 for compatibility; [the draft callback retype is planned for Vest 7](https://github.com/ealush/vest/issues/1327).
 A successful full-run result still carries the complete mapped output.
+Parser names are checked when `enforce.extend()` runs: they must be unique own
+properties whose values are functions. Invalid registration throws
+`EnforceSchemaError` before any rule is installed. Purity remains the parser
+author's responsibility.
 
 When a focused path enters an array, Vest refreshes that containing array from
 the current input. Array positions are not identities, so this prevents an

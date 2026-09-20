@@ -180,6 +180,6 @@ enforce.extend = function extend<Rules extends Record<string, ExtensionRule>>(
   extendEnforce(
     enforce as unknown as Record<string, unknown>,
     rules,
-    new Set(options?.parsers),
+    options?.parsers,
   );
 };

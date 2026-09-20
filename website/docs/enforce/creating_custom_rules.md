@@ -82,6 +82,8 @@ enforce.extend(
 
 Rules left out of `parsers` keep validator treatment. Field-level validators run when their field is in the affected set; validators attached to a retained container can also run when a descendant changes. See [Input vs output types with parsers](../writing_your_suite/schema_validation#input-vs-output-types-with-parsers) and [Custom Parsers and Selective Runs](../writing_your_suite/schema_relationships#custom-parsers-and-selective-runs).
 
+Parser registration is validated immediately: every parser name must appear exactly once as an own, callable rule in the same extension object. Unknown, inherited, duplicate, or non-callable entries throw `EnforceSchemaError` before any rule is registered. This catches configuration mistakes; it cannot prove purity, so parser functions must still be deterministic and side-effect free.
+
 ## Custom rules return value
 
 Rules can return a boolean or a rule-result object. `pass` indicates success, and `message` may be a string or a function that returns the failure message.

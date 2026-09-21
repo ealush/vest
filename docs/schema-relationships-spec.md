@@ -43,6 +43,15 @@ output.
   complete output.
 - Existing `only()` / `focus()` builders and `suite.get()` retain their Vest 6
   `SuiteResult` type for source compatibility.
+- Consumers that want defensive callback access today may explicitly annotate
+  the callback with a compatible partial output type; no alternate factory or
+  configuration parameter is required.
+- Once `changed()` participates in a builder chain, its result remains
+  `FocusedSuiteResult` in either order (`changed().only()` or
+  `only().changed()`).
+- Schema-suite trailing arguments and the suite's input-shaped Standard Schema
+  output generic retain their Vest 6 behavior. Their stricter forms are part of
+  the coordinated Vest 7 migration in #1327.
 - Runtime correspondence: first focused runs omit untouched required
   properties (own-property absent, never fabricated); later focused runs
   hydrate retained fields from the last complete mapping; absent optional
@@ -234,5 +243,10 @@ narrowing (`only`) retains them.
   samples at frozen budgets; C12full/D13full samples are medians of five
   independent timings on both checkouts. Paired ratios, raw-side CVs, and
   bounded retries reject scheduler/GC drift without relaxing thresholds.
+- Review follow-up invariants are pinned by regression tests: class-instance
+  `undefined` output falls back consistently while explicit plain-object
+  `undefined` remains a value; keyed reorder registries contain one current
+  entry per field; and boundary aliases match exact package roots as well as
+  descendants without matching sibling prefixes.
 - Docs examples are executable (`docs:examples:test` runs the Markdown
   code blocks it names).

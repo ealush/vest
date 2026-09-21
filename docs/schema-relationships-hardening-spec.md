@@ -1,4 +1,4 @@
-# Schema relationships hardening plan
+# Schema relationships hardening specification
 
 Status: P0 and P1 complete; P2 begins after the Vest 6 release baseline
 
@@ -19,7 +19,7 @@ an unbounded refactor. Work is ordered by user impact:
 4. the intentional Vest 7 type correction; and
 5. optional capability expansion.
 
-The plan keeps these architectural invariants:
+This specification keeps these architectural invariants:
 
 - n4s is the only owner of schema relationship semantics;
 - Vest is the only owner of validation history and suite lifecycle;
@@ -151,7 +151,7 @@ CI timeout while waiting for an async validation to start, despite passing on
 immediate rerun and locally. Polling makes release confidence dependent on
 scheduler timing.
 
-Plan:
+Required implementation:
 
 1. Replace bounded microtask polling with an explicit deferred promise or
    callback barrier owned by the test fixture.
@@ -225,7 +225,7 @@ C12full has crossed the 10% boundary in one run and passed in later runs. The
 current gate correctly fails stable measured regressions, but separately timed
 head and baseline samples can still experience machine-phase drift.
 
-Plan:
+Required implementation:
 
 1. Preserve current thresholds and fail-closed behavior.
 2. Execute head and baseline single-workload batches in an alternating ABBA
@@ -290,7 +290,7 @@ Problem:
 Selective mapping relies on custom parser steps being pure, but purity itself
 cannot be enforced by TypeScript or JavaScript.
 
-Plan:
+Required implementation:
 
 1. Validate at registration that every name listed in `parsers` exists in the
    extension object and is callable.

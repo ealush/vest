@@ -57,7 +57,7 @@ PR #1326 currently provides:
 
 Current verification baseline:
 
-- 349 test files and 4,007 tests pass;
+- 350 test files and 4,012 tests pass;
 - TypeScript reports no errors;
 - packed ESM and CJS consumers pass on current TypeScript and 5.4.5;
 - schema coverage and package-boundary gates pass;
@@ -141,7 +141,8 @@ Complete these before triggering the next stable release branch.
 ### P1.1 Make TanStack async tests deterministic
 
 Implementation status: complete in `1b992235`; the formerly flaky file passed
-100 consecutive single-worker runs.
+100 consecutive single-worker runs, followed by the full integration test,
+typecheck, and build matrix.
 
 Problem:
 
@@ -207,8 +208,9 @@ Acceptance criteria:
 ### P1.2 Stabilize baseline-relative performance evidence
 
 Implementation status: complete in `623966c1`; self-tests, head-only execution,
-and a clean local baseline ABBA comparison pass. The three-run CI consistency
-criterion remains release evidence rather than local implementation work.
+and a clean local baseline ABBA comparison pass with 120 paired C12full and
+D13full samples. The three-run CI consistency criterion remains release
+evidence rather than local implementation work.
 
 Problem:
 
@@ -273,7 +275,8 @@ Acceptance criteria:
 ### P1.3 Validate custom parser registration
 
 Implementation status: complete in `3ffa13d4`; five new registration tests and
-the full n4s suite pass.
+the full 1,615-test n4s suite pass. The complete repository suite and packed
+consumer checks also pass.
 
 Problem:
 

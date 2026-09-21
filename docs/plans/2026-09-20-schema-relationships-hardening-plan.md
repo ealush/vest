@@ -1,8 +1,10 @@
 # Schema relationships hardening plan
 
-Status: proposed roadmap after PR #1326  
+Status: P0 complete; P1 implemented locally, CI repetition pending
+
 Scope: schema relationships, selective `suite.changed()` execution, and the
-supporting Vest/n4s architecture  
+supporting Vest/n4s architecture
+
 Release boundary: preserve Vest 6 compatibility; reserve breaking type
 corrections for Vest 7
 
@@ -138,6 +140,9 @@ Complete these before triggering the next stable release branch.
 
 ### P1.1 Make TanStack async tests deterministic
 
+Implementation status: complete in `1b992235`; the formerly flaky file passed
+100 consecutive single-worker runs.
+
 Problem:
 
 `integrations/tanstack-form/src/__tests__/asyncFormRoute.test.ts` has produced a
@@ -201,6 +206,10 @@ Acceptance criteria:
 
 ### P1.2 Stabilize baseline-relative performance evidence
 
+Implementation status: complete in `623966c1`; self-tests, head-only execution,
+and a clean local baseline ABBA comparison pass. The three-run CI consistency
+criterion remains release evidence rather than local implementation work.
+
 Problem:
 
 C12full has crossed the 10% boundary in one run and passed in later runs. The
@@ -262,6 +271,9 @@ Acceptance criteria:
 - three consecutive CI executions produce the same verdict.
 
 ### P1.3 Validate custom parser registration
+
+Implementation status: complete in `3ffa13d4`; five new registration tests and
+the full n4s suite pass.
 
 Problem:
 

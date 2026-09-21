@@ -1,6 +1,6 @@
 # Schema relationships hardening plan
 
-Status: P0 complete; P1 implemented locally, CI repetition pending
+Status: P0 and P1 complete; P2 begins after the Vest 6 release baseline
 
 Scope: schema relationships, selective `suite.changed()` execution, and the
 supporting Vest/n4s architecture
@@ -209,8 +209,15 @@ Acceptance criteria:
 
 Implementation status: complete in `623966c1`; self-tests, head-only execution,
 and a clean local baseline ABBA comparison pass with 120 paired C12full and
-D13full samples. The three-run CI consistency criterion remains release
-evidence rather than local implementation work.
+D13full samples. CI run
+[35551015090](https://github.com/ealush/vest/actions/runs/35551015090)
+produced three consecutive passing attempts on the same commit:
+
+| Attempt | C12full paired ratio | D13full paired ratio | Verdict |
+| ------- | -------------------: | -------------------: | ------- |
+| 1       |                1.096 |                1.077 | pass    |
+| 2       |                1.071 |                1.066 | pass    |
+| 3       |                1.093 |                1.044 | pass    |
 
 Problem:
 

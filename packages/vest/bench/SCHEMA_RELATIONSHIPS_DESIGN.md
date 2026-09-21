@@ -416,16 +416,16 @@ Benchmark creation pattern to keep naming CI-friendly: append field-count hint i
 
 These are not encoded in reporter yet — they are review-time rules. If violated, the PR should be blocked:
 
-| Gate                                   | Check                                                             | Threshold                                           |
-| -------------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------- |
-| **G1 — creation not regressed**        | related/plain ≥ `0.80` (target `0.90`) + ≤ `5us`/edge absolute    | warn-band passes only with absolute ceiling (PF04)  |
-| **G2 — describe not regressed**        | `hz(B2) / hz(B1) > 0.85`                                          | metadata read within 15% (JSON round-trip excluded) |
-| **G3 — changed beats run (flat)**      | `hz(C3) / hz(C1) > 1.2`                                           | changed does less work so faster                    |
-| **G4 — changed beats run (array 100)** | `hz(C13) / hz(C12) >= 1`, hard floor `0.9`                        | changed never slower than full at scale             |
-| **G5 — isolation**                     | `hz(C9)` ≈ `hz(C7)` floor                                         | reusable not slower than flat                       |
-| **G6 — volatility**                    | `hz(D13 changed) / hz(D13 run) >= 1`, hard floor `0.9`            | 100-field suite, only 2 run                         |
-| **G7 — stability**                     | paired in-process ratios, CV ≤ `0.20` over ≥7 interleaved batches | retry head+baseline once, then fail inconclusive    |
-| **A1 — creation vs base**              | absolute ≤ `500ms` per 20k-shape batch (no relative comparison)   | pre-feature base lacks the machinery (PF04)         |
+| Gate                                   | Check                                                           | Threshold                                           |
+| -------------------------------------- | --------------------------------------------------------------- | --------------------------------------------------- |
+| **G1 — creation not regressed**        | related/plain ≥ `0.80` (target `0.90`) + ≤ `5us`/edge absolute  | warn-band passes only with absolute ceiling (PF04)  |
+| **G2 — describe not regressed**        | `hz(B2) / hz(B1) > 0.85`                                        | metadata read within 15% (JSON round-trip excluded) |
+| **G3 — changed beats run (flat)**      | `hz(C3) / hz(C1) > 1.2`                                         | changed does less work so faster                    |
+| **G4 — changed beats run (array 100)** | `hz(C13) / hz(C12) >= 1`, hard floor `0.9`                      | changed never slower than full at scale             |
+| **G5 — isolation**                     | `hz(C9)` ≈ `hz(C7)` floor                                       | reusable not slower than flat                       |
+| **G6 — volatility**                    | `hz(D13 changed) / hz(D13 run) >= 1`, hard floor `0.9`          | 100-field suite, only 2 run                         |
+| **G7 — stability**                     | paired ratios, raw-side CV ≤ `0.20`, symmetric H-B-B-H blocks   | bounded retries, then fail inconclusive             |
+| **A1 — creation vs base**              | absolute ≤ `500ms` per 20k-shape batch (no relative comparison) | pre-feature base lacks the machinery (PF04)         |
 
 **Retired absolute ratio targets (2026-09-12).** G4 previously required
 `> 10×` and G6 `> 20×`. Paired in-process measurement (warmup,
@@ -443,7 +443,9 @@ impossible, but requiring a runtime redesign (lazy declaration,
 incremental reconciliation/summaries, tracked separately). They are
 replaced by the ≥1× target / 0.9× floor above, enforced by
 `gate:schema-performance`, plus predicate-minimality assertions in the
-contract suites.
+contract suites. Baseline-relative full-run singles use symmetric H-B-B-H
+measurement blocks. The gate combines the two observations per checkout and
+classifies aligned head/base ratios while retaining raw timings and CVs.
 
 Gate thresholds use `max(5, rme)` masking in reporter — so a 7% diff tagged `0.00%` is still visible in raw log. Always check CI log raw output, not only masked table.
 

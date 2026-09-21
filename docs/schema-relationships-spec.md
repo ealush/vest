@@ -210,9 +210,9 @@ narrowing (`only`) retains them.
   stable error).
 - Resource bounds: deep/wide smoke tests exist; a GC-enabled harness with
   predeclared CPU/heap budgets is still needed (allocation/heap/scaling).
-- Benchmark stability: D13full baseline dispersion is under a scoped
-  waiver (head stable, base unstable, no stable breach measured); further
-  stability work is tracked separately.
+- Benchmark stability: baseline-relative singles use a symmetric
+  head/base/base/head schedule and paired ratios so machine-phase drift does
+  not turn sequential measurements into false regressions.
 - Architecture debt: deferred runner/extraction migrations (no big-bang
   migration mandated).
 
@@ -230,9 +230,9 @@ narrowing (`only`) retains them.
 - Gates: `gate:schema-coverage` (selectiveRun 85, dependencyResolver 85,
   runner 90, clone 95), `gate:schema-boundaries` (DD01/DD03/PK01),
   `gate:schema-performance` (`--self-test`, head-only, and baseline
-  comparison with raw-attempt evidence). Singles use 60 samples at frozen
-  budgets; C12full/D13full samples are medians of five independent timings
-  on both checkouts to reject scheduler/GC outliers without changing
-  thresholds, sample counts, or retry policy.
+  comparison with raw-attempt evidence). Each ABBA observation contributes 60
+  samples at frozen budgets; C12full/D13full samples are medians of five
+  independent timings on both checkouts. Paired ratios, raw-side CVs, and
+  bounded retries reject scheduler/GC drift without relaxing thresholds.
 - Docs examples are executable (`docs:examples:test` runs the Markdown
   code blocks it names).

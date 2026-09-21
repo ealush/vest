@@ -300,13 +300,9 @@ function isSingleSample(sample) {
   );
 }
 
-function checkBaseRegression(headMs, baseMs) {
-  if (!validPositive(headMs) || !validPositive(baseMs) || !(baseMs > 0)) {
-    return 'fail-missing';
-  }
-  return headMs > baseMs * BASE_LATENCY_GROWTH_LIMIT
-    ? 'fail-regression'
-    : 'pass';
+function classifyLatencyGrowth(ratio) {
+  if (!validPositive(ratio)) return 'fail-missing';
+  return ratio > BASE_LATENCY_GROWTH_LIMIT ? 'fail-regression' : 'pass';
 }
 
 function withBaselineFile(baselineDir, fn) {
@@ -447,15 +443,11 @@ function runGate(baselineDir) {
   // whatever evidence accumulated — never a stale success, never nothing.
   // An artifact-write failure itself propagates visibly.
   try {
-    const head = runMeasurement(REPO_ROOT);
-    const base = measureBaseline(baselineDir);
+    const { head, base } = measureGateInputs(baselineDir);
     // Pairs and singles are always both evaluated: a breached pair must not
     // hide base-regression evidence (or vice versa). Proven by the
     // no-short-circuit self-test.
-    const remeasureSingles = () => ({
-      head: runMeasurement(REPO_ROOT),
-      base: measureBaseline(baselineDir),
-    });
+    const remeasureSingles = () => measureGateInputs(baselineDir);
     const outcome = decideGateOutcome(head, base, [], remeasureSingles);
     // Evidence persists on pass AND failure: the CI artifact carries gate
     // measurements and verdicts separately from the earlier benchmark report.
@@ -465,6 +457,61 @@ function runGate(baselineDir) {
     writeEvidenceFile(EVIDENCE_FILE, buildErrorEvidence(error, baselineDir));
     throw error;
   }
+}
+
+/**
+ * Relative evidence uses a symmetric block schedule: head, base, base, head.
+ * Combining both observations per checkout cancels monotonic machine-phase
+ * drift without weakening sample counts, thresholds, or fail-closed rules.
+ */
+function measureGateInputs(
+  baselineDir,
+  measureHead = () => runMeasurement(REPO_ROOT),
+  measureBase = () => measureBaseline(baselineDir),
+) {
+  const headFirst = measureHead();
+  if (baselineDir === null) return { base: null, head: headFirst };
+  const baseFirst = measureBase();
+  const baseSecond = measureBase();
+  const headSecond = measureHead();
+  return {
+    base: mergeMeasurements(baseFirst, baseSecond),
+    head: mergeMeasurements(headFirst, headSecond),
+  };
+}
+
+function mergeMeasurements(first, second) {
+  return {
+    samples: mergeSampleMaps(first.samples, second.samples, mergePairSamples),
+    singles: mergeSampleMaps(first.singles, second.singles, mergeSingleSamples),
+  };
+}
+
+function mergeSampleMaps(first, second, mergeSample) {
+  const labels = new Set([...first.keys(), ...second.keys()]);
+  const merged = new Map();
+  for (const label of labels) {
+    const firstSample = first.get(label);
+    const secondSample = second.get(label);
+    if (!firstSample || !secondSample) {
+      throw new Error(`ABBA measurement missing repeated sample: ${label}`);
+    }
+    merged.set(label, mergeSample(firstSample, secondSample));
+  }
+  return merged;
+}
+
+function mergePairSamples(first, second) {
+  return {
+    ...first,
+    changed: [...first.changed, ...second.changed],
+    full: [...first.full, ...second.full],
+    ratios: [...first.ratios, ...second.ratios],
+  };
+}
+
+function mergeSingleSamples(first, second) {
+  return { ...first, times: [...first.times, ...second.times] };
 }
 
 function buildErrorEvidence(error, baselineDir) {
@@ -516,18 +563,25 @@ function rawSampleArray(sample, key) {
 
 function recordSingleEvidence(label, result, retried, kind) {
   evidence.singles.push({
-    attempts: result.attempts ?? null,
+    attempts: evidenceValue(result.attempts),
     baseCv: result.baseCv,
     baseMs: result.baseMs,
-    baseTimes: result.baseTimes ?? null,
+    baseTimes: evidenceValue(result.baseTimes),
     headCv: result.headCv,
     headMs: result.headMs,
-    headTimes: result.headTimes ?? null,
+    headTimes: evidenceValue(result.headTimes),
     kind,
     label,
+    pairedRatios: evidenceValue(result.pairedRatios),
+    ratioCv: evidenceValue(result.ratioCv),
+    ratioMedian: evidenceValue(result.ratioMedian),
     retried,
     verdict: result.verdict,
   });
+}
+
+function evidenceValue(value) {
+  return value === undefined ? null : value;
 }
 
 function buildPolicy() {
@@ -541,6 +595,7 @@ function buildPolicy() {
     maxCv: STABILITY_MAX_CV,
     maxLatencyGrowth: BASE_LATENCY_GROWTH_LIMIT,
     maxRelativeRetries: MAX_SINGLE_RETRIES,
+    measurementSchedule: 'ABBA-blocks-v1',
     minimumBatches: MIN_PAIR_BATCHES,
   };
 }
@@ -679,6 +734,11 @@ function summarizeAttempt(result) {
     headCv: result.headCv,
     headMs: result.headMs,
     headTimes: result.headTimes ? [...result.headTimes] : result.headTimes,
+    pairedRatios: result.pairedRatios
+      ? [...result.pairedRatios]
+      : result.pairedRatios,
+    ratioCv: result.ratioCv,
+    ratioMedian: result.ratioMedian,
     verdict: result.verdict,
   };
 }
@@ -795,13 +855,18 @@ function missingSingleResult() {
     baseMs: NaN,
     headCv: NaN,
     headMs: NaN,
+    pairedRatios: null,
+    ratioCv: NaN,
+    ratioMedian: NaN,
     verdict: 'fail-missing',
   };
 }
 
 function hasEnoughSingleSamples(headTimes, baseTimes) {
   return (
-    headTimes.length >= MIN_PAIR_BATCHES && baseTimes.length >= MIN_PAIR_BATCHES
+    headTimes.length === baseTimes.length &&
+    headTimes.length >= MIN_PAIR_BATCHES &&
+    baseTimes.length >= MIN_PAIR_BATCHES
   );
 }
 
@@ -824,15 +889,32 @@ function checkSingleTimes(headTimes, baseTimes) {
   const baseCv = cv(baseTimes);
   const headMs = median(headTimes);
   const baseMs = median(baseTimes);
-  if (unstableCv(headCv) || unstableCv(baseCv)) {
-    return { baseCv, baseMs, headCv, headMs, verdict: 'unstable' };
+  const pairedRatios = headTimes.map(
+    (headTime, index) => headTime / baseTimes[index],
+  );
+  const ratioCv = cv(pairedRatios);
+  const ratioMedian = median(pairedRatios);
+  if ([headCv, baseCv, ratioCv].some(unstableCv)) {
+    return {
+      baseCv,
+      baseMs,
+      headCv,
+      headMs,
+      pairedRatios,
+      ratioCv,
+      ratioMedian,
+      verdict: 'unstable',
+    };
   }
   return {
     baseCv,
     baseMs,
     headCv,
     headMs,
-    verdict: checkBaseRegression(headMs, baseMs),
+    pairedRatios,
+    ratioCv,
+    ratioMedian,
+    verdict: classifyLatencyGrowth(ratioMedian),
   };
 }
 
@@ -855,7 +937,9 @@ function timesOf(singles, label) {
 function reportSingle(label, result, retried) {
   console.log(
     `single ${label}: head ${fmt(result.headMs)}ms (cv ${fmt(result.headCv)}) ` +
-      `vs base ${fmt(result.baseMs)}ms (cv ${fmt(result.baseCv)}) -> ${result.verdict}` +
+      `vs base ${fmt(result.baseMs)}ms (cv ${fmt(result.baseCv)}), ` +
+      `paired ratio ${fmt(result.ratioMedian)} (cv ${fmt(result.ratioCv)}) ` +
+      `-> ${result.verdict}` +
       `${retried ? ' (retried)' : ''}`,
   );
   recordSingleEvidence(label, result, retried, 'relative');
@@ -866,6 +950,7 @@ function selfTest() {
     ...selfTestEvaluate(),
     ...selfTestParse(),
     ...selfTestDuplicateRows(),
+    ...selfTestAbbaSchedule(),
     ...selfTestBase(),
     ...selfTestPairEvidence(),
     ...selfTestSingles(),
@@ -881,6 +966,61 @@ function selfTest() {
   const ok = results.every(Boolean);
   console.log(ok ? 'self-test passed' : 'self-test FAILED');
   return ok;
+}
+
+function selfTestAbbaSchedule() {
+  const order = [];
+  let next = 0;
+  const measured = measureGateInputs(
+    '/baseline',
+    () => {
+      order.push('H');
+      next += 1;
+      return measurementFixture(next);
+    },
+    () => {
+      order.push('B');
+      next += 1;
+      return measurementFixture(next);
+    },
+  );
+  let missingRepeatFails = false;
+  try {
+    mergeMeasurements(measurementFixture(1), {
+      samples: new Map(),
+      singles: new Map(),
+    });
+  } catch (error) {
+    missingRepeatFails = /missing repeated sample/.test(String(error.message));
+  }
+  const headTimes = measured.head.singles.get('S').times;
+  const baseTimes = measured.base.singles.get('S').times;
+  const combined = [
+    headTimes.join(',') === '1,4',
+    baseTimes.join(',') === '2,3',
+  ].every(Boolean);
+  return [
+    checkCase('ABBA measurement order', order.join('') === 'HBBH'),
+    checkCase('ABBA combines both observations per checkout', combined),
+    checkCase('ABBA repeated rows fail closed', missingRepeatFails),
+  ];
+}
+
+function measurementFixture(value) {
+  return {
+    samples: new Map([
+      [
+        'P',
+        {
+          changed: [value],
+          full: [value],
+          label: 'P',
+          ratios: [1],
+        },
+      ],
+    ]),
+    singles: new Map([['S', { label: 'S', times: [value] }]]),
+  };
 }
 
 function checkCase(label, pass) {
@@ -997,17 +1137,17 @@ function selfTestParse() {
 }
 
 function selfTestBase() {
-  // Latency-growth budget is exactly 10%: 110/100 passes, 111/100 fails.
+  // Latency-growth budget is exactly 10%: 1.10 passes, 1.11 fails.
   const cases = [
-    { args: [100, 100], want: 'pass' },
-    { args: [110, 100], want: 'pass' },
-    { args: [111, 100], want: 'fail-regression' },
-    { args: [NaN, 100], want: 'fail-missing' },
+    { ratio: 1, want: 'pass' },
+    { ratio: 1.1, want: 'pass' },
+    { ratio: 1.11, want: 'fail-regression' },
+    { ratio: NaN, want: 'fail-missing' },
   ];
-  return cases.map(({ args, want }, index) =>
+  return cases.map(({ ratio, want }, index) =>
     checkCase(
       `base ${index} (expect ${want})`,
-      checkBaseRegression(args[0], args[1]) === want,
+      classifyLatencyGrowth(ratio) === want,
     ),
   );
 }
@@ -1199,6 +1339,10 @@ function evidenceFileAssertions(parsed) {
       'evidence file carries raw samples',
       evidenceRawSamplesOk(parsed),
     ),
+    checkCase(
+      'evidence file carries paired singles',
+      evidenceSinglePairingOk(parsed),
+    ),
   ];
 }
 
@@ -1213,6 +1357,24 @@ function selfTestEvidenceFile() {
   recordPairEvidence(
     { floor: 0.9, id: 'G4', label: 'C13', target: 1.0 },
     evidenceFixtureEntry(),
+  );
+  recordSingleEvidence(
+    'C12full',
+    {
+      attempts: [],
+      baseCv: 0,
+      baseMs: 1,
+      baseTimes: [1],
+      headCv: 0,
+      headMs: 1,
+      headTimes: [1],
+      pairedRatios: [1],
+      ratioCv: 0,
+      ratioMedian: 1,
+      verdict: 'pass',
+    },
+    false,
+    'relative',
   );
   writeEvidenceFile(
     filePath,
@@ -1241,6 +1403,16 @@ function evidenceRawSamplesOk(parsed) {
   );
 }
 
+function evidenceSinglePairingOk(parsed) {
+  const single = parsed.singles[0];
+  return (
+    parsed.policy.measurementSchedule === 'ABBA-blocks-v1' &&
+    Array.isArray(single.pairedRatios) &&
+    single.pairedRatios[0] === 1 &&
+    single.ratioMedian === 1
+  );
+}
+
 function selfTestInjectedFileRestore() {
   const fs = require('node:fs');
   const os = require('node:os');
@@ -1265,6 +1437,7 @@ function steadySingles(ms) {
 function selfTestSingles() {
   const stable = steadySingles(100);
   const regressed = steadySingles(130);
+  const stableResult = checkSingle('S', stable, stable);
   const unstable = new Map([
     ['S', { label: 'S', times: [50, 150, 50, 150, 50, 150, 50] }],
   ]);
@@ -1273,9 +1446,12 @@ function selfTestSingles() {
     return new Map([['S', { label: 'S', times: [ms] }]]);
   }
   return [
+    checkCase('singles stable pass', stableResult.verdict === 'pass'),
     checkCase(
-      'singles stable pass',
-      checkSingle('S', stable, stable).verdict === 'pass',
+      'singles carry paired ratio evidence',
+      stableResult.ratioMedian === 1 &&
+        stableResult.ratioCv === 0 &&
+        stableResult.pairedRatios?.length === 7,
     ),
     checkCase(
       'singles regression',
@@ -1292,6 +1468,13 @@ function selfTestSingles() {
     checkCase(
       'singles thin evidence fails closed',
       checkSingle('S', thin(100), thin(100)).verdict === 'fail-missing',
+    ),
+    checkCase(
+      'singles mismatched pairs fail closed',
+      checkSingleTimes(
+        [100, 100, 100, 100, 100, 100, 100],
+        [100, 100, 100, 100, 100, 100, 100, 100],
+      ).verdict === 'fail-missing',
     ),
     checkCase(
       'singles nonpositive timing fails closed despite healthy median',

@@ -1,3 +1,5 @@
+import { isStringValue } from 'vest-utils';
+
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 import { mapPassing, registerParserRules } from './parserUtils';
@@ -19,7 +21,7 @@ export const toAbsolute = (value: number) =>
 
 export const toDate = (value: unknown): RuleRunReturn<Date> => {
   if (
-    typeof value !== 'string' &&
+    !isStringValue(value) &&
     typeof value !== 'number' &&
     !(value instanceof Date)
   ) {

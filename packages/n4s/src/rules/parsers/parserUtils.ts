@@ -1,3 +1,5 @@
+import { isFunction } from 'vest-utils';
+
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**
@@ -16,7 +18,7 @@ export function registerParserRules(
 }
 
 export function isParserRule(rule: unknown): rule is CallableFunction {
-  return typeof rule === 'function' && parserRules.has(rule);
+  return isFunction(rule) && parserRules.has(rule);
 }
 
 export function mapPassing<TInput, TOutput>(

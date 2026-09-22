@@ -1,6 +1,7 @@
 import {
   greaterThan,
   hasOwnProperty,
+  isArray,
   isFunction,
   longerThan,
 } from 'vest-utils';
@@ -35,7 +36,7 @@ import { RuleRunReturn } from '../../utils/RuleRunReturn';
  * ```
  */
 export function tuple(value: unknown, ...rules: any[]): RuleRunReturn<any> {
-  if (!Array.isArray(value)) return RuleRunReturn.Failing(value);
+  if (!isArray(value)) return RuleRunReturn.Failing(value);
 
   // Determine minimum required length (all rules minus trailing optionals)
   const requiredCount = countRequired(rules);

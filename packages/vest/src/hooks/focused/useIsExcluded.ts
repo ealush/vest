@@ -1,4 +1,10 @@
-import { asArray, dynamicValue, isNotEmptySet } from 'vest-utils';
+import {
+  asArray,
+  dynamicValue,
+  isArray,
+  isNotEmptySet,
+  isStringValue,
+} from 'vest-utils';
 import {
   TIsolate,
   Walker,
@@ -91,9 +97,8 @@ export function useIsExcludedByFieldSkip(testObject: TIsolateTest): boolean {
   if (modifiers.__skipAll) return false;
   const { fieldName } = VestTest.getData(testObject);
   const skip = modifiers.skip as string | readonly string[] | null | undefined;
-  if (typeof skip === 'string') return skip === fieldName;
-  if (Array.isArray(skip))
-    return (skip as readonly unknown[]).includes(fieldName);
+  if (isStringValue(skip)) return skip === fieldName;
+  if (isArray(skip)) return (skip as readonly unknown[]).includes(fieldName);
   return false;
 }
 

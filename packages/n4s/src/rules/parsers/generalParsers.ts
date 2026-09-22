@@ -1,3 +1,5 @@
+import { isNullish } from 'vest-utils';
+
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 import { CHAIN_PREPEND, registerParserRules } from './parserUtils';
 import { toBoolean } from './toBoolean';
@@ -6,7 +8,7 @@ export function defaultTo<TValue>(
   value: TValue,
   fallback: NonNullable<TValue>,
 ): RuleRunReturn<NonNullable<TValue>> {
-  if (value == null) {
+  if (isNullish(value)) {
     return RuleRunReturn.Passing(fallback);
   }
 

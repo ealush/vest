@@ -62,8 +62,11 @@ output.
 
 ### 3.1 `vest-utils` — generic primitives
 
-`asArray` accepts `readonly` inputs. No suite, schema, or graph concepts
-live here; only generic cloning, descriptor, path, and collection helpers.
+`asArray` accepts `readonly` inputs. `isRecord` owns the shared non-array
+object predicate, and `isArrayPrefix` owns package-neutral positional prefix
+comparison. No suite, schema, or graph concepts live here; see
+`docs/schema-relationships-consolidation-spec.md` for the ownership boundary
+and verification contract.
 
 ### 3.2 `context` — scoped execution state
 

@@ -1,3 +1,5 @@
+import { isFunction, isObject } from 'vest-utils';
+
 /** Internal metadata shared by rule construction and selective execution. */
 export const UNRESOLVED_DEPS = Symbol.for('vest:unresolvedDeps');
 export const RESOLVED_RELATIONSHIPS = Symbol.for('vest:resolvedRelationships');
@@ -23,9 +25,7 @@ export type ChainBaseline = {
 export type ItemContainerKind = 'array' | 'record';
 
 function slotOf(rule: unknown, slot: symbol): unknown {
-  if (rule === null) return undefined;
-  const kind = typeof rule;
-  if (kind !== 'object' && kind !== 'function') return undefined;
+  if (!isObject(rule) && !isFunction(rule)) return undefined;
   return (rule as Record<symbol, unknown>)[slot];
 }
 

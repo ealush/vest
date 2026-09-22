@@ -16,7 +16,12 @@ import {
   freezeAssign,
   hasOwnProperty,
   isArray,
+  isArrayPrefix,
+  isBoolean,
+  isNullish,
   isObject,
+  isRecord,
+  isStringValue,
   isUnsafeKey,
   withResolvers,
 } from 'vest-utils';
@@ -378,7 +383,7 @@ function baseOnlyListOf<F extends TFieldName, G extends TGroupName>(
   only: InternalSuiteModifiers<F, G>['only'],
 ): string[] {
   if (!only) return [];
-  return asArray(only).filter(entry => typeof entry === 'string');
+  return asArray(only).filter(isStringValue);
 }
 
 // Inclusion names for schema-failure retention, or null when execution is
@@ -387,7 +392,7 @@ function onlyInclusionOf<F extends TFieldName, G extends TGroupName>(
   only: InternalSuiteModifiers<F, G>['only'],
 ): string[] | null {
   if (!only) return null;
-  if (Array.isArray(only) && only.length === 0) return null;
+  if (isArray(only) && only.length === 0) return null;
   return baseOnlyListOf(only);
 }
 
@@ -396,7 +401,7 @@ function onlyInclusionOf<F extends TFieldName, G extends TGroupName>(
 function nullIfEmptyFocusList<F extends TFieldName, G extends TGroupName>(
   only: InternalSuiteModifiers<F, G>['only'],
 ): InternalSuiteModifiers<F, G>['only'] | null {
-  if (Array.isArray(only) && only.length === 0) return null;
+  if (isArray(only) && only.length === 0) return null;
   return only;
 }
 
@@ -407,7 +412,7 @@ function skippedFocusPaths<F extends TFieldName, G extends TGroupName>(
   skip: InternalSuiteModifiers<F, G>['skip'],
 ): string[] | null {
   if (!skip) return null;
-  const entries = asArray(skip).filter(entry => typeof entry === 'string');
+  const entries = asArray(skip).filter(isStringValue);
   return entries.length > 0 ? entries : null;
 }
 
@@ -419,18 +424,13 @@ function mappedFocusPaths<F extends TFieldName, G extends TGroupName>(
   modifiers: Pick<InternalSuiteModifiers<F, G>, 'only' | 'skip' | '__skipAll'>,
 ): string[] | null {
   if (modifiers.__skipAll) return [];
-  if (modifiers.only == null) return null;
+  if (isNullish(modifiers.only)) return null;
   const skipped = new Set(
-    modifiers.skip
-      ? asArray(modifiers.skip).filter(
-          (entry): entry is string => typeof entry === 'string',
-        )
-      : [],
+    modifiers.skip ? asArray(modifiers.skip).filter(isStringValue) : [],
   );
-  return asArray(modifiers.only).filter(
-    (entry): entry is string =>
-      typeof entry === 'string' && !skipped.has(entry),
-  );
+  return asArray(modifiers.only)
+    .filter(isStringValue)
+    .filter(entry => !skipped.has(entry));
 }
 
 /**
@@ -755,10 +755,6 @@ function seedUnionWitnesses(
   return next;
 }
 
-function isRecord(value: unknown): value is Record<PropertyKey, unknown> {
-  return isObject(value) && !isArray(value);
-}
-
 function reconcileTopLevel(
   base: Record<PropertyKey, unknown>,
   retained: Record<PropertyKey, unknown>,
@@ -812,7 +808,7 @@ function restoreIfRetained(
 }
 
 function isContainerValue(value: unknown): boolean {
-  return isObject(value) || isArray(value);
+  return isObject(value);
 }
 
 function fillAbsentKeys(
@@ -887,9 +883,7 @@ function sharesValidationLine(
   path: readonly ConcretePathSegment[],
   member: readonly ConcretePathSegment[],
 ): boolean {
-  const shorter = path.length <= member.length ? path : member;
-  const longer = path.length <= member.length ? member : path;
-  return shorter.every((segment, position) => segment === longer[position]);
+  return isArrayPrefix(path, member) || isArrayPrefix(member, path);
 }
 
 function formatUnionPath(path: readonly ConcretePathSegment[]): string {
@@ -971,10 +965,7 @@ function isStrictPrefixPath(
   prefix: readonly ConcretePathSegment[],
   path: readonly ConcretePathSegment[],
 ): boolean {
-  return (
-    prefix.length < path.length &&
-    prefix.every((segment, index) => segment === path[index])
-  );
+  return prefix.length < path.length && isArrayPrefix(prefix, path);
 }
 
 function isEmptyPath(full: readonly ConcretePathSegment[]): boolean {
@@ -1120,11 +1111,7 @@ function isAtOrUnderPath(
   candidate: readonly ConcretePathSegment[],
   path: readonly ConcretePathSegment[],
 ): boolean {
-  if (candidate.length < path.length) return false;
-  for (let index = 0; index < path.length; index += 1) {
-    if (candidate[index] !== path[index]) return false;
-  }
-  return true;
+  return isArrayPrefix(path, candidate);
 }
 
 /**
@@ -1161,7 +1148,7 @@ function hasPathDeep(
 ): boolean {
   let node = value;
   for (const key of path) {
-    if (!isObject(node) && !isArray(node)) return false;
+    if (!isObject(node)) return false;
     if (!hasOwnProperty(node, key)) return false;
     node = readPathValue(node, key);
   }
@@ -1223,7 +1210,7 @@ function concreteFieldPath(field: string): ConcretePathSegment[] {
 }
 
 function isUnsafePathSegment(segment: ConcretePathSegment): boolean {
-  return typeof segment === 'string' && isUnsafeKey(segment);
+  return isStringValue(segment) && isUnsafeKey(segment);
 }
 
 function setPathValue(
@@ -1259,7 +1246,7 @@ function copyWithoutKey(value: unknown, key: ConcretePathSegment): unknown {
 }
 
 function readPathValue(value: unknown, key: ConcretePathSegment): unknown {
-  if (!isObject(value) && !isArray(value)) return undefined;
+  if (!isObject(value)) return undefined;
   return (value as Record<PropertyKey, unknown>)[key];
 }
 
@@ -1340,22 +1327,22 @@ function useRunSuiteCallback<
  * readonly arrays become mutable copies, non-string entries drop out.
  */
 function mutableOnlyList(value: unknown): FieldExclusion<string> | undefined {
-  if (value == null) return undefined;
-  if (Array.isArray(value)) {
-    return value.filter((entry): entry is string => typeof entry === 'string');
+  if (isNullish(value)) return undefined;
+  if (isArray(value)) {
+    return value.filter(isStringValue);
   }
-  return typeof value === 'string' ? value : undefined;
+  return isStringValue(value) ? value : undefined;
 }
 
 function mutableSkipList(
   value: unknown,
 ): FieldExclusion<string> | boolean | undefined {
-  if (value == null) return undefined;
-  if (typeof value === 'boolean') return value;
-  if (Array.isArray(value)) {
-    return value.filter((entry): entry is string => typeof entry === 'string');
+  if (isNullish(value)) return undefined;
+  if (isBoolean(value)) return value;
+  if (isArray(value)) {
+    return value.filter(isStringValue);
   }
-  return typeof value === 'string' ? value : undefined;
+  return isStringValue(value) ? value : undefined;
 }
 
 /**

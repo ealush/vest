@@ -1,4 +1,4 @@
-import { hasOwnProperty, isArray, isObject } from 'vest-utils';
+import { hasOwnProperty, isArray, isFunction, isRecord } from 'vest-utils';
 
 import { ITEM_CONTAINER, ITEM_SCHEMA } from './schemaSlots';
 import { isRuleNode } from './ruleNode';
@@ -82,7 +82,7 @@ function mapFullValueSlot(
   base: readonly MappingPathSegment[],
 ): SlotMapping {
   const mapFullValue = slots[MAP_FULL_VALUE];
-  if (typeof mapFullValue !== 'function') return { applies: false, value };
+  if (!isFunction(mapFullValue)) return { applies: false, value };
   const result = (mapFullValue as FullValueMapper)(value, provenance, base);
   return { applies: true, value: result.type };
 }
@@ -95,7 +95,7 @@ function mapValueSlot(
 ): unknown {
   const mapped = mapStructuredValue(slots, value, provenance, base);
   const mapValue = slots[MAP_VALUE];
-  if (typeof mapValue !== 'function') return mapped;
+  if (!isFunction(mapValue)) return mapped;
   markMapped(provenance, base);
   const result = (mapValue as (input: unknown) => MappingResult)(mapped);
   return result.type;
@@ -116,7 +116,7 @@ function mapStructuredValue(
   base: readonly MappingPathSegment[],
 ): unknown {
   const shape = rule.__schema;
-  if (isObject(shape) && isObject(value) && !isArray(value)) {
+  if (isRecord(shape) && isRecord(value)) {
     return mapShape(
       shape as Record<string, unknown>,
       value as object,
@@ -148,8 +148,7 @@ function mapStructuredValue(
   if (
     rule[ITEM_CONTAINER] === 'record' &&
     itemSchema !== undefined &&
-    isObject(value) &&
-    !isArray(value)
+    isRecord(value)
   ) {
     return Object.fromEntries(
       Object.entries(value as object).map(([key, item]) => [

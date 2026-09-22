@@ -2,7 +2,13 @@ import {
   parseAffectedFieldName,
   type SelectiveSchemaResult,
 } from 'n4s/exports/internal';
-import { makeResult } from 'vest-utils';
+import {
+  isArray,
+  isArrayPrefix,
+  isNullish,
+  isStringValue,
+  makeResult,
+} from 'vest-utils';
 import { VestRuntime, Walker, type TIsolate } from 'vestjs-runtime';
 
 import { VestTest } from '../core/isolate/IsolateTest/VestTest';
@@ -112,7 +118,7 @@ function isRevalidatedOrDestroyed(
  * fall back to the legacy display-name reading.
  */
 function retainedIdentity(node: TIsolate): RetainedIdentity | null {
-  if (typeof node.key === 'string') {
+  if (isStringValue(node.key)) {
     const keyed = parseKeyedIdentity(node.key);
     if (keyed !== null) return keyed;
   }
@@ -136,7 +142,7 @@ function isLiveFailure(node: TIsolate): boolean {
 function parseKeyedIdentity(key: string): RetainedIdentity | null {
   // Not a keyed schema identity — use the legacy display-name reading.
   const parsed = parseJsonKey(key);
-  if (parsed === undefined || !Array.isArray(parsed)) return null;
+  if (parsed === undefined || !isArray(parsed)) return null;
   return keyedIdentityFrom(parsed);
 }
 
@@ -155,13 +161,11 @@ function parseJsonKey(key: string): unknown {
 }
 
 function isStringArray(value: unknown): value is string[] {
-  return (
-    Array.isArray(value) && value.every(segment => typeof segment === 'string')
-  );
+  return isArray(value) && value.every(isStringValue);
 }
 
 function isOptionalString(value: unknown): value is string | null | undefined {
-  return value === null || value === undefined || typeof value === 'string';
+  return isNullish(value) || isStringValue(value);
 }
 
 /** Canonical dotted affected names parsed to comparable segments. */
@@ -173,11 +177,7 @@ function affectedSegments(field: string): string[] {
 
 /** Segment-wise overlap in either direction (containment counts). */
 function pathsOverlap(a: readonly string[], b: readonly string[]): boolean {
-  const length = Math.min(a.length, b.length);
-  for (let index = 0; index < length; index++) {
-    if (a[index] !== b[index]) return false;
-  }
-  return true;
+  return isArrayPrefix(a, b) || isArrayPrefix(b, a);
 }
 
 export function schemaFailureField(result: SelectiveSchemaResult): string {

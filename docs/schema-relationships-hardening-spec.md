@@ -1,6 +1,7 @@
 # Schema relationships hardening specification
 
-Status: P0 and P1 complete; P2 begins after the Vest 6 release baseline
+Status: P0 and P1 complete; PR-local utility consolidation complete; P2
+decomposition begins after the Vest 6 release baseline
 
 Scope: schema relationships, selective `suite.changed()` execution, and the
 supporting Vest/n4s architecture
@@ -57,7 +58,7 @@ PR #1326 currently provides:
 
 Current verification baseline:
 
-- 350 test files and 4,012 tests pass;
+- 353 test files and 4,025 tests pass;
 - TypeScript reports no errors;
 - packed ESM and CJS consumers pass on current TypeScript and 5.4.5;
 - schema coverage and package-boundary gates pass;

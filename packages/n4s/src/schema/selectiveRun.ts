@@ -2,9 +2,12 @@ import {
   asArray,
   hasOwnProperty,
   isArray,
+  isBoolean,
   isFunction,
   isNullish,
   isObject,
+  isRecord,
+  isStringValue,
   isUnsafeKey,
 } from 'vest-utils';
 
@@ -342,7 +345,7 @@ function descendCompositionChildren(
   const children = omissionChildrenOf(node);
   if (children.length === 0) return false;
   for (const child of children) {
-    if (isRuleLike(child)) assertSkipPathExcludable(child, rest, full);
+    if (isRuleNode(child)) assertSkipPathExcludable(child, rest, full);
   }
   return true;
 }
@@ -466,9 +469,7 @@ function n4sStandardValidateOf(
 }
 
 function hasStandardIssues(result: unknown): boolean {
-  return (
-    isObject(result) && Array.isArray((result as { issues?: unknown }).issues)
-  );
+  return isObject(result) && isArray((result as { issues?: unknown }).issues);
 }
 
 /**
@@ -506,7 +507,7 @@ function runSchemaWithParse(
   modifiers: FocusModifiers,
   changedAffected?: readonly string[] | null,
 ): SelectiveSchemaResult[] {
-  if (changedAffected == null) {
+  if (isNullish(changedAffected)) {
     return runFlatSchema(schema, modifiers, data, changedAffected);
   }
   if (changedAffected.length === 0) return [{ pass: true, type: data }];
@@ -716,7 +717,7 @@ function shouldNarrowFlatResults(
   changedAffected: readonly string[] | null | undefined,
 ): changedAffected is readonly string[] {
   return (
-    changedAffected != null &&
+    !isNullish(changedAffected) &&
     changedAffected.length > 0 &&
     isN4sVendorSchema(schema)
   );
@@ -828,7 +829,7 @@ function memberTopKey(
 ): string | null {
   const [failure] = failures as [SelectiveSchemaResult];
   const [top] = failure?.path ?? [];
-  if (typeof top !== 'string' || !hasOwnProperty(topSchema, top)) return null;
+  if (!isStringValue(top) || !hasOwnProperty(topSchema, top)) return null;
   return top;
 }
 
@@ -1025,7 +1026,7 @@ function omitSkippedComposition(
   let changed = false;
   let matched = false;
   const next = children.map(child => {
-    if (!isRuleLike(child)) return child;
+    if (!isRuleNode(child)) return child;
     const omitted = omitSkippedSegs(child, skipSegs);
     if (omitted.matched) matched = true;
     if (omitted.rule !== child) changed = true;
@@ -1058,13 +1059,7 @@ function omissionChildrenOf(rule: SelectiveSchema): unknown[] {
   const children = (rule as unknown as Record<symbol, unknown>)[
     COMPOSITION_CHILDREN
   ];
-  return Array.isArray(children) ? children : [];
-}
-
-function isRuleLike(child: unknown): child is SelectiveSchema {
-  return (
-    child !== null && (typeof child === 'object' || typeof child === 'function')
-  );
+  return isArray(children) ? children : [];
 }
 
 type SkipPlan = {
@@ -1092,9 +1087,9 @@ function classifySkipSegs(
   nested: Map<string, AffectedSeg[][]>,
 ): void {
   const [head, ...tail] = segs;
-  if (typeof head !== 'string' || !hasOwnProperty(members, head)) return;
+  if (!isStringValue(head) || !hasOwnProperty(members, head)) return;
   if (tail.length === 0) {
-    if (!exact.includes(head)) exact.push(head);
+    pushUniqueName(exact, head);
     return;
   }
   appendNestedSkip(nested, head, tail);
@@ -1132,7 +1127,7 @@ function rebuildNestedMembers(
     // Function facades (e.g. a nested compose() result mounted as a
     // member) carry slots like object rules; only non-rules are tolerated
     // as unknown paths.
-    if (!isRuleLike(member)) continue;
+    if (!isRuleNode(member)) continue;
     const omitted = omitSkippedSegs(member, tails);
     // Unmatched tails name no executable validator beneath this member
     // (scalar descent, unknown keys): safe no-op, like an unknown
@@ -1181,9 +1176,7 @@ function containerMembersOf(
   rule: SelectiveSchema,
 ): Record<string, SelectiveSchema> | null {
   const top = rule.__schema;
-  return top !== undefined && typeof top === 'object'
-    ? (top as Record<string, SelectiveSchema>)
-    : null;
+  return isObject(top) ? (top as Record<string, SelectiveSchema>) : null;
 }
 
 function defineMember(
@@ -1378,7 +1371,7 @@ function stepKeySegment(
   seg: AffectedSeg | undefined,
   last: boolean,
 ): AffectedStep | null {
-  if (typeof seg !== 'string' || schemaNode === undefined) return null;
+  if (!isStringValue(seg) || schemaNode === undefined) return null;
   const inner = shapeInnerOf(schemaNode);
   if (inner === null) return null;
   if (!last) {
@@ -1425,7 +1418,7 @@ function shapeInnerOf(
   // Records accept any key, so no key is ever unknown under one.
   if (containerKindOf(rule) === 'record') return null;
   const inner = rule.__schema;
-  return inner && typeof inner === 'object' ? inner : null;
+  return isObject(inner) ? inner : null;
 }
 
 /**
@@ -1456,10 +1449,7 @@ function readDataKey(dataNode: unknown, key: string): unknown {
 function readOwnDataValue(dataNode: object, key: string | number): unknown {
   const descriptor = Object.getOwnPropertyDescriptor(dataNode, key);
   if (descriptor === undefined) return undefined;
-  if (
-    typeof descriptor.get === 'function' ||
-    typeof descriptor.set === 'function'
-  ) {
+  if (isFunction(descriptor.get) || isFunction(descriptor.set)) {
     return undefined;
   }
   return descriptor.value;
@@ -1496,7 +1486,7 @@ function itemMemberOf(
  * required semantics.
  */
 function isPartialLikeContainer(rule: SelectiveSchema): boolean {
-  if (typeof rule !== 'object' || rule === null) return false;
+  if (!isObject(rule)) return false;
   return symbolSlotOf(rule, PARTIAL_LIKE) === true;
 }
 
@@ -1510,7 +1500,7 @@ function isPartialLikeContainer(rule: SelectiveSchema): boolean {
  * above: no user code executes to decide this.
  */
 function skipAbsentMembersOf(rule: SelectiveSchema): boolean {
-  if (typeof rule !== 'object' || rule === null) return false;
+  if (!isObject(rule)) return false;
   if (symbolSlotOf(rule, PARTIAL_LIKE) === true) return true;
   return !hasChainBaseline(rule);
 }
@@ -1546,7 +1536,7 @@ function kindValueMatches(rule: SelectiveSchema, value: unknown): boolean {
     return isArray(value);
   }
   if (kind === 'record') {
-    return isRecordValue(value);
+    return isRecord(value);
   }
   return true;
 }
@@ -1571,7 +1561,7 @@ function expandChangedToAffected(
   affected: readonly string[] | null | undefined,
   data: unknown,
 ): readonly string[] | null {
-  if (affected == null) return null;
+  if (isNullish(affected)) return null;
   return resolveAffectedPaths(schema, affected, data);
 }
 
@@ -1581,9 +1571,7 @@ export function resolveAffectedPaths(
   changedFields: string | readonly string[],
   data?: unknown,
 ): string[] {
-  const entries = Array.isArray(changedFields)
-    ? changedFields
-    : [changedFields];
+  const entries = asArray(changedFields);
   const changedArray = stringEntriesOf(entries).map(canonicalAffectedName);
   if (changedArray.length === 0) return [];
   const relationships = getSchemaRelationships(schema);
@@ -1631,7 +1619,7 @@ function collectSubtreeDescendants(
 }
 
 function asRuleNode(schema: unknown): SelectiveSchema | undefined {
-  if (typeof schema === 'function') return schema as SelectiveSchema;
+  if (isFunction(schema)) return schema as SelectiveSchema;
   return isObject(schema) ? (schema as SelectiveSchema) : undefined;
 }
 
@@ -1685,7 +1673,7 @@ function appendChildPaths(
   // The guard tracks the current recursion stack, not a global visited set:
   // an aliased object reachable from two branches expands under both, while
   // a genuine cycle on the current path still terminates.
-  if (typeof dataNode !== 'object' || dataNode === null) {
+  if (!isObject(dataNode)) {
     appendKeyChildren({ ancestors, base, dataNode, out, schemaNode });
     return;
   }
@@ -1721,7 +1709,7 @@ function appendIndexChildren(
 }
 
 function appendKeyChildren(walk: ChildWalk): void {
-  if (!isRecordValue(walk.dataNode) && !hasDeclaredMembers(walk.schemaNode)) {
+  if (!isRecord(walk.dataNode) && !hasDeclaredMembers(walk.schemaNode)) {
     return;
   }
   for (const key of childKeysOf(walk.schemaNode, walk.dataNode)) {
@@ -1764,14 +1752,14 @@ function addDeclaredKeys(
 }
 
 function addDataKeys(keys: Set<string>, dataNode: unknown): void {
-  if (!isRecordValue(dataNode)) return;
+  if (!isRecord(dataNode)) return;
   for (const key of Object.keys(dataNode)) keys.add(key);
 }
 
 // Non-string entries (e.g. a runtime boolean) never reach field-name
 // parsing, which would throw on them — filtered gracefully instead.
 function stringEntriesOf(entries: readonly unknown[]): string[] {
-  return entries.filter((field): field is string => typeof field === 'string');
+  return entries.filter(isStringValue);
 }
 
 function collectForwardTargets(
@@ -1829,7 +1817,7 @@ function describeFnOf(
 ): (() => { relationships: SchemaRelationship[] }) | null {
   if (!isRuleNode(schema)) return null;
   const describe = (schema as SelectiveSchema).describe;
-  return typeof describe === 'function' ? describe : null;
+  return isFunction(describe) ? describe : null;
 }
 
 /**
@@ -2133,7 +2121,7 @@ function collectArraySupplementInner(
   data: unknown,
   context: ArraySupplementContext,
 ): SelectiveSchemaResult[] {
-  if (!isObject(data) || isArray(data)) return [];
+  if (!isRecord(data)) return [];
   const out: SelectiveSchemaResult[] = [];
   const selection: IndexSelection = {
     suffixes: context.expanded.map(parseAffectedPath),
@@ -2207,7 +2195,7 @@ function appendSupplementalFailures(
   selection: IndexSelection,
 ): void {
   if (tryAppendMembers(rule, value, selection)) return;
-  if (isArray(value) || !isObject(value)) return;
+  if (!isRecord(value)) return;
   const record: Record<string, unknown> = value;
   appendShapeDescendants(rule, record, selection);
 }
@@ -2255,7 +2243,7 @@ function appendSingleDispatch(
   if (isArray(value)) {
     return appendEachIndex(item, value, selection);
   }
-  if (isRecordValue(value)) {
+  if (isRecord(value)) {
     return appendRecordKeys(rule, item, value, selection);
   }
   return false;
@@ -2294,10 +2282,6 @@ function isCoveredByMain(
     if (path.length < memberPath.length) return false;
     return memberPath.every((seg, i) => String(path[i]) === seg);
   });
-}
-
-function isRecordValue(value: unknown): value is Record<string, unknown> {
-  return isObject(value) && !isArray(value);
 }
 
 /**
@@ -2860,7 +2844,7 @@ function keyHeads(suffixes: AffectedSeg[][]): string[] {
  * numeric record keys ('0', '1') dispatch to their member like other keys.
  */
 function addKeyHead(head: AffectedSeg, keys: Set<string>): void {
-  if (typeof head === 'string') {
+  if (isStringValue(head)) {
     keys.add(head);
     return;
   }
@@ -2969,7 +2953,7 @@ function suffixesForMember(
 function headMatches(suffixHead: AffectedSeg, head: string | number): boolean {
   if (suffixHead === head) return true;
   return (
-    typeof head === 'string' &&
+    isStringValue(head) &&
     typeof suffixHead === 'number' &&
     String(suffixHead) === head
   );
@@ -3227,7 +3211,7 @@ function introspectableTopSchema(
   schema: SelectiveSchema,
 ): Record<string, SelectiveSchema> | null {
   const topSchema = schema?.__schema;
-  if (!topSchema || typeof topSchema !== 'object') return null;
+  if (!isObject(topSchema)) return null;
   if (!topContainerRebuildable(schema)) return null;
   return topSchema;
 }
@@ -3286,7 +3270,7 @@ function appendTopGroup(
 ): void {
   if (segs.length === 0) return;
   const [top, ...rest] = segs as [AffectedSeg, ...AffectedSeg[]];
-  if (typeof top !== 'string') return;
+  if (!isStringValue(top)) return;
   // Unknown keys stay grouped: the fragment retains them as extra-key
   // sentinels so a strict shape() failure the full run reports is not lost.
   // Unsafe unknown keys are still dropped: a sentinel cannot sit in a
@@ -3388,7 +3372,7 @@ function projectRule(
   suffixes: AffectedSeg[][],
 ): SelectiveSchema | null | typeof FRAGMENT_EXCLUDED {
   const inner = rule?.__schema;
-  if (inner && typeof inner === 'object') {
+  if (isObject(inner)) {
     return projectShapeRule(rule, inner, suffixes);
   }
   return projectItemRule(rule, suffixes);
@@ -3517,7 +3501,7 @@ function appendChildGroup(
   suffix: AffectedSeg[],
 ): boolean {
   const [head, ...rest] = suffix as [AffectedSeg, ...AffectedSeg[]];
-  if (typeof head !== 'string') return false;
+  if (!isStringValue(head)) return false;
   // Unknown keys stay grouped so nested fragments retain their extra-key
   // sentinels. Unsafe ones keep the whole rule instead: a sentinel cannot
   // sit in a plain-object fragment (prototype setter, not an own key).
@@ -3767,7 +3751,7 @@ function intersectAffectedWithOnly(
   affected: readonly string[] | null | undefined,
   only: readonly string[] | null,
 ): readonly string[] | null {
-  if (affected == null || only == null) return affected ?? null;
+  if (isNullish(affected) || isNullish(only)) return affected ?? null;
   if (only.length === 0) return [];
   const onlyNames = only.map(canonicalAffectedName);
   return affected.filter(field =>
@@ -3820,11 +3804,7 @@ function buildArrayProp(
   // Non-string entries never reach name matching: asArray(true) is [true]
   // and name normalization would throw on it (boolean skip-all is a legal
   // modifier, handled as match-all by buildSkipFilter instead).
-  // Copy readonly arrays: asArray only accepts mutable element lists.
-  const list = Array.isArray(prop) ? [...prop] : prop;
-  return asArray(list).filter(
-    (entry): entry is string => typeof entry === 'string',
-  );
+  return asArray(prop).filter(isStringValue);
 }
 
 /**
@@ -3947,7 +3927,7 @@ function expandOneOnlyName(
     return;
   }
   const [head] = segs;
-  if (typeof head !== 'string') {
+  if (!isStringValue(head)) {
     pushUniqueName(topOnly, name);
     return;
   }
@@ -3979,7 +3959,7 @@ function collectWholeParents(only: readonly string[]): Set<string> {
   return new Set(
     only.filter(name => {
       const segs = safeAffectedSegs(name);
-      return segs !== null && segs.length === 1 && typeof segs[0] === 'string';
+      return segs !== null && segs.length === 1 && isStringValue(segs[0]);
     }),
   );
 }
@@ -4042,11 +4022,11 @@ function planNestedOnlyStep(
 ): string[] | null | undefined {
   const seg = segs[index] as AffectedSeg;
   const isLast = index === segs.length - 1;
-  if (typeof seg !== 'string' || !hasOwnProperty(state.members, seg)) {
+  if (!isStringValue(seg) || !hasOwnProperty(state.members, seg)) {
     return planNestedOnlyMissing(state, index);
   }
   const member = state.members[seg] as SelectiveSchema;
-  if (!isRuleLike(member)) return null;
+  if (!isRuleNode(member)) return null;
   if (isLast) return planNestedOnlyLeaf(state, seg);
   return planNestedOnlyDescend(state, member, seg);
 }
@@ -4104,7 +4084,7 @@ function nestedOnlyContainerBoundary(
   member: unknown,
   path: readonly string[],
 ): string[] | null {
-  if (!isRuleLike(member)) return null;
+  if (!isRuleNode(member)) return null;
   const slots = member as unknown as Record<symbol, unknown>;
   if (
     slots[ITEM_SCHEMA] !== undefined ||
@@ -4173,10 +4153,10 @@ function isSelectiveSchemaResult(
 
   const value = candidate as Partial<SelectiveSchemaResult>;
 
-  const hasPass = typeof value.pass === 'boolean';
+  const hasPass = isBoolean(value.pass);
   const hasPath =
     value.path === undefined ||
-    (isArray(value.path) && value.path.every(item => typeof item === 'string'));
+    (isArray(value.path) && value.path.every(isStringValue));
 
   return hasPass && hasPath;
 }

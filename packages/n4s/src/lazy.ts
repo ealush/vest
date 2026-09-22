@@ -16,7 +16,7 @@ import * as schemaRules from './rules/schemaRules/schemaRules';
 import { lazy as lazyRule } from './rules/schemaRules/lazy';
 import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
 import { type RuleInstance } from './utils/RuleInstance';
-import { asArray, isNullish } from 'vest-utils';
+import { asArray, isArray, isFunction, isNullish } from 'vest-utils';
 import { ctx } from './enforceContext';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 import { resolveInlineDeps } from './schema/dependencyResolver';
@@ -184,7 +184,7 @@ function collectItemRelationships(
  */
 function normalizeItemSchemas(item: unknown): Record<PropertyKey, unknown>[] {
   if (!item) return [];
-  const entries = Array.isArray(item) ? item : [item];
+  const entries = isArray(item) ? item : [item];
   const out: Record<PropertyKey, unknown>[] = [];
   for (const entry of entries) {
     if (!isRuleNode(entry)) continue;
@@ -250,10 +250,10 @@ function wrapOptional(
     // Use adapted rule to get lazy RuleInstance that preserves chain behavior
     const rule = rawOptional(inner);
     const slots = slotsOf(rule);
-    if (Array.isArray(innerResolved) && innerResolved.length > 0) {
+    if (isArray(innerResolved) && innerResolved.length > 0) {
       slots[RESOLVED_RELATIONSHIPS] = [...innerResolved];
     }
-    if (Array.isArray(innerUnresolved) && innerUnresolved.length > 0) {
+    if (isArray(innerUnresolved) && innerUnresolved.length > 0) {
       slots[UNRESOLVED_DEPS] = [...innerUnresolved];
     }
     // Also copy __schema and ITEM_SCHEMA if present
@@ -267,7 +267,7 @@ function wrapOptional(
       slots[ITEM_CONTAINER] = innerSlots[ITEM_CONTAINER];
     }
     const innerMapValue = innerSlots[MAP_VALUE];
-    if (typeof innerMapValue === 'function') {
+    if (isFunction(innerMapValue)) {
       slots[MAP_VALUE] = (value: unknown): unknown =>
         isNullish(value)
           ? RuleRunReturn.Passing(value)

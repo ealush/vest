@@ -1,3 +1,5 @@
+import { isStringValue } from 'vest-utils';
+
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 import { mapPassing, registerParserRules } from './parserUtils';
 
@@ -19,7 +21,7 @@ function mapString<TOutput>(transform: (value: string) => TOutput) {
   // branch is unreachable per the types, so it collapses to never and
   // needs no cast.
   return (value: string): RuleRunReturn<TOutput> => {
-    if (typeof value !== 'string') return RuleRunReturn.Failing(value);
+    if (!isStringValue(value)) return RuleRunReturn.Failing(value);
     return mapPassing(transform)(value);
   };
 }
@@ -87,7 +89,7 @@ export const replaceAll = (
   replaceValue: string,
 ) =>
   mapString((current: string) =>
-    typeof searchValue === 'string'
+    isStringValue(searchValue)
       ? searchValue === ''
         ? current
         : current.split(searchValue).join(replaceValue)

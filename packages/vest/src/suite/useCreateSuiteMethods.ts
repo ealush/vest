@@ -1,4 +1,4 @@
-import { CB, makeBrand, withCatch } from 'vest-utils';
+import { CB, asArray, isArray, makeBrand, withCatch } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { useEmit, usePrepareEmitter, Subscribe } from '../core/VestBus/VestBus';
@@ -249,10 +249,14 @@ function copyFieldLists<F extends TFieldName, G extends TGroupName>(
   config: SuiteModifiers<F, G>,
 ): SuiteModifiers<F, G> {
   const copied = { ...config };
-  if (Array.isArray(copied.only)) copied.only = [...copied.only];
-  if (Array.isArray(copied.skip)) copied.skip = [...copied.skip];
-  if (Array.isArray(copied.onlyGroup)) copied.onlyGroup = [...copied.onlyGroup];
-  if (Array.isArray(copied.skipGroup)) copied.skipGroup = [...copied.skipGroup];
+  if (isArray(copied.only)) copied.only = [...(copied.only as readonly F[])];
+  if (isArray(copied.skip)) copied.skip = [...(copied.skip as readonly F[])];
+  if (isArray(copied.onlyGroup)) {
+    copied.onlyGroup = [...(copied.onlyGroup as readonly G[])];
+  }
+  if (isArray(copied.skipGroup)) {
+    copied.skipGroup = [...(copied.skipGroup as readonly G[])];
+  }
 
   return copied;
 }
@@ -312,7 +316,7 @@ function useCreateChanged<
     // Falsy scalars (undefined, null, false, '') are a legal no-op — run
     // without changed focus. Only changed([]) is an explicit zero-field
     // focus that runs no tests.
-    if (!Array.isArray(changedField) && !changedField) {
+    if (!isArray(changedField) && !changedField) {
       // Mirror only(undefined): a legal no-op — run without changed focus.
       const nextModifiers = { ...modifiers };
       delete nextModifiers.__changed;
@@ -326,9 +330,7 @@ function useCreateChanged<
     // Copy caller-owned lists at the builder boundary (see copyFieldLists):
     // the derived runner must keep selecting these fields even if the
     // caller later mutates their array.
-    const changedArray = Array.isArray(changedField)
-      ? [...(changedField as string[])]
-      : [changedField as string];
+    const changedArray = asArray(changedField as string | readonly string[]);
     // Store raw changed fields; useCreateSuiteRunner will expand using run data
     // Fallback to immediate expansion for pre-run inspection (e.g., suite.get)
     // is handled by runner; here we just create a focused suite with deferred modifier.

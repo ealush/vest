@@ -1,3 +1,5 @@
+import { isArray, isObject } from 'vest-utils';
+
 import type { SchemaPath } from './SchemaPath';
 import { propertySegment } from './SchemaPath';
 
@@ -36,11 +38,7 @@ export type DependencyRef = {
 };
 
 export function isDependencyRef(value: unknown): value is DependencyRef {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    (value as DependencyRef)[DEPENDENCY_REF] === true
-  );
+  return isObject(value) && (value as DependencyRef)[DEPENDENCY_REF] === true;
 }
 
 export function getRefPath(ref: DependencyRef): SchemaPath {
@@ -155,11 +153,6 @@ function chainStringProp(target: unknown, prop: string | number): unknown {
  */
 export function normalizeResolverResult(result: unknown): DependencyRef[] {
   if (!result) return [];
-  if (Array.isArray(result)) {
-    return result.filter(isDependencyRef);
-  }
-  if (isDependencyRef(result)) {
-    return [result];
-  }
-  return [];
+  if (isArray(result)) return result.filter(isDependencyRef);
+  return isDependencyRef(result) ? [result] : [];
 }

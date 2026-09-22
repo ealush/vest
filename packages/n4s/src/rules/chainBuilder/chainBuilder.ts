@@ -2,6 +2,8 @@
 /* eslint-disable max-lines-per-function */
 import {
   dynamicValue,
+  isArray,
+  isObject,
   type DynamicValue,
   type Maybe,
   type Stringable,
@@ -69,32 +71,28 @@ const activeBoundaryFrames: BoundaryFrame[] = [];
 // receive their underlying targets.
 const proxyToTarget = new WeakMap<object, object>();
 
-function isObjectNode(node: unknown): node is object {
-  return isRuleNode(node);
-}
-
 function resolveBoundaryNode(node: unknown): object | null {
-  if (!isObjectNode(node)) return null;
+  if (!isRuleNode(node)) return null;
   return proxyToTarget.get(node as object) ?? (node as object);
 }
 
 function schemaChildNodes(record: Record<PropertyKey, unknown>): unknown[] {
   const schema = record.__schema;
-  if (!schema || typeof schema !== 'object') return [];
+  if (!isObject(schema)) return [];
   return Object.values(schema);
 }
 
 function itemChildNodes(record: Record<PropertyKey, unknown>): unknown[] {
   const item = record[ITEM_SCHEMA];
-  if (Array.isArray(item)) return item.filter(isObjectNode);
-  return isObjectNode(item) ? [item] : [];
+  if (isArray(item)) return item.filter(isRuleNode);
+  return isRuleNode(item) ? [item] : [];
 }
 
 function explicitCompositionChildren(
   record: Record<PropertyKey, unknown>,
 ): unknown[] {
   const children = record[COMPOSITION_CHILDREN];
-  return Array.isArray(children) ? children.filter(isObjectNode) : [];
+  return isArray(children) ? children.filter(isRuleNode) : [];
 }
 
 function childNodesOf(resolved: object): unknown[] {
@@ -112,7 +110,7 @@ function collectCompositionMembers(root: unknown): WeakSet<object> {
   const pending: unknown[] = [root];
   while (pending.length > 0) {
     const raw = pending.pop();
-    if (isObjectNode(raw)) members.add(raw as object);
+    if (isRuleNode(raw)) members.add(raw as object);
     const resolved = resolveBoundaryNode(raw);
     if (!resolved || seen.has(resolved)) continue;
     seen.add(resolved);
@@ -124,7 +122,7 @@ function collectCompositionMembers(root: unknown): WeakSet<object> {
 
 // eslint-disable-next-line complexity -- two identity forms across nested frames
 function isActiveCompositionMember(rule: unknown): boolean {
-  if (!isObjectNode(rule)) return false;
+  if (!isRuleNode(rule)) return false;
   const resolved = resolveBoundaryNode(rule);
   if (!resolved) return false;
   for (let i = activeBoundaryFrames.length - 1; i >= 0; i--) {
@@ -137,10 +135,10 @@ function isActiveCompositionMember(rule: unknown): boolean {
 }
 
 function hasRootedRelationships(rule: unknown): boolean {
-  if (!isObjectNode(rule)) return false;
+  if (!isRuleNode(rule)) return false;
   const rels = (rule as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS];
   return (
-    Array.isArray(rels) &&
+    isArray(rels) &&
     (rels as InternalRelationship[]).some(
       rel => rel.__isRootSource === true || rel.__isRootTarget === true,
     )

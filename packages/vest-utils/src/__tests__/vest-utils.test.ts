@@ -5,6 +5,8 @@ describe('vest-utils exports', () => {
   it('should export expected utilities', () => {
     expect(vestUtils.noop).toBeDefined();
     expect(vestUtils.isFunction).toBeDefined();
+    expect(vestUtils.isArrayPrefix).toBeDefined();
+    expect(vestUtils.isRecord).toBeDefined();
     expect(vestUtils.withResolvers).toBeDefined();
     // Verify a few others to ensure the file is processed
     expect(vestUtils.defaultTo).toBeDefined();

@@ -1,4 +1,4 @@
-import { hasOwnProperty, type Stringable } from 'vest-utils';
+import { hasOwnProperty, isStringValue, type Stringable } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import {
@@ -86,7 +86,7 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
         );
     }
 
-    if (typeof prop === 'string') {
+    if (isStringValue(prop)) {
       const lazyRule = getLazyRule(prop);
       if (lazyRule) {
         return (...args: unknown[]) =>
@@ -108,7 +108,7 @@ function createProxyHandlersHelper<T extends RuleInstance<any, any>>(
       );
     },
     has(_target: T, prop: string | symbol) {
-      if (typeof prop === 'string') {
+      if (isStringValue(prop)) {
         if (methodKeys.has(prop) || getLazyRule(prop) !== undefined)
           return true;
       }

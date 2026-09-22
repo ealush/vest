@@ -1,3 +1,5 @@
+import { isFunction, isStringValue } from 'vest-utils';
+
 import { extendEager } from './eager';
 import { ctx } from './enforceContext';
 import { EnforceSchemaError } from './errors/EnforceSchemaError';
@@ -129,7 +131,7 @@ function assertCallableRules(
   ruleNames: readonly string[],
 ): void {
   for (const ruleName of ruleNames) {
-    if (typeof rules[ruleName] !== 'function') {
+    if (!isFunction(rules[ruleName])) {
       throw new EnforceSchemaError(
         `enforce.extend() rule "${ruleName}" must be a function`,
       );
@@ -143,7 +145,7 @@ function validatedParserNames(
 ): ReadonlySet<string> {
   const parsers = new Set<string>();
   for (const parserName of parserNames) {
-    if (typeof parserName !== 'string' || !declaredRules.has(parserName)) {
+    if (!isStringValue(parserName) || !declaredRules.has(parserName)) {
       throw new EnforceSchemaError(
         `enforce.extend() parser "${String(parserName)}" is not a declared rule`,
       );

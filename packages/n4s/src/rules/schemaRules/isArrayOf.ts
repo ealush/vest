@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import { hasOwnProperty, lengthEquals, mapFirst } from 'vest-utils';
+import { hasOwnProperty, isArray, lengthEquals, mapFirst } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
 import { transformResult } from '../../ruleResult';
@@ -48,7 +48,7 @@ import { RuleRunReturn } from '../../utils/RuleRunReturn';
  */
 
 export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
-  if (!Array.isArray(value)) {
+  if (!isArray(value)) {
     return RuleRunReturn.Failing(value);
   }
 

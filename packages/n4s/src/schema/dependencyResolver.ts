@@ -1,9 +1,20 @@
-import { hasOwnProperty, isNullish, isObject } from 'vest-utils';
+import {
+  hasOwnProperty,
+  isArray,
+  isFunction,
+  isNullish,
+  isObject,
+  isStringValue,
+} from 'vest-utils';
 
 import { EnforceSchemaError } from '../errors/EnforceSchemaError';
 import type { RuleInstance } from '../utils/RuleInstance';
-import type { ItemSegment, PropertySegment, SchemaPath } from './SchemaPath';
-import { propertySegment } from './SchemaPath';
+import type { PropertySegment, SchemaPath } from './SchemaPath';
+import {
+  isSchemaPathPrefixedBy,
+  propertySegment,
+  schemaPathsEqual,
+} from './SchemaPath';
 import { isRuleNode } from './ruleNode';
 import {
   COMPOSITION_CHILDREN,
@@ -62,7 +73,7 @@ export function resolveInlineDeps(
     const targetPath: SchemaPath = [...scopePath, propertySegment(fieldKey)];
 
     for (const dep of unresolved) {
-      if (typeof dep.resolver !== 'function') {
+      if (!isFunction(dep.resolver)) {
         throw new EnforceSchemaError(
           `EnforceSchemaError: "${String(fieldKey)}" dependsOn expects a function, got ${typeof dep.resolver}`,
         );
@@ -85,18 +96,12 @@ export function resolveInlineDeps(
       }
       const refs = normalizeResolverResult(result);
       // An explicit empty array is the intentional zero-dependency form.
-      if (
-        refs.length === 0 &&
-        !(Array.isArray(result) && result.length === 0)
-      ) {
+      if (refs.length === 0 && !(isArray(result) && result.length === 0)) {
         throw new EnforceSchemaError(
           `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver must return a dependency ref (e.g., $ => $.other) or array of refs, got ${typeof result}`,
         );
       }
-      if (
-        Array.isArray(result) &&
-        refs.length !== (result as unknown[]).length
-      ) {
+      if (isArray(result) && refs.length !== (result as unknown[]).length) {
         throw new EnforceSchemaError(
           `EnforceSchemaError: "${String(fieldKey)}" dependsOn resolver array contains non-dependency values`,
         );
@@ -122,7 +127,7 @@ export function resolveInlineDeps(
           // Single self: $.self => owning field (unless shadowed by sibling)
           if (
             sourcePath.length === scopePath.length + 1 &&
-            isPathPrefixedBy(sourcePath.slice(0, -1), scopePath) &&
+            isSchemaPathPrefixedBy(sourcePath.slice(0, -1), scopePath) &&
             !hasOwnProperty(shape, 'self')
           ) {
             sourcePath = targetPath;
@@ -134,7 +139,7 @@ export function resolveInlineDeps(
         // Self-dependency is no-op: deduplicate / filter
         // If a field depends on itself, it creates no useful edge — skip silently.
         // Documented decision: self-dependency is filtered, not thrown.
-        if (pathsEqual(sourcePath, targetPath)) {
+        if (schemaPathsEqual(sourcePath, targetPath)) {
           continue;
         }
 
@@ -188,7 +193,7 @@ function resolverFailure(field: string, thrown: unknown): EnforceSchemaError {
 
 function safeResolverMessage(thrown: unknown): string {
   try {
-    if (typeof thrown === 'string') return thrown;
+    if (isStringValue(thrown)) return thrown;
     if (thrown instanceof Error) return String(thrown.message);
   } catch {
     // A hostile accessor threw while reading: fall through to fixed text.
@@ -214,7 +219,7 @@ export function assertRuleRootedPathsValid(rule: unknown): void {
 
 function checkableRootedRels(rule: object): InternalRelationship[] | null {
   const rels = (rule as Record<symbol, unknown>)[RESOLVED_RELATIONSHIPS];
-  if (!Array.isArray(rels)) return null;
+  if (!isArray(rels)) return null;
   const checkable = (rels as unknown[]).filter(isCheckableRel);
   const hasRooted = checkable.some(
     rel => rel.__isRootSource === true || rel.__isRootTarget === true,
@@ -225,11 +230,11 @@ function checkableRootedRels(rule: object): InternalRelationship[] | null {
 function rootShapeOf(rule: object): Record<PropertyKey, unknown> | null {
   const record = rule as Record<PropertyKey, unknown>;
   const rootShape = record.__schema;
-  if (rootShape && typeof rootShape === 'object') {
+  if (isObject(rootShape)) {
     return rootShape as Record<PropertyKey, unknown>;
   }
   const compositionChildren = record[COMPOSITION_CHILDREN];
-  return Array.isArray(compositionChildren)
+  return isArray(compositionChildren)
     ? mergedChildShapes(compositionChildren)
     : null;
 }
@@ -250,15 +255,14 @@ function validateRootedRels(
 
 function isCheckableRel(rel: unknown): rel is InternalRelationship {
   return (
-    !!rel &&
-    typeof rel === 'object' &&
-    Array.isArray((rel as InternalRelationship).source) &&
-    Array.isArray((rel as InternalRelationship).target)
+    isObject(rel) &&
+    isArray((rel as InternalRelationship).source) &&
+    isArray((rel as InternalRelationship).target)
   );
 }
 
 function targetFieldName(path: SchemaPath | undefined): string {
-  if (Array.isArray(path) && path.length) {
+  if (isArray(path) && path.length) {
     const last = path[path.length - 1];
     if (last && last.type === 'property') {
       return String((last as unknown as PropertySegment).key);
@@ -324,11 +328,7 @@ function assertRootKeyExists(
   fieldForMsg: string,
   unknownField: string,
 ): void {
-  if (
-    !current ||
-    typeof current !== 'object' ||
-    !hasOwnProperty(current, key)
-  ) {
+  if (!isObject(current) || !hasOwnProperty(current, key)) {
     throw new EnforceSchemaError(
       `EnforceSchemaError: "${fieldForMsg}" depends on unknown field "${unknownField}"`,
     );
@@ -343,7 +343,7 @@ function childShape(rule: unknown): unknown {
   };
   if (candidate.__schema) return candidate.__schema;
   const compositionChildren = candidate[COMPOSITION_CHILDREN];
-  if (Array.isArray(compositionChildren)) {
+  if (isArray(compositionChildren)) {
     return mergedChildShapes(compositionChildren);
   }
   return itemChildShape(candidate[ITEM_SCHEMA]);
@@ -351,7 +351,7 @@ function childShape(rule: unknown): unknown {
 
 function itemChildShape(item: unknown): unknown {
   if (!isRuleNode(item)) return {};
-  if (Array.isArray(item)) return mergedItemShape(item);
+  if (isArray(item)) return mergedItemShape(item);
   return childShape(item);
 }
 
@@ -417,7 +417,7 @@ function validateSourceExists(
       ];
       if (isRuleNode(itemSchema)) {
         current = (
-          Array.isArray(itemSchema)
+          isArray(itemSchema)
             ? mergedItemShape(itemSchema)
             : ((itemSchema as { __schema?: unknown }).__schema ?? {})
         ) as Record<PropertyKey, unknown>;
@@ -425,7 +425,7 @@ function validateSourceExists(
     }
   }
 
-  const isRooted = !isPathPrefixedBy(sourcePath, scopePath);
+  const isRooted = !isSchemaPathPrefixedBy(sourcePath, scopePath);
 
   // Quoted in every unknown-field error below: the full dotted source path,
   // never the leaf alone.
@@ -479,7 +479,7 @@ function validateSourceExists(
       const itemSchema = (rule as unknown as Record<symbol, unknown>)[
         ITEM_SCHEMA
       ];
-      walkShape = Array.isArray(itemSchema)
+      walkShape = isArray(itemSchema)
         ? mergedItemShape(itemSchema)
         : ((
             itemSchema as unknown as {
@@ -505,7 +505,7 @@ function validateSourceExists(
       const seg = relativePath[i];
       if (seg.type !== 'property') continue;
       const key = String((seg as unknown as PropertySegment).key);
-      if (!parentShape || typeof parentShape !== 'object') {
+      if (!isObject(parentShape)) {
         throw new EnforceSchemaError(
           `EnforceSchemaError: "${targetField}" depends on unknown field "${unknownField}"`,
         );
@@ -517,7 +517,7 @@ function validateSourceExists(
           })
         | null
         | undefined;
-      if (rule === undefined || rule === null) {
+      if (isNullish(rule)) {
         const suggestion = findClosestKey(key, Object.keys(parentShape));
         let msg = `EnforceSchemaError: "${targetField}" depends on unknown field "${unknownField}"`;
         if (suggestion) {
@@ -536,7 +536,7 @@ function validateSourceExists(
         const itemSchema = (rule as unknown as Record<symbol, unknown>)[
           ITEM_SCHEMA
         ];
-        parentShape = Array.isArray(itemSchema)
+        parentShape = isArray(itemSchema)
           ? mergedItemShape(itemSchema)
           : ((
               itemSchema as unknown as {
@@ -569,43 +569,6 @@ function validateSourceExists(
     }
     throw new EnforceSchemaError(msg);
   }
-}
-
-// eslint-disable-next-line complexity
-function pathsEqual(a: SchemaPath, b: SchemaPath): boolean {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) {
-    if (a[i].type !== b[i].type) return false;
-    if (
-      a[i].type === 'property' &&
-      (a[i] as unknown as PropertySegment).key !==
-        (b[i] as unknown as PropertySegment).key
-    )
-      return false;
-    if (
-      a[i].type === 'item' &&
-      (a[i] as unknown as ItemSegment).binding !==
-        (b[i] as unknown as ItemSegment).binding
-    )
-      return false;
-  }
-  return true;
-}
-
-// eslint-disable-next-line complexity
-function isPathPrefixedBy(path: SchemaPath, prefix: SchemaPath): boolean {
-  if (prefix.length === 0) return true;
-  if (path.length < prefix.length) return false;
-  for (let i = 0; i < prefix.length; i++) {
-    if (path[i].type !== prefix[i].type) return false;
-    if (
-      path[i].type === 'property' &&
-      (path[i] as unknown as PropertySegment).key !==
-        (prefix[i] as unknown as PropertySegment).key
-    )
-      return false;
-  }
-  return true;
 }
 
 function findClosestKey(input: string, keys: string[]): string | null {
@@ -680,10 +643,10 @@ function assertSchemaRootPathsValidInner(schema: unknown): void {
     const rels = recordOf(node)[RESOLVED_RELATIONSHIPS] as
       | InternalRelationship[]
       | undefined;
-    if (Array.isArray(rels) && rels.length) relationships.push(...rels);
+    if (isArray(rels) && rels.length) relationships.push(...rels);
     const inner: unknown = recordOf(node).__schema;
-    if (!isNullish(inner) && typeof inner === 'object') {
-      if (Array.isArray(inner)) {
+    if (isObject(inner)) {
+      if (isArray(inner)) {
         for (const v of inner as unknown[]) collect(v);
       } else {
         for (const v of Object.values(recordOf(inner))) collect(v);
@@ -694,7 +657,7 @@ function assertSchemaRootPathsValidInner(schema: unknown): void {
     // Tuple and multi-rule arrays store a list: validate every member so
     // dangling references inside positional members fail like everywhere
     // else (GR05).
-    if (Array.isArray(item)) {
+    if (isArray(item)) {
       for (const v of item) collect(v);
     } else if (item) collect(item);
     // Plain shape object (no __schema/RESOLVED wrapper)
@@ -758,11 +721,11 @@ function assertSchemaRootPathsValidInner(schema: unknown): void {
       });
     };
     const targetField =
-      Array.isArray(rel.target) && rel.target.length
+      isArray(rel.target) && rel.target.length
         ? lastPropertyKeyOf(rel.target)
         : 'unknown';
     const sourceField =
-      Array.isArray(rel.source) && rel.source.length
+      isArray(rel.source) && rel.source.length
         ? lastPropertyKeyOf(rel.source)
         : 'unknown';
     if (isRootSource) {

@@ -1,4 +1,10 @@
-import { hasOwnProperty, isArray, isNullish, isObject } from 'vest-utils';
+import {
+  hasOwnProperty,
+  isArray,
+  isFunction,
+  isNullish,
+  isObject,
+} from 'vest-utils';
 
 /**
  * Copies supported data containers without relying on JSON serialization,
@@ -282,7 +288,7 @@ function readSnapshotProperty<T extends object>(
   const value = Reflect.get(current, property, current);
   if (
     hasOwnProperty(current, property) ||
-    typeof value !== 'function' ||
+    !isFunction(value) ||
     property === 'constructor'
   ) {
     return value;
@@ -292,8 +298,7 @@ function readSnapshotProperty<T extends object>(
       callback: (value: unknown, key: unknown, collection: T) => void,
       thisArg?: unknown,
     ) => {
-      if (typeof callback !== 'function')
-        return value.call(current, callback, thisArg);
+      if (!isFunction(callback)) return value.call(current, callback, thisArg);
       return value.call(current, (entry: unknown, key: unknown) =>
         callback.call(thisArg, entry, key, snapshot),
       );

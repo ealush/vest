@@ -1,4 +1,4 @@
-import { StringObject, assign, invariant } from 'vest-utils';
+import { StringObject, assign, invariant, isArray } from 'vest-utils';
 import type { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 
 import { ctx } from './enforceContext';
@@ -168,9 +168,9 @@ function forwardCompositionSlots(
   for (const source of sources) {
     const from = source as unknown as Record<PropertyKey, unknown>;
     const sourceUnresolved = from[UNRESOLVED_DEPS];
-    if (Array.isArray(sourceUnresolved)) unresolved.push(...sourceUnresolved);
+    if (isArray(sourceUnresolved)) unresolved.push(...sourceUnresolved);
     const sourceRelationships = from[RESOLVED_RELATIONSHIPS];
-    if (Array.isArray(sourceRelationships)) {
+    if (isArray(sourceRelationships)) {
       for (const relationship of sourceRelationships) {
         relationships.set(JSON.stringify(relationship), relationship);
       }
@@ -211,5 +211,5 @@ function mapComposedValue(sources: readonly ComposableRule[]): FullValueMapper {
 
 function readArraySlot(source: object, slot: symbol): unknown[] {
   const value = (source as Record<PropertyKey, unknown>)[slot];
-  return Array.isArray(value) ? [...value] : [];
+  return isArray(value) ? [...value] : [];
 }

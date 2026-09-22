@@ -1,4 +1,5 @@
 import { resolveAffectedPaths } from 'n4s/exports/internal';
+import { isObject } from 'vest-utils';
 
 /**
  * Runtime rejection for unsupported `suite.changed` options. V1 accepts no
@@ -10,8 +11,7 @@ import { resolveAffectedPaths } from 'n4s/exports/internal';
 export function assertNoAbortSignal(options?: unknown): void {
   if (options === undefined) return;
   if (
-    options !== null &&
-    typeof options === 'object' &&
+    isObject(options) &&
     (options as { signal?: unknown }).signal !== undefined
   ) {
     throw new Error('suite.changed({ signal: AbortSignal }) deferred to v2');

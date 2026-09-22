@@ -1,3 +1,5 @@
+import { isFunction, isObject } from 'vest-utils';
+
 /**
  * Runtime predicate for n4s rule nodes.
  *
@@ -6,7 +8,5 @@
  * nodes; `vest-utils/isObject` intentionally covers objects only.
  */
 export function isRuleNode(value: unknown): value is object {
-  return (
-    value !== null && (typeof value === 'object' || typeof value === 'function')
-  );
+  return isObject(value) || isFunction(value);
 }

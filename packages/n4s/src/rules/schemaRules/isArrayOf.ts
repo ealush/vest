@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import { lengthEquals, mapFirst } from 'vest-utils';
+import { hasOwnProperty, isArray, lengthEquals, mapFirst } from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
 import { transformResult } from '../../ruleResult';
@@ -48,7 +48,7 @@ import { RuleRunReturn } from '../../utils/RuleRunReturn';
  */
 
 export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
-  if (!Array.isArray(value)) {
+  if (!isArray(value)) {
     return RuleRunReturn.Failing(value);
   }
 
@@ -65,7 +65,11 @@ export function isArrayOf<T>(value: T[], ...rules: any[]): RuleRunReturn<T[]> {
         lastRes = rawResult;
         const transformed = transformResult(rawResult, 'isArrayOf', item);
         if (transformed.pass) {
-          passingTransformedType = rawResult.type ?? item;
+          // Presence decides output existence: a declared null/undefined
+          // member output is a value, never a missing one.
+          passingTransformedType = hasOwnProperty(rawResult, 'type')
+            ? rawResult.type
+            : item;
         }
         return transformed.pass;
       });

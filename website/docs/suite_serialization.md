@@ -23,6 +23,12 @@ import { SuiteSerializer } from 'vest/exports/SuiteSerializer';
 
 Takes a result object (for example, from `suite.runStatic(data)`) and returns a serializable string (safe for JSON transport).
 
+For schema-backed suites, the serialized state includes the last mapped schema
+output. This allows the first focused client run after `resume()` to retain
+untouched parsed fields exactly as a stateful run would. Treat the serialized
+string as application data: do not expose or log it where the validated values
+would be sensitive.
+
 ### `SuiteSerializer.resume(suite, serializedData)`
 
 Takes a suite instance and serialized data, and applies that state to the suite.

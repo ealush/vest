@@ -1,4 +1,4 @@
-import { CB, makeBrand, withCatch } from 'vest-utils';
+import { CB, asArray, isArray, makeBrand, withCatch } from 'vest-utils';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { useEmit, usePrepareEmitter, Subscribe } from '../core/VestBus/VestBus';
@@ -14,7 +14,14 @@ import {
 import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
-import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
+import { FieldExclusion } from '../hooks/focused/focused';
+import { assertNoAbortSignal } from './changed';
+import {
+  InternalSuiteModifiers,
+  SuiteModifiers,
+  SuiteCallbackWithSchema,
+  SuiteRunArguments,
+} from './SuiteTypes';
 import { useDeferDoneCallback } from './after/deferDoneCallback';
 import { createSuite } from './createSuite';
 import { getStandardSchema } from './getStandardSchema';
@@ -36,7 +43,7 @@ export function useCreateSuiteMethods<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {
@@ -64,7 +71,7 @@ function useCreateSuiteMethodsHelper<
   S extends TSchema = undefined,
 >(ctx: {
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  modifiers: SuiteModifiers<F, G>;
+  modifiers: InternalSuiteModifiers<F, G>;
   subscribe: Subscribe;
   schema?: S;
   persistedRun: any;
@@ -87,7 +94,7 @@ function useGetSuiteMethods<
   S extends TSchema = undefined,
 >(ctx: {
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  modifiers: SuiteModifiers<F, G>;
+  modifiers: InternalSuiteModifiers<F, G>;
   subscribe: Subscribe;
   schema?: S;
   persistedRun: any;
@@ -102,12 +109,15 @@ function useGetSuiteMethods<
     get,
     ...bindSuiteSelectors<F, G, S>(get),
     ...getTypedMethods<F, G>(),
-    // focus and only must come after the spreads to prevent spread keys from overriding them
+    // focus, only and changed must come after the spreads to prevent spread keys from overriding them
     focus: VestRuntime.persist(
       useCreateFocus<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
     only: VestRuntime.persist(
       useCreateOnly<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
+    ),
+    changed: VestRuntime.persist(
+      useCreateChanged<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
   };
 }
@@ -119,7 +129,7 @@ function useGetLifecycleMethods<
   S extends TSchema = undefined,
 >(ctx: {
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  modifiers: SuiteModifiers<F, G>;
+  modifiers: InternalSuiteModifiers<F, G>;
   subscribe: Subscribe;
   schema?: S;
   persistedRun: any;
@@ -161,7 +171,7 @@ function useAddAfterHelper<
 >(
   ctx: {
     suiteCallback: SuiteCallbackWithSchema<S, T>;
-    modifiers: SuiteModifiers<F, G>;
+    modifiers: InternalSuiteModifiers<F, G>;
     subscribe: Subscribe;
     schema?: S;
     persistedRun: any;
@@ -213,18 +223,42 @@ function useCreateFocus<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {
   return function focus(config: SuiteModifiers<F, G>) {
     return useCreateSuiteMethods<F, G, T, S>(
       suiteCallback,
-      { ...modifiers, ...config },
+      { ...modifiers, ...copyFieldLists(config) },
       subscribe,
       schema,
     );
   };
+}
+
+// A focus builder captures its configuration when called: caller-owned
+// field AND group lists are copied at the public boundary so a later
+// caller mutation cannot reselect a previously derived runner (a runner
+// created after the mutation would otherwise read the mutated array when
+// it snapshots Sets at creation). The caller's own array is never frozen.
+// Downstream spreads share the builder-owned copy read-only (no in-place
+// mutation exists on these lists), which keeps derived runners independent
+// while sharing the suite's retained execution history by design.
+function copyFieldLists<F extends TFieldName, G extends TGroupName>(
+  config: SuiteModifiers<F, G>,
+): SuiteModifiers<F, G> {
+  const copied = { ...config };
+  if (isArray(copied.only)) copied.only = [...(copied.only as readonly F[])];
+  if (isArray(copied.skip)) copied.skip = [...(copied.skip as readonly F[])];
+  if (isArray(copied.onlyGroup)) {
+    copied.onlyGroup = [...(copied.onlyGroup as readonly G[])];
+  }
+  if (isArray(copied.skipGroup)) {
+    copied.skipGroup = [...(copied.skipGroup as readonly G[])];
+  }
+
+  return copied;
 }
 
 /**
@@ -244,7 +278,7 @@ function useCreateOnly<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: InternalSuiteModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {
@@ -256,6 +290,56 @@ function useCreateOnly<
   );
   return function only(onlyField: NonNullable<SuiteModifiers<F, G>['only']>) {
     return focus({ only: onlyField });
+  };
+}
+
+function useCreateChanged<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB = CB,
+  S extends TSchema = undefined,
+>(
+  suiteCallback: SuiteCallbackWithSchema<S, T>,
+  modifiers: InternalSuiteModifiers<F, G>,
+  subscribe: Subscribe,
+  schema?: S,
+) {
+  // Defer affected-set expansion until run(data) so root->array targets
+  // can be expanded using the actual runtime data (rows.length).
+  // Without deferral, changed('global') with target rows[$item].tax would
+  // produce the unusable field 'rows.rows.$item.tax' and nothing would run.
+  return function changed(
+    changedField: string | string[] | FieldExclusion<F>,
+    options?: unknown,
+  ) {
+    assertNoAbortSignal(options);
+    // Falsy scalars (undefined, null, false, '') are a legal no-op — run
+    // without changed focus. Only changed([]) is an explicit zero-field
+    // focus that runs no tests.
+    if (!isArray(changedField) && !changedField) {
+      // Mirror only(undefined): a legal no-op — run without changed focus.
+      const nextModifiers = { ...modifiers };
+      delete nextModifiers.__changed;
+      return useCreateSuiteMethods<F, G, T, S>(
+        suiteCallback,
+        nextModifiers,
+        subscribe,
+        schema,
+      );
+    }
+    // Copy caller-owned lists at the builder boundary (see copyFieldLists):
+    // the derived runner must keep selecting these fields even if the
+    // caller later mutates their array.
+    const changedArray = asArray(changedField as string | readonly string[]);
+    // Store raw changed fields; useCreateSuiteRunner will expand using run data
+    // Fallback to immediate expansion for pre-run inspection (e.g., suite.get)
+    // is handled by runner; here we just create a focused suite with deferred modifier.
+    return useCreateSuiteMethods<F, G, T, S>(
+      suiteCallback,
+      { ...modifiers, __changed: changedArray },
+      subscribe,
+      schema,
+    );
   };
 }
 
@@ -272,11 +356,7 @@ function createStaticRunner<
   T extends CB = CB,
   S extends TSchema = undefined,
 >(suiteCallback: SuiteCallbackWithSchema<S, T>, schema?: S) {
-  return function runStatic(
-    ...runArgs: S extends undefined
-      ? Parameters<T>
-      : [data: InferSchemaData<S>, ...args: any[]]
-  ) {
+  return function runStatic(...runArgs: SuiteRunArguments<S, T>) {
     const suite = createSuite<F, G, T, S>(suiteCallback, schema);
     return suite.run(...(runArgs as Parameters<typeof suite.run>));
   };

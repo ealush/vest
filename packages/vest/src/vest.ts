@@ -16,7 +16,13 @@ import { skipWhen } from './isolates/skipWhen';
 import type { Suite } from './suite/SuiteTypes';
 import { createSuite } from './suite/createSuite';
 import type { SuiteConfig } from './suite/createSuite';
-import type { SuiteResult, SuiteSummary } from './suiteResult/SuiteResultTypes';
+import type {
+  DeepDraft,
+  DraftSchemaOutput,
+  FocusedSuiteResult,
+  SuiteResult,
+  SuiteSummary,
+} from './suiteResult/SuiteResultTypes';
 import { suiteSelectors } from './suiteResult/selectors/suiteSelectors';
 
 export {
@@ -39,4 +45,12 @@ export {
   registerReconciler,
 };
 
-export type { SuiteResult, SuiteSummary, Suite, SuiteConfig };
+export type {
+  DeepDraft,
+  DraftSchemaOutput,
+  FocusedSuiteResult,
+  SuiteResult,
+  SuiteSummary,
+  Suite,
+  SuiteConfig,
+};

@@ -1,4 +1,10 @@
-import { greaterThan, isFunction, longerThan } from 'vest-utils';
+import {
+  greaterThan,
+  hasOwnProperty,
+  isArray,
+  isFunction,
+  longerThan,
+} from 'vest-utils';
 
 import { ctx } from '../../enforceContext';
 import type { RuleInstance } from '../../utils/RuleInstance';
@@ -30,7 +36,7 @@ import { RuleRunReturn } from '../../utils/RuleRunReturn';
  * ```
  */
 export function tuple(value: unknown, ...rules: any[]): RuleRunReturn<any> {
-  if (!Array.isArray(value)) return RuleRunReturn.Failing(value);
+  if (!isArray(value)) return RuleRunReturn.Failing(value);
 
   // Determine minimum required length (all rules minus trailing optionals)
   const requiredCount = countRequired(rules);
@@ -76,8 +82,9 @@ function validateElements(value: any[], rules: any[]): RuleRunReturn<any> {
 
     if (!res.pass) return elementFailure(value, res, i);
 
-    // Use the parsed value (res.type) if the rule transformed it, otherwise keep the original
-    parsedTuple.push(res.type ?? value[i]);
+    // Presence decides output existence: a declared null/undefined element
+    // output is a value, never a missing one.
+    parsedTuple.push(hasOwnProperty(res, 'type') ? res.type : value[i]);
   }
 
   return RuleRunReturn.Passing(parsedTuple);

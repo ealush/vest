@@ -1,3 +1,5 @@
+import { isFunction } from 'vest-utils';
+
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
 /**
@@ -6,6 +8,18 @@ import { RuleRunReturn } from '../../utils/RuleRunReturn';
  * so they run before type checks (e.g. defaultTo).
  */
 export const CHAIN_PREPEND: unique symbol = Symbol('chainPrepend');
+
+const parserRules = new WeakSet<CallableFunction>();
+
+export function registerParserRules(
+  rules: Readonly<Record<string, CallableFunction>>,
+): void {
+  for (const rule of Object.values(rules)) parserRules.add(rule);
+}
+
+export function isParserRule(rule: unknown): rule is CallableFunction {
+  return isFunction(rule) && parserRules.has(rule);
+}
 
 export function mapPassing<TInput, TOutput>(
   transform: (value: TInput) => TOutput,

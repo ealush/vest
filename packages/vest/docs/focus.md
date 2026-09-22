@@ -65,6 +65,12 @@ If a group fails these checks, `skip(true)` pushes a transient `Focused` isolate
 
 A fundamental implication of using `onlyGroup` is the isolation of execution solely to targeted groups. Therefore, all "top-level" tests (tests declared without a parent group) must be reliably excluded.
 
+Schema-generated failures are emitted as top-level Vest tests because schemas
+do not declare Vest group membership. Consequently, `onlyGroup` excludes those
+failures, while `skipGroup` affects only tests inside the skipped group. Combine
+group focus with field-level `only` or `skip` when schema validation also needs
+to be narrowed.
+
 Inside `useIsExcluded()` (specifically `useIsExcludedByGroup`), the test node is strictly verified against the `onlyGroup` rule. If `onlyGroup` is active, and the test lacks a `groupName`, it is instantly excluded. This rule handles edge cases dynamically—even if a top-level test shares the exact name of a successfully `only`'d test inside an allowed group, the top-level test will remain isolated and excluded.
 
 ### 3. Field Granularity (`useIsExcludedByField`)

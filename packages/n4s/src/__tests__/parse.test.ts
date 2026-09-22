@@ -1,10 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { enforce } from '../n4s';
+import { RuleRunReturn } from '../utils/RuleRunReturn';
 
 declare global {
   namespace n4s {
     interface EnforceMatchers {
+      classUndefinedOutput: (value: unknown) => RuleRunReturn<undefined>;
+      plainUndefinedOutput: (value: unknown) => {
+        pass: boolean;
+        type: undefined;
+      };
       toNumber: (value: unknown) => { pass: boolean; type: number };
     }
   }
@@ -58,6 +64,26 @@ describe('parse()', () => {
     const schema = enforce.isArrayOf(enforce.toNumber());
 
     expect(schema.parse(['42', '100', 5])).toEqual([42, 100, 5]);
+  });
+
+  it('distinguishes missing class output from explicit plain undefined', () => {
+    try {
+      enforce.extend({
+        classUndefinedOutput: () => RuleRunReturn.Passing(undefined),
+        plainUndefinedOutput: () => ({ pass: true, type: undefined }),
+      });
+
+      const classResult = enforce.isArrayOf(enforce.classUndefinedOutput());
+      const plainResult = enforce.isArrayOf(enforce.plainUndefinedOutput());
+
+      expect(classResult.parse(['input'])).toEqual(['input']);
+      expect(plainResult.parse(['input'])).toEqual([undefined]);
+    } finally {
+      delete (enforce as unknown as Record<string, unknown>)
+        .classUndefinedOutput;
+      delete (enforce as unknown as Record<string, unknown>)
+        .plainUndefinedOutput;
+    }
   });
 
   it('should throw an error if an item in isArrayOf fails to parse', () => {

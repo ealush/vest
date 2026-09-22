@@ -6,14 +6,14 @@ import type { Equal, Expect } from '@vest/integration-kit';
 import { accountSchema, accountSuite } from './suite';
 import type { AccountInput, AccountOutput } from './suite';
 
-it('infers Standard Schema input and transformed output types', () => {
+it('preserves the Vest 6 suite contract and schema transform types', () => {
   type SuiteInput = StandardSchemaV1.InferInput<typeof accountSuite>;
   type SuiteOutput = StandardSchemaV1.InferOutput<typeof accountSuite>;
   type SchemaInput = StandardSchemaV1.InferInput<typeof accountSchema>;
   type SchemaOutput = StandardSchemaV1.InferOutput<typeof accountSchema>;
 
   type SuiteInputMatches = Expect<Equal<SuiteInput, AccountInput>>;
-  type SuiteOutputMatches = Expect<Equal<SuiteOutput, AccountOutput>>;
+  type SuiteOutputMatches = Expect<Equal<SuiteOutput, AccountInput>>;
   type SchemaInputMatches = Expect<Equal<SchemaInput, AccountInput>>;
   type SchemaOutputMatches = Expect<Equal<SchemaOutput, AccountOutput>>;
 

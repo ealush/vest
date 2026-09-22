@@ -83,21 +83,63 @@ export type GetFailuresResponse = FailureMessages | string[];
 export type FailureMessages = Record<string, string[]>;
 export type TSchema = any;
 
-export type InferSchemaData<S> = S extends {
-  '~standard': { types: { input: infer I } };
-}
-  ? I
+export type InferSchemaData<S> = S extends StandardSchemaV1
+  ? StandardSchemaV1.InferInput<S>
   : S extends { infer: infer T }
     ? { [K in keyof T]: T[K] } & NonNullable<unknown>
     : any;
 
-export type InferSchemaOutput<S> = S extends {
-  '~standard': { types: { output: infer O } };
-}
-  ? O
+export type InferSchemaOutput<S> = S extends StandardSchemaV1
+  ? StandardSchemaV1.InferOutput<S>
   : S extends { infer: infer T }
     ? { [K in keyof T]: T[K] } & NonNullable<unknown>
     : any;
+
+/**
+ * Draft output exposed by changed-run results. Selective runs execute only
+ * their selected region: untouched
+ * required fields are absent (own-property missing, never fabricated),
+ * retained mappings may hydrate previously proven values, and a mapped
+ * value never certifies validation of an untouched validator. Vest 6 keeps
+ * the existing callback and legacy focus types for source compatibility;
+ * their draft-safe retype is tracked for Vest 7 in issue #1327.
+ *
+ * Partiality applies per object property: nested siblings outside the
+ * selection are also absent, optional output stays present-undefined
+ * when materialized, and complete values remain assignable to the draft.
+ * Values with identity semantics (arrays, tuples, Date, Map, Set,
+ * promises) are kept whole — focused mapping replaces them wholesale
+ * rather than splitting them, so an absent array is the missing property,
+ * never a partial array. Custom class instances still recurse; treat
+ * their methods as possibly-absent and narrow before use. Callers narrow
+ * with `typeof` / `in` / `Object.hasOwn` before use.
+ */
+export type DeepDraft<T> = T extends (...args: any[]) => any
+  ? T
+  : T extends readonly unknown[]
+    ? T
+    : T extends
+          | Date
+          | RegExp
+          | Error
+          | Map<any, any>
+          | ReadonlyMap<any, any>
+          | Set<any>
+          | ReadonlySet<any>
+          | WeakMap<any, any>
+          | WeakSet<any>
+          | Promise<any>
+          | ArrayBuffer
+          | DataView
+          | ArrayBufferView
+      ? T
+      : T extends object
+        ? { [K in keyof T]?: DeepDraft<T[K]> }
+        : T;
+
+export type DraftSchemaOutput<S> = S extends undefined
+  ? any
+  : DeepDraft<InferSchemaOutput<S>>;
 
 type SuiteResultData<
   F extends TFieldName,
@@ -133,6 +175,49 @@ export type SuiteResult<
   S extends TSchema = undefined,
   D = unknown,
 > = SuiteResultData<BrandedFieldName<F>, BrandedGroupName<G>, S, D> & {
+  dump: CB<TIsolateSuite>;
+  types: S extends undefined
+    ? undefined
+    : { input: InferSchemaData<S>; output: InferSchemaOutput<S> };
+};
+
+type FocusedSuiteResultData<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema = undefined,
+  D = unknown,
+> =
+  | (Omit<SuiteSummary<F, G, D, S>, 'valid'> &
+      SuiteSelectors<F, G> & {
+        valid: true;
+        value: DraftSchemaOutput<S>;
+        issues?: undefined;
+      })
+  | (Omit<SuiteSummary<F, G, D, S>, 'valid'> &
+      SuiteSelectors<F, G> & {
+        valid: false;
+        issues: ReadonlyArray<StandardSchemaV1.Issue>;
+        value?: undefined;
+      })
+  | (Omit<SuiteSummary<F, G, D, S>, 'valid'> &
+      SuiteSelectors<F, G> & {
+        valid: null;
+        issues?: undefined;
+        value?: undefined;
+      });
+
+/**
+ * Selective changed-run result. `valid: true` certifies only the executed
+ * region; `value` is a draft because required output may be absent. Full runs
+ * use `SuiteResult`, whose `valid: true` certifies complete output. Existing
+ * only()/focus()/get() surfaces retain their Vest 6 result type until Vest 7.
+ */
+export type FocusedSuiteResult<
+  F extends string = TFieldName,
+  G extends string = TGroupName,
+  S extends TSchema = undefined,
+  D = unknown,
+> = FocusedSuiteResultData<BrandedFieldName<F>, BrandedGroupName<G>, S, D> & {
   dump: CB<TIsolateSuite>;
   types: S extends undefined
     ? undefined

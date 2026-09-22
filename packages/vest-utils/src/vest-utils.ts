@@ -31,6 +31,8 @@ export { numberEquals, numberNotEquals } from './numberEquals';
 export { isNull, isNotNull } from './isNull';
 export { isUndefined, isNotUndefined } from './isUndefined';
 export { isArray, isNotArray } from './isArrayValue';
+export { isArrayPrefix } from './isArrayPrefix';
+export { isRecord } from './isRecord';
 export { isEmpty, isNotEmpty } from './isEmpty';
 export { isEmptySet, isNotEmptySet } from './isEmptySet';
 export { isPositive } from './isPositive';

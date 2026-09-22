@@ -28,4 +28,6 @@ Commit dated results only when they include model name, model version, date, pro
 - Tradeoff quality uses a 0–2 rubric: incorrect/advocacy-only, incomplete, or accurate responsibility-based guidance.
 - Unknown values remain `null`; they are excluded rather than counted as failures.
 
-Start with the ten pilot prompts. Expand to 50 only after the compilation workflow and reviewer agreement are stable.
+The ten pilot prompts are supplemented by two schema-relationship correctness cases. Expand to 50 only after the compilation workflow and reviewer agreement are stable.
+
+Relationship cases must distinguish dependency metadata from executable checks, direct expansion from transitive expansion, and focused validity from full input validation. Run generated examples against the checked-out version; do not award success from plausible code alone. The template contains no measured results.

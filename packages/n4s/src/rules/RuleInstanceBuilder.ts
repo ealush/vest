@@ -1,5 +1,3 @@
-import type { DropFirst } from 'vest-utils';
-
 import type { RuleInstance } from '../utils/RuleInstance';
 
 type InferRuleReturn<TValue, TFunc> = TFunc extends (...args: any[]) => {
@@ -21,9 +19,14 @@ export type BuildRuleInstance<
   TArgs extends [any, ...any[]],
   TRules extends Record<string, (...args: any[]) => any>,
 > = RuleInstance<TValue, TArgs> & {
-  [K in keyof TRules]: (
-    ...args: DropFirst<Parameters<TRules[K]>>
-  ) => BuildRuleInstance<InferRuleReturn<TValue, TRules[K]>, TArgs, TRules>;
+  [K in keyof TRules]: TRules[K] extends (
+    value: any,
+    ...args: infer Rest
+  ) => any
+    ? (
+        ...args: Rest
+      ) => BuildRuleInstance<InferRuleReturn<TValue, TRules[K]>, TArgs, TRules>
+    : never;
 };
 
 /**

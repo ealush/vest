@@ -66,6 +66,16 @@ type ComposeResult<Input, Output> = RuleInstance<Output, [Input]> & {
  * The composed rule executes rules in order and fails on the first failing rule.
  * Returns a RuleInstance that can be used with both eager and lazy APIs.
  *
+ * Compatibility note (PR #1326 decision): each rule receives the previous
+ * rule's parsed output, exactly like chained rules
+ * (`enforce(x).trim().equals(...)`). This differs from the pre-#1326
+ * behavior where every rule validated the original input, so
+ * `compose(enforce.isString().trim(), enforce.isString().equals(' x '))`
+ * now fails on `' x '` (the second rule sees `'x'`). Threading is what
+ * makes composed parser chains (`toNumber()` then `greaterThan(0)`) and
+ * parser-only mapping work; reverting to original-input validation would
+ * break them. Pinned by `compose-values-thread-through-composites` below.
+ *
  * @template Rules - The ordered rules whose first input and final output
  * determine the composed rule's public types.
  * @param composites - Validation rules to compose

@@ -9,6 +9,7 @@ import {
   FocusedSuiteResult,
   TFieldName,
   TGroupName,
+  DeepPartialInput,
   InferSchemaData,
   InferSchemaOutput,
   TSchema,
@@ -36,7 +37,7 @@ export type Suite<
   T extends CB = CB,
   S extends TSchema = undefined,
 > = SuiteMethods<F, G, T, S> &
-  StandardSchemaV1<InferSchemaData<S>, InferSchemaData<S>>;
+  StandardSchemaV1<InferSchemaData<S>, InferSchemaOutput<S>>;
 
 type SuiteMethods<
   F extends TFieldName,
@@ -100,8 +101,10 @@ type FocusedMethods<
   >;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
+  // Selective runs accept deeply partial input: untouched fields may be
+  // omitted at any depth.
   run: (
-    ...args: SuiteRunArguments<S, T, Partial<InferSchemaData<S>>>
+    ...args: SuiteRunArguments<S, T, DeepPartialInput<InferSchemaData<S>>>
   ) => SuiteResult<F, G, S>;
 };
 
@@ -141,7 +144,7 @@ type ChangedMethods<
     ]
   >;
   run: (
-    ...args: SuiteRunArguments<S, T, Partial<InferSchemaData<S>>>
+    ...args: SuiteRunArguments<S, T, DeepPartialInput<InferSchemaData<S>>>
   ) => FocusedSuiteResult<F, G, S>;
 };
 

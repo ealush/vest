@@ -64,10 +64,10 @@ describe('StandardSchemaV1 Adherence', () => {
       expectTypeOf<StandardTypes['input']>().toEqualTypeOf<{
         age: string | number;
       }>();
-      // Vest 6 compatibility keeps the suite's Standard Schema output aligned
-      // with its input. Correct transformed-output typing is tracked for v7.
+      // ~standard.validate() returns parsed output (see getStandardSchema),
+      // so the output generic is the transformed type, not the input shape.
       expectTypeOf<StandardTypes['output']>().toEqualTypeOf<{
-        age: string | number;
+        age: number;
       }>();
 
       expect(suite.runStatic({ age: '42' }).run.data.parsed).toEqual({

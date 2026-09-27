@@ -103,6 +103,11 @@ function typeChecks() {
     confirmPassword: 'a',
     profile: { age: 1, displayName: 'x' },
   });
+  // changed() accepts deeply partial input: a present but incomplete nested
+  // object needs no cast (selective nested validation supports it at runtime).
+  suite.changed('profile.displayName').run({
+    profile: { displayName: 'x' },
+  });
 
   // describe should be on schema - describe() output
   const d = schema.describe();

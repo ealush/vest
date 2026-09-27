@@ -58,6 +58,20 @@ describe('compose() - Rule Composition', () => {
       expect(ParsedPositiveNumber['~standard'].vendor).toBe('n4s');
     });
 
+    it('compose-values-thread-through-composites like chains, not original input', () => {
+      // Compatibility decision (PR #1326): each composite validates the
+      // previous composite's parsed output, matching chained-rule semantics.
+      // Pre-#1326 every rule saw the original input, so this passed; now the
+      // equals rule sees the trimmed 'x' and fails.
+      const TrimThenEquals = compose(
+        enforce.isString().trim(),
+        enforce.isString().equals(' x '),
+      );
+
+      expect(TrimThenEquals.run(' x ').pass).toBe(false);
+      expect(TrimThenEquals.test(' x ')).toBe(false);
+    });
+
     it('keeps dependencies added to the composed facade', () => {
       const dependent = compose(
         enforce.isString().dependsOn($ => $.firstSource),

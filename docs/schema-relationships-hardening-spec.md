@@ -81,8 +81,9 @@ Required contract:
   result types;
 - `suite.get()`, `only()`, and `focus()` retain their Vest 6 result types;
 - schema-suite trailing arguments remain permissive;
-- the suite Standard Schema surface retains its Vest 6 input-shaped output
-  generic; and
+- the suite Standard Schema surface types its output as the parsed schema
+  output (`InferSchemaOutput`), matching `~standard.validate()` runtime
+  behavior; and
 - only the new `changed().run()` path returns `FocusedSuiteResult` with
   `DraftSchemaOutput`.
 

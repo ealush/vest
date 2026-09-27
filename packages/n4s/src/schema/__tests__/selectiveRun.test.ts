@@ -575,6 +575,30 @@ describe('runSchemaPaths dependency expansion', () => {
       }).every(result => result.pass),
     ).toBe(true);
   });
+
+  it('planning array-target expansion never invokes input getters', () => {
+    // SC-SCOPE: planning enumerates data shape only. Accessor-backed
+    // subtrees expand schema-side; descriptor reads keep data-side
+    // expansion side-effect free.
+    const schema = enforce.shape({
+      source: enforce.isString(),
+      items: enforce.isArrayOf(
+        enforce.shape({
+          dep: enforce.isString().dependsOn(($: any) => $.root.source),
+        }),
+      ),
+    });
+    let getterCalls = 0;
+    const data = {
+      source: 'a',
+      get items() {
+        getterCalls++;
+        return [{ dep: 'x' }];
+      },
+    };
+    expect(resolveAffectedPaths(schema, 'source', data)).toContain('source');
+    expect(getterCalls).toBe(0);
+  });
 });
 
 describe('runSchemaPaths standalone boundaries', () => {

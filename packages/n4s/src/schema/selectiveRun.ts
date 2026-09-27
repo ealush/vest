@@ -1446,7 +1446,7 @@ function readDataKey(dataNode: unknown, key: string): unknown {
  * side-effect free (SC-SCOPE). Accessor-backed subtrees expand schema-side
  * only. Data descriptors read identically to a direct access.
  */
-function readOwnDataValue(dataNode: object, key: string | number): unknown {
+function readOwnDataValue(dataNode: object, key: PropertyKey): unknown {
   const descriptor = Object.getOwnPropertyDescriptor(dataNode, key);
   if (descriptor === undefined) return undefined;
   if (isFunction(descriptor.get) || isFunction(descriptor.set)) {
@@ -2005,8 +2005,9 @@ function dfsChangedTarget(
   const seg = targetPath[pathIdx];
   if (seg === undefined) return;
   if (isPropertySegment(seg)) {
+    // Descriptor read: planning must not invoke input getters (SC-SCOPE).
     const child: unknown = isObject(dataNode)
-      ? (dataNode as Record<PropertyKey, unknown>)[seg.key]
+      ? readOwnDataValue(dataNode, seg.key)
       : undefined;
     dfsChangedTarget(
       targetPath,
@@ -2032,7 +2033,7 @@ function dfsChangedItem(
       dfsChangedTarget(
         targetPath,
         pathIdx + 1,
-        dataNode[i],
+        readOwnDataValue(dataNode, i),
         [...built, { type: 'item', binding: String(i) }] as SchemaPath,
         results,
       );
@@ -2040,11 +2041,12 @@ function dfsChangedItem(
   } else if (isObject(dataNode)) {
     // Item segment over a record — expand every dynamic key as a
     // concrete property so affected names never leak '$item' bindings.
+    // Descriptor reads: planning must not invoke input getters (SC-SCOPE).
     for (const key of Object.keys(dataNode)) {
       dfsChangedTarget(
         targetPath,
         pathIdx + 1,
-        (dataNode as Record<string, unknown>)[key],
+        readOwnDataValue(dataNode, key),
         [...built, { type: 'property', key }] as SchemaPath,
         results,
       );

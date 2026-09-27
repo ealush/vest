@@ -787,6 +787,35 @@ describe('schema contracts: draft versus complete output (AC05 characterization)
     expect(seen[1]).toEqual({ n: 42, note: 'next' });
   });
 
+  it('[SC-AC05] valid focused value never carries unvalidated current input', () => {
+    const seen: unknown[] = [];
+    const suite = create(
+      (data: any) => {
+        seen.push(data);
+        test('name', () => {
+          enforce(data.name).isString();
+        });
+        test('note', () => {
+          enforce(data.note).isString();
+        });
+      },
+      enforce.shape({
+        name: enforce.isString(),
+        note: enforce.isString(),
+      }),
+    );
+    expect(suite.run({ name: 'x', note: 'ok' }).isValid()).toBe(true);
+    // `name` is untouched by this run and invalid in the current input: the
+    // valid result keeps the established 'x', never raw 123, while the
+    // callback still declares under current input.
+    const focused = suite
+      .changed('note')
+      .run({ name: 123, note: 'ok' } as never);
+    expect(focused.isValid()).toBe(true);
+    expect(focused.value).toEqual({ name: 'x', note: 'ok' });
+    expect(seen[seen.length - 1]).toEqual({ name: 123, note: 'ok' });
+  });
+
   it('[SC-AC05] absent optional materializes as own undefined everywhere', () => {
     const seen: unknown[] = [];
     const suite = create(

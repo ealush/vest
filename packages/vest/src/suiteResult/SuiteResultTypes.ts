@@ -96,6 +96,39 @@ export type InferSchemaOutput<S> = S extends StandardSchemaV1
     : any;
 
 /**
+ * Deep partial input for selective runs (`only()` / `focus()` /
+ * `changed()`). Focused runs validate a region, so callers may omit
+ * untouched fields at any depth — including incomplete nested objects and
+ * partial array members, which selective nested validation supports at
+ * runtime. Complete input stays assignable. Parser-established containers
+ * (Date, Map, Set, …) and functions stay whole; plain objects and arrays
+ * recurse. Tuple arity is not preserved (arrays of partial members);
+ * runtime validation still enforces shape.
+ */
+export type DeepPartialInput<T> = T extends (...args: any[]) => any
+  ? T
+  : T extends readonly (infer U)[]
+    ? Array<DeepPartialInput<U>>
+    : T extends
+          | Date
+          | RegExp
+          | Error
+          | Map<any, any>
+          | ReadonlyMap<any, any>
+          | Set<any>
+          | ReadonlySet<any>
+          | WeakMap<any, any>
+          | WeakSet<any>
+          | Promise<any>
+          | ArrayBuffer
+          | DataView
+          | ArrayBufferView
+      ? T
+      : T extends object
+        ? { [K in keyof T]?: DeepPartialInput<T[K]> }
+        : T;
+
+/**
  * Draft output exposed by changed-run results. Selective runs execute only
  * their selected region: untouched
  * required fields are absent (own-property missing, never fabricated),

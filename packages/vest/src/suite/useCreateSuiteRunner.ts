@@ -256,8 +256,17 @@ export function useCreateSuiteRunner<
     // Schema-mapped callback data, public output, and the retained cache must
     // never share mutable containers. Preserve the established raw-input
     // identity for schema failures and schema-less suites.
+    // Proof boundary: a valid result's typed `value` carries only established
+    // output (proven retention overlaid with the validated region), never
+    // best-effort callback data holding unvalidated raw input.
+    const provenOutput =
+      successfulSchemaResult(schemaRunResult) !== null
+        ? callbackMapping.proven
+        : undefined;
     const resultOutput = schema
-      ? cloneDetachedDataTree(callbackInput)
+      ? cloneDetachedDataTree(
+          provenOutput !== undefined ? provenOutput : callbackInput,
+        )
       : callbackInput;
     const runDataSnapshot =
       schema && schemaRunResult?.every(result => result.pass)
@@ -474,6 +483,15 @@ type CallbackInputParams = {
 type CallbackMapping = {
   input: unknown;
   retained?: MappedSchemaOutput;
+  /**
+   * Proof-boundary value: output whose type is established by validation.
+   * Unlike `input` (best-effort declaration data that must carry current
+   * raw values so tests declare under latest input), `proven` overlays the
+   * current run's validated region onto previously proven retention and
+   * never fills unexecuted paths with raw input. Set on success paths
+   * only; the public result `value` is cloned from it when valid.
+   */
+  proven?: unknown;
 };
 
 /**
@@ -549,12 +567,18 @@ function fullCallbackMapping(params: {
     const { fresh, unions } = focusedMappingSource(schema, fallback, false);
     const base = previous === undefined ? fresh : previous.value;
     assertSkippedUnionCoverage({ base, fallback, previous, skipped, unions });
-    return mappedCallbackResult(repairSkippedPaths(current, base, skipped));
+    const repaired = repairSkippedPaths(current, base, skipped);
+    // Full validation passed, so the repaired output is established
+    // throughout. Proven aliases the detached retained copy (never the live
+    // schema output) so publishing the value reads no accessors twice.
+    const mapped = mappedCallbackResult(repaired);
+    return { ...mapped, proven: mapped.retained?.value };
   }
   // mappedCallbackResult already creates separate retained and callback
   // copies. Passing the schema output directly avoids a third full-tree copy
   // while preserving both ownership boundaries.
-  return mappedCallbackResult(current);
+  const mapped = mappedCallbackResult(current);
+  return { ...mapped, proven: mapped.retained?.value };
 }
 
 function failedCallbackMapping(
@@ -638,7 +662,7 @@ function focusedCallbackMapping(params: {
   // a parser step actually produced. Array merging uses it to prefer
   // current-run parser output over stale retained mappings when values
   // alone cannot decide (an idempotent parser output equals raw input).
-  const { fresh, mapping, unions } = focusedMappingSource(
+  const { fresh, mapping, mappedPaths, unions } = focusedMappingSource(
     schema,
     fallback,
     replacesArray,
@@ -652,13 +676,25 @@ function focusedCallbackMapping(params: {
     fallback,
     mapping,
   );
+  // Proven public value: parser-established current output and previously
+  // proven retention overlaid with the validated region. Unexecuted paths
+  // keep retained proof or stay absent — never current raw input.
+  const proven = overlayProvenAffected(
+    overlayFreshMapped(previous?.value ?? {}, fresh, mappedPaths),
+    current,
+    affected,
+  );
   // Empty focus is best-effort declaration data, not a successful mapping
   // proof. Preserve history without promoting raw union passthrough to a
   // witness for the next nonempty run.
   if (affected.length === 0) {
-    return { input: cloneDetachedDataTree(value), retained: previous };
+    return {
+      input: cloneDetachedDataTree(value),
+      retained: previous,
+      proven,
+    };
   }
-  return mappedCallbackResult(value);
+  return { ...mappedCallbackResult(value), proven };
 }
 
 function assertSkippedUnionCoverage(params: {
@@ -689,6 +725,7 @@ function focusedMappingSource(
 ): {
   fresh: unknown;
   mapping: ArrayMergeMapping | undefined;
+  mappedPaths: ReadonlyArray<readonly ConcretePathSegment[]>;
   unions: ReadonlyArray<readonly ConcretePathSegment[]>;
 } {
   // Union incompleteness is collected on every focused mapping: the error
@@ -699,6 +736,7 @@ function focusedMappingSource(
   const fresh = mapWithoutValidation(schema, fallback, provenance);
   return {
     fresh,
+    mappedPaths: provenance.mapped,
     mapping: replacesArray ? { fresh, mapped: provenance.mapped } : undefined,
     unions: provenance.unions,
   };
@@ -1091,6 +1129,126 @@ function retainedMember(
     return pair.previous[index];
   }
   return pair.current[index];
+}
+
+/**
+ * Seeds the proven base with parser-established current output. Pure parser
+ * steps carry their declared output type, so fresh values at provenance
+ * paths are established even without validation. Identity passthrough
+ * (unmapped paths) is never copied: unexecuted, unproven leaves stay
+ * retained or absent instead of leaking current raw input. Paths already
+ * proven by retention keep the detached retained copy so publishing the
+ * value reads no accessor twice.
+ */
+function overlayFreshMapped(
+  base: unknown,
+  fresh: unknown,
+  mappedPaths: ReadonlyArray<readonly ConcretePathSegment[]>,
+): unknown {
+  let next = base;
+  for (const path of mappedPaths) {
+    if (path.length === 0 || path.some(isUnsafePathSegment)) continue;
+    if (hasPathDeep(next, path)) continue;
+    next = setPathValue(next, fresh, path, 0);
+  }
+  return next;
+}
+
+/**
+ * Overlays the validated region onto proven base data for the public
+ * result value. Non-array paths set directly; arrays merge member-wise
+ * (executed from current, rest from base) or, without a pairable retained
+ * array, keep executed members only.
+ */
+function overlayProvenAffected(
+  base: unknown,
+  current: unknown,
+  affected: readonly string[],
+): unknown {
+  let out = base;
+  for (const full of topmostFields(affected.map(concreteFieldPath))) {
+    out = overlayProvenField(out, current, full);
+  }
+  return out;
+}
+
+function overlayProvenField(
+  base: unknown,
+  current: unknown,
+  full: readonly ConcretePathSegment[],
+): unknown {
+  if (full.some(isUnsafePathSegment)) return base;
+  const firstIndex = full.findIndex(segment => typeof segment === 'number');
+  if (firstIndex === -1) {
+    return full.length === 0 ? current : setPathValue(base, current, full, 0);
+  }
+  return overlayProvenArray(base, current, full, firstIndex);
+}
+
+function overlayProvenArray(
+  base: unknown,
+  current: unknown,
+  full: readonly ConcretePathSegment[],
+  firstIndex: number,
+): unknown {
+  const ancestor = full.slice(0, firstIndex);
+  if (ancestor.some(isUnsafePathSegment)) return base;
+  const pair = arrayPairAt(base, current, ancestor);
+  if (pair !== null) {
+    return writePathAt(
+      base,
+      ancestor,
+      mergeProvenMembers(pair, full[firstIndex]),
+    );
+  }
+  return writeUnpairedProvenArray(base, current, full, firstIndex);
+}
+
+function mergeProvenMembers(
+  pair: ArrayMergePair,
+  executed: ConcretePathSegment | undefined,
+): unknown[] {
+  return pair.current.map((member, index) =>
+    index === executed ? member : pair.previous[index],
+  );
+}
+
+/**
+ * No retained array pairs with the current one (first run or resize): keep
+ * the executed member from validated current output and leave every other
+ * member absent rather than filling unvalidated raw input.
+ */
+function writeUnpairedProvenArray(
+  base: unknown,
+  current: unknown,
+  full: readonly ConcretePathSegment[],
+  firstIndex: number,
+): unknown {
+  const ancestor = full.slice(0, firstIndex);
+  const currentArray = readPathDeep(current, ancestor);
+  if (!isArray(currentArray)) {
+    return setPathValue(base, current, ancestor, 0);
+  }
+  const executed = full[firstIndex];
+  if (typeof executed !== 'number' || executed >= currentArray.length) {
+    return base;
+  }
+  const built = new Array<unknown>(currentArray.length);
+  built[executed] = provenArrayMember(
+    currentArray,
+    executed,
+    full.slice(firstIndex + 1),
+  );
+  return writePathAt(base, ancestor, built);
+}
+
+function provenArrayMember(
+  currentArray: unknown[],
+  executed: number,
+  rest: readonly ConcretePathSegment[],
+): unknown {
+  if (rest.length === 0) return currentArray[executed];
+  return setPathValue({}, currentArray[executed], rest, 0);
 }
 
 /**

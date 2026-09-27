@@ -49,14 +49,21 @@ output.
 - Once `changed()` participates in a builder chain, its result remains
   `FocusedSuiteResult` in either order (`changed().only()` or
   `only().changed()`).
-- Schema-suite trailing arguments and the suite's input-shaped Standard Schema
-  output generic retain their Vest 6 behavior. Their stricter forms are part of
+- Schema-suite trailing arguments retain their Vest 6 behavior. The suite's
+  Standard Schema output generic is the parsed output type
+  (`InferSchemaOutput<S>`), matching what `~standard.validate()` returns;
+  only the callback/`get()`/`only()`/`focus()` types retain the Vest 6
+  input-compatible contract. Their stricter forms are part of
   the coordinated Vest 7 migration in #1327.
 - Runtime correspondence: first focused runs omit untouched required
   properties (own-property absent, never fabricated); later focused runs
   hydrate retained fields from the last complete mapping; absent optional
   input materializes as own `undefined` everywhere; a mapped-but-unvalidated
-  value never certifies validation.
+  value never certifies validation. Proof boundary: a valid focused `value`
+  contains only established output — retained proof and fresh parser output
+  overlaid with the validated region. Unexecuted, unproven paths stay
+  absent rather than carrying current raw input (best-effort callback data
+  may still observe current input for test declaration).
 
 ## 3. Implementation by part
 

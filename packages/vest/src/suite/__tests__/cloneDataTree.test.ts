@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { cloneDataTree } from '../cloneDataTree';
+import { cloneDataTree, cloneDeclarationInput } from '../cloneDataTree';
 
 describe('cloneDataTree', () => {
   it('clones custom symbol descriptors and cycles on built-in values', () => {
@@ -186,5 +186,46 @@ describe('cloneDataTree snapshot containers (BB07)', () => {
     expect(setterCalls).toBe(0);
     expect(snapshot.plain).toBe(1);
     expect(Object.hasOwn(snapshot, 'getter')).toBe(true);
+  });
+
+  describe('cloneDeclarationInput', () => {
+    it('reads an input accessor lazily, once, on first access', () => {
+      const getter = vi.fn(() => ({ nested: 1 }));
+      const input = Object.defineProperty({ plain: 1 }, 'lazy', {
+        enumerable: true,
+        get: getter,
+      });
+      const copy = cloneDeclarationInput(input) as {
+        lazy: { nested: number };
+        plain: number;
+      };
+      expect(getter).not.toHaveBeenCalled();
+      const first = copy.lazy;
+      expect(copy.lazy).toBe(first);
+      expect(getter).toHaveBeenCalledTimes(1);
+      expect(first).toEqual({ nested: 1 });
+      expect(first).not.toBe(getter.mock.results[0]?.value);
+    });
+
+    it('lets callers overwrite a lazy accessor without reading it', () => {
+      const getter = vi.fn(() => 'source');
+      const input = Object.defineProperty({}, 'lazy', {
+        enumerable: true,
+        get: getter,
+      });
+      const copy = cloneDeclarationInput(input) as { lazy: string };
+      copy.lazy = 'local';
+      expect(copy.lazy).toBe('local');
+      expect(getter).not.toHaveBeenCalled();
+    });
+
+    it('keeps RegExp state in immutable snapshots', () => {
+      const pattern = /a/g;
+      pattern.lastIndex = 2;
+      const copy = cloneDataTree(pattern, true) as RegExp;
+      expect(copy).not.toBe(pattern);
+      expect(copy.lastIndex).toBe(2);
+      expect(Object.isFrozen(copy)).toBe(true);
+    });
   });
 });

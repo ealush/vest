@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { FocusedSchemaMappingError, SchemaExclusionError, compose } from 'n4s';
+import { SchemaExclusionError, compose } from 'n4s';
 
 import { create, enforce, mode, Modes, test } from '../../vest';
 import { each } from '../../isolates/each';
@@ -139,19 +139,15 @@ describe('schema contracts: exclusion matrix', () => {
       root.mockClear();
     }
 
-    const result = suite
-      .changed(cell.affected)
-      .focus({ skip: cell.skip })
-      .run(cell.data);
-
+    expect(() =>
+      suite.changed(cell.affected).focus({ skip: cell.skip }).run(cell.data),
+    ).toThrow(SchemaExclusionError);
     expect(skipped).not.toHaveBeenCalled();
-    expect(selected).toHaveBeenCalledTimes(1);
-    expect(root).toHaveBeenCalledTimes(1);
-    expect(result.hasErrors()).toBe(!rootPass);
-    expect(result.hasErrors(cell.skippedPath)).toBe(false);
+    expect(selected).not.toHaveBeenCalled();
+    expect(root).not.toHaveBeenCalled();
   });
 
-  it('[SC-SKIP-FALLBACK] public partial-root counterpart executes selected work only', () => {
+  it('[SC-SKIP-FALLBACK] opaque partial-root selection rejects before any work', () => {
     const skipped = vi.fn(() => true);
     const selected = vi.fn(() => true);
     const calls: string[] = [];
@@ -176,20 +172,16 @@ describe('schema contracts: exclusion matrix', () => {
       });
     }, schema as never);
 
-    const result = suite
-      .changed('b')
-      .focus({ skip: 'a' })
-      .run({ a: 'a', b: 'b' } as never);
-
+    expect(() =>
+      suite
+        .changed('b')
+        .focus({ skip: 'a' })
+        .run({ a: 'a', b: 'b' } as never),
+    ).toThrow(SchemaExclusionError);
     expect(skipped).not.toHaveBeenCalled();
-    expect(selected).toHaveBeenCalledTimes(1);
-    expect(calls).toEqual(['b']);
-    expect(result.hasErrors()).toBe(false);
-    // A run with skipped tests is not fully valid, so result.value is
-    // absent by design; the detached callback data carries both keys.
-    expect(Object.hasOwn(callbackData as object, 'a')).toBe(true);
-    expect(Object.hasOwn(callbackData as object, 'b')).toBe(true);
-    expect((callbackData as Record<string, unknown>)?.b).toBe('b');
+    expect(selected).not.toHaveBeenCalled();
+    expect(calls).toEqual([]);
+    expect(callbackData).toBeUndefined();
   });
 
   it('[SC-EXCLUSION-OPAQUE] moved-chain fallback with intersecting skip fails closed', () => {
@@ -228,7 +220,7 @@ describe('schema contracts: exclusion matrix', () => {
     expect(skipped).not.toHaveBeenCalled();
   });
 
-  it('[SC-EXCLUSION-OPAQUE] unwitnessed union focus throws a stable mapping error', () => {
+  it('[SC-EXCLUSION-OPAQUE] a selected union member establishes only its own output', () => {
     const schema = enforce.shape({
       rows: enforce.isArrayOf(
         enforce.isNumeric().toNumber(),
@@ -240,24 +232,20 @@ describe('schema contracts: exclusion matrix', () => {
       void data;
     }, schema as never);
 
-    let thrown: unknown;
-    try {
-      suite.changed('rows.0').run({ rows: ['2', true, '3'] } as never);
-    } catch (error) {
-      thrown = error;
-    }
+    const result = suite
+      .changed('rows.0')
+      .run({ rows: ['2', true, '3'] } as never);
 
-    expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
-    expect((thrown as FocusedSchemaMappingError).code).toBe(
-      'FOCUSED_SCHEMA_MAPPING_UNWITNESSED_UNION',
-    );
-    expect(String((thrown as Error).message)).toMatch(/mapping|focused|union/i);
+    expect(result.isValid()).toBe(true);
+    expect(result.value).toStrictEqual({
+      rows: Object.assign(new Array(3), { 0: 2 }),
+    });
   });
 });
 
 describe('schema contracts: exclusion interactions', () => {
   it.each([false, true])(
-    '[SC-EXCLUSION-COMPOSE] root %s preserves exclusion with every root linked',
+    '[SC-EXCLUSION-COMPOSE] root %s rejects member selection before any rule runs',
     rootFirst => {
       const skipped = vi.fn(() => true);
       const selected = vi.fn(() => true);
@@ -270,17 +258,18 @@ describe('schema contracts: exclusion interactions', () => {
         ? [enforce.condition(roots[0]), shape, enforce.condition(roots[1])]
         : [shape, enforce.condition(roots[0]), enforce.condition(roots[1])];
       const schema = compose(...(chain as never[]));
-      const result = runPublicChanged(schema, { a: 'a', b: 'b' }, ['b'], ['a']);
 
+      expect(() =>
+        runPublicChanged(schema, { a: 'a', b: 'b' }, ['b'], ['a']),
+      ).toThrow(SchemaExclusionError);
       expect(skipped).not.toHaveBeenCalled();
-      expect(selected).toHaveBeenCalledTimes(1);
-      expect(roots[0]).toHaveBeenCalledTimes(1);
-      expect(roots[1]).toHaveBeenCalledTimes(1);
-      expect(result.hasErrors()).toBe(false);
+      expect(selected).not.toHaveBeenCalled();
+      expect(roots[0]).not.toHaveBeenCalled();
+      expect(roots[1]).not.toHaveBeenCalled();
     },
   );
 
-  it('[SC-EXCLUSION-COMPOSE] nested composition keeps every root and drops the skip', () => {
+  it('[SC-EXCLUSION-COMPOSE] nested composition rejects member selection before any rule runs', () => {
     const skipped = vi.fn(() => true);
     const selected = vi.fn(() => true);
     const inner = vi.fn(() => true);
@@ -295,13 +284,13 @@ describe('schema contracts: exclusion interactions', () => {
       ),
       enforce.condition(outer) as never,
     );
-    const result = runPublicChanged(schema, { a: 'a', b: 'b' }, ['b'], ['a']);
-
+    expect(() =>
+      runPublicChanged(schema, { a: 'a', b: 'b' }, ['b'], ['a']),
+    ).toThrow(SchemaExclusionError);
     expect(skipped).not.toHaveBeenCalled();
-    expect(selected).toHaveBeenCalledTimes(1);
-    expect(inner).toHaveBeenCalledTimes(1);
-    expect(outer).toHaveBeenCalledTimes(1);
-    expect(result.hasErrors()).toBe(false);
+    expect(selected).not.toHaveBeenCalled();
+    expect(inner).not.toHaveBeenCalled();
+    expect(outer).not.toHaveBeenCalled();
   });
 
   it('[SC-EXCLUSION-ARRAY] changed item runs while skipped and sibling predicates stay silent', () => {
@@ -394,7 +383,7 @@ describe('schema contracts: exclusion interactions', () => {
     expect(after.hasErrors('rows.1.v')).toBe(true);
   });
 
-  it('[SC-EXCLUSION-PARSER] skipped parsed child maps honestly without validation', () => {
+  it('[SC-EXCLUSION-PARSER] a skipped parsed child is neither parsed nor restored', () => {
     const seen: unknown[] = [];
     const schema = enforce.shape({
       age: enforce.isNumeric().toNumber(),
@@ -411,13 +400,13 @@ describe('schema contracts: exclusion interactions', () => {
       .run({ age: '43', note: 'second' });
 
     expect(result.hasErrors()).toBe(false);
-    // The excluded field was mapped (parsed) but never validated: its
-    // value is honestly parsed input restored from the prior complete
-    // run, not raw strings and not fresh validation.
-    expect(seen[0]).toEqual({ age: 42, note: 'second' });
+    // The excluded field is neither parsed nor restored from the prior
+    // run: the callback sees this invocation's input.
+    expect(seen[0]).toEqual({ age: '43', note: 'second' });
+    expect(result.run.data.parsed).toEqual({ note: 'second' });
   });
 
-  it('[SC-EXCLUSION-UNION] witnessed union survives a dependent change without reprobing', () => {
+  it('[SC-EXCLUSION-UNION] an unselected union stays out of focused output', () => {
     const suite = create(
       data => {
         test('note', () => true);
@@ -431,19 +420,17 @@ describe('schema contracts: exclusion interactions', () => {
         note: enforce.isString(),
       }) as never,
     );
-    // Full run establishes the branch witness; the dependent change keeps
-    // the same union input, so the retained witness is reused honestly.
-    // Branch-changing inputs need witness invalidation (open MP03).
+    // An unselected union is never re-established from an earlier run.
     suite.run({ rows: ['1', true], note: 'first' });
     const result = suite
       .changed('note')
       .run({ rows: ['1', true], note: 'second' });
 
     expect(result.isValid()).toBe(true);
-    expect(result.value).toEqual({ rows: [1, true], note: 'second' });
+    expect(result.value).toEqual({ note: 'second' });
   });
 
-  it('[SC-EXCLUSION-UNION] skip on an unwitnessed union still throws before callbacks', () => {
+  it('[SC-EXCLUSION-UNION] a skipped union needs no witness', () => {
     const callback = vi.fn();
     const suite = create(
       data => {
@@ -458,13 +445,15 @@ describe('schema contracts: exclusion interactions', () => {
         note: enforce.isString(),
       }) as never,
     );
-    expect(() =>
-      suite
-        .changed('note')
-        .focus({ skip: 'rows' })
-        .run({ rows: ['2'], note: 'ok' }),
-    ).toThrow(/mapping|union|focused/i);
-    expect(callback).not.toHaveBeenCalled();
+    const result = suite
+      .changed('note')
+      .focus({ skip: 'rows' })
+      .run({ rows: ['2'], note: 'ok' });
+    expect(result.isValid()).toBe(true);
+    expect(callback).toHaveBeenCalledExactlyOnceWith({
+      rows: ['2'],
+      note: 'ok',
+    });
   });
   it('[SC-COPY-ISOLATION] mutating a published copy touches nothing else', () => {
     const callbacks: Record<string, unknown>[] = [];
@@ -500,7 +489,7 @@ describe('schema contracts: exclusion interactions', () => {
       .changed('note')
       .run({ note: 'second', payload: { nested: 1 } });
     expect(second.isValid()).toBe(true);
-    expect(second.value).toEqual({ note: 'second', payload: { nested: 1 } });
+    expect(second.value).toEqual({ note: 'second' });
     expect(callbacks[1]).toEqual({ note: 'second', payload: { nested: 1 } });
     // The caller's object was never aliased by any public copy.
     expect(callerInput).toEqual({ note: 'first', payload: { nested: 1 } });
@@ -605,7 +594,7 @@ describe('schema contracts: runner retained-path utilities', () => {
     expect(seen[1]).toEqual({ rows: ['c', 'b'] });
   });
 
-  it('[SC-MERGE] grown arrays replace the retained array wholesale', () => {
+  it('[SC-MERGE] grown arrays publish only the selected member', () => {
     const seen: unknown[] = [];
     const schema = enforce.shape({
       rows: enforce.isArrayOf(enforce.isNumeric().toNumber()),
@@ -616,17 +605,15 @@ describe('schema contracts: runner retained-path utilities', () => {
     suite.run({ rows: ['1', '2'] });
     const result = suite.changed('rows.0').run({ rows: ['3', '2', '9'] });
     expect(result.hasErrors()).toBe(false);
-    const delivered = seen[1] as { rows: unknown[] };
-    // The changed member is parsed; the wholesale path is exercised.
-    // OPEN DEFECT: unexecuted members of a resized array keep raw input
-    // ('2'/'9' unparsed) instead of retained parsed values or fresh
-    // mapping. Positional identity breaks on insert/remove; do not treat
-    // this output as fully parsed until MP01 covers resized mapping.
-    expect(delivered.rows[0]).toBe(3);
-    expect(delivered.rows).toHaveLength(3);
+    // The callback sees this invocation's input; output keeps the resized
+    // array's positions with only the selected member established.
+    expect(seen[1]).toEqual({ rows: ['3', '2', '9'] });
+    expect(result.run.data.parsed).toStrictEqual({
+      rows: Object.assign(new Array(3), { 0: 3 }),
+    });
   });
 
-  it('[SC-MERGE] hostile affected paths cannot corrupt retained mappings', () => {
+  it('[SC-MERGE] hostile affected paths are inert', () => {
     const seen: unknown[] = [];
     const schema = enforce.shape({
       rows: enforce.isArrayOf(enforce.isString()),
@@ -638,10 +625,8 @@ describe('schema contracts: runner retained-path utilities', () => {
     suite.run({ rows: ['a'] });
     const result = suite.changed('rows.__proto__').run({ rows: ['b'] });
     expect(result.hasErrors('rows')).toBe(false);
-    // OPEN (SE01): hostile affected paths are ignored — the callback keeps
-    // retained data instead of the current input. Safe (no corruption) but
-    // stale; reject-vs-ignore needs an explicit product rule.
-    expect(seen[1]).toEqual({ rows: ['a'] });
+    expect(seen[1]).toEqual({ rows: ['b'] });
+    expect(Object.hasOwn(Object.prototype, '0')).toBe(false);
   });
 
   it('[SC-MERGE] foreign schemas deliver raw input on focused runs', () => {
@@ -805,27 +790,25 @@ describe('schema contracts: union coverage directions', () => {
     expect(second).not.toHaveBeenCalled();
   });
 
-  it('[SC-MERGE] fallback-array members reuse retained output when identical', () => {
-    const seen: unknown[] = [];
+  it('[SC-MERGE] composed array members reject selection before execution', () => {
+    const member = vi.fn(() => true);
     const schema = compose(
       enforce.shape({
-        rows: enforce.isArrayOf(enforce.condition(() => true)),
+        rows: enforce.isArrayOf(enforce.condition(member)),
         note: enforce.isString(),
       }),
       enforce.condition(() => true),
     );
-    const suite = create(data => {
-      seen.push(data);
-    }, schema as never);
-    // Parser-free members leave no mapping provenance, so the unexecuted
-    // member resolves identical to the raw input and reuses the retained
-    // mapping instead of revalidating.
+    const callback = vi.fn();
+    const suite = create(callback, schema as never);
     suite.run({ rows: ['x', 'y'], note: 'first' });
-    const result = suite
-      .changed('rows.0')
-      .run({ rows: ['z', 'y'], note: 'first' });
-    expect(result.hasErrors()).toBe(false);
-    expect(seen[1]).toEqual({ rows: ['z', 'y'], note: 'first' });
+    member.mockClear();
+    callback.mockClear();
+    expect(() =>
+      suite.changed('rows.0').run({ rows: ['z', 'y'], note: 'first' }),
+    ).toThrow(SchemaExclusionError);
+    expect(member).not.toHaveBeenCalled();
+    expect(callback).not.toHaveBeenCalled();
   });
 
   it('[SC-MERGE] skip-only runs ignore nested skips under scalars', () => {
@@ -848,7 +831,7 @@ describe('schema contracts: union coverage directions', () => {
     expect(seen[1]).toEqual({ a: 'x', b: 'z' });
   });
 
-  it('[SC-MERGE] untouched absent keys hydrate from retention', () => {
+  it('[SC-MERGE] untouched absent keys are never hydrated from history', () => {
     const seen: unknown[] = [];
     const schema = enforce.partial({
       gone: enforce.isString(),
@@ -859,11 +842,10 @@ describe('schema contracts: union coverage directions', () => {
       test('other', () => true);
     }, schema as never);
     suite.run({ gone: 'g', other: 'ok' });
-    // Unlike changing the deleted field itself (which honors deletion),
-    // merely untouched absence hydrates from the retained mapping.
     const result = suite.changed('other').run({ other: 'next' });
     expect(result.hasErrors()).toBe(false);
-    expect(seen[1]).toEqual({ other: 'next', gone: 'g' });
+    expect(seen[1]).toEqual({ other: 'next' });
+    expect(result.value).toEqual({ other: 'next' });
   });
 });
 
@@ -1048,14 +1030,12 @@ describe('schema contracts: exclusion record keys (EX07b)', () => {
     note: 'n',
   });
 
-  it('[SC-EXCLUSION-RECORD] a key change executes the shared value rule over every key (wildcard scope)', () => {
-    // Records cannot narrow through their shared value rule, so a key
-    // change is wildcard scope: every key's predicates run, exactly once.
+  it('[SC-EXCLUSION-RECORD] a key descendant change executes only that entry', () => {
     const { aCalls, bCalls, suite } = recordSuite();
     const result = suite.changed('dict.k1.b').run(recordData());
 
-    expect(aCalls).toEqual(['a1', 'a2']);
-    expect(bCalls).toEqual(['b1', 'b2']);
+    expect(aCalls).toEqual([]);
+    expect(bCalls).toEqual(['b1']);
     expect(result.hasErrors()).toBe(false);
   });
 
@@ -1110,7 +1090,7 @@ describe('schema contracts: exclusion record keys (EX07b)', () => {
   });
 });
 
-describe('schema contracts: union witness invalidation (MP03)', () => {
+describe('schema contracts: focused union output (MP03)', () => {
   function unionSuite(callback?: (data: unknown) => void) {
     return create(
       data => {
@@ -1127,20 +1107,20 @@ describe('schema contracts: union witness invalidation (MP03)', () => {
     );
   }
 
-  it('[SC-WITNESS] an affected branch change revalidates instead of reusing the stale witness', () => {
+  it('[SC-UNION-FOCUS] an affected branch change revalidates the selected member only', () => {
     const suite = unionSuite();
     suite.run({ rows: ['1', true], note: 'first' });
-    // rows.0 is covered by the change: the numeric witness cannot certify
-    // boolean input, so the member revalidates honestly on its new branch.
     const result = suite
       .changed('rows.0')
       .run({ rows: [true, true], note: 'first' });
 
     expect(result.isValid()).toBe(true);
-    expect(result.value).toEqual({ rows: [true, true], note: 'first' });
+    expect(result.value).toStrictEqual({
+      rows: Object.assign(new Array(2), { 0: true }),
+    });
   });
 
-  it('[SC-WITNESS] an affected union growth revalidates new members and refreshes the witness', () => {
+  it('[SC-UNION-FOCUS] a changed union validates every current member', () => {
     const suite = unionSuite();
     suite.run({ rows: ['1', true], note: 'first' });
     const grown = suite
@@ -1148,41 +1128,31 @@ describe('schema contracts: union witness invalidation (MP03)', () => {
       .run({ rows: ['1', true, '3'], note: 'first' });
 
     expect(grown.isValid()).toBe(true);
-    expect(grown.value).toEqual({ rows: [1, true, 3], note: 'first' });
-    // The refreshed witness covers the grown shape for a later focused run.
-    const next = suite
-      .changed('note')
-      .run({ rows: ['1', true, '3'], note: 'second' });
-    expect(next.isValid()).toBe(true);
-    expect(next.value).toEqual({ rows: [1, true, 3], note: 'second' });
+    expect(grown.value).toEqual({ rows: [1, true, 3] });
   });
 
-  it('[SC-WITNESS] an uncovered union growth without a witness fails closed before callbacks', () => {
+  it('[SC-UNION-FOCUS] untouched union growth is neither parsed nor published', () => {
     const callback = vi.fn();
     const suite = unionSuite(callback);
     suite.run({ rows: ['1', true], note: 'first' });
     callback.mockClear();
-    let thrown: unknown;
-    try {
-      // The new member rows.2 is neither covered by the change nor present
-      // in the retained witness: choosing its branch without validation
-      // would fabricate typed output, so the run rejects instead.
-      suite.changed('note').run({ rows: ['1', true, '3'], note: 'second' });
-    } catch (error) {
-      thrown = error;
-    }
+    const result = suite
+      .changed('note')
+      .run({ rows: ['1', true, '3'], note: 'second' });
 
-    expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
-    expect(callback).not.toHaveBeenCalled();
-    // A later full run re-establishes the witness and succeeds.
-    const recovery = suite.run({ rows: ['1', true, '3'], note: 'second' });
-    expect(recovery.isValid()).toBe(true);
-    expect(recovery.value).toEqual({ rows: [1, true, 3], note: 'second' });
+    expect(result.isValid()).toBe(true);
+    expect(result.value).toEqual({ note: 'second' });
+    expect(callback).toHaveBeenCalledExactlyOnceWith({
+      rows: ['1', true, '3'],
+      note: 'second',
+    });
+    // A full run establishes the complete value.
+    const full = suite.run({ rows: ['1', true, '3'], note: 'second' });
+    expect(full.isValid()).toBe(true);
+    expect(full.value).toEqual({ rows: [1, true, 3], note: 'second' });
   });
 
-  it('[SC-WITNESS] same-branch skipped input reuses the retained witness (EX09 control)', () => {
-    // Guards against over-tightening: a skip over a union region whose
-    // input stays on the witnessed branches keeps the documented reuse.
+  it('[SC-UNION-FOCUS] a skipped union never reuses earlier output', () => {
     const suite = unionSuite();
     suite.run({ rows: ['1', true], note: 'first' });
     const result = suite
@@ -1191,6 +1161,6 @@ describe('schema contracts: union witness invalidation (MP03)', () => {
       .run({ rows: ['9', false], note: 'second' });
 
     expect(result.isValid()).toBe(true);
-    expect(result.value).toEqual({ rows: [1, true], note: 'second' });
+    expect(result.value).toEqual({ note: 'second' });
   });
 });

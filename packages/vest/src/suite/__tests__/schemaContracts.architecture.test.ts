@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 import { EnforceSchemaError, enforce } from 'n4s';
-import { mapWithoutValidation } from 'n4s/exports/internal';
 
 import { create, group, mode, Modes, test } from '../../vest';
 
@@ -38,55 +37,41 @@ declare global {
 }
 const architectureBoomError = new Error('parser boom');
 const architectureMappedBoomError = new Error('mapped parser boom');
-enforce.extend(
-  {
-    architectureNumber: () => ({ pass: false, type: 2 }),
-    architectureBox: (value: number) => ({ pass: true, type: { value } }),
-    architectureBoom: () => {
-      throw architectureBoomError;
-    },
-    architectureConditionalMapped: (value: string) =>
-      value === 'bad'
-        ? { pass: false, type: 'MAPPED' }
-        : { pass: true, type: value },
-    architectureBoomOnMapped: (value: string) => {
-      if (value === 'MAPPED') throw architectureMappedBoomError;
-      return { pass: true, type: value };
-    },
-    architectureFrameworkBoom: (value: string) => {
-      if (value === 'MAPPED') {
-        throw new Error('structural mapping fault');
-      }
-      return { pass: true, type: value };
-    },
-    architectureUserEnforceBoom: (value: string) => {
-      // A user parser throwing the PUBLIC EnforceSchemaError must NOT be
-      // mistaken for a framework mapping-unavailable fault: it propagates.
-      if (value === 'MAPPED') {
-        throw new EnforceSchemaError('user parser fault');
-      }
-      return { pass: true, type: value };
-    },
-    architectureThrowPrimitive: (value: string) => {
-      if (value === 'MAPPED') {
-        throw 'primitive boom';
-      }
-      return { pass: true, type: value };
-    },
+enforce.extend({
+  architectureNumber: () => ({ pass: false, type: 2 }),
+  architectureBox: (value: number) => ({ pass: true, type: { value } }),
+  architectureBoom: () => {
+    throw architectureBoomError;
   },
-  {
-    parsers: [
-      'architectureNumber',
-      'architectureBox',
-      'architectureBoom',
-      'architectureConditionalMapped',
-      'architectureBoomOnMapped',
-      'architectureFrameworkBoom',
-      'architectureUserEnforceBoom',
-      'architectureThrowPrimitive',
-    ],
+  architectureConditionalMapped: (value: string) =>
+    value === 'bad'
+      ? { pass: false, type: 'MAPPED' }
+      : { pass: true, type: value },
+  architectureBoomOnMapped: (value: string) => {
+    if (value === 'MAPPED') throw architectureMappedBoomError;
+    return { pass: true, type: value };
   },
-);
+  architectureFrameworkBoom: (value: string) => {
+    if (value === 'MAPPED') {
+      throw new Error('structural mapping fault');
+    }
+    return { pass: true, type: value };
+  },
+  architectureUserEnforceBoom: (value: string) => {
+    // A user parser throwing the PUBLIC EnforceSchemaError must NOT be
+    // mistaken for a framework mapping-unavailable fault: it propagates.
+    if (value === 'MAPPED') {
+      throw new EnforceSchemaError('user parser fault');
+    }
+    return { pass: true, type: value };
+  },
+  architectureThrowPrimitive: (value: string) => {
+    if (value === 'MAPPED') {
+      throw 'primitive boom';
+    }
+    return { pass: true, type: value };
+  },
+});
 
 function mappingSchema() {
   return enforce.shape({
@@ -108,15 +93,7 @@ const flush = () =>
   });
 
 describe('schema contracts: architectural boundaries', () => {
-  it('[ARCH-MAPPING] parser-only mapping continues after a parser validation failure', () => {
-    // Both parser transforms are total and return the declared type. The
-    // first verdict must not short-circuit a pass that explicitly ignores it.
-    expect(
-      mapWithoutValidation(mappingSchema(), { a: 'raw', b: 'ok' }),
-    ).toEqual({ a: { value: 2 }, b: 'ok' });
-  });
-
-  it('[ARCH-MAPPING] a fresh focused callback receives the final parser type on untouched fields', () => {
+  it('[ARCH-MAPPING] a focused callback receives supplied input for untouched fields', () => {
     const seen = vi.fn();
     const suite = create(data => {
       seen(data.a);
@@ -124,11 +101,12 @@ describe('schema contracts: architectural boundaries', () => {
     }, mappingSchema());
     const result = suite.changed('b').run({ a: 'raw', b: 'ok' });
     expect(result.isValid()).toBe(true);
-    expect(seen).toHaveBeenCalledExactlyOnceWith({ value: 2 });
-    expect(result.value).toEqual({ a: { value: 2 }, b: 'ok' });
+    // The untouched parser chain never runs to prepare callback data.
+    expect(seen).toHaveBeenCalledExactlyOnceWith('raw');
+    expect(result.value).toEqual({ b: 'ok' });
   });
 
-  it('[ARCH-UNION] an opaque untouched union fails explicitly before calling a typed callback', () => {
+  it('[ARCH-UNION] an untouched union is never probed for a focused callback', () => {
     const first = vi.fn(() => true);
     const second = vi.fn(() => true);
     const callback = vi.fn();
@@ -145,12 +123,9 @@ describe('schema contracts: architectural boundaries', () => {
         b: enforce.isString(),
       }),
     );
-    // There is no prior branch witness, and choosing the first branch
-    // requires an opaque predicate. Never claim a complete typed mapping.
-    expect(() => suite.changed('b').run({ a: [2], b: 'ok' })).toThrow(
-      /mapping|focused|union/i,
-    );
-    expect(callback).not.toHaveBeenCalled();
+    const result = suite.changed('b').run({ a: [2], b: 'ok' });
+    expect(result.isValid()).toBe(true);
+    expect(callback).toHaveBeenCalledExactlyOnceWith({ a: [2], b: 'ok' });
     expect(first).not.toHaveBeenCalled();
     expect(second).not.toHaveBeenCalled();
   });
@@ -164,7 +139,7 @@ describe('schema contracts: architectural boundaries', () => {
     expect(result.value).toBeUndefined();
   });
 
-  it('[ARCH-MAPPING] throwing parser preserves cause without a second validation route', () => {
+  it('[ARCH-MAPPING] a throwing parser on a skipped field never runs', () => {
     const selected = vi.fn(() => true);
     const callback = vi.fn();
     const suite = create(
@@ -178,19 +153,19 @@ describe('schema contracts: architectural boundaries', () => {
       }),
     );
 
-    let thrown: unknown;
-    try {
-      suite.changed('b').focus({ skip: 'a' }).run({ a: 'x', b: 'y' });
-    } catch (error) {
-      thrown = error;
-    }
+    const result = suite.changed('b').focus({ skip: 'a' }).run({
+      a: 'x',
+      b: 'y',
+    });
 
-    expect(thrown).toBe(architectureBoomError);
+    expect(result.hasErrors()).toBe(false);
     expect(selected).toHaveBeenCalledTimes(1);
-    expect(callback).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledExactlyOnceWith({ a: 'x', b: 'y' });
+    // Executing the parser propagates its cause by identity.
+    expect(() => suite.run({ a: 'x', b: 'y' })).toThrow(architectureBoomError);
   });
 
-  it('[ARCH-MAPPING] failure mapping propagates parser exceptions instead of raw fallback', () => {
+  it('[ARCH-MAPPING] a failing parser stage short-circuits later stages', () => {
     const callback = vi.fn();
     const suite = create(
       data => {
@@ -206,90 +181,53 @@ describe('schema contracts: architectural boundaries', () => {
     const valid = suite.run({ a: 'good', b: 'ok' });
     expect(valid.isValid()).toBe(true);
     const delivered = valid.value as Record<string, unknown>;
-    expect(callback).toHaveBeenCalledTimes(1);
 
-    // Validation fails at the first stage (short-circuit: the throwing
-    // stage never runs as a validator). Failure mapping runs every parser
-    // stage, so the second stage throws there.
-    let thrown: unknown;
-    try {
-      suite.run({ a: 'bad', b: 'ok' });
-    } catch (error) {
-      thrown = error;
-    }
-    expect(thrown).toBe(architectureMappedBoomError);
-    // No callback with fabricated raw input, no partial publication, and
-    // the previously delivered snapshot is untouched.
-    expect(callback).toHaveBeenCalledTimes(1);
+    // The first stage fails validation, so the throwing stage never runs:
+    // there is no second pass that ignores verdicts.
+    const failed = suite.run({ a: 'bad', b: 'ok' });
+    expect(failed.hasErrors('a')).toBe(true);
+    expect(callback).toHaveBeenLastCalledWith({ a: 'bad', b: 'ok' });
     expect(delivered).toEqual({ a: 'good', b: 'ok' });
-    expect(suite.get().hasErrors()).toBe(false);
 
     const recovery = suite.run({ a: 'fine', b: 'ok' });
     expect(recovery.isValid()).toBe(true);
     expect(recovery.value).toEqual({ a: 'fine', b: 'ok' });
   });
 
-  it('[ARCH-MAPPING] mapping-stage faults propagate instead of raw fallback', () => {
-    const callback = vi.fn();
-    const suite = create(
-      data => {
-        callback(data);
-        test('b', () => true);
-      },
-      enforce.shape({
-        a: enforce.architectureConditionalMapped().architectureFrameworkBoom(),
-        b: enforce.isString(),
-      }),
-    );
-    const valid = suite.run({ a: 'good', b: 'ok' });
-    expect(valid.isValid()).toBe(true);
-    // Validation fails at the first stage; failure mapping reaches the
-    // second stage, which throws. There is no framework-owned fallback:
-    // the fault propagates by identity with no fabricated callback input.
-    let thrown: unknown;
-    try {
-      suite.run({ a: 'bad', b: 'ok' });
-    } catch (error) {
-      thrown = error;
-    }
-    expect(thrown).toBeInstanceOf(Error);
-    expect((thrown as Error).message).toBe('structural mapping fault');
-    expect(callback).toHaveBeenCalledTimes(1);
-  });
+  it.each([
+    ['architectureFrameworkBoom', 'structural mapping fault'],
+    ['architectureUserEnforceBoom', 'user parser fault'],
+  ] as const)(
+    '[ARCH-MAPPING] %s thrown during validation propagates with its message',
+    (rule, message) => {
+      const callback = vi.fn();
+      const suite = create(
+        data => {
+          callback(data);
+          test('b', () => true);
+        },
+        enforce.shape({
+          a: (enforce as any)[rule](),
+          b: enforce.isString(),
+        }),
+      );
+      expect(suite.run({ a: 'good', b: 'ok' }).isValid()).toBe(true);
+      let thrown: unknown;
+      try {
+        suite.run({ a: 'MAPPED', b: 'ok' });
+      } catch (error) {
+        thrown = error;
+      }
+      expect(thrown).toBeInstanceOf(Error);
+      expect((thrown as Error).message).toBe(message);
+      if (rule === 'architectureUserEnforceBoom') {
+        expect(thrown).toBeInstanceOf(EnforceSchemaError);
+      }
+      expect(callback).toHaveBeenCalledTimes(1);
+    },
+  );
 
-  it('[ARCH-MAPPING] user-thrown EnforceSchemaError propagates instead of raw fallback', () => {
-    const callback = vi.fn();
-    const userFault = new EnforceSchemaError('user parser fault');
-    const suite = create(
-      data => {
-        callback(data);
-        test('b', () => true);
-      },
-      enforce.shape({
-        a: enforce
-          .architectureConditionalMapped()
-          .architectureUserEnforceBoom(),
-        b: enforce.isString(),
-      }),
-    );
-    const valid = suite.run({ a: 'good', b: 'ok' });
-    expect(valid.isValid()).toBe(true);
-    // Validation fails at the first stage; failure mapping reaches the
-    // second stage, which throws the public EnforceSchemaError. The
-    // dedicated-error boundary must NOT swallow it as mapping-unavailable.
-    let thrown: unknown;
-    try {
-      suite.run({ a: 'bad', b: 'ok' });
-    } catch (error) {
-      thrown = error;
-    }
-    expect(thrown).toBeInstanceOf(EnforceSchemaError);
-    expect((thrown as Error).message).toBe('user parser fault');
-    expect(thrown).not.toBe(userFault);
-    expect(callback).toHaveBeenCalledTimes(1);
-  });
-
-  it('[ARCH-MAPPING] non-object mapping throws propagate with identity', () => {
+  it('[ARCH-MAPPING] non-object parser throws propagate with identity', () => {
     const callback = vi.fn();
     const suite = create(
       data => {
@@ -297,13 +235,13 @@ describe('schema contracts: architectural boundaries', () => {
         test('b', () => true);
       },
       enforce.shape({
-        a: enforce.architectureConditionalMapped().architectureThrowPrimitive(),
+        a: enforce.architectureThrowPrimitive(),
         b: enforce.isString(),
       }),
     );
     let thrown: unknown;
     try {
-      suite.run({ a: 'bad', b: 'ok' });
+      suite.run({ a: 'MAPPED', b: 'ok' });
     } catch (error) {
       thrown = error;
     }
@@ -400,7 +338,7 @@ describe('schema contracts: architectural boundaries', () => {
   });
 
   it.each(['01', '1'])(
-    '[ARCH-PATH] numeric record focus preserves complete mapped callback data at key %s',
+    '[ARCH-PATH] numeric record focus establishes exactly key %s',
     key => {
       const schema = enforce.shape({
         dict: enforce.record(enforce.isNumeric().toNumber()),
@@ -411,9 +349,7 @@ describe('schema contracts: architectural boundaries', () => {
       suite.run({ dict: { '01': '1', '1': '2', other: '3' } });
       const dict = { '01': '1', '1': '2', other: '3', [key]: '9' };
       const result = suite.changed(`dict.${key}`).run({ dict });
-      expect(result.value).toEqual({
-        dict: { '01': 1, '1': 2, other: 3, [key]: 9 },
-      });
+      expect(result.value).toEqual({ dict: { [key]: 9 } });
     },
   );
 });

@@ -1,13 +1,9 @@
-import { isFunction, isStringValue } from 'vest-utils';
+import { isFunction } from 'vest-utils';
 
 import { extendEager } from './eager';
 import { ctx } from './enforceContext';
 import { EnforceSchemaError } from './errors/EnforceSchemaError';
 import { addToChain, registerLazyRule } from './rules/genRuleChain';
-import {
-  declaredTransformOf,
-  MAPPING_DECLARED_OUTPUT,
-} from './rules/chainBuilder/chainExecutor';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 
 type ExtensionRule = (...args: never[]) => unknown;
@@ -52,18 +48,12 @@ type MutableEnforce = Record<string, unknown>;
 export function extendEnforce<Rules extends Record<string, ExtensionRule>>(
   enforce: MutableEnforce,
   rules: Rules,
-  parserNames: readonly string[] = [],
 ) {
-  const parsers = validateExtension(rules, parserNames);
+  assertCallableRules(rules, Object.keys(rules));
   extendEager(rules);
 
   Object.keys(rules).forEach(ruleName => {
-    registerExtensionRule(
-      enforce,
-      ruleName,
-      rules[ruleName],
-      parsers.has(ruleName),
-    );
+    registerExtensionRule(enforce, ruleName, rules[ruleName]);
   });
 }
 
@@ -71,7 +61,6 @@ function registerExtensionRule(
   enforce: MutableEnforce,
   ruleName: string,
   rule: ExtensionRule,
-  mapsValue: boolean,
 ): void {
   const callableRule = rule as unknown as (
     value: unknown,
@@ -79,51 +68,17 @@ function registerExtensionRule(
   ) => unknown;
   const ruleWrapper = (value: unknown, ...args: unknown[]) => {
     const res = ctx.run({ value }, () => callableRule(value, ...args));
-    const normalized = RuleRunReturn.create(
-      res as boolean | RuleRunReturn<unknown>,
-      value,
-    );
-    attachDeclaredTransform(normalized, res, mapsValue);
-    return normalized;
+    return RuleRunReturn.create(res as boolean | RuleRunReturn<unknown>, value);
   };
 
   enforce[ruleName] = (...args: unknown[]) =>
-    addToChain({}, (value: unknown) => ruleWrapper(value, ...args), mapsValue);
+    addToChain({}, (value: unknown) => ruleWrapper(value, ...args));
   registerLazyRule(
     ruleName,
     (...args: unknown[]) =>
       (value: unknown) =>
         ruleWrapper(value, ...args),
-    mapsValue,
   );
-}
-
-function attachDeclaredTransform(
-  normalized: RuleRunReturn<unknown>,
-  raw: unknown,
-  mapsValue: boolean,
-): void {
-  // Parser-only mapping consumes each step's declared transform output even
-  // when validation fails. The declaration rides alongside the normalized
-  // validation payload, preserving verdicts, paths, types, and messages.
-  if (!mapsValue) return;
-  const declared = declaredTransformOf(raw);
-  if (!declared.found) return;
-  (
-    normalized as unknown as Record<
-      typeof MAPPING_DECLARED_OUTPUT,
-      { value: unknown }
-    >
-  )[MAPPING_DECLARED_OUTPUT] = { value: declared.value };
-}
-
-function validateExtension(
-  rules: Readonly<Record<string, unknown>>,
-  parserNames: readonly string[],
-): ReadonlySet<string> {
-  const ruleNames = Object.keys(rules);
-  assertCallableRules(rules, ruleNames);
-  return validatedParserNames(new Set(ruleNames), parserNames);
 }
 
 function assertCallableRules(
@@ -137,25 +92,4 @@ function assertCallableRules(
       );
     }
   }
-}
-
-function validatedParserNames(
-  declaredRules: ReadonlySet<string>,
-  parserNames: readonly string[],
-): ReadonlySet<string> {
-  const parsers = new Set<string>();
-  for (const parserName of parserNames) {
-    if (!isStringValue(parserName) || !declaredRules.has(parserName)) {
-      throw new EnforceSchemaError(
-        `enforce.extend() parser "${String(parserName)}" is not a declared rule`,
-      );
-    }
-    if (parsers.has(parserName)) {
-      throw new EnforceSchemaError(
-        `enforce.extend() parser "${parserName}" is listed more than once`,
-      );
-    }
-    parsers.add(parserName);
-  }
-  return parsers;
 }

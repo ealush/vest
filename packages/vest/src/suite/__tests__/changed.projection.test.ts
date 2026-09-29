@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { enforce } from 'n4s';
+import { enforce, SchemaExclusionError } from 'n4s';
 
 import { create, test } from '../../vest';
 import { invokeWithUnknown } from '../../__tests__/runtimeTestUtils';
@@ -498,7 +498,7 @@ describe('changed() source-retaining projection', () => {
     expect(changed.hasErrors('profile.state')).toBe(false);
   });
 
-  it('P1-1: changed() keeps container validators chained after the combinator', async () => {
+  it('P1-1: changed() rejects descendants of a container with chained validators', async () => {
     // A validator chained onto the container itself (not a member) must
     // survive projection: dropping it makes changed() pass a run that the
     // full suite fails. The baseline bail-out retains the whole subtree.
@@ -514,11 +514,15 @@ describe('changed() source-retaining projection', () => {
       flag: false,
     };
     expect(suite.runStatic(bad).hasErrors()).toBe(true);
-    const changed = await suite.changed('profile.country').run(bad);
-    expect(changed.hasErrors()).toBe(true);
+    // Projection would drop the chained root validator, so a descendant
+    // selection rejects; a full run evaluates it.
+    expect(() => suite.changed('profile.country').run(bad)).toThrow(
+      SchemaExclusionError,
+    );
+    expect(suite.run(bad).hasErrors()).toBe(true);
   });
 
-  it('synthesizes a retained root failure reported again by the fresh run only once', async () => {
+  it('keeps a retained root failure intact when a chained-root selection rejects', async () => {
     // A warm suite retains the message-less root failure from the full run;
     // the changed run freshly reports the same verdict. Both carry the
     // identical issue identity, so only one test node may exist — creating
@@ -534,10 +538,13 @@ describe('changed() source-retaining projection', () => {
       profile: { country: 'US' },
       flag: false,
     };
-    expect(suite.run(bad).hasErrors()).toBe(true);
-    const changed = await suite.changed('profile.country').run(bad);
-    expect(changed.hasErrors()).toBe(true);
-    expect(countDumpKey(changed.dump(), '[[],null]')).toBe(1);
+    const full = suite.run(bad);
+    expect(full.hasErrors()).toBe(true);
+    expect(countDumpKey(full.dump(), '[[],null]')).toBe(1);
+    expect(() => suite.changed('profile.country').run(bad)).toThrow(
+      SchemaExclusionError,
+    );
+    expect(countDumpKey(suite.get().dump(), '[[],null]')).toBe(1);
   });
 
   it('P1-2: changed() narrows an all-optional shape instead of retaining it', async () => {
@@ -610,7 +617,7 @@ describe('changed() source-retaining projection', () => {
     expect(changed.hasErrors('state')).toBe(true);
   });
 
-  it('supplements shadowed members in a retained chained container', async () => {
+  it('rejects member selection in a nested chained container', async () => {
     const schema = enforce.shape({
       profile: enforce
         .loose({
@@ -633,15 +640,14 @@ describe('changed() source-retaining projection', () => {
     };
 
     expect(schema.run(data).path).toEqual(['profile', 'unrelated']);
-    const changed = await create((): void => {}, schema)
-      .changed('profile.country')
-      .run(data);
-
-    expect(changed.hasErrors('profile.unrelated')).toBe(false);
-    expect(changed.hasErrors('profile.state')).toBe(true);
+    expect(() =>
+      create((): void => {}, schema)
+        .changed('profile.country')
+        .run(data),
+    ).toThrow(SchemaExclusionError);
   });
 
-  it('supplements shadowed members when the root container is retained', async () => {
+  it('rejects member selection in a chained root container', async () => {
     const schema = enforce
       .loose({
         unrelated: enforce.isString().longerThan(5),
@@ -660,12 +666,11 @@ describe('changed() source-retaining projection', () => {
     };
 
     expect(schema.run(data).path).toEqual(['unrelated']);
-    const changed = await create((): void => {}, schema)
-      .changed('country')
-      .run(data);
-
-    expect(changed.hasErrors('unrelated')).toBe(false);
-    expect(changed.hasErrors('state')).toBe(true);
+    expect(() =>
+      create((): void => {}, schema)
+        .changed('country')
+        .run(data),
+    ).toThrow(SchemaExclusionError);
   });
 
   it('P1-3a: changed() surfaces an affected tuple member hidden by first-failure', async () => {
@@ -690,7 +695,7 @@ describe('changed() source-retaining projection', () => {
     expect(changed.hasErrors('point.0')).toBe(true);
   });
 
-  it('P1-3b: changed() surfaces an affected union element hidden by first-failure', async () => {
+  it('P1-3b: changed() validates a selected union element hidden by first-failure', async () => {
     // Union elements must match some member: element 0 matches neither, so
     // the full run reports only element 0. The supplement resolves
     // whole-member matching per affected index and reproduces the generic
@@ -713,11 +718,13 @@ describe('changed() source-retaining projection', () => {
     const full = await invokeWithUnknown(suite.run, data);
     expect(full.hasErrors('rows.0')).toBe(true);
     expect(full.hasErrors('rows.1')).toBe(false);
-    const changed = await invokeWithUnknown(
-      suite.changed('rows.1.kind').run,
-      data,
-    );
+    // A descendant cannot pick a union branch on its own.
+    expect(() =>
+      invokeWithUnknown(suite.changed('rows.1.kind').run, data),
+    ).toThrow(SchemaExclusionError);
+    const changed = await invokeWithUnknown(suite.changed('rows.1').run, data);
     expect(changed.hasErrors('rows.1')).toBe(true);
+    // rows.0 was not selected; its earlier failure is retained.
     expect(changed.hasErrors('rows.0')).toBe(true);
   });
 
@@ -750,5 +757,62 @@ describe('changed() source-retaining projection', () => {
     const changed = await suite.changed('rows.1.country').run(data);
     expect(changed.hasErrors()).toBe(false);
     expect(seen).toEqual(['CA']);
+  });
+
+  it('focused value omits unvalidated raw input outside the selection', () => {
+    // Proof boundary: a valid focused result publishes only established
+    // output. `b` was neither validated nor mapped by a parser, so the
+    // wrong-typed raw value must not appear under the typed `value` —
+    // even though the callback still observes current declaration data.
+    const seen: unknown[] = [];
+    const suite = create(
+      data => {
+        seen.push(data);
+        test('a', () => true);
+      },
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString(),
+      }),
+    );
+    const changed = invokeWithUnknown(suite.changed('a').run, {
+      a: 'ok',
+      b: 42,
+    });
+    expect(changed.isValid()).toBe(true);
+    expect(changed.value).toEqual({ a: 'ok' });
+    expect(seen).toEqual([{ a: 'ok', b: 42 }]);
+  });
+
+  it('focused value does not promote retained raw input into proof', () => {
+    // A later focused run must not upgrade raw values retained from an
+    // earlier run's callback data: `b` stays absent from every published
+    // value until a run actually validates or parses it. The dependency
+    // keeps both user tests executing so the runs stay fully valid.
+    const suite = create(
+      () => {
+        test('a', () => true);
+        test('c', () => true);
+      },
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString(),
+        c: enforce.isString().dependsOn(($: any) => $.a),
+      }),
+    );
+    const first = invokeWithUnknown(suite.changed(['a', 'c']).run, {
+      a: 'ok',
+      b: 42,
+      c: 'c',
+    });
+    expect(first.isValid()).toBe(true);
+    expect(first.value).toEqual({ a: 'ok', c: 'c' });
+    const second = invokeWithUnknown(suite.changed('c').run, {
+      a: 'ok',
+      b: 42,
+      c: 'c',
+    });
+    expect(second.isValid()).toBe(true);
+    expect(second.value).toEqual({ c: 'c' });
   });
 });

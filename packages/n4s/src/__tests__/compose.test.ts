@@ -44,32 +44,33 @@ describe('compose() - Rule Composition', () => {
   });
 
   describe('Lazy evaluation', () => {
-    it('preserves RuleInstance methods and passes parser output forward', () => {
-      const ParsedPositiveNumber = compose(
-        enforce.isNumeric().toNumber(),
-        enforce.isNumber().greaterThan(0),
+    it('preserves RuleInstance methods and returns the original input', () => {
+      const NumericText = compose(
+        enforce.isNumeric(),
+        enforce.isString().longerThan(1),
       );
 
-      expect(ParsedPositiveNumber.parse('12')).toBe(12);
-      expect(ParsedPositiveNumber.validate('12')).toEqual({ value: 12 });
-      expect(ParsedPositiveNumber['~standard'].validate('12')).toEqual({
-        value: 12,
+      expect(NumericText.parse('12')).toBe('12');
+      expect(NumericText.validate('12')).toEqual({ value: '12' });
+      expect(NumericText['~standard'].validate('12')).toEqual({
+        value: '12',
       });
-      expect(ParsedPositiveNumber['~standard'].vendor).toBe('n4s');
+      expect(NumericText['~standard'].vendor).toBe('n4s');
     });
 
-    it('compose-values-thread-through-composites like chains, not original input', () => {
-      // Compatibility decision (PR #1326): each composite validates the
-      // previous composite's parsed output, matching chained-rule semantics.
-      // Pre-#1326 every rule saw the original input, so this passed; now the
-      // equals rule sees the trimmed 'x' and fails.
+    it('validates every composite against the original input', () => {
+      // Composition combines validators; it is not a parser pipeline. Each
+      // composite sees the original input and success returns it unchanged.
       const TrimThenEquals = compose(
         enforce.isString().trim(),
         enforce.isString().equals(' x '),
       );
 
-      expect(TrimThenEquals.run(' x ').pass).toBe(false);
-      expect(TrimThenEquals.test(' x ')).toBe(false);
+      expect(TrimThenEquals.run(' x ')).toMatchObject({
+        pass: true,
+        type: ' x ',
+      });
+      expect(TrimThenEquals.test(' x ')).toBe(true);
     });
 
     it('keeps dependencies added to the composed facade', () => {

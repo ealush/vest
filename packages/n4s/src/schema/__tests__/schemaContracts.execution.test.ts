@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { compose, enforce } from '../../n4s';
+import { SchemaExclusionError } from '../../errors/SchemaExclusionError';
 import { resolveAffectedPaths, runSchemaPaths } from '../selectiveRun';
 
 const roots = ['shape', 'loose', 'partial', 'compose'] as const;
@@ -26,13 +27,23 @@ describe('schema contracts: execution coverage and paths', () => {
               enforce.condition(() => true),
             )
           : enforce[root](members);
-      const results = runSchemaPaths(
-        schema,
-        { a: 'bad', b: 'selected' },
-        { affected: ['b'] },
-      );
+      const run = () =>
+        runSchemaPaths(
+          schema,
+          { a: 'bad', b: 'selected' },
+          { affected: ['b'] },
+        );
+      if (root === 'compose') {
+        // An opaque composition cannot run its member alone: reject before
+        // any validator executes rather than run and hide excluded work.
+        expect(run).toThrow(SchemaExclusionError);
+        expect(selected).not.toHaveBeenCalled();
+        expect(before).not.toHaveBeenCalled();
+        return;
+      }
+      const results = run();
       expect(selected).toHaveBeenCalledExactlyOnceWith('selected');
-      expect(before.mock.calls.length).toBeLessThanOrEqual(1);
+      expect(before).not.toHaveBeenCalled();
       expect(results.some(result => !result.pass)).toBe(!selectedPass);
       if (!selectedPass)
         expect(results).toContainEqual(
@@ -148,8 +159,7 @@ describe('schema contracts: execution coverage and paths', () => {
       a: enforce.isString(),
       b: enforce.isString().dependsOn($ => $.a),
     });
-    // The getter lives on an extra key the schema never declares. Exactly
-    // one read occurs — the validator's own shallow input copy — so any
+    // The getter lives on an extra key the schema never declares, so any
     // planning-time data enumeration (e.g. a read loop in changed
     // expansion) fails this count. Through the production entry, not
     // resolveAffectedPaths directly.
@@ -159,7 +169,8 @@ describe('schema contracts: execution coverage and paths', () => {
     });
     const results = runSchemaPaths(schema, data, { affected: ['b'] });
     expect(results.every(result => result.pass)).toBe(true);
-    expect(getter).toHaveBeenCalledTimes(1);
+    // The selected fragment copies undeclared properties by descriptor.
+    expect(getter).not.toHaveBeenCalled();
   });
 
   it('[SC-SCOPE] projection privileges do not leak into a nested schema constructed by a validator', () => {

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { compose, enforce } from '../../n4s';
 import { runSchemaPaths } from '../selectiveRun';
+import { SchemaExclusionError } from '../../errors/SchemaExclusionError';
 
 const fields = ['a', 'b', 'c'] as const;
 const edges = [
@@ -100,7 +101,7 @@ describe('schema contracts: release-readiness execution audit', () => {
   );
 
   it.each(['passing', 'failing'] as const)(
-    '[SC-SKIP-FALLBACK] root-chain fallback never executes an explicitly skipped predicate (%s)',
+    '[SC-SKIP-FALLBACK] opaque root-chain selection rejects before any predicate (%s)',
     verdict => {
       const skipped = vi.fn(() => verdict === 'passing');
       const selected = vi.fn(() => true);
@@ -111,18 +112,19 @@ describe('schema contracts: release-readiness execution audit', () => {
         }),
         enforce.condition(() => true),
       );
-      const result = runSchemaPaths(
-        schema,
-        { a: 'a', b: 'b' },
-        { affected: ['b'], skip: ['a'] },
-      );
+      expect(() =>
+        runSchemaPaths(
+          schema,
+          { a: 'a', b: 'b' },
+          { affected: ['b'], skip: ['a'] },
+        ),
+      ).toThrow(SchemaExclusionError);
       expect(skipped).not.toHaveBeenCalled();
-      expect(selected).toHaveBeenCalledTimes(1);
-      expect(result.every(entry => entry.pass)).toBe(true);
+      expect(selected).not.toHaveBeenCalled();
     },
   );
 
-  it('[SC-SKIP-FALLBACK] partial root-chain fallback never executes an explicitly skipped predicate', () => {
+  it('[SC-SKIP-FALLBACK] opaque partial root-chain selection rejects before any predicate', () => {
     const skipped = vi.fn(() => true);
     const selected = vi.fn(() => true);
     const schema = compose(
@@ -133,17 +135,19 @@ describe('schema contracts: release-readiness execution audit', () => {
       enforce.condition(() => true),
     );
 
-    runSchemaPaths(
-      schema,
-      { a: 'a', b: 'b' },
-      { affected: ['b'], skip: ['a'] },
-    );
+    expect(() =>
+      runSchemaPaths(
+        schema,
+        { a: 'a', b: 'b' },
+        { affected: ['b'], skip: ['a'] },
+      ),
+    ).toThrow(SchemaExclusionError);
 
     expect(skipped).not.toHaveBeenCalled();
-    expect(selected).toHaveBeenCalledTimes(1);
+    expect(selected).not.toHaveBeenCalled();
   });
 
-  it('[SC-SKIP-FALLBACK] nested root-chain fallback never executes an explicitly skipped predicate', () => {
+  it('[SC-SKIP-FALLBACK] opaque nested root-chain selection rejects before any predicate', () => {
     const skipped = vi.fn(() => true);
     const selected = vi.fn(() => true);
     const schema = compose(
@@ -156,13 +160,15 @@ describe('schema contracts: release-readiness execution audit', () => {
       enforce.condition(() => true),
     );
 
-    runSchemaPaths(
-      schema,
-      { profile: { a: 'a', b: 'b' } },
-      { affected: ['profile.b'], skip: ['profile.a'] },
-    );
+    expect(() =>
+      runSchemaPaths(
+        schema,
+        { profile: { a: 'a', b: 'b' } },
+        { affected: ['profile.b'], skip: ['profile.a'] },
+      ),
+    ).toThrow(SchemaExclusionError);
 
     expect(skipped).not.toHaveBeenCalled();
-    expect(selected).toHaveBeenCalledTimes(1);
+    expect(selected).not.toHaveBeenCalled();
   });
 });

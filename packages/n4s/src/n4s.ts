@@ -72,18 +72,13 @@ export { FIELD } from './schema/scopeProxy';
  * catch it by identity regardless of which entry built the schema.
  */
 export { EnforceSchemaError } from './errors/EnforceSchemaError';
-export { FocusedSchemaMappingError } from './errors/FocusedSchemaMappingError';
 export { SchemaExclusionError } from './errors/SchemaExclusionError';
 export type { ScopeHandle } from './utils/RuleInstance';
 export type { SchemaMemberRule } from './rules/schemaRules/schemaRulesLazyTypes';
 
-type ExtendOptions<Rules> = {
-  parsers?: readonly (keyof Rules & string)[];
-};
 type ExtensionRule = (...args: never[]) => unknown;
 type ExtendFn = <Rules extends Record<string, ExtensionRule>>(
   rules: Rules,
-  options?: ExtendOptions<Rules>,
 ) => void;
 type ContextFn = () => EnforceContext;
 type Enforce = typeof enforceEager &
@@ -146,9 +141,6 @@ enforce.context = function context(): EnforceContext {
  * Custom rules become available on both eager and lazy APIs.
  *
  * @param rules - Object mapping rule names to validation functions
- * @param options.parsers - Custom rules that are safe to execute as pure
- * transformations when mapping an unfocused value. Rules are validators by
- * default and are never speculatively executed.
  *
  * @example
  * ```typescript
@@ -175,11 +167,6 @@ enforce.context = function context(): EnforceContext {
  */
 enforce.extend = function extend<Rules extends Record<string, ExtensionRule>>(
   rules: Rules,
-  options?: ExtendOptions<Rules>,
 ) {
-  extendEnforce(
-    enforce as unknown as Record<string, unknown>,
-    rules,
-    options?.parsers,
-  );
+  extendEnforce(enforce as unknown as Record<string, unknown>, rules);
 };

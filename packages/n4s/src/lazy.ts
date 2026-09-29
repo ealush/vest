@@ -16,7 +16,7 @@ import * as schemaRules from './rules/schemaRules/schemaRules';
 import { lazy as lazyRule } from './rules/schemaRules/lazy';
 import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
 import { type RuleInstance } from './utils/RuleInstance';
-import { asArray, isArray, isFunction, isNullish } from 'vest-utils';
+import { asArray, isArray, isNullish } from 'vest-utils';
 import { ctx } from './enforceContext';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 import { resolveInlineDeps } from './schema/dependencyResolver';
@@ -34,7 +34,6 @@ import { snapshotChainBaseline } from './rules/chainBuilder/chainBuilder';
 import { rebaseRelationships } from './schema/rebase';
 import type { SchemaPath } from './schema/SchemaPath';
 import type { InternalRelationship } from './schema/SchemaRelationship';
-import { MAP_FULL_VALUE, MAP_VALUE } from './schema/mapWithoutValidation';
 import { isRuleNode } from './schema/ruleNode';
 
 /**
@@ -265,16 +264,6 @@ function wrapOptional(
     }
     if (innerSlots[ITEM_CONTAINER] && !slots[ITEM_CONTAINER]) {
       slots[ITEM_CONTAINER] = innerSlots[ITEM_CONTAINER];
-    }
-    const innerMapValue = innerSlots[MAP_VALUE];
-    if (isFunction(innerMapValue)) {
-      slots[MAP_VALUE] = (value: unknown): unknown =>
-        isNullish(value)
-          ? RuleRunReturn.Passing(value)
-          : (innerMapValue as (input: unknown) => unknown)(value);
-    }
-    if (innerSlots[MAP_FULL_VALUE] && !slots[MAP_FULL_VALUE]) {
-      slots[MAP_FULL_VALUE] = innerSlots[MAP_FULL_VALUE];
     }
     // The wrapper validates through the inner rule, so the rebuild
     // baseline is the inner rule's current chain state — not the fresh

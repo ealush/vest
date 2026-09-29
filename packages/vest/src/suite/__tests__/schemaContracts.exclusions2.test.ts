@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { FocusedSchemaMappingError, SchemaExclusionError, compose } from 'n4s';
+import { SchemaExclusionError, compose } from 'n4s';
 
 import { each } from '../../isolates/each';
 import { create, enforce, group, mode, Modes, test, warn } from '../../vest';
@@ -103,7 +103,7 @@ describe('schema contracts: exclusion overlap and fan-out (EX03)', () => {
   });
 
   it.each(['changed-first', 'focus-first'] as const)(
-    '[SC-EXCLUSION-FANOUT-ORDER] %s runs every composed root once with skip+changed',
+    '[SC-EXCLUSION-FANOUT-ORDER] %s rejects a composed member selection before any rule runs',
     order => {
       const skipped = vi.fn(() => true);
       const selected = vi.fn(() => true);
@@ -119,7 +119,7 @@ describe('schema contracts: exclusion overlap and fan-out (EX03)', () => {
       );
       const suite = create(() => {}, schema as never) as any;
       const data = { a: 'a', b: 'b' };
-      const result =
+      const run = () =>
         order === 'changed-first'
           ? suite
               .changed(['b'])
@@ -130,11 +130,13 @@ describe('schema contracts: exclusion overlap and fan-out (EX03)', () => {
               .changed(['b'])
               .run(data);
 
+      // Composed roots cannot run a member alone; rejecting beats running
+      // the excluded predicates and hiding their verdicts.
+      expect(run).toThrow(SchemaExclusionError);
       expect(skipped).not.toHaveBeenCalled();
-      expect(selected).toHaveBeenCalledTimes(1);
-      expect(roots[0]).toHaveBeenCalledTimes(1);
-      expect(roots[1]).toHaveBeenCalledTimes(1);
-      expect(result.hasErrors()).toBe(false);
+      expect(selected).not.toHaveBeenCalled();
+      expect(roots[0]).not.toHaveBeenCalled();
+      expect(roots[1]).not.toHaveBeenCalled();
     },
   );
 
@@ -203,24 +205,21 @@ describe('schema contracts: exclusion attribution (EX04)', () => {
       b: enforce.condition(selected),
     });
     const schema = compose(inner as never, enforce.condition(root) as never);
-    const result = runChangedSkip(schema, { a: 'a', b: 'b' }, ['b'], ['a']);
 
-    // The excluded predicate never fires, whatever it would have done.
+    // Whatever each rule would have done, none of them runs: a composed
+    // root rejects member selection before execution.
+    expect(() =>
+      runChangedSkip(schema, { a: 'a', b: 'b' }, ['b'], ['a']),
+    ).toThrow(SchemaExclusionError);
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).not.toHaveBeenCalled();
+    expect(root).not.toHaveBeenCalled();
+    // Plain shapes still attribute each verdict to its own path.
+    const plain = runChangedSkip(inner, { a: 'a', b: 'b' }, ['b'], ['a']);
     expect(skipped).not.toHaveBeenCalled();
     expect(selected).toHaveBeenCalledTimes(1);
-    // Errors stay attributed: the skipped path is clean, the selected path
-    // carries exactly its own verdict.
-    expect(result.hasErrors('a')).toBe(false);
-    expect(result.hasErrors('b')).toBe(!selectedPass);
-    expect(result.hasErrors()).toBe(!selectedPass || !rootPass);
-    if (selectedPass) {
-      // With the selected work passing, the root verdict is preserved.
-      expect(root).toHaveBeenCalledTimes(1);
-    } else {
-      // A failing selected sibling short-circuits the composed root; the
-      // overall failure is still reported via the selected path above.
-      expect(root).not.toHaveBeenCalled();
-    }
+    expect(plain.hasErrors('a')).toBe(false);
+    expect(plain.hasErrors('b')).toBe(!selectedPass);
   });
 });
 
@@ -637,7 +636,17 @@ describe('schema contracts: only+skip route matrix remainder (T1 routes)', () =>
       });
       const schema = compose(inner as never, enforce.condition(root) as never);
       const suite: any = create((_data: unknown) => {}, schema as never);
-      const result = runRoute(suite, route, { a: 'a', b: 'b' } as never);
+      const data = { a: 'a', b: 'b' } as never;
+      if (route === 'changed-first' || route === 'focus-first') {
+        expect(() => runRoute(suite, route, data)).toThrow(
+          SchemaExclusionError,
+        );
+        expect(skipped).not.toHaveBeenCalled();
+        expect(selected).not.toHaveBeenCalled();
+        expect(root).not.toHaveBeenCalled();
+        return;
+      }
+      const result = runRoute(suite, route, data);
 
       expect(skipped).not.toHaveBeenCalled();
       expect(selected).toHaveBeenCalledTimes(1);
@@ -1269,31 +1278,25 @@ describe('schema contracts: skip-all establishes no mapping witness (H1)', () =>
     return { callback, suite };
   }
 
-  it('[SC-SKIPALL-WITNESS] focused union run after skip-all still fails without a witness', () => {
+  it('[SC-SKIPALL-WITNESS] focused run after skip-all needs no union witness', () => {
     const { suite } = unionSuite();
     suite.focus({ skip: true }).run({ a: [2], b: 'ok' } as never);
-    let thrown: unknown;
-    try {
-      suite.changed('b').run({ a: [2], b: 'ok' } as never);
-    } catch (error) {
-      thrown = error;
-    }
-    expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
+    // Focused runs publish only selected output, so an untouched union
+    // never needs a branch witness.
+    const focused = suite.changed('b').run({ a: [2], b: 'ok' } as never);
+    expect(focused.isValid()).toBe(true);
+    expect(focused.value).toEqual({ b: 'ok' });
   });
 
-  it('[SC-SKIPALL-WITNESS] skip-all preserves previous mapping without inventing coverage', () => {
+  it('[SC-SKIPALL-WITNESS] skip-all never promotes earlier output into focused output', () => {
     const { callback, suite } = unionSuite();
     const full = suite.run({ a: [2], b: 'ok' });
     expect(full.isValid()).toBe(true);
-    // Full validation genuinely witnessed branch a[0] (predicates ran on
-    // that data). The skip-all run executes nothing, so it must preserve
-    // that proof untouched: the focused run reuses the full run's witness,
-    // not the unvalidated skip-all data.
     suite.focus({ skip: true }).run({ a: [99], b: 'ok' } as never);
     const focused = suite.changed('b').run({ a: [2], b: 'ok' } as never);
     expect(focused.isValid()).toBe(true);
     expect(callback).toHaveBeenCalledTimes(3);
-    expect(focused.value).toEqual({ a: [2], b: 'ok' });
+    expect(focused.value).toEqual({ b: 'ok' });
   });
 
   it('[SC-SKIPALL-WITNESS] skip-all reuses a proven parser witness', () => {
@@ -1318,7 +1321,7 @@ describe('schema contracts: skip-all establishes no mapping witness (H1)', () =>
     expect(callback).toHaveBeenCalledTimes(3);
   });
 
-  it('[SC-SKIPALL-WITNESS] skip-all callback receives parser mapping without validation', () => {
+  it('[SC-SKIPALL-WITNESS] skip-all callback receives input without parsing it', () => {
     const callback = vi.fn();
     const suite: any = create(
       callback,
@@ -1328,9 +1331,9 @@ describe('schema contracts: skip-all establishes no mapping witness (H1)', () =>
       }) as never,
     );
     const result = suite.focus({ skip: true }).run({ n: '42', note: 'ok' });
-    // Best-effort parser mapping still runs (no validator does): the
-    // callback observes mapped output, but the run certifies nothing.
-    expect(callback.mock.calls[0][0]).toEqual({ n: 42, note: 'ok' });
+    // No schema rule runs, so the callback sees the supplied input and the
+    // run certifies nothing.
+    expect(callback.mock.calls[0][0]).toEqual({ n: '42', note: 'ok' });
     expect(result.hasErrors()).toBe(false);
   });
 });
@@ -1395,16 +1398,12 @@ describe('schema contracts: empty-focus witness behavior (H1 expansion)', () => 
     return { callback, suite };
   }
 
-  it('[SC-SKIPALL-WITNESS] changed([]) establishes no witness', () => {
+  it('[SC-SKIPALL-WITNESS] changed([]) leaves later focused runs independent', () => {
     const { suite } = unionSuite();
     suite.changed([]).run({ a: [2], b: 'ok' } as never);
-    let thrown: unknown;
-    try {
-      suite.changed('b').run({ a: [2], b: 'ok' } as never);
-    } catch (error) {
-      thrown = error;
-    }
-    expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
+    const focused = suite.changed('b').run({ a: [2], b: 'ok' } as never);
+    expect(focused.isValid()).toBe(true);
+    expect(focused.value).toEqual({ b: 'ok' });
   });
 
   it('[SC-SKIPALL-WITNESS] changed([]) preserves a proven witness', () => {
@@ -1417,19 +1416,15 @@ describe('schema contracts: empty-focus witness behavior (H1 expansion)', () => 
     expect(callback).toHaveBeenCalledTimes(3);
   });
 
-  it('[SC-SKIPALL-WITNESS] only+skip-all establishes no witness', () => {
+  it('[SC-SKIPALL-WITNESS] only+skip-all leaves later focused runs independent', () => {
     const { suite } = unionSuite();
     suite
       .only('b')
       .focus({ skip: true })
       .run({ a: [2], b: 'ok' } as never);
-    let thrown: unknown;
-    try {
-      suite.changed('b').run({ a: [2], b: 'ok' } as never);
-    } catch (error) {
-      thrown = error;
-    }
-    expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
+    const focused = suite.changed('b').run({ a: [2], b: 'ok' } as never);
+    expect(focused.isValid()).toBe(true);
+    expect(focused.value).toEqual({ b: 'ok' });
   });
 
   it('[SC-SKIPALL-WITNESS] skip-all destructively clears retained errors without revalidating', () => {
@@ -1632,7 +1627,11 @@ describe('schema contracts: indexed changed paths into unions (BB05)', () => {
     suite.run({ a: ['x', 1], b: 'ok' });
     const result = suite.changed('a[0]').run({ a: ['y', 1], b: 'ok' });
     expect(result.hasErrors()).toBe(false);
-    expect(result.value).toEqual({ a: ['y', 1], b: 'ok' });
+    // Only the selected member is established output; the other position
+    // is a hole, never a copied raw value.
+    expect(result.value).toStrictEqual({
+      a: Object.assign(new Array(2), { 0: 'y' }),
+    });
   });
 
   it('[SC-BB05] indexed change with an invalid member matches the full run exactly', () => {
@@ -1662,9 +1661,14 @@ describe('schema contracts: indexed changed paths into unions (BB05)', () => {
     const selective = fixture();
     selective.run({ a: [{ v: 'ok' }], b: 'ok' });
     calls.length = 0;
-    const result = selective.changed('a[0].v').run(data as never);
-    // Parity contract: the selective run executes the affected member and
-    // reports exactly what the full run reports for the same data.
+    // A descendant of a union member cannot select a branch on its own;
+    // it rejects before any member executes.
+    expect(() => selective.changed('a[0].v').run(data as never)).toThrow(
+      SchemaExclusionError,
+    );
+    expect(calls).toEqual([]);
+    // Selecting the whole member reports exactly what the full run reports.
+    const result = selective.changed('a[0]').run(data as never);
     expect(calls).toContain('v:bad');
     expect(result.isValid()).toBe(full.isValid());
     expect(result.getErrors()).toEqual(full.getErrors());

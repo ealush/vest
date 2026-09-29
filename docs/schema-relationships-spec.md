@@ -32,10 +32,11 @@ output.
   `InferSchemaOutput<S>` type. Focused runtime data can still be incomplete;
   this pre-existing `only()` / `focus()` typing limitation is documented and
   deferred to Vest 7 in #1327.
-- `DeepDraft` recurses into plain objects only. Identity containers
-  (arrays, tuples, `Date`, `Map`, `Set`, promises, functions) stay whole:
-  focused mapping replaces them wholesale, so an absent array is the
-  missing property, never a partial array.
+- `DeepDraft` recurses into plain objects, arrays, and tuples: focused runs
+  publish only selected positions, so draft arrays may contain holes and
+  draft tuple positions are optional. Built-in identity values (`Date`,
+  `Map`, `Set`, `RegExp`, buffers, promises, functions) stay whole.
+- `changed()` results type `types.output` as the draft as well.
 - `Suite.run` / `runStatic` / `validate` return `SuiteResult`, whose
   `valid: true` arm carries complete `InferSchemaOutput<S>`.
 - The new `changed()` builder returns `FocusedSuiteResult`, whose `valid: true`
@@ -55,15 +56,15 @@ output.
   only the callback/`get()`/`only()`/`focus()` types retain the Vest 6
   input-compatible contract. Their stricter forms are part of
   the coordinated Vest 7 migration in #1327.
-- Runtime correspondence: first focused runs omit untouched required
-  properties (own-property absent, never fabricated); later focused runs
-  hydrate retained fields from the last complete mapping; absent optional
-  input materializes as own `undefined` everywhere; a mapped-but-unvalidated
-  value never certifies validation. Proof boundary: a valid focused `value`
-  contains only established output — retained proof and fresh parser output
-  overlaid with the validated region. Unexecuted, unproven paths stay
-  absent rather than carrying current raw input (best-effort callback data
-  may still observe current input for test declaration).
+- Runtime correspondence: a focused `value` and `run.data.parsed` contain
+  only output established by that run. Unselected properties are absent and
+  unselected array positions are holes (`DeepDraft` types arrays and tuples
+  as partial). Output is never retained across runs, so reset, removal, and
+  hydration cannot resurrect it.
+- Callback data: a passing run applies its parsed values onto the supplied
+  input (complete output on a full run, focused fields on `only()`/`focus()`
+  runs). `changed()` runs and failed runs pass the supplied input unchanged.
+  No parser runs outside selected validation.
 
 ## 3. Implementation by part
 
@@ -110,18 +111,20 @@ skip, resolvedAffected, coverage }`. `buildFocusedSchemaInstance`
 - Omission: `omitSkippedDeep` performs kind-preserving exclusion (shape,
   partial, loose); record/index exclusions that cannot be rebuilt fail
   closed instead of running excluded validators.
-- Mapping: `mapWithoutValidation` runs pure parser steps without
-  validators and reports provenance (mapped paths; union paths needing a
-  branch witness). Chains execute via `executeMappingChain` (verdicts never
-  short-circuit mapping; declared outputs compose) as opposed to
-  `executeChain` (validation short-circuits). Declared parser outputs are
-  tracked with `MAPPING_DECLARED_OUTPUT`, preserving explicit
-  `undefined`/`null` as values.
+- Fail-closed planning: `assertSelectedPathsSupported` and projection
+  reject a `changed()` selection that cannot execute on its own (composed or
+  chained containers, root arrays, descendants inside union members or
+  scalars, explicit-undefined unknown keys) with `SchemaExclusionError`
+  before any user rule runs. There is no full-run-and-filter fallback.
+  Record keys leave the fragment and run per entry with the record's key
+  and value rules. A root selection runs the whole schema; foreign
+  (non-n4s) schemas validate whole. Unsafe key segments select nothing.
+- `compose()` validates every composite against the original input and
+  returns it unchanged (Vest 6 semantics).
 - Parser totality: built-in string parsers (`stringParsers.ts`,
   via `mapString`) fail closed with the untouched value on non-string
   input instead of throwing `TypeError`; validators report the mismatch.
-- Errors: `SchemaExclusionError` (unrepresentable exclusion),
-  `FocusedSchemaMappingError` (unwitnessed union branch under focus),
+- Errors: `SchemaExclusionError` (unrepresentable exclusion or selection),
   `EnforceSchemaError` (misuse).
 
 ### 3.4 `vestjs-runtime` — untouched by design
@@ -144,12 +147,10 @@ n4s and orchestration in Vest.
   `changed([])` is explicit zero-field scope (runs nothing, retains
   history), distinct from no-op `only([])` and destructive `skip: true`.
 - Runner (`suite/useCreateSuiteRunner.ts`): resolves the affected set once
-  through n4s and hands the same set to suite focus and schema execution;
-  builds callback input by merging current-run parser output over the
-  retained mapping (`mergeMappedPaths`, array wholesale replacement,
-  skipped-path repair from retention); failing runs deliver best-effort
-  parser mapping without poisoning retention; skip-all validates nothing
-  and establishes no witness.
+  through n4s and hands the same set to suite focus and schema execution.
+  `schemaOutput` copies only selected paths from the run's parsed value;
+  `applySchemaOutput` overlays them on the supplied input for passing
+  non-`changed()` runs. No mapping is retained between runs.
 - Ownership: `pendingRunsFor` / supersede chaining settle stale handles
   with the latest outcome; superseded same-field work cannot publish while
   retained pending work on unaffected fields may finish.
@@ -211,9 +212,9 @@ narrowing (`only`) retains them.
 ## 6. Error taxonomy
 
 - `SchemaExclusionError`: exclusion/selection cannot be represented
-  (record/index splits, positional splits of shared rules).
-- `FocusedSchemaMappingError`: focused run needs an unwitnessed union
-  branch; run a full validation first or focus the union path.
+  (record skips, positional splits of shared rules, composed or chained
+  containers, root arrays, union-member descendants). Thrown before any
+  rule or user test executes; select the containing field or run fully.
 - Order-change error: unkeyed declarations ran in a different order than
   the previous run; use keyed tests for reorderable lists.
 - Parser `TypeError`s from built-in string transforms on non-string
@@ -225,6 +226,8 @@ narrowing (`only`) retains them.
   reinsertion are covered; a separate active-declaration oracle remains
   follow-up work.
 - Union/composed nested-`only` fail-closed behavior.
+- Selective execution of members of composed/chained containers and root
+  arrays (currently rejected before execution).
 - Quoted-string bracket path support (or explicit rejection with a
   stable error).
 - Resource bounds: deep/wide smoke tests exist; a GC-enabled harness with
@@ -239,7 +242,7 @@ narrowing (`only`) retains them.
 
 - Unit/graph contracts: `packages/n4s/src/schema/__tests__/`
   (`selectiveRun.coverage`, `selectiveRun`, `dependencyResolver.coverage`,
-  `mapWithoutValidation`, `execution`, `mappingProvenance`, `readiness`).
+  `execution`, `readiness`).
 - Suite contracts: `packages/vest/src/suite/__tests__/schemaContracts.*`
   (focus, exclusions, output, async, builderReuse, nestedOnly, lifecycle,
   stateMachine, boundaries, snapshots, publicApi, lintInventory).

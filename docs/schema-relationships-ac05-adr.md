@@ -31,13 +31,12 @@ new invalidation graph.
 
 ## Runtime contract
 
-- A first focused run may omit untouched required properties.
-- A later focused run can hydrate untouched properties from the last successful
-  mapped output.
-- Absent optional input can materialize as an own `undefined` property.
-- Untouched invalid parser input is never fabricated into output.
+- A focused run's output contains only values it established: untouched
+  properties are absent and unselected array positions are holes.
+- Output is never carried from an earlier run into a later one.
+- Untouched input is never parsed, validated, or fabricated into output.
 - A later full run certifies complete output.
-- `changed([])` executes no fields and establishes no validation witness.
+- `changed([])` executes no fields and publishes no output.
 
 These behaviors are covered by the `[SC-AC05]` tests in
 `packages/vest/src/suite/__tests__/schemaContracts.output.test.ts`.

@@ -67,7 +67,7 @@ export function loose<T extends Record<string, any>>(
     };
   }
 
-  const parsedValue: Record<string, any> = safeShallowCopy(value);
+  const parsedValue: Record<string, any> = safeShallowCopy(value, schema);
 
   for (const key of ownKeys(schema)) {
     const fieldValue = hasOwnProperty(value, key) ? value[key] : undefined;

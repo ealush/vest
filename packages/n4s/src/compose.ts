@@ -9,11 +9,6 @@ import {
   RESOLVED_RELATIONSHIPS,
   UNRESOLVED_DEPS,
 } from './schema/schemaSlots';
-import {
-  MAP_FULL_VALUE,
-  FullValueMapper,
-  mapWithoutValidation,
-} from './schema/mapWithoutValidation';
 import { RuleInstance } from './utils/RuleInstance';
 import { RuleRunReturn } from './utils/RuleRunReturn';
 import { withStandaloneRootedBoundary } from './rules/chainBuilder/chainBuilder';
@@ -33,29 +28,16 @@ type RuleInput<Rule> = Rule extends {
   ? Input
   : unknown;
 
-type RuleOutput<Rule> = Rule extends {
-  readonly '~standard': {
-    readonly types: StandardSchemaV1.Types<unknown, infer Output>;
-  };
-}
-  ? Output
-  : unknown;
-
 type FirstRule<Rules extends readonly ComposableRule[]> =
   Rules extends readonly [infer First extends ComposableRule, ...unknown[]]
     ? First
-    : never;
-
-type LastRule<Rules extends readonly ComposableRule[]> =
-  Rules extends readonly [...unknown[], infer Last extends ComposableRule]
-    ? Last
     : never;
 
 type ComposeInput<Rules extends readonly ComposableRule[]> =
   Rules extends readonly [] ? unknown : RuleInput<FirstRule<Rules>>;
 
 type ComposeOutput<Rules extends readonly ComposableRule[]> =
-  Rules extends readonly [] ? unknown : RuleOutput<LastRule<Rules>>;
+  ComposeInput<Rules>;
 
 type ComposeResult<Input, Output> = RuleInstance<Output, [Input]> & {
   (value: Input): void;
@@ -66,18 +48,11 @@ type ComposeResult<Input, Output> = RuleInstance<Output, [Input]> & {
  * The composed rule executes rules in order and fails on the first failing rule.
  * Returns a RuleInstance that can be used with both eager and lazy APIs.
  *
- * Compatibility note (PR #1326 decision): each rule receives the previous
- * rule's parsed output, exactly like chained rules
- * (`enforce(x).trim().equals(...)`). This differs from the pre-#1326
- * behavior where every rule validated the original input, so
- * `compose(enforce.isString().trim(), enforce.isString().equals(' x '))`
- * now fails on `' x '` (the second rule sees `'x'`). Threading is what
- * makes composed parser chains (`toNumber()` then `greaterThan(0)`) and
- * parser-only mapping work; reverting to original-input validation would
- * break them. Pinned by `compose-values-thread-through-composites` below.
+ * Every rule validates the original input. Successful composition returns
+ * that input unchanged. Transformation chains belong inside individual
+ * rules; composing validators does not introduce a second pipeline.
  *
- * @template Rules - The ordered rules whose first input and final output
- * determine the composed rule's public types.
+ * @template Rules - Rules validating the same original input.
  * @param composites - Validation rules to compose
  * @returns A composed rule that can be run with values or called directly
  *
@@ -106,9 +81,15 @@ type ComposeResult<Input, Output> = RuleInstance<Output, [Input]> & {
  */
 export function compose<const Rules extends readonly ComposableRule[]>(
   ...composites: Rules
-): ComposeResult<ComposeInput<Rules>, ComposeOutput<Rules>> {
-  type Input = ComposeInput<Rules>;
-  type Output = ComposeOutput<Rules>;
+): ComposeResult<ComposeInput<Rules>, ComposeOutput<Rules>>;
+export function compose<T>(
+  ...composites: ComposableRule[]
+): ComposeResult<T, T>;
+export function compose(
+  ...composites: ComposableRule[]
+): ComposeResult<any, any> {
+  type Input = any;
+  type Output = any;
   const instance = RuleInstance.create<
     RuleInstance<Output, [Input]>,
     Output,
@@ -146,16 +127,14 @@ export function compose<const Rules extends readonly ComposableRule[]>(
   function run(value: Input): RuleRunReturn<Output> {
     return withStandaloneRootedBoundary(result, () =>
       ctx.run({ value }, () => {
-        let current: unknown = value;
         for (const composite of composites) {
           const executable = composite as unknown as {
             run(input: unknown): RuleRunReturn<unknown>;
           };
-          const result = executable.run(current);
+          const result = executable.run(value);
           if (!result.pass) return result as RuleRunReturn<Output>;
-          current = result.type;
         }
-        return RuleRunReturn.Passing(current as Output);
+        return RuleRunReturn.Passing(value);
       }),
     );
   }
@@ -201,22 +180,7 @@ function forwardCompositionSlots(
       }
     }
     to[COMPOSITION_CHILDREN] = [...sources];
-    // A composition maps each source in sequence, including its structural
-    // mapping. This full-value slot prevents mapWithoutValidation() from first
-    // mapping the forwarded __schema and then mapping that same source again.
-    to[MAP_FULL_VALUE] = mapComposedValue(sources);
   }
-}
-
-function mapComposedValue(sources: readonly ComposableRule[]): FullValueMapper {
-  return (value, provenance, base) =>
-    RuleRunReturn.Passing(
-      sources.reduce(
-        (current, source) =>
-          mapWithoutValidation(source, current, provenance, base),
-        value,
-      ),
-    );
 }
 
 function readArraySlot(source: object, slot: symbol): unknown[] {

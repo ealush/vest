@@ -98,7 +98,7 @@ function mergeReports() {
     }
     const raw = JSON.parse(fs.readFileSync(finalPath, 'utf8'));
     for (const [filePath, entry] of Object.entries(raw)) {
-      mergeFileEntry(byFile, path.relative(REPO_ROOT, filePath), entry);
+      mergeFileEntry(byFile, path.relative(REPO_ROOT, filePath), entry, pkg);
     }
   }
   return byFile;
@@ -111,17 +111,20 @@ function mergeReports() {
  * later percentage silently overwrite an earlier one. Files outside both
  * packages keep the first-seen report.
  */
-function mergeFileEntry(byFile, suffix, entry) {
+function mergeFileEntry(byFile, suffix, entry, sourcePackage) {
   const owner = ownerPackageOf(suffix);
   const existing = byFile.get(suffix);
-  if (existing === undefined || prefersOwnerReport(owner, existing)) {
-    byFile.set(suffix, { entry, owner });
+  if (
+    existing === undefined ||
+    prefersOwnerReport(owner, sourcePackage, existing)
+  ) {
+    byFile.set(suffix, { entry, sourcePackage });
   }
 }
 
-function prefersOwnerReport(owner, existing) {
+function prefersOwnerReport(owner, sourcePackage, existing) {
   if (owner === null) return false;
-  return owner === existing.owner || existing.owner === null;
+  return sourcePackage === owner && existing.sourcePackage !== owner;
 }
 
 function ownerPackageOf(suffix) {

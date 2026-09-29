@@ -91,7 +91,8 @@ type AtomicDraftsStayUsable = AssertTrue<
       error?: Error;
       labels?: Map<string, number>;
       pattern?: RegExp;
-      tags?: string[];
+      // Arrays are not atomic: focused runs may publish sparse positions.
+      tags?: (string | undefined)[];
       view?: DataView;
     }
   >

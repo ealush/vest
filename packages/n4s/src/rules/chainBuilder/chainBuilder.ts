@@ -28,14 +28,9 @@ import {
 } from '../../schema/schemaSlots';
 import type { ChainBaseline, ChainInfo } from '../../schema/schemaSlots';
 import { isSchemaExecutionProjection } from '../../schema/projectionContext';
-import { MAP_VALUE } from '../../schema/mapWithoutValidation';
 import { isRuleNode } from '../../schema/ruleNode';
 
-import {
-  executeChain,
-  executeMappingChain,
-  type Predicate,
-} from './chainExecutor';
+import { executeChain, type Predicate } from './chainExecutor';
 import { createChainProxyHandlers } from './proxyHandlers';
 
 export type RuleFunctions<T extends RuleInstance<unknown, unknown[]>> = Record<
@@ -178,23 +173,20 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
   rules: RuleFunctions<T> | Record<string, (...args: unknown[]) => unknown>,
 ) {
   const chain: Predicate[] = [];
-  const mappingChain: Predicate[] = [];
   const target: Partial<T> = {};
   let lazyMessage: Maybe<LazyMessage> = undefined;
   const unresolvedDeps: Array<{
     resolver: (scope: ScopeHandle) => unknown;
   }> = [];
 
-  const add = (p: Predicate, mapsValue = false): T => {
+  const add = (p: Predicate): T => {
     chain.push(p);
-    if (mapsValue) mappingChain.push(p);
     syncChainInfo();
     return proxy;
   };
 
-  const prepend = (p: Predicate, mapsValue = false): T => {
+  const prepend = (p: Predicate): T => {
     chain.unshift(p);
-    if (mapsValue) mappingChain.unshift(p);
     syncChainInfo();
     return proxy;
   };
@@ -343,12 +335,6 @@ export function createChainBuilder<T extends RuleInstance<unknown, unknown[]>>(
 
   (proxy as unknown as Record<symbol, unknown>)[UNRESOLVED_DEPS] =
     unresolvedDeps;
-  // Parser-only mapping threads declared transforms without validation
-  // short-circuiting (A1); the shared validation executor is untouched.
-  const mapValue = (value: unknown): ReturnType<typeof executeChain> =>
-    executeMappingChain(mappingChain, value);
-  (target as unknown as Record<symbol, unknown>)[MAP_VALUE] = mapValue;
-  (proxy as unknown as Record<symbol, unknown>)[MAP_VALUE] = mapValue;
   proxyToTarget.set(proxy as unknown as object, target as object);
 
   return { add, proxy } as const;

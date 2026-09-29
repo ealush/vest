@@ -6,6 +6,8 @@ import {
   isObject,
 } from 'vest-utils';
 
+type AccessorMode = boolean | 'lazy';
+
 /**
  * Copies supported data containers without relying on JSON serialization,
  * preserving undefined values, symbols, cycles, and property descriptors.
@@ -22,7 +24,7 @@ export function cloneDataTree(
   data: unknown,
   immutable = false,
   seen = new WeakMap<object, unknown>(),
-  detachAccessors = false,
+  detachAccessors: AccessorMode = false,
 ): unknown {
   if (!isObject(data)) return data;
 
@@ -98,7 +100,7 @@ function copyOwnDescriptors(
   target: object,
   immutable: boolean,
   seen: WeakMap<object, unknown>,
-  detachAccessors: boolean,
+  detachAccessors: AccessorMode,
 ): void {
   for (const key of Reflect.ownKeys(source)) {
     const descriptor = Object.getOwnPropertyDescriptor(source, key);
@@ -132,13 +134,66 @@ function copyAccessorDescriptor(
   descriptor: PropertyDescriptor,
   immutable: boolean,
   seen: WeakMap<object, unknown>,
-  detachAccessors: boolean,
+  detachAccessors: AccessorMode,
 ): void {
-  const detached =
-    immutable || detachAccessors
-      ? detachAccessor(source, descriptor, seen, detachAccessors)
-      : null;
-  Object.defineProperty(target, key, detached ?? descriptor);
+  if (!immutable && detachAccessors === 'lazy') {
+    defineLazyAccessor(source, target, key, descriptor, seen);
+    return;
+  }
+  Object.defineProperty(
+    target,
+    key,
+    detachedDescriptor(source, descriptor, immutable, seen, detachAccessors),
+  );
+}
+
+function detachedDescriptor(
+  source: object,
+  descriptor: PropertyDescriptor,
+  immutable: boolean,
+  seen: WeakMap<object, unknown>,
+  detachAccessors: AccessorMode,
+): PropertyDescriptor {
+  if (!immutable && !detachAccessors) return descriptor;
+  return (
+    detachAccessor(source, descriptor, seen, detachAccessors) ?? descriptor
+  );
+}
+
+/** Input accessors detach on first access, so unselected getters stay idle. */
+function defineLazyAccessor(
+  source: object,
+  target: object,
+  key: PropertyKey,
+  descriptor: PropertyDescriptor,
+  seen: WeakMap<object, unknown>,
+): void {
+  let read = false;
+  let value: unknown;
+  Object.defineProperty(target, key, {
+    configurable: descriptor.configurable,
+    enumerable: descriptor.enumerable,
+    get() {
+      if (!read) {
+        value = cloneDataTree(
+          descriptor.get?.call(source),
+          false,
+          seen,
+          'lazy',
+        );
+        read = true;
+      }
+      return value;
+    },
+    set(next: unknown) {
+      value = next;
+      read = true;
+    },
+  });
+}
+
+export function cloneDeclarationInput(data: unknown): unknown {
+  return cloneDataTree(data, false, new WeakMap(), 'lazy');
 }
 
 /**
@@ -156,7 +211,7 @@ function detachAccessor(
   source: object,
   descriptor: PropertyDescriptor,
   seen: WeakMap<object, unknown>,
-  detachAccessors: boolean,
+  detachAccessors: AccessorMode,
 ): PropertyDescriptor | null {
   const getter = descriptor.get;
   if (isNullish(getter)) {
@@ -199,7 +254,7 @@ function cloneArrayBufferView(
   view: ArrayBufferView,
   immutable: boolean,
   seen: WeakMap<object, unknown>,
-  detachAccessors: boolean,
+  detachAccessors: AccessorMode,
 ): ArrayBufferView {
   // Allocate and register both ends before copying descriptors: the buffer
   // may itself point back to this view, including during view-first traversal.

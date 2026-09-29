@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { compose, EnforceSchemaError, enforce } from '../../n4s';
+import { SchemaExclusionError } from '../../errors/SchemaExclusionError';
 import {
   assertSchemaRootPathsValid,
   parseAffectedFieldName,
@@ -10,7 +11,6 @@ import {
 import type { SelectiveSchemaResult } from '../../exports/internal';
 import type { RuleInstance } from '../../utils/RuleInstance';
 import {
-  buildProjectedSchema,
   filterSchemaResultsToAffected,
   mergeSupplementalResults,
 } from '../selectiveRun';
@@ -273,7 +273,7 @@ describe('runSchemaPaths unknown extra keys', () => {
       profile: enforce.shape({ state: enforce.isString() }),
     });
 
-  it('matches the full-run verdict for an explicitly-undefined unknown key', () => {
+  it('rejects an explicitly-undefined unknown key selection projection cannot reproduce', () => {
     const schema = strictUser();
     const data = {
       a: 'ok',
@@ -286,12 +286,12 @@ describe('runSchemaPaths unknown extra keys', () => {
         result => !result.pass && (result.path ?? []).join('.') === 'extra',
       ),
     ).toBe(true);
-    expect(
+    expect(() =>
       runSchemaPaths(schema, data, { affected: ['extra', 'profile.state'] }),
-    ).toEqual(full);
+    ).toThrow(SchemaExclusionError);
   });
 
-  it('matches the full-run verdict for a nested explicitly-undefined unknown key', () => {
+  it('rejects a nested explicitly-undefined unknown key selection', () => {
     const schema = strictUser();
     const data = {
       a: 'ok',
@@ -304,9 +304,9 @@ describe('runSchemaPaths unknown extra keys', () => {
           !result.pass && (result.path ?? []).join('.') === 'profile.extra',
       ),
     ).toBe(true);
-    expect(
+    expect(() =>
       runSchemaPaths(schema, data, { affected: ['profile.extra'] }),
-    ).toEqual(full);
+    ).toThrow(SchemaExclusionError);
   });
 
   it('still fails present-with-value unknown keys selectively', () => {
@@ -834,38 +834,39 @@ describe('runSchemaPaths single expansion', () => {
 });
 
 describe('selectiveRun projection internals', () => {
-  it('records keep the full rule under projection (key-rule parity)', () => {
-    // Narrowing through record(value) would drop a two-arg record's key
-    // rule (n4s exposes only the value rule in the item slot), so the
-    // projection keeps the whole record rule. Suffixes alone cannot tell
-    // numeric record keys from indices — the container-kind marker routes
-    // here instead of the array rebuild, which would reject record data.
+  it('records execute selected keys with their key rule (key-rule parity)', () => {
+    // Record keys leave the projected fragment; the per-key supplement runs
+    // each selected entry through the record's own rule, so a two-arg
+    // record's key rule still applies and unselected entries never run.
+    const values: unknown[] = [];
     const schema = enforce.shape({
       dictionary: enforce.record(
         enforce.isString().longerThan(3),
         enforce.shape({
-          country: enforce.isString(),
-          state: enforce.isString().dependsOn($ => $.country),
+          country: enforce.condition((value: unknown) => {
+            values.push(value);
+            return typeof value === 'string';
+          }),
         }),
       ),
     });
-    const projected = buildProjectedSchema(schema, ['dictionary.1.country']);
-    expect(projected).not.toBeNull();
-    if (projected === null) {
-      throw new Error('projected schema must compose');
-    }
-    type DictData = Parameters<typeof schema.parse>[0];
-    const parse = (projected as unknown as ExecutableFragment<DictData>).parse;
+    const failures = (data: unknown, affected: string[]) =>
+      runSchemaPaths(schema, data, { affected })
+        .filter(result => !result.pass)
+        .map(result => result.path?.join('.'));
+
+    expect(
+      failures(
+        { dictionary: { abcd: { country: 'CA' }, other: { country: 'X' } } },
+        ['dictionary.abcd'],
+      ),
+    ).toEqual([]);
+    expect(values).toEqual(['CA']);
+    expect(
+      failures({ dictionary: { '1': { country: 'CA' } } }, ['dictionary.1']),
+    ).toEqual(['dictionary.1']);
     expect(() =>
-      parse({ dictionary: { abcd: { country: 'CA', state: 'abc' } } }),
-    ).not.toThrow();
-    // Key validation matches the full run exactly — nothing was dropped
-    // (keys validate before values, so the short key throws either way).
-    expect(() =>
-      parse({ dictionary: { '1': { country: 'CA', state: 'abc' } } }),
-    ).toThrow();
-    expect(() =>
-      schema.parse({ dictionary: { '1': { country: 'CA', state: 'abc' } } }),
+      schema.parse({ dictionary: { '1': { country: 'CA' } } }),
     ).toThrow();
   });
 });
@@ -999,12 +1000,3 @@ describe('mergeSupplementalResults merger', () => {
     expect(merged[0]?.type).toEqual({ rows: [42] });
   });
 });
-
-/**
- * Executable view of a projected fragment. The generic schema type cannot
- * name its own data type, so each test pins it from its own schema instead
- * of reaching for an untyped escape hatch.
- */
-type ExecutableFragment<Data> = {
-  parse: (value: Data) => unknown;
-};

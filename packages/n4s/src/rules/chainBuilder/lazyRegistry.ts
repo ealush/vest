@@ -1,23 +1,17 @@
 import type { Predicate } from './chainExecutor';
 
-type LazyRule = {
-  readonly build: (args: readonly unknown[]) => Predicate;
-  readonly mapsValue: boolean;
-};
+const lazyRegistry: Record<string, (...args: any[]) => Predicate> =
+  Object.create(null);
 
-const lazyRegistry = Object.create(null) as Record<string, LazyRule>;
-
-export function registerLazyRule<Args extends unknown[]>(
+export function registerLazyRule(
   name: string,
-  builder: (...args: Args) => Predicate,
-  mapsValue = false,
+  builder: (...args: any[]) => Predicate,
 ) {
-  lazyRegistry[name] = {
-    build: args => builder(...(args as Args)),
-    mapsValue,
-  };
+  lazyRegistry[name] = builder;
 }
 
-export function getLazyRule(name: string): LazyRule | undefined {
+export function getLazyRule(
+  name: string,
+): ((...args: any[]) => Predicate) | undefined {
   return lazyRegistry[name];
 }

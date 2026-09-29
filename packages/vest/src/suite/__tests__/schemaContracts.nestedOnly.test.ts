@@ -164,6 +164,25 @@ describe('nested only() selection completeness', () => {
     expect(result.hasErrors()).toBe(false);
   });
 
+  it('nested ancestor subsumes its descendant at depth', () => {
+    const excludedFn = vi.fn(() => true);
+    const selectedFn = vi.fn(() => true);
+    const excluded = enforce.condition(excludedFn as never) as never;
+    const selected = enforce.condition(selectedFn as never) as never;
+    const schema = enforce.shape({
+      box: enforce.shape({
+        inner: enforce.shape({ a: excluded, b: selected }),
+      }),
+    });
+    const suite = create(() => {}, schema as never) as any;
+    const result = suite
+      .only(['box.inner', 'box.inner.a'])
+      .run({ box: { inner: { a: 1, b: 2 } } });
+    expect(selectedFn).toHaveBeenCalledTimes(1);
+    expect(excludedFn).toHaveBeenCalledTimes(1);
+    expect(result.hasErrors()).toBe(false);
+  });
+
   it('only+skip both fluent orders select the leaf', () => {
     for (const order of ['only-first', 'skip-first'] as const) {
       const excludedFn = vi.fn(() => true);

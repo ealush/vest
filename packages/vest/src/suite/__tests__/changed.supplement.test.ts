@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { enforce } from 'n4s';
+import { enforce, SchemaExclusionError } from 'n4s';
 
 import { create } from '../../vest';
 
@@ -51,10 +51,9 @@ describe('changed() supplement exactly-once execution', () => {
   });
 
   it('record per-key: the affected member validator fires exactly once', async () => {
-    // F3: the projection keeps records whole (key-rule parity), so the
-    // main run already executes every key. The supplement must not re-run
-    // affected keys on top: a once-only stateful validator false-fails on
-    // its second call.
+    // Selected record keys leave the projected fragment and run once in the
+    // per-key supplement: a once-only stateful validator never re-runs and
+    // unselected keys never execute.
     const calls: unknown[] = [];
     enforce.extend({
       countSupplementValue: (value: unknown): boolean => {
@@ -73,10 +72,8 @@ describe('changed() supplement exactly-once execution', () => {
 
     const changed = await suite.changed('dict.a').run(data);
     expect(changed.hasErrors()).toBe(false);
-    // The affected key ran once (in the kept-whole main run, never again
-    // in the supplement); the whole-record main run covers both keys once.
-    expect(calls.filter(value => value === 'x')).toHaveLength(1);
-    expect(calls).toHaveLength(2);
+    // Only the selected key executes, exactly once.
+    expect(calls).toEqual(['x']);
   });
 
   it('record per-key: a failing affected key is still reported', async () => {
@@ -138,8 +135,7 @@ describe('changed() supplement exactly-once execution', () => {
 
     const changed = await suite.changed('dict.abc').run(data);
     expect(changed.hasErrors()).toBe(false);
-    expect(calls.filter(value => value === 1)).toHaveLength(1);
-    expect(calls).toHaveLength(2);
+    expect(calls).toEqual([1]);
   });
 
   it('flat changed() surfaces an affected member hidden by first-failure order', async () => {
@@ -385,10 +381,10 @@ describe('changed() supplement exactly-once execution', () => {
     expect(changed.hasErrors('profile.b')).toBe(true);
   });
 
-  it('full-fallback path executes each member validator at most once', async () => {
-    // F4: a validator chained after the top container moves the baseline,
-    // so the projection falls back to a full-schema main run. The
-    // per-member supplement must not run on top of it.
+  it('chained root rejects member selection before any validator runs', async () => {
+    // A validator chained after the top container moves the baseline.
+    // Projection cannot keep it, so selection rejects instead of running
+    // the full schema and hiding unselected verdicts.
     const calls: unknown[] = [];
     enforce.extend({
       countFallbackState: (value: unknown): boolean => {
@@ -420,13 +416,13 @@ describe('changed() supplement exactly-once execution', () => {
       flag: true,
     };
 
-    const changed = await suite.changed('rows.1.state').run(data);
-    expect(changed.hasErrors()).toBe(false);
-    expect(calls.filter(value => value === 'NY')).toHaveLength(1);
-    expect(calls.filter(value => value === 'CA')).toHaveLength(1);
+    expect(() => suite.changed('rows.1.state').run(data)).toThrow(
+      SchemaExclusionError,
+    );
+    expect(calls).toEqual([]);
   });
 
-  it('full-fallback supplement does not revisit array members before the failure', async () => {
+  it('chained root rejects array member selection before any member runs', async () => {
     const calls: unknown[] = [];
     enforce.extend({
       countFallbackState: (value: unknown): boolean => {
@@ -455,17 +451,13 @@ describe('changed() supplement exactly-once execution', () => {
     expect(calls).not.toContain('third-ok');
     calls.length = 0;
 
-    const changed = await create((): void => {}, schema)
-      .changed(['rows.0', 'rows.2'])
-      .run(data);
-
-    expect(changed.hasErrors()).toBe(false);
-    // A full fallback has the same call count as one direct run.
-    // The supplement must not revisit an earlier member.
-    expect(calls.filter(value => value === 'first-ok')).toHaveLength(
-      baselineFirst,
-    );
-    expect(calls.filter(value => value === 'x')).toHaveLength(baselineFailure);
-    expect(calls.filter(value => value === 'third-ok')).toHaveLength(1);
+    expect(baselineFirst).toBe(1);
+    expect(baselineFailure).toBe(1);
+    expect(() =>
+      create((): void => {}, schema)
+        .changed(['rows.0', 'rows.2'])
+        .run(data),
+    ).toThrow(SchemaExclusionError);
+    expect(calls).toEqual([]);
   });
 });

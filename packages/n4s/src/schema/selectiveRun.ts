@@ -17,6 +17,7 @@ import type { SchemaMemberRule } from '../rules/schemaRules/schemaRulesLazyTypes
 import type { DescribeResult } from '../utils/RuleInstance';
 import { RuleInstance } from '../utils/RuleInstance';
 import { partialLoose } from '../rules/schemaRules/partial';
+import { loose } from '../rules/schemaRules/loose';
 import {
   COMPOSITION_CHILDREN,
   ITEM_CONTAINER,
@@ -507,31 +508,26 @@ function runSchemaWithParse(
   modifiers: FocusModifiers,
   changedAffected?: readonly string[] | null,
 ): SelectiveSchemaResult[] {
-  if (isNullish(changedAffected)) {
-    return runFlatSchema(schema, modifiers, data, changedAffected);
+  // Foreign (non-n4s) schemas expose no selection vocabulary. They validate
+  // whole, exactly as they do under only(); Vest focus scopes the report.
+  if (isNullish(changedAffected) || !isN4sVendorSchema(schema)) {
+    return runFlatSchema(schema, modifiers, data);
   }
-  if (changedAffected.length === 0) return [{ pass: true, type: data }];
-  // Leaf exclusions (W3): a skip nested under an affected parent splits
-  // the parent into its explicit non-skipped branches for execution, so a
-  // skipped predicate never runs. Narrowing keeps the original affected
-  // set: container-level failures at a split parent still report.
-  const executionAffected = subtractSkippedPaths(
+  const executionAffected = executableAffected(
     schema,
     data,
     changedAffected,
-    modifiers.skip,
+    modifiers,
   );
   if (executionAffected.length === 0) return [{ pass: true, type: data }];
-  const divergentFallback = runExplicitUndefinedFallback(
-    schema,
-    modifiers,
-    executionAffected,
-    data,
-  );
-  if (divergentFallback !== null) return divergentFallback;
+  // A selection resolving to the root selects the whole schema: execute it
+  // like a full run (skips still honored) rather than projecting nothing.
+  if (executionAffected.some(field => parseAffectedPath(field).length === 0)) {
+    return runRootSelection(schema, modifiers, data);
+  }
+  assertNoExplicitUndefinedDivergence(schema, executionAffected, data);
   const { mainRun, supplement } = runProjectedMain(
     schema,
-    modifiers,
     [...executionAffected],
     data,
   );
@@ -543,6 +539,39 @@ function runSchemaWithParse(
     schema,
     supplement,
   });
+}
+
+/**
+ * Leaf exclusions (W3): a skip nested under an affected parent splits the
+ * parent into its explicit non-skipped branches for execution, so a skipped
+ * predicate never runs. Narrowing keeps the original affected set:
+ * container-level failures at a split parent still report.
+ * Prototype-sensitive segments can never name schema members: such
+ * selections are inert rather than routed into projection.
+ */
+function executableAffected(
+  schema: SelectiveSchema,
+  data: unknown,
+  changedAffected: readonly string[],
+  modifiers: FocusModifiers,
+): string[] {
+  if (changedAffected.length === 0) return [];
+  return subtractSkippedPaths(
+    schema,
+    data,
+    changedAffected,
+    modifiers.skip,
+  ).filter(field => !parseAffectedPath(field).some(isUnsafeSegment));
+}
+
+function runRootSelection(
+  schema: SelectiveSchema,
+  modifiers: FocusModifiers,
+  data: unknown,
+): SelectiveSchemaResult[] {
+  const results = runFlatSchema(schema, modifiers, data);
+  if (isNullish(modifiers.skip)) markRootReevaluated(modifiers, results);
+  return results;
 }
 
 type ProjectedOutcome = {
@@ -567,13 +596,9 @@ function narrowProjectedResults(
 ): SelectiveSchemaResult[] {
   const skip = buildSkipFilter(outcome.modifiers.skip);
   if (outcome.supplement.gap) {
-    return runFullWithAffectedFilter({
-      affected: outcome.nestedAffected,
-      data: outcome.data,
-      modifiers: outcome.modifiers,
-      schema: outcome.schema,
-      skip,
-    });
+    throw new SchemaExclusionError(
+      'The selected schema region cannot execute independently. Select its containing field.',
+    );
   }
   const merged = mergeSupplementalResults(
     outcome.mainRun.results,
@@ -592,27 +617,105 @@ function narrowProjectedResults(
  */
 function runProjectedMain(
   schema: SelectiveSchema,
-  modifiers: FocusModifiers,
   expanded: string[],
   data: unknown,
 ): { mainRun: ProjectedMainRun; supplement: ArraySupplement } {
+  assertSelectedPathsSupported(schema, expanded.map(parseAffectedPath));
   const projectedSchema = buildProjectedSchema(schema, expanded);
-  const mainRun = runProjectedOrFull(projectedSchema, schema, modifiers, data);
+  const mainRun = runProjectedFragment(projectedSchema, data);
   const supplement = collectSupplementForMain(mainRun, schema, expanded, data);
   return { mainRun, supplement };
 }
 
-type FullFilterRun = {
-  readonly affected: readonly string[];
-  readonly data: unknown;
-  readonly modifiers: FocusModifiers;
-  readonly schema: SelectiveSchema;
-  readonly skip: string[] | true | null;
-};
+/** Check every selected descendant before the first user rule executes. */
+function assertSelectedPathsSupported(
+  rule: SelectiveSchema,
+  paths: readonly AffectedSeg[][],
+): void {
+  if (paths.some(path => path.length === 0)) return;
+  if (!chainBaselineMatches(rule)) {
+    throw new SchemaExclusionError(
+      'Select the whole container when it has chained or opaque rules.',
+    );
+  }
+  for (const [head, tails] of groupSelectionPaths(paths)) {
+    assertSelectedChildSupported(rule, head, tails);
+  }
+}
 
-/**
- * Full-schema run with post-filtering to the affected set.
- */
+function groupSelectionPaths(
+  paths: readonly AffectedSeg[][],
+): Map<AffectedSeg, AffectedSeg[][]> {
+  const grouped = new Map<AffectedSeg, AffectedSeg[][]>();
+  for (const [head, ...tail] of paths) {
+    const tails = grouped.get(head) ?? [];
+    tails.push(tail);
+    grouped.set(head, tails);
+  }
+  return grouped;
+}
+
+function assertSelectedChildSupported(
+  rule: SelectiveSchema,
+  head: AffectedSeg,
+  tails: AffectedSeg[][],
+): void {
+  const members = rule.__schema;
+  if (members) {
+    // Unknown members are inert: they name no executable work.
+    if (hasOwnProperty(members, String(head))) {
+      assertSelectedPathsSupported(members[String(head)], tails);
+    }
+    return;
+  }
+  assertSelectedEntrySupported(rule, head, tails);
+}
+
+function assertSelectedEntrySupported(
+  rule: SelectiveSchema,
+  head: AffectedSeg,
+  tails: AffectedSeg[][],
+): void {
+  const items = symbolSlotOf(rule, ITEM_SCHEMA);
+  // Records execute selected keys independently: each entry runs the
+  // record's own key and value rules (see runRecordKeyEntry).
+  if (isObject(items) && containerKindOf(rule) === 'record') {
+    assertSelectedPathsSupported(items as SelectiveSchema, nonEmpty(tails));
+    return;
+  }
+  if (typeof head !== 'number' || !isObject(items)) {
+    throw new SchemaExclusionError(
+      'The selected descendant has no executable schema.',
+    );
+  }
+  assertSelectedItemSupported(rule, items, head, tails);
+}
+
+function nonEmpty(paths: AffectedSeg[][]): AffectedSeg[][] {
+  const deeper = paths.filter(path => path.length > 0);
+  return deeper.length > 0 ? deeper : [[]];
+}
+
+function assertSelectedItemSupported(
+  rule: SelectiveSchema,
+  items: object,
+  index: number,
+  tails: AffectedSeg[][],
+): void {
+  if (!isArray(items)) {
+    assertSelectedPathsSupported(items as SelectiveSchema, tails);
+    return;
+  }
+  if (containerKindOf(rule) === 'array') {
+    if (!tails.some(tail => tail.length === 0)) {
+      throw new SchemaExclusionError('Select the whole union member.');
+    }
+    return;
+  }
+  if (items[index])
+    assertSelectedPathsSupported(items[index] as SelectiveSchema, tails);
+}
+
 /**
  * Records root re-evaluation when a full-schema execution passes
  * unfiltered. Fragment executions and filtered verdicts never qualify
@@ -628,33 +731,21 @@ function markRootReevaluated(
     rawResults.length > 0 && rawResults.every(result => result.pass);
 }
 
-function runFullWithAffectedFilter(
-  run: FullFilterRun,
-): SelectiveSchemaResult[] {
-  const full = runExecutableSchema(
-    changedFallbackSchema(run.schema, run.modifiers),
-    run.data,
-  );
-  markRootReevaluated(run.modifiers, full);
-  return filterSchemaResultsToAffected(full, run.affected, run.data, run.skip);
-}
-
 /**
- * Full-run fallback for the explicit-undefined unknown-key divergence (see
- * `hasExplicitUndefinedUnknownKey`): the fragment would report clean where
- * the full run fails, so run everything with post-filtering instead.
- * Returns null when the fast projection path applies.
+ * Explicit-undefined unknown-key divergence (see
+ * `hasExplicitUndefinedProjectionDivergence`): the fragment would report
+ * clean where the full run fails, so reject before execution.
  */
-function runExplicitUndefinedFallback(
+function assertNoExplicitUndefinedDivergence(
   schema: SelectiveSchema,
-  modifiers: FocusModifiers,
   nestedAffected: readonly string[],
   data: unknown,
-): SelectiveSchemaResult[] | null {
-  if (!hasExplicitUndefinedProjectionDivergence(schema, nestedAffected, data)) {
-    return null;
+): void {
+  if (hasExplicitUndefinedProjectionDivergence(schema, nestedAffected, data)) {
+    throw new SchemaExclusionError(
+      'The selected unknown property has an explicit undefined value. Select its containing field.',
+    );
   }
-  return runFlatSchema(schema, modifiers, data, nestedAffected);
 }
 
 /**
@@ -667,200 +758,10 @@ function runFlatSchema(
   schema: SelectiveSchema,
   modifiers: FocusModifiers,
   data: unknown,
-  changedAffected?: readonly string[] | null,
 ): SelectiveSchemaResult[] {
-  // Top-level changed() runs carry the only∫affected intersection like the
-  // nested path: a pick() would drop container validators chained after
-  // construction, so they take the parity-guarded fallback schema instead.
-  // Plain only()/skip() runs keep the legacy focus behavior identical.
-  const focused = changedAffected
-    ? changedFallbackSchema(schema, modifiers)
-    : applySchemaFocus(schema, modifiers);
-  const result = runExecutableSchema(focused, data);
-  // Narrowing applies to n4s schemas only: custom standard-schema results
-  // keep full-run parity (no affected/skip vocabulary exists for them).
-  // Root-container n4s schemas (array/record/tuple roots without __schema)
-  // cannot take pick/omit focus or projection, but their full-run failures
-  // still filter by affected path — returning them unfiltered would report
-  // failures changed() never asked about.
-  if (!shouldNarrowFlatResults(schema, changedAffected)) {
-    if (isEmptyAffectedFocus(schema, changedAffected)) {
-      // Explicit zero-field focus (e.g. a disjoint only∫affected): run
-      // nothing, mirroring the skip-all pass-through. Foreign schemas keep
-      // full-run parity (no affected vocabulary exists for them).
-      return passThroughResult(result, data);
-    }
-    return result;
-  }
-  // The changed() flat path executes the full fallback schema: a passing
-  // raw verdict re-evaluates the root (supplement runs below only add
-  // member coverage, never revoke it).
-  markRootReevaluated(modifiers, result);
-  const skip = buildSkipFilter(modifiers.skip);
-  const memberResults = collectFlatMemberSupplement(
-    schema,
-    changedAffected,
-    result,
-    data,
-    skip,
-  );
-  const merged = mergeSupplementalResults(result, memberResults);
-  return filterSchemaResultsToAffected(merged, changedAffected, data, skip);
-}
-
-/**
- * Whether flat changed() results narrow by affected path: a real affected
- * set on an n4s schema. Empty and foreign cases return early instead.
- */
-function shouldNarrowFlatResults(
-  schema: SelectiveSchema,
-  changedAffected: readonly string[] | null | undefined,
-): changedAffected is readonly string[] {
-  return (
-    !isNullish(changedAffected) &&
-    changedAffected.length > 0 &&
-    isN4sVendorSchema(schema)
-  );
-}
-
-function isEmptyAffectedFocus(
-  schema: SelectiveSchema,
-  changedAffected: readonly string[] | null | undefined,
-): boolean {
-  return changedAffected?.length === 0 && isN4sVendorSchema(schema);
-}
-
-/**
- * Per-member execution for flat (top-level-only) changed() runs. The main
- * run validates the full schema, which reports only its first failure — an
- * affected member invalid behind an earlier failure would stay silent
- * (W2). n4s containers iterate schema keys in Object.keys order (ownKeys)
- * and short-circuit at the first failure, so members strictly after the
- * single reported failure's top key never executed: run exactly those
- * standalone and merge (W3 honors the merged only+affected set the same
- * way). Any other main outcome — pass, root failure, extra-key failure,
- * several failures — implies full member execution (or filter-kept roots),
- * so it supplements nothing: a member the main run reached is never
- * re-run, keeping stateful validators exactly-once.
- */
-function collectFlatMemberSupplement(
-  schema: SelectiveSchema,
-  affected: readonly string[],
-  main: SelectiveSchemaResult[],
-  data: unknown,
-  skip: string[] | true | null,
-): SelectiveSchemaResult[] {
-  if (skip === true) return [];
-  const topSchema = schema.__schema;
-  if (topSchema === undefined) return [];
-  const afterKey = shadowedAfterKey(main, topSchema);
-  if (afterKey === null) return [];
-  // Absent-member knowledge comes from the declared top container's
-  // metadata: a partial-like top never evaluates missing keys, so an
-  // absent affected member past the boundary is valid-absent, not a
-  // shadowed failure. Unknown containers skip absent members too — the
-  // full-run verdict stands instead of inventing failures.
-  const skipAbsent = skipAbsentMembersOf(schema);
-  return runShadowedMembers(topSchema, afterKey, {
-    affected,
-    data,
-    skip,
-    skipAbsent,
-  });
-}
-
-type ShadowedRun = {
-  readonly skipAbsent: boolean;
-  readonly affected: readonly string[];
-  readonly skip: string[] | null;
-  readonly data: unknown;
-};
-
-function runShadowedMembers(
-  topSchema: Record<string, SelectiveSchema>,
-  afterKey: string,
-  run: ShadowedRun,
-): SelectiveSchemaResult[] {
-  const skipSet = skipSetOf(run.skip);
-  const affectedSet = new Set(run.affected);
-  const out: SelectiveSchemaResult[] = [];
-  let pastFailure = false;
-  for (const key of Object.keys(topSchema)) {
-    if (key === afterKey) {
-      pastFailure = true;
-    } else if (shouldRunShadowed(pastFailure, affectedSet, skipSet, key)) {
-      appendFlatMember(
-        topSchema[key],
-        { skipAbsent: run.skipAbsent, data: run.data, key },
-        out,
-      );
-    }
-  }
-  return out;
-}
-
-function shouldRunShadowed(
-  pastFailure: boolean,
-  affectedSet: Set<string>,
-  skipSet: Set<string>,
-  key: string,
-): boolean {
-  return pastFailure && affectedSet.has(key) && !skipSet.has(key);
-}
-
-/**
- * The top-level key a single-failure main run failed at, when that failure
- * proves later members never executed: exactly one failure, pathed under a
- * declared member. Anything else (pass, root failure, extra-key failure,
- * several failures) implies full member execution or filter-kept roots.
- */
-function shadowedAfterKey(
-  main: readonly SelectiveSchemaResult[],
-  topSchema: Record<string, SelectiveSchema>,
-): string | null {
-  const failures = main.filter(result => !result.pass);
-  if (failures.length !== 1) return null;
-  return memberTopKey(failures, topSchema);
-}
-
-function memberTopKey(
-  failures: SelectiveSchemaResult[],
-  topSchema: Record<string, SelectiveSchema>,
-): string | null {
-  const [failure] = failures as [SelectiveSchemaResult];
-  const [top] = failure?.path ?? [];
-  if (!isStringValue(top) || !hasOwnProperty(topSchema, top)) return null;
-  return top;
-}
-
-type FlatMemberRun = {
-  readonly skipAbsent: boolean;
-  readonly data: unknown;
-  readonly key: string;
-};
-
-function appendFlatMember(
-  rule: SelectiveSchema,
-  run: FlatMemberRun,
-  out: SelectiveSchemaResult[],
-): void {
-  // A member absent from a partial-like (or unknown) top was never
-  // evaluated by the main run: running it standalone would invent a
-  // failure the full run never reports. Absent members of required
-  // containers are genuinely invalid and run (failing correctly), as do
-  // present members — including explicit-undefined ones, which the full
-  // run evaluates.
-  if (skipAbsentMember(run)) return;
-  const child = childValue(run.data, run.key);
-  // This path is reached only when an earlier failure proved the member
-  // was never executed. No error boundary here: structural gaps are
-  // detected during planning (projection returns null, supplement flags a
-  // gap) before user execution begins, so any exception from the run is an
-  // unexpected user fault that propagates with single execution.
-  const outcome = runExecutableSchema(rule, child);
-  for (const result of prefixFailureResults(outcome, [run.key])) {
-    out.push(result);
-  }
+  // Plain only()/skip() runs keep the legacy top-level focus behavior.
+  // Foreign schemas have no focus vocabulary and validate whole.
+  return runExecutableSchema(applySchemaFocus(schema, modifiers), data);
 }
 
 /**
@@ -871,62 +772,29 @@ function isPresentKey(data: unknown, key: string): boolean {
   return isObject(data) && hasOwnProperty(data, key);
 }
 
-function skipAbsentMember(run: FlatMemberRun): boolean {
-  return run.skipAbsent && !isPresentKey(run.data, run.key);
-}
-
-/**
- * One projected main run. `full` reports whether the main run already
- * executed the full schema instead of a fragment.
- */
+/** One projected main run over the selected fragment. */
 type ProjectedMainRun = {
   results: SelectiveSchemaResult[];
-  full: boolean;
 };
 
 /**
- * Runs the projected fragment, falling back to the full schema run with
- * post-filtering when the fragment cannot validate standalone (e.g. an
- * exotic rooted edge the source expansion did not retain).
+ * Runs the projected fragment. A selection with no standalone fragment
+ * rejects before any user rule executes; there is no full-run fallback.
  */
-function runProjectedOrFull(
+function runProjectedFragment(
   projectedSchema: SelectiveSchema | null,
-  schema: SelectiveSchema,
-  modifiers: FocusModifiers,
   data: unknown,
 ): ProjectedMainRun {
   if (!projectedSchema) {
-    const results = runExecutableSchema(
-      changedFallbackSchema(schema, modifiers),
-      data,
+    throw new SchemaExclusionError(
+      'The schema cannot execute this selection without running excluded rules. Select the containing field or run the full schema.',
     );
-    markRootReevaluated(modifiers, results);
-    return { full: true, results };
   }
   // No error boundary here: an unprojectable fragment is detected during
   // planning (buildProjectedSchema returns null) before user execution, so
   // any exception from the fragment run is an unexpected user fault that
   // propagates with single execution instead of retrying an alternate route.
-  return { full: false, results: runExecutableSchema(projectedSchema, data) };
-}
-
-/**
- * Schema for the changed() fallback path. The caller post-filters to the
- * only∫affected set, so `only` needs no further narrowing here (a pick()
- * over dotted names would silently drop subtrees and container
- * validators). Skip exclusions apply at every supported depth: exact
- * top-level keys are dropped, nested skips rebuild their parent chain
- * with kind preserved (partial stays partial), and composed chains
- * recompose with the root chain untouched. A recognizable container the
- * rebuild cannot preserve (a moved chain whose validators would be lost)
- * fails closed with SchemaExclusionError before any excluded predicate
- * runs, instead of running unfocused and filtering afterward.
- */
-function changedFallbackSchema(
-  schema: SelectiveSchema,
-  modifiers: FocusModifiers,
-): SelectiveSchema {
-  return omitSkippedDeep(schema, modifiers.skip);
+  return { results: runExecutableSchema(projectedSchema, data) };
 }
 
 /**
@@ -1287,8 +1155,24 @@ function affectedPathToName(path: SchemaPath): string {
  */
 function parseAffectedPath(field: string): AffectedSeg[] {
   return parseAffectedFieldName(field).map(seg =>
-    seg.type === 'item' ? Number(seg.binding) : String(seg.key),
+    seg.type === 'item' ? itemSegment(String(seg.binding)) : String(seg.key),
   );
+}
+
+/**
+ * Canonical indices become numbers; any other digit string ('01', values
+ * beyond the safe-integer range) stays a record key so it is never
+ * conflated with a different key.
+ */
+function isUnsafeSegment(segment: AffectedSeg): boolean {
+  return typeof segment === 'string' && isUnsafeKey(segment);
+}
+
+function itemSegment(binding: string): AffectedSeg {
+  const index = Number(binding);
+  return Number.isSafeInteger(index) && String(index) === binding
+    ? index
+    : binding;
 }
 
 /**
@@ -2103,7 +1987,6 @@ function collectArraySupplement(
   return {
     results: collectArraySupplementInner(schema, data, {
       expanded,
-      fullMain: mainRun.full,
       gap,
       main: mainRun.results,
     }),
@@ -2113,7 +1996,6 @@ function collectArraySupplement(
 
 type ArraySupplementContext = {
   readonly expanded: readonly string[];
-  readonly fullMain: boolean;
   readonly gap: { found: boolean };
   readonly main: readonly SelectiveSchemaResult[];
 };
@@ -2129,59 +2011,20 @@ function collectArraySupplementInner(
     suffixes: context.expanded.map(parseAffectedPath),
     sink: {
       basePath: [],
-      fullMain: context.fullMain,
       gap: context.gap,
       out,
     },
     main: context.main,
   };
-  if (schema.__schema === undefined) {
-    appendCompositionDescendants(schema, data, selection);
-    return out;
-  }
   appendShapeDescendants(schema, data, selection);
   return out;
-}
-
-/**
- * Coverage supplement for composed chains (W3). A compose() top carries no
- * __schema, so the full main run is authoritative — but it short-circuits
- * at the first failing link or member, leaving requested affected siblings
- * unvisited. Each composed child runs through the same walker, so the
- * single-failure boundary rule applies per link: members past the boundary
- * run standalone exactly once, members before it (and links without member
- * vocabulary, like chained root conditions) stay untouched.
- */
-function appendCompositionDescendants(
-  schema: SelectiveSchema,
-  value: Record<string, unknown>,
-  selection: IndexSelection,
-): void {
-  for (const child of compositionChildrenOf(schema)) {
-    appendSupplementalFailures(child, value, selection);
-  }
-}
-
-function compositionChildrenOf(rule: SelectiveSchema): SelectiveSchema[] {
-  const slot = symbolSlotOf(rule, COMPOSITION_CHILDREN);
-  if (!isArray(slot)) return [];
-  return slot.filter((entry): entry is SelectiveSchema => isObject(entry));
-}
-
-function childValue(data: unknown, top: string): unknown {
-  if (!isObject(data)) return undefined;
-  const record: Record<string, unknown> = data;
-  if (!hasOwnProperty(record, top)) return undefined;
-  return record[top];
 }
 
 type IndexRunSink = {
   readonly basePath: string[];
   out: SelectiveSchemaResult[];
-  /** Boundary gaps hit while running members standalone (→ full fallback). */
+  /** Boundary gaps hit while running members standalone (→ rejection). */
   readonly gap: { found: boolean };
-  /** Whether the authoritative main result came from the unprojected schema. */
-  readonly fullMain: boolean;
 };
 
 type IndexSelection = {
@@ -2381,8 +2224,8 @@ function shouldRunRecordEntry(
 }
 
 function isExactKeySelection(suffixes: AffectedSeg[][], key: string): boolean {
-  const rests = suffixesForMember(suffixes, key);
-  return rests.length > 0 && rests.every(rest => rest.length === 0);
+  // A selected key subsumes any expanded descendant paths beneath it.
+  return suffixesForMember(suffixes, key).some(rest => rest.length === 0);
 }
 
 /**
@@ -2438,11 +2281,14 @@ function pushRecordEntryPass(
   sink: IndexRunSink,
 ): void {
   const entryValue = recordEntryValue(result.type, key);
+  // The entry ran as a single-key record at the container path; its output
+  // belongs at the selected key.
+  const path = [...(result.path ?? []), key];
   if (entryValue === undefined) {
-    sink.out.push({ pass: result.pass, path: result.path });
+    sink.out.push({ pass: result.pass, path });
     return;
   }
-  sink.out.push({ ...result, type: entryValue });
+  sink.out.push({ ...result, path, type: entryValue });
 }
 
 function recordEntryValue(type: unknown, key: string): unknown {
@@ -2493,22 +2339,12 @@ function shapeDescendantContext(
   // chained after the shape evaluator; every child already ran successfully.
   if (mainFailedAtPath(selection.main, selection.sink.basePath)) return null;
   const failedKey = failedChildKey(inner, selection);
-  // A full main run already executed every reachable member. Supplement it
-  // only when its single failure identifies a short-circuit boundary.
-  if (fullMainWithoutFailureBoundary(selection, failedKey)) return null;
   // Absent-member knowledge for shadowed members from the parent's
   // metadata: a partial-like parent never evaluates missing keys, so an
   // absent member past the boundary is valid-absent, not a shadowed
   // failure. Unknown parents skip absent members too — the full-run
   // verdict stands instead of inventing failures.
   return { byKey, failedKey, inner, skipAbsent: skipAbsentMembersOf(rule) };
-}
-
-function fullMainWithoutFailureBoundary(
-  selection: IndexSelection,
-  failedKey: string | null,
-): boolean {
-  return selection.sink.fullMain && failedKey === null;
 }
 
 type ShapeDescendantRun = {
@@ -2529,7 +2365,6 @@ function appendSelectedShapeDescendant(run: ShapeDescendantRun): void {
     suffixes: rests,
     sink: {
       basePath: [...selection.sink.basePath, key],
-      fullMain: selection.sink.fullMain,
       gap: selection.sink.gap,
       out: selection.sink.out,
     },
@@ -2645,14 +2480,16 @@ function appendShadowedShapeMember(
 ): void {
   const child = hasOwnProperty(value, key) ? value[key] : undefined;
   const narrowed = projectRule(rule, selection.suffixes);
-  // This member is now its own projected run. Descendant supplementation
-  // must reason from that local outcome, not the earlier full-root failure.
-  const sink: IndexRunSink = { ...selection.sink, fullMain: false };
   if (narrowed === FRAGMENT_EXCLUDED) {
-    tryAppendMembers(rule, child, { ...selection, sink });
+    tryAppendMembers(rule, child, selection);
     return;
   }
-  runProjectedMember(narrowed ?? rule, child, selection.suffixes, sink);
+  runProjectedMember(
+    narrowed ?? rule,
+    child,
+    selection.suffixes,
+    selection.sink,
+  );
 }
 
 type MemberDispatch =
@@ -2894,7 +2731,6 @@ function appendSingleMember(
   const narrowed = projectRule(item, itemSuffixes);
   const sink: IndexRunSink = {
     basePath: memberPath,
-    fullMain: false,
     gap: selection.sink.gap,
     out: selection.sink.out,
   };
@@ -3359,7 +3195,12 @@ function projectTopKey(
   // Exact-selected (e.g. parent changed path itself): keep whole subtree.
   if (rests.some(rest => rest.length === 0)) return rule;
   const projected = projectRule(rule, rests);
-  return projected ?? rule;
+  if (projected === null) {
+    throw new SchemaExclusionError(
+      'A selected descendant has no independently executable schema. Select its containing field.',
+    );
+  }
+  return projected;
 }
 
 /**
@@ -3373,6 +3214,7 @@ function projectRule(
   rule: SelectiveSchema,
   suffixes: AffectedSeg[][],
 ): SelectiveSchema | null | typeof FRAGMENT_EXCLUDED {
+  if (suffixes.some(suffix => suffix.length === 0)) return rule;
   const inner = rule?.__schema;
   if (isObject(inner)) {
     return projectShapeRule(rule, inner, suffixes);
@@ -3386,7 +3228,11 @@ function projectItemRule(
 ): SelectiveSchema | null | typeof FRAGMENT_EXCLUDED {
   // A moved chain means container-level validators a rebuild would drop —
   // retain the whole rule (full-run parity).
-  if (!chainBaselineMatches(rule)) return rule;
+  if (!chainBaselineMatches(rule)) {
+    throw new SchemaExclusionError(
+      'A container with chained rules must be selected as a whole.',
+    );
+  }
   const itemSchema = symbolSlotOf(rule, ITEM_SCHEMA);
   if (isArray(itemSchema)) {
     // Tuple (positional members, kindless slot) and union (kind 'array')
@@ -3394,7 +3240,12 @@ function projectItemRule(
     // (P1-3). Index selections leave the fragment so unaffected members
     // never execute and affected members execute exactly once (P1-4);
     // anything else keeps the whole rule.
-    return indexSelectionsOnly(suffixes) ? FRAGMENT_EXCLUDED : rule;
+    if (!indexSelectionsOnly(suffixes)) {
+      throw new SchemaExclusionError(
+        'Select an array or tuple position, or the whole container.',
+      );
+    }
+    return FRAGMENT_EXCLUDED;
   }
   if (!isObject(itemSchema)) return null;
   return projectArrayRule(rule, suffixes);
@@ -3435,14 +3286,17 @@ function rebuildShapeRule(
   rule: SelectiveSchema,
   filtered: Record<string, SelectiveSchema>,
 ): SelectiveSchema | null {
-  if (!chainBaselineMatches(rule)) return rule;
+  if (!chainBaselineMatches(rule)) {
+    throw new SchemaExclusionError(
+      'A container with chained rules must be selected as a whole.',
+    );
+  }
   try {
     return preserveOptionality(rule, rebuildShapeContainer(rule, filtered));
   } catch {
-    // A narrowed fragment can orphan a dependsOn source (e.g. taxId needs
-    // its sibling country): rebuilding then throws. Keep the whole subtree —
-    // today's full-run behavior — instead of breaking the run.
-    return rule;
+    throw new SchemaExclusionError(
+      'The selected container cannot be rebuilt without excluded rules.',
+    );
   }
 }
 
@@ -3519,11 +3373,9 @@ function appendChildGroup(
  * fragment (FRAGMENT_EXCLUDED): isArrayOf validates every member with one
  * rule, so keeping it would execute unaffected members, and the per-member
  * supplement already executes each affected member exactly once (P1-4).
- * Records always keep the full rule: narrowing through record() would drop
- * a two-arg record's key rule (n4s exposes only the value rule in the item
- * slot), breaking parity with the full run. Whole-item and non-index
- * selections keep the container whole. Member failures still surface via
- * the per-member supplement.
+ * Record keys leave the fragment the same way; their supplement evaluates
+ * each selected entry with the record's own rule, preserving a two-arg key
+ * rule. Other non-index selections reject before execution.
  */
 type LooseCombinator = (
   schema: Record<string, SelectiveSchema>,
@@ -3539,16 +3391,18 @@ function rebuildShapeContainer(
   original: SelectiveSchema,
   filtered: Record<string, SelectiveSchema>,
 ): SelectiveSchema {
-  if (!isPartialLikeContainer(original)) return looseRule(filtered);
   // optional(member) changes present-undefined semantics and invents absent
   // properties. Reuse the native partial evaluator with only strict-key
   // rejection disabled for this internal fragment.
   const projected = RuleInstance.create((value: unknown) =>
-    partialLoose(value as Record<string, unknown>, filtered),
+    (isPartialLikeContainer(original) ? partialLoose : loose)(
+      value as Record<string, unknown>,
+      filtered,
+    ),
   );
   return Object.assign(projected, {
     __schema: filtered,
-    [PARTIAL_LIKE]: true,
+    [PARTIAL_LIKE]: isPartialLikeContainer(original),
   });
 }
 
@@ -3556,8 +3410,14 @@ function projectArrayRule(
   rule: SelectiveSchema,
   suffixes: AffectedSeg[][],
 ): SelectiveSchema | null | typeof FRAGMENT_EXCLUDED {
-  if (containerKindOf(rule) === 'record') return rule;
-  if (!indexSelectionsOnly(suffixes)) return rule;
+  // Record keys leave the fragment like array indices: the per-key
+  // supplement runs each selected entry exactly once with the record's own
+  // key and value rules, so unselected entries never execute.
+  if (containerKindOf(rule) !== 'record' && !indexSelectionsOnly(suffixes)) {
+    throw new SchemaExclusionError(
+      'This container must be selected as a whole.',
+    );
+  }
   return FRAGMENT_EXCLUDED;
 }
 
@@ -3899,7 +3759,16 @@ function expandNestedOnlySelections(
 ): { synthSkip: string[]; topOnly: string[] } {
   const topOnly: string[] = [];
   const synthSkip: string[] = [];
-  for (const name of only) expandOneOnlyName(members, name, topOnly, synthSkip);
+  const selections = [...new Set(only.map(canonicalAffectedName))].filter(
+    name =>
+      !only.some(
+        parent =>
+          name !== canonicalAffectedName(parent) &&
+          name.startsWith(`${canonicalAffectedName(parent)}.`),
+      ),
+  );
+  for (const name of selections)
+    expandOneOnlyName(members, name, topOnly, synthSkip);
   // Explicit whole-parent selections win over synthesized sibling skips.
   // Sibling skips that are themselves selected by another only() entry
   // (e.g. only(['box.a', 'box.b'])) must not cancel the selection.

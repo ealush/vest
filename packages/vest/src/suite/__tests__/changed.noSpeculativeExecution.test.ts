@@ -15,7 +15,7 @@ function stripBaseline(rule: unknown): void {
 }
 
 describe('changed() never speculatively executes user validators', () => {
-  it('does not probe an unmarked top-level container with a synthetic value', async () => {
+  it('does not probe an unmarked top-level container with a synthetic value', () => {
     // The spy sits on the first member: n4s containers short-circuit at
     // the first failure, so a synthetic {} probe would execute it with
     // undefined (the key is missing from the probe value).
@@ -29,19 +29,15 @@ describe('changed() never speculatively executes user validators', () => {
     });
     stripBaseline(schema);
 
-    const changed = await create((): void => {}, schema)
-      .changed('b')
-      .run({ a: 'x', b: 'ok' });
-
-    // Every execution of a's validator uses real run data ('x').
-    expect(seenA).toContain('x');
-    expect(seenA).not.toContain(undefined);
-    // Full-run fallback with affected filtering: 'a' is not reported.
-    expect(changed.hasErrors('a')).toBe(false);
-    expect(changed.hasErrors('b')).toBe(false);
+    expect(() =>
+      create(() => {}, schema)
+        .changed('b')
+        .run({ a: 'x', b: 'ok' }),
+    ).toThrow(/whole container/);
+    expect(seenA).toEqual([]);
   });
 
-  it('does not probe an unmarked nested container with a synthetic value', async () => {
+  it('does not probe an unmarked nested container with a synthetic value', () => {
     const seenY: unknown[] = [];
     // Invalidity is runtime-driven (flag), not type-driven: the data stays
     // well-typed while the member fails, so no type escape is needed to
@@ -60,20 +56,14 @@ describe('changed() never speculatively executes user validators', () => {
       nested,
     });
 
-    const changed = await create((): void => {}, schema)
-      .changed('nested.y')
-      .run({ a: 'ok', nested: { y: 'ok', x: 'bad' } });
-
-    expect(seenY).toContain('ok');
-    expect(seenY).not.toContain(undefined);
-    expect(changed.hasErrors('nested.x')).toBe(false);
-    expect(changed.hasErrors('nested.y')).toBe(false);
-
-    // The affected-invalid direction still surfaces through the filter.
-    const changedInvalid = await create((): void => {}, schema)
-      .changed('nested.x')
-      .run({ a: 'ok', nested: { y: 'ok', x: 'bad' } });
-    expect(changedInvalid.hasErrors('nested.x')).toBe(true);
+    const suite = create(() => {}, schema);
+    expect(() =>
+      suite.changed('nested.y').run({ a: 'ok', nested: { y: 'ok', x: 'bad' } }),
+    ).toThrow(/whole container/);
+    expect(() =>
+      suite.changed('nested.x').run({ a: 'ok', nested: { y: 'ok', x: 'bad' } }),
+    ).toThrow(/whole container/);
+    expect(seenY).toEqual([]);
   });
 
   it('positive controls: unaffected-invalid stays unreported while affected validators fire with real data', async () => {
@@ -87,7 +77,6 @@ describe('changed() never speculatively executes user validators', () => {
         return typeof value === 'string';
       }),
     });
-    stripBaseline(schema);
 
     const suite = create((): void => {}, schema);
     const changed = await suite.changed('b').run({ a: 42, b: 'ok' });

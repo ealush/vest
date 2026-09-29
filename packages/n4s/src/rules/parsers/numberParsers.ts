@@ -2,7 +2,7 @@ import { isStringValue } from 'vest-utils';
 
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
 
-import { mapPassing, registerParserRules } from './parserUtils';
+import { mapPassing } from './parserUtils';
 
 export const ceil = (value: number) =>
   mapPassing((current: number) => Math.ceil(current))(value);
@@ -85,5 +85,3 @@ export const numberParsers = {
   toFloat,
   toInteger,
 } as const;
-
-registerParserRules(numberParsers);

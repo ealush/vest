@@ -82,6 +82,8 @@ jobs:
         run: yarn gate:schema-coverage
       - name: Schema boundary gate
         run: yarn gate:schema-boundaries
+      - name: Schema mutation gate
+        run: yarn gate:schema-mutants
       - name: Release
         run: yarn release
       - name: Run benchmarks

@@ -29,8 +29,10 @@ describe('changed() coercion parity for excluded array members', () => {
     expect(full.run.data.parsed).toEqual({ rows: [42] });
     expect(changed.run.data.parsed).toEqual(full.run.data.parsed);
     expect(changed.run.data.parsed).toEqual({ rows: [42] });
-    expect(changedInput).toEqual({ rows: [42] });
-    expect(changedInput).toEqual(fullInput);
+    // A passing full run hands the callback parsed output; a focused run
+    // hands it the supplied input.
+    expect(fullInput).toEqual({ rows: [42] });
+    expect(changedInput).toEqual(data);
   });
 
   it('passing run: every affected index keeps its coercion', async () => {
@@ -44,7 +46,7 @@ describe('changed() coercion parity for excluded array members', () => {
     expect(changed.run.data.parsed).toEqual(full.run.data.parsed);
   });
 
-  it('preserves the full mapped schema output for the suite callback', async () => {
+  it('preserves supplied input for the suite callback', async () => {
     const schema = enforce.shape({
       profile: enforce.shape({ state: enforce.isString() }),
       age: enforce.isNumeric().toNumber(),
@@ -64,17 +66,11 @@ describe('changed() coercion parity for excluded array members', () => {
       age: 42,
     });
 
-    // Parsed metadata is intentionally per-run in Vest 6: this changed run
-    // mapped profile.state and did not claim that it remapped age.
     expect(changed.run.data.parsed).toEqual({
       profile: { state: 'CA' },
-      age: '42',
     });
 
-    // The suite callback has a different contract: its parameter is typed as
-    // the schema's full output, so untouched successful transformations are
-    // retained from the previous mapped snapshot.
-    expect(callbackInput).toEqual(full.run.data.parsed);
+    expect(callbackInput).toEqual(input);
   });
 
   it('failing run: mapped-output parity is preserved', async () => {
@@ -94,9 +90,7 @@ describe('changed() coercion parity for excluded array members', () => {
     expect(full.isValid()).toBe(false);
     expect(changed.isValid()).toBe(false);
     expect(changed.run.data.parsed).toEqual(full.run.data.parsed);
-    // The parser maps 'nope' to NaN (a number, keeping the output type
-    // truthful); both runs agree on the mapped output.
-    expect(changedInput).toEqual({ rows: [NaN] });
+    expect(changedInput).toEqual(data);
     expect(changedInput).toEqual(fullInput);
   });
 });

@@ -11,6 +11,7 @@
 /* eslint-disable no-console */
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
@@ -76,11 +77,10 @@ const MUTANTS = [
   {
     edits: [
       {
-        file: 'packages/vest/src/suite/useCreateSuiteRunner.ts',
-        newText:
-          '  if (firstResult === undefined || firstResult.type === undefined) {',
+        file: 'packages/vest/src/suite/schemaOutput.ts',
+        newText: '  return results[0].type !== undefined ? results[0] : null;',
         oldText:
-          "  if (firstResult === undefined || !hasOwnProperty(firstResult, 'type')) {",
+          "  return hasOwnProperty(results[0], 'type') ? results[0] : null;",
       },
     ],
     id: 'M4-missing-undefined-collapse',
@@ -105,22 +105,21 @@ const MUTANTS = [
     edits: [
       {
         file: 'packages/n4s/src/schema/selectiveRun.ts',
-        newText: `): SelectiveSchema {
-  try {
-    return omitSkippedDeep(schema, modifiers.skip);
-  } catch {
-    return schema;
-  }
-}`,
-        oldText: `): SelectiveSchema {
-  return omitSkippedDeep(schema, modifiers.skip);
-}`,
+        newText: `  if (!projectedSchema) {
+    return { results: [{ pass: true, type: data }] };
+  }`,
+        oldText: `  if (!projectedSchema) {
+    throw new SchemaExclusionError(
+      'The schema cannot execute this selection without running excluded rules. Select the containing field or run the full schema.',
+    );
+  }`,
       },
     ],
-    id: 'M6-rebuild-error-swallow',
-    reason: 'Swallowed rebuild errors must execute skipped predicates.',
+    id: 'M6-unprojectable-silent-pass',
+    reason: 'An unprojectable selection must reject, never pass unvalidated.',
     tests: [
-      'packages/vest/src/suite/__tests__/schemaContracts.exclusions.test.ts',
+      'packages/n4s/src/schema/__tests__/selectiveRun.coverage.test.ts',
+      'packages/vest/src/suite/__tests__/changed.integration.test.ts',
     ],
   },
 ];
@@ -134,33 +133,91 @@ function packageOf(testFile) {
   return 'packages/vest';
 }
 
-function runTests(files) {
+function groupByPackage(files) {
   const byPackage = new Map();
   for (const file of files) {
     const pkg = packageOf(file);
     if (!byPackage.has(pkg)) byPackage.set(pkg, []);
     byPackage.get(pkg).push(path.relative(path.join(REPO_ROOT, pkg), file));
   }
+  return byPackage;
+}
+
+/**
+ * Returns 'passed', 'failed', or 'inconclusive'. Only a structured Vitest
+ * report with failed test cases proves a killed mutant; loader, config, and
+ * collection failures are inconclusive, never a kill.
+ */
+function runTests(files) {
+  const report = path.join(os.tmpdir(), `vest-mutant-${process.pid}.json`);
+  const counts = { failed: 0, total: 0 };
   try {
-    for (const [pkg, relativeFiles] of byPackage) {
-      execFileSync(
-        VITEST_BIN,
-        [
-          'run',
-          '--config',
-          path.join(REPO_ROOT, pkg, 'vitest.config.ts'),
-          ...relativeFiles,
-        ],
-        { cwd: path.join(REPO_ROOT, pkg), stdio: 'ignore' },
-      );
+    for (const [pkg, relativeFiles] of groupByPackage(files)) {
+      const outcome = runPackageTests(pkg, relativeFiles, report);
+      if (outcome === null) return 'inconclusive';
+      counts.total += outcome.total;
+      counts.failed += outcome.failed;
     }
-    return true;
-  } catch {
-    return false;
+    return summarizeCounts(counts);
+  } finally {
+    fs.rmSync(report, { force: true });
   }
 }
 
+function summarizeCounts({ failed, total }) {
+  if (total === 0) return 'inconclusive';
+  return failed > 0 ? 'failed' : 'passed';
+}
+
+function runPackageTests(pkg, relativeFiles, report) {
+  const exitCode = execVitest(pkg, relativeFiles, report);
+  const counts = readReport(report);
+  if (counts === null) return null;
+  // A non-zero exit without failed cases is an infrastructure failure.
+  return exitCode !== 0 && counts.failed === 0 ? null : counts;
+}
+
+function readReport(report) {
+  if (!fs.existsSync(report)) return null;
+  const result = JSON.parse(fs.readFileSync(report, 'utf8'));
+  fs.rmSync(report, { force: true });
+  const total = result.numTotalTests;
+  if (!Number.isInteger(total) || total < 1) return null;
+  return { failed: result.numFailedTests ?? 0, total };
+}
+
+function execVitest(pkg, relativeFiles, report) {
+  try {
+    execFileSync(
+      VITEST_BIN,
+      [
+        'run',
+        '--config',
+        path.join(REPO_ROOT, pkg, 'vitest.config.ts'),
+        '--reporter=json',
+        `--outputFile=${report}`,
+        ...relativeFiles,
+      ],
+      { cwd: path.join(REPO_ROOT, pkg), stdio: 'pipe' },
+    );
+    return 0;
+  } catch (error) {
+    process.stderr.write(error.stdout ?? '');
+    process.stderr.write(error.stderr ?? '');
+    return error.status ?? 1;
+  }
+}
+
+const OUTCOME_LABELS = {
+  failed: 'killed',
+  inconclusive: 'inconclusive (test infrastructure failed)',
+  passed: 'SURVIVED (tests still green)',
+};
+
 function checkMutant(mutant) {
+  if (runTests(mutant.tests) !== 'passed') {
+    return { id: mutant.id, ok: false, result: 'baseline did not pass' };
+  }
   const originals = new Map();
   const saveOriginal = edit => {
     if (!originals.has(edit.file)) {
@@ -190,11 +247,11 @@ function checkMutant(mutant) {
       saveOriginal(edit);
       fs.writeFileSync(filePath, current.replace(edit.oldText, edit.newText));
     }
-    const passed = runTests(mutant.tests);
+    const outcome = runTests(mutant.tests);
     return {
       id: mutant.id,
-      ok: !passed,
-      result: passed ? 'SURVIVED (tests still green)' : 'killed',
+      ok: outcome === 'failed',
+      result: OUTCOME_LABELS[outcome],
     };
   } finally {
     restoreAll();

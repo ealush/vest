@@ -17,12 +17,14 @@ function fieldMetaOf(
   return state.fieldMeta[field] as FieldMetaView | undefined;
 }
 
-// Bounded macrotask polling (no wall-clock sleeps): waits until the
-// debounced async validator actually starts its focused run.
+// Bounded timer-phase polling: waits until the debounced async validator
+// actually starts its focused run. The debounce is a timer, so each poll
+// yields through the timers phase; setImmediate alone can exhaust every
+// attempt before a 1ms timer is due.
 async function pollFor(condition: () => boolean, what: string) {
   for (let i = 0; i < 100 && !condition(); i += 1) {
     await new Promise<void>(resolve => {
-      setImmediate(resolve);
+      setTimeout(resolve, 0);
     });
   }
   if (!condition()) throw new Error(`timed out waiting for ${what}`);

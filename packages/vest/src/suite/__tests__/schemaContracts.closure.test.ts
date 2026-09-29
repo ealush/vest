@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   EnforceSchemaError,
-  FocusedSchemaMappingError,
   SchemaExclusionError,
   compose,
   enforce,
@@ -37,31 +36,22 @@ declare global {
 }
 
 const closureBoomError = new Error('closure parser boom');
-enforce.extend(
-  {
-    closureConditionalMapped: (value: string) =>
-      value === 'bad'
-        ? { pass: false, type: 'MAPPED' }
-        : { pass: true, type: value },
-    closureBoomOnMapped: (value: string) => {
-      if (value === 'MAPPED') throw closureBoomError;
-      return { pass: true, type: value };
-    },
-    closureFrameworkBoom: (value: string) => {
-      if (value === 'MAPPED') {
-        throw new Error('closure mapping fault');
-      }
-      return { pass: true, type: value };
-    },
+enforce.extend({
+  closureConditionalMapped: (value: string) => ({
+    pass: true,
+    type: value === 'bad' ? 'MAPPED' : value,
+  }),
+  closureBoomOnMapped: (value: string) => {
+    if (value === 'MAPPED') throw closureBoomError;
+    return { pass: true, type: value };
   },
-  {
-    parsers: [
-      'closureConditionalMapped',
-      'closureBoomOnMapped',
-      'closureFrameworkBoom',
-    ],
+  closureFrameworkBoom: (value: string) => {
+    if (value === 'MAPPED') {
+      throw new Error('closure mapping fault');
+    }
+    return { pass: true, type: value };
   },
-);
+});
 
 function deferred() {
   let release: () => void = () => {};
@@ -131,10 +121,7 @@ describe('schema contracts: async lifecycle combined with boundary throws', () =
       arm(true);
       let thrown: unknown;
       try {
-        suite
-          .changed('other')
-          .focus({ skip: 'payload' })
-          .run(input as never);
+        suite.changed('payload').run(input as never);
       } catch (error) {
         thrown = error;
       }
@@ -183,10 +170,7 @@ describe('schema contracts: async lifecycle combined with boundary throws', () =
     arm(true);
     let thrown: unknown;
     try {
-      suite
-        .changed('other')
-        .focus({ skip: 'payload' })
-        .run(input as never);
+      suite.changed('payload').run(input as never);
     } catch (error) {
       thrown = error;
     }
@@ -233,9 +217,10 @@ describe('schema contracts: skipped-predicate zero invocation on fallback routes
     } catch (error) {
       thrown = error;
     }
-    expect(thrown).toBeUndefined();
+    // Composed roots reject member selection before any predicate runs.
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
     expect(skipped).not.toHaveBeenCalled();
-    expect(selected).toHaveBeenCalledTimes(1);
+    expect(selected).not.toHaveBeenCalled();
   });
 
   it('[SC-SE02] partial root-chain fallback never invokes a throwing skipped predicate', () => {
@@ -259,9 +244,10 @@ describe('schema contracts: skipped-predicate zero invocation on fallback routes
     } catch (error) {
       thrown = error;
     }
-    expect(thrown).toBeUndefined();
+    // Composed roots reject member selection before any predicate runs.
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
     expect(skipped).not.toHaveBeenCalled();
-    expect(selected).toHaveBeenCalledTimes(1);
+    expect(selected).not.toHaveBeenCalled();
   });
 
   it('[SC-SE02] nested root-chain fallback never invokes a throwing skipped predicate', () => {
@@ -287,9 +273,10 @@ describe('schema contracts: skipped-predicate zero invocation on fallback routes
     } catch (error) {
       thrown = error;
     }
-    expect(thrown).toBeUndefined();
+    // Composed roots reject member selection before any predicate runs.
+    expect(thrown).toBeInstanceOf(SchemaExclusionError);
     expect(skipped).not.toHaveBeenCalled();
-    expect(selected).toHaveBeenCalledTimes(1);
+    expect(selected).not.toHaveBeenCalled();
   });
 });
 
@@ -452,23 +439,22 @@ describe('schema contracts: single normalization across routes', () => {
       );
       const suite = create((_data: unknown) => {}, schema as never);
       const data = { a: 'a', b: 'b' } as never;
-      let errors: boolean;
-      if (route === 'changed-then-skip')
-        errors = (
-          suite.changed('b').focus({ skip: 'a' }).run(data) as {
-            hasErrors(): boolean;
-          }
-        ).hasErrors();
-      else if (route === 'skip-then-changed')
-        errors = (
-          suite.focus({ skip: 'a' }).changed('b').run(data) as {
-            hasErrors(): boolean;
-          }
-        ).hasErrors();
-      else
-        errors = (
-          suite.focus({ skip: 'a' }).run(data) as { hasErrors(): boolean }
-        ).hasErrors();
+      if (route !== 'skip-only') {
+        // changed() cannot run one member of an opaque composition: it
+        // rejects before any predicate executes.
+        expect(() =>
+          route === 'changed-then-skip'
+            ? suite.changed('b').focus({ skip: 'a' }).run(data)
+            : suite.focus({ skip: 'a' }).changed('b').run(data),
+        ).toThrow(SchemaExclusionError);
+        expect(skipped).not.toHaveBeenCalled();
+        expect(selected).not.toHaveBeenCalled();
+        expect(root).not.toHaveBeenCalled();
+        continue;
+      }
+      const errors = (
+        suite.focus({ skip: 'a' }).run(data) as { hasErrors(): boolean }
+      ).hasErrors();
       observations.push({
         errors,
         root: root.mock.calls.length,
@@ -652,8 +638,14 @@ describe('schema contracts: error boundaries per route', () => {
       } catch (error) {
         thrown = error;
       }
-      // Failure mapping reaches the throwing stage on every route: the
-      // original cause propagates, no fabricated mapping is published.
+      if (route === 'changed-skip') {
+        // The throwing stage belongs to a skipped field and never runs.
+        expect(thrown).toBeUndefined();
+        expect(callback).toHaveBeenCalledTimes(2);
+        return;
+      }
+      // Executing the stage propagates the original cause; no callback
+      // runs with fabricated data.
       expect(thrown).toBe(closureBoomError);
       expect(callback).toHaveBeenCalledTimes(1);
       expect(suite.get().hasErrors()).toBe(false);
@@ -666,12 +658,10 @@ describe('schema contracts: error boundaries per route', () => {
     '[SC-DD06] mapping-stage fault propagates with identity on route %s',
     route => {
       const { callback, suite } = frameworkFaultSuite();
-      // A full run first: it establishes the branch witness a first-ever
-      // focused run cannot provide on its own.
       const valid = suite.run({ a: 'good', b: 'ok' });
       expect(valid.isValid()).toBe(true);
-      // No framework-owned mapping fallback exists: the fault propagates
-      // by identity with no fabricated callback input.
+      // No framework-owned fallback exists: the fault propagates by
+      // identity with no fabricated callback input.
       let thrown: unknown;
       try {
         if (route === 'full') suite.run({ a: 'bad', b: 'ok' });
@@ -732,23 +722,20 @@ describe('schema contracts: error boundaries per route', () => {
   const reviewFault = new EnforceSchemaError('user parser fault');
   let reviewCalls = 0;
   const reviewUnrelated = vi.fn(() => true);
-  enforce.extend(
-    {
-      closureReviewBoom: () => {
-        reviewCalls += 1;
-        throw reviewFault;
-      },
-      closureReviewFlaky: (() => {
-        let calls = 0;
-        return () => {
-          calls += 1;
-          if (calls === 1) throw reviewFault;
-          return { pass: true, type: 'recovered' };
-        };
-      })(),
+  enforce.extend({
+    closureReviewBoom: () => {
+      reviewCalls += 1;
+      throw reviewFault;
     },
-    { parsers: ['closureReviewBoom', 'closureReviewFlaky'] },
-  );
+    closureReviewFlaky: (() => {
+      let calls = 0;
+      return () => {
+        calls += 1;
+        if (calls === 1) throw reviewFault;
+        return { pass: true, type: 'recovered' };
+      };
+    })(),
+  });
 
   function reviewSuite(parser: 'closureReviewBoom' | 'closureReviewFlaky') {
     const callback = vi.fn();
@@ -802,7 +789,7 @@ describe('schema contracts: error boundaries per route', () => {
   });
 
   it.each(['full', 'changed'] as const)(
-    '[SC-DD06] unwitnessed union fails closed with a stable code on route %s',
+    '[SC-DD06] an untouched union needs no witness on route %s',
     route => {
       const callback = vi.fn();
       const suite = create(
@@ -826,11 +813,10 @@ describe('schema contracts: error boundaries per route', () => {
       } catch (error) {
         thrown = error;
       }
-      expect(thrown).toBeInstanceOf(FocusedSchemaMappingError);
-      expect((thrown as FocusedSchemaMappingError).code).toBe(
-        'FOCUSED_SCHEMA_MAPPING_UNWITNESSED_UNION',
-      );
-      expect(callback).not.toHaveBeenCalled();
+      // Focused callbacks receive the supplied input, so an unselected
+      // union is never parsed to prepare them.
+      expect(thrown).toBeUndefined();
+      expect(callback).toHaveBeenCalledExactlyOnceWith({ a: ['2'], b: 'ok' });
     },
   );
 });
@@ -931,11 +917,17 @@ describe('schema contracts: hostile keys and selectors (SE02)', () => {
     });
     expect(suite.run(input as never).hasErrors()).toBe(false);
 
+    // A descendant of a scalar field has no executable schema of its own.
+    calls.length = 0;
+    expect(() => suite.changed('a..b').run({ a: 'x', b: 'y' })).toThrow(
+      SchemaExclusionError,
+    );
+    expect(calls).toEqual([]);
+
     for (const selector of [
       '__proto__',
       'constructor',
       'prototype',
-      'a..b',
       'nope.missing',
     ]) {
       calls.length = 0;

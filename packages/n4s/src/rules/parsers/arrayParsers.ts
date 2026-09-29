@@ -1,4 +1,4 @@
-import { mapPassing, registerParserRules } from './parserUtils';
+import { mapPassing } from './parserUtils';
 
 export const join = (value: unknown[], separator = ',') =>
   mapPassing((current: unknown[]) => current.join(separator))(value);
@@ -10,5 +10,3 @@ export const arrayParsers = {
   join,
   uniq,
 } as const;
-
-registerParserRules(arrayParsers);

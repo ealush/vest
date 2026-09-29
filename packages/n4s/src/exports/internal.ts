@@ -3,13 +3,10 @@
  *
  * This entry is intentionally separate from the public n4s API. Applications
  * should use schema rules, `dependsOn()`, and `describe()`; Vest alone consumes
- * these planner and mapping operations to implement focused suite execution.
+ * these planner and execution operations to implement focused suite execution.
  */
 export { assertSchemaRootPathsValid } from '../schema/dependencyResolver';
-export { FocusedSchemaMappingError } from '../errors/FocusedSchemaMappingError';
 export { SchemaExclusionError } from '../errors/SchemaExclusionError';
-export { mapWithoutValidation } from '../schema/mapWithoutValidation';
-export type { MappingProvenance } from '../schema/mapWithoutValidation';
 export {
   parseAffectedFieldName,
   resolveAffectedPaths,

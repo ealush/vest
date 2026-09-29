@@ -1,6 +1,6 @@
 import { enforce } from 'n4s';
-import { runSchemaPaths } from 'n4s/exports/internal';
-import { describe, it, expect } from 'vitest';
+import { runSchemaPaths, SchemaExclusionError } from 'n4s/exports/internal';
+import { describe, it, expect, vi } from 'vitest';
 
 import {
   create,
@@ -1115,47 +1115,31 @@ describe('Integration: suite.changed() — merge gate (13)', () => {
   // not just focus exclusion: focus-excluded tests still land in the result
   // inventory as skipped nodes, so a missing key proves the failure was
   // dropped before emission — only the schema-level filter can do that.
-  it('27. root array schema — changed() reports only affected failures', async () => {
+  it('27. root array schema — changed() rejects index selection before execution', async () => {
+    const state = vi.fn((value: unknown) => String(value).length > 5);
     const schema = enforce.isArrayOf(
       enforce.shape({
         country: enforce.isString().longerThan(5),
-        state: enforce.isString().longerThan(5),
+        state: enforce.condition(state),
       }),
     );
     const data = [
       { country: 'abcdef', state: 'abcdef' },
       { country: 'abcdef', state: 'yy' },
     ];
-    const failurePaths = (
-      results: readonly { pass: boolean; path?: readonly string[] }[],
-    ): string[] =>
-      results
-        .filter(result => !result.pass)
-        .map(result => (result.path ?? []).join('.'));
-    // Schema level: the full run surfaces the 1.state failure (array runs
-    // short-circuit at the first failing element); narrowing to the
-    // affected path keeps exactly it, while narrowing to an unaffected
-    // path drops it via pass-through.
-    expect(failurePaths(runSchemaPaths(schema, data))).toEqual(['1.state']);
-    expect(
-      failurePaths(runSchemaPaths(schema, data, { affected: ['1.state'] })),
-    ).toEqual(['1.state']);
-    expect(
-      runSchemaPaths(schema, data, { affected: ['0.state'] }).some(
-        result => !result.pass,
-      ),
-    ).toBe(false);
-    // Suite level: the same narrowing is observable through changed().
+    // A root array has no member fragment to project; selecting an index
+    // rejects instead of validating every element and hiding the rest.
+    expect(() =>
+      runSchemaPaths(schema, data, { affected: ['1.state'] }),
+    ).toThrow(SchemaExclusionError);
     const suite = create(() => {}, schema);
-    const affected = await suite.changed('1.state').run(data);
-    // Array-element paths are runtime failure names that the type-level field
-    // vocabulary cannot name, so probe them through the explicit runtime seam.
-    expect(invokeWithUnknown(affected.hasErrors, '1.state')).toBe(true);
-    expect(invokeWithUnknown(affected.hasErrors, '0.state')).toBe(false);
-    const unaffected = await suite.changed('0.state').run(data);
-    // Vest retains the prior failure until that field is revalidated.
-    expect(invokeWithUnknown(unaffected.hasErrors, '1.state')).toBe(true);
-    expect(Object.keys(unaffected.tests)).toContain('1.state');
+    expect(() => suite.changed('1.state').run(data)).toThrow(
+      SchemaExclusionError,
+    );
+    expect(state).not.toHaveBeenCalled();
+    // The full run reports the failure.
+    const full = await suite.run(data);
+    expect(invokeWithUnknown(full.hasErrors, '1.state')).toBe(true);
   });
 
   /** No typed options in V1; runtime misuse still throws explicitly. */

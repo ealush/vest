@@ -12,13 +12,10 @@ declare global {
   }
 }
 
-enforce.extend(
-  {
-    orderSuffix: (value: string) => ({ pass: true, type: `${value}!` }),
-    orderEmit: (value: string) => ({ pass: true, type: `emit:${value}` }),
-  },
-  { parsers: ['orderSuffix', 'orderEmit'] },
-);
+enforce.extend({
+  orderSuffix: (value: string) => ({ pass: true, type: `${value}!` }),
+  orderEmit: (value: string) => ({ pass: true, type: `emit:${value}` }),
+});
 
 // MP04b: parser-before/after/nested/custom matrix. Mapping runs declared
 // parsers exactly once per selected execution; ordinary validators are never
@@ -40,15 +37,15 @@ describe('schema contracts: parser ordering matrix (MP04b)', () => {
     }, schema as never);
     const result = suite.changed('a').run({ a: 'x', b: 'ok' });
     expect(result.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ a: 'x!', b: 'ok' });
+    expect(seen[0]).toEqual({ a: 'x', b: 'ok' });
     expect(validated).toHaveBeenCalledTimes(1);
   });
 
-  it('[SC-MP04b] parser before validation observes raw input and validates once', () => {
+  it('[SC-MP04b] composed validators observe the original input and run once', () => {
     const observed: unknown[] = [];
     const validated = vi.fn((value: unknown) => {
       observed.push(value);
-      return value === 'x!';
+      return value === 'x';
     });
     const schema = enforce.shape({
       a: compose(
@@ -63,10 +60,10 @@ describe('schema contracts: parser ordering matrix (MP04b)', () => {
     }, schema as never);
     const result = suite.changed('a').run({ a: 'x', b: 'ok' });
     expect(result.hasErrors()).toBe(false);
-    // The validator observed the parser output, exactly once.
-    expect(observed).toEqual(['x!']);
+    // compose() validates each rule against the original input, once.
+    expect(observed).toEqual(['x']);
     expect(validated).toHaveBeenCalledTimes(1);
-    expect(seen[0]).toEqual({ a: 'x!', b: 'ok' });
+    expect(seen[0]).toEqual({ a: 'x', b: 'ok' });
   });
 
   it('[SC-MP04b] nested parsers chain in order without validator retry', () => {
@@ -84,7 +81,7 @@ describe('schema contracts: parser ordering matrix (MP04b)', () => {
     }, schema as never);
     const result = suite.changed('a').run({ a: 'x', b: 'ok' });
     expect(result.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ a: 'x!!', b: 'ok' });
+    expect(seen[0]).toEqual({ a: 'x', b: 'ok' });
     expect(validated).toHaveBeenCalledTimes(1);
   });
 
@@ -101,7 +98,7 @@ describe('schema contracts: parser ordering matrix (MP04b)', () => {
     }, schema as never);
     const full = suite.run({ a: 'x', b: 'first' });
     expect(full.isValid()).toBe(true);
-    expect(seen[0]).toEqual({ a: 'emit:x', b: 'first' });
+    expect(seen[0]).toEqual({ a: 'x', b: 'first' });
     expect(validated).toHaveBeenCalledTimes(1);
 
     validated.mockClear();
@@ -112,14 +109,14 @@ describe('schema contracts: parser ordering matrix (MP04b)', () => {
       .run({ a: 'y', b: 'second' });
     expect(skipped.hasErrors()).toBe(false);
     // Skipped custom parser maps from retention, never revalidates.
-    expect(seen[0]).toEqual({ a: 'emit:x', b: 'second' });
+    expect(seen[0]).toEqual({ a: 'y', b: 'second' });
     expect(validated).not.toHaveBeenCalled();
 
     validated.mockClear();
     seen.length = 0;
     const selected = suite.changed('a').run({ a: 'z', b: 'second' });
     expect(selected.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ a: 'emit:z', b: 'second' });
+    expect(seen[0]).toEqual({ a: 'z', b: 'second' });
     expect(validated).toHaveBeenCalledTimes(1);
   });
 

@@ -35,8 +35,12 @@ describe('schema contracts: public API surface', () => {
       .only('password')
       .focus({ skip: 'confirm' })
       .run({ password: 'secret', confirm: 'secret' });
-    expectTypeOf(result.types?.output.password).toEqualTypeOf<string>();
-    expectTypeOf(result.types?.output.confirm).toEqualTypeOf<string>();
+    expectTypeOf(result.types?.output.password).toEqualTypeOf<
+      string | undefined
+    >();
+    expectTypeOf(result.types?.output.confirm).toEqualTypeOf<
+      string | undefined
+    >();
     expect(result.hasErrors('confirm')).toBe(false);
   });
 

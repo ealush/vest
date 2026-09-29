@@ -103,56 +103,23 @@ result.value; // typed as { age: number; name: string } after a successful full 
 
 The first rule in a chain determines the input type, and the last parser in the chain determines the output type. This means you never need `@ts-expect-error` or `as any` for valid parser coercion inputs.
 
-Successful focused schema runs assemble mapped output for the suite callback. On a
-first focused run, Vest applies parser steps to untouched fields without
-running their validation predicates. Parser transforms should therefore be
-pure and must return their declared output type even when their `pass` verdict
-is false. An untouched parser's failure does not become part of that focused
-run's validation result. Mapping is not validation: missing or invalid untouched
-input is not proven to satisfy the schema. If schema validation fails, the
-callback can receive raw input at the failing paths. Guard values before using
-output-only operations, and use a full successful run before submission.
-If a custom `enforce.extend` rule is a parser, register it explicitly so
-focused mapping can recognize it:
+Callback data follows one rule: a run whose schema validation passes hands the
+callback its input with this run's parsed values applied — the complete parsed
+output on a full run, the parsed focused fields on an `only()` / `focus()` run.
+A run whose schema validation fails, and every `suite.changed()` run, hands the
+callback the input exactly as supplied. Vest never runs an extra parser pass to
+complete callback data, so unselected fields are neither parsed nor validated.
 
-```typescript
-declare global {
-  namespace n4s {
-    interface EnforceMatchers {
-      normalizeId: (value: string) => { pass: boolean; type: string };
-    }
-  }
-}
+Custom `enforce.extend` rules that transform values need no registration: they
+run as part of validation wherever their field is selected, and never outside
+it.
 
-enforce.extend(
-  {
-    normalizeId: (value: string) => ({
-      pass: true,
-      type: value.trim().toUpperCase(),
-    }),
-  },
-  { parsers: ['normalizeId'] },
-);
-```
-
-Custom extension rules are treated as validators unless they are listed in
-`parsers`. The per-run `result.run.data.parsed` value still reflects only the
-schema work performed by that run. Because the same callback can serve full
-and focused runs, properties not witnessed by the current or retained mapping
-may be absent at runtime. Vest 6 preserves the callback's complete-output type
-for compatibility; [the draft callback retype is planned for Vest 7](https://github.com/ealush/vest/issues/1327).
-A successful full-run result still carries the complete mapped output.
-Parser names are checked when `enforce.extend()` runs: they must be unique own
-properties whose values are functions. Invalid registration throws
-`EnforceSchemaError` before any rule is installed. Purity remains the parser
-author's responsibility.
-
-When a focused path enters an array, Vest refreshes that containing array from
-the current input. Array positions are not identities, so this prevents an
-insert, removal, or reorder from combining the current item with a stale array
-layout retained from an earlier run. Untouched members of that array are mapped
-from raw input without running their validation predicates. Parsers can run
-again to refresh this mapping and must be pure.
+`result.run.data.parsed` and `result.value` contain only values established by
+the current run. Values from earlier runs are never carried into later output,
+so a focused run's output is a draft: unselected properties are absent and
+arrays may have holes at unselected positions. Vest 6 preserves the callback's
+complete-output type for compatibility; [the draft callback retype is planned for Vest 7](https://github.com/ealush/vest/issues/1327).
+A successful full-run result carries the complete parsed output.
 
 ### What becomes typed from the schema
 
@@ -203,7 +170,7 @@ suite.focus({ onlyGroup: 'account' }); // typed group name
 ```
 
 :::note Focused runs
-Suite-level `only`, `skip`, and `focus` select schema fields as well as suite tests. Structural schemas can be narrowed using their metadata; rules with container validators may require a full-schema fallback. Focused validation does not establish the validity or presence of untouched input. Supply complete form data when the callback reads untouched fields.
+Suite-level `only`, `skip`, and `focus` select schema fields as well as suite tests. Structural schemas are narrowed using their metadata; schemas without member structure (such as `compose()` roots or foreign Standard Schema validators) validate whole under `only()`. Focused validation does not establish the validity or presence of untouched input. Supply complete form data when the callback reads untouched fields.
 
 ```javascript
 // Validate only the username field, enforcing the schema for 'username' while ignoring 'age'
@@ -229,9 +196,9 @@ The suite result includes typed properties for accessing validated and parsed da
 
 - `result.value` — The parsed output when the suite is valid. Full runs and existing `only()` / `focus()` / `get()` surfaces retain Vest 6's complete-output type. The new `changed()` result uses the draft output type because required properties may be absent. `undefined` when invalid.
 - `result.types.input` — Carries the schema's input type for static analysis. At runtime, holds the parsed output value.
-- `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value.
-- `result.run.data.raw` — The current run's parsed chunk when schema validation succeeds, or its original input when validation fails. A focused callback may receive a fuller retained mapped output than this per-run metadata.
-- `result.run.data.parsed` — Parsed data for the current run.
+- `result.types.output` — Carries the schema's output type. At runtime, holds the parsed output value. On a `changed()` result it is draft-typed like `value`.
+- `result.run.data.raw` — The data the callback received: the input with this run's parsed values applied when schema validation succeeds, otherwise the original input.
+- `result.run.data.parsed` — Parsed data established by the current run only.
 
 ```typescript
 const schema = enforce.shape({

@@ -13,7 +13,7 @@ import {
   TFieldName,
   TGroupName,
   TSchema,
-  InferSchemaOutput,
+  DraftSchemaOutput,
 } from './SuiteResultTypes';
 import { suiteSelectors } from './selectors/suiteSelectors';
 import { useProduceSuiteSummary } from './selectors/useProduceSuiteSummary';
@@ -28,7 +28,7 @@ export function useCreateSuiteResult<
   outputData?: any,
   inputData?: D,
   runTime: Date = new Date(),
-  parsedData?: Partial<InferSchemaOutput<S>>,
+  parsedData?: DraftSchemaOutput<S>,
   focus?: SuiteModifiers<F, G>,
 ): SuiteResult<F, G, S, D> {
   return useSuiteResultCache<F, G, S, D>(() => {

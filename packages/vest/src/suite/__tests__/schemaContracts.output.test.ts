@@ -16,47 +16,38 @@ declare global {
       matrixFailEmit: (value: string) => { pass: boolean; type: string };
       exclBeforeCount: (value: string) => { pass: boolean; type: string };
       exclAfterCount: (value: string) => { pass: boolean; type: string };
+      contractTap: (value: unknown) => boolean;
     }
   }
 }
-enforce.extend(
-  {
-    contractEmit: (_value: unknown, output: unknown) => ({
-      pass: true,
-      type: output,
-    }),
-    contractSuffix: (value: string) => ({ pass: true, type: `${value}!` }),
-    matrixSuffix: (value: string) => ({ pass: true, type: `${value}!` }),
-    matrixFailEmit: (value: string) =>
-      value === 'bad'
-        ? { pass: false, type: 'MAPPED' }
-        : { pass: true, type: value },
-    exclBeforeCount: (value: string) => {
-      exclBeforeCalls += 1;
-      return { pass: true, type: `${value}<` };
-    },
-    exclAfterCount: (value: string) => {
-      exclAfterCalls += 1;
-      return { pass: true, type: `${value}>` };
-    },
+enforce.extend({
+  contractEmit: (_value: unknown, output: unknown) => ({
+    pass: true,
+    type: output,
+  }),
+  contractSuffix: (value: string) => ({ pass: true, type: `${value}!` }),
+  matrixSuffix: (value: string) => ({ pass: true, type: `${value}!` }),
+  matrixFailEmit: (value: string) =>
+    value === 'bad'
+      ? { pass: false, type: 'MAPPED' }
+      : { pass: true, type: value },
+  exclBeforeCount: (value: string) => {
+    exclBeforeCalls += 1;
+    return { pass: true, type: `${value}<` };
   },
-  {
-    parsers: [
-      'contractEmit',
-      'contractSuffix',
-      'matrixSuffix',
-      'matrixFailEmit',
-      'exclBeforeCount',
-      'exclAfterCount',
-    ],
+  exclAfterCount: (value: string) => {
+    exclAfterCalls += 1;
+    return { pass: true, type: `${value}>` };
   },
-);
+  contractTap: () => {
+    contractTapCalls += 1;
+    return true;
+  },
+});
 
-// Module-scoped parser invocation counters: registration above runs once at
-// import time so every test (including isolated `-t` runs) can chain the
-// parsers. Tests that assert counts reset them first.
 let exclBeforeCalls = 0;
 let exclAfterCalls = 0;
+let contractTapCalls = 0;
 
 const outputs = [
   { name: 'null', value: null },
@@ -90,12 +81,15 @@ describe('schema contracts: parsed output matrix', () => {
         : placement === 'array' || placement === 'tuple'
           ? ['raw']
           : 'raw';
+    // compose() validates the original input and returns it unchanged.
     const expected =
       placement === 'shape'
         ? { v: value }
         : placement === 'array' || placement === 'tuple'
           ? [value]
-          : value;
+          : placement === 'compose'
+            ? raw
+            : value;
     const seen: unknown[] = [];
     const suite = create(data => {
       seen.push(data);
@@ -106,6 +100,7 @@ describe('schema contracts: parsed output matrix', () => {
       expect.objectContaining({ pass: true, type: expected }),
     );
     expect(result.isValid()).toBe(true);
+    // A passing full run hands the callback its complete parsed output.
     expect(seen).toStrictEqual([expected]);
     expect(result.value).toStrictEqual(expected);
     expect(result.run.data.parsed).toStrictEqual(expected);
@@ -116,7 +111,7 @@ describe('schema contracts: parsed output matrix', () => {
   });
 
   it.each(['fresh', 'warm', 'reorder', 'insert', 'remove'] as const)(
-    '[SC-UNION] complete union mapping after %s focused update',
+    '[SC-UNION] selected union output after %s focused update',
     state => {
       const schema = enforce.shape({
         rows: enforce.isArrayOf(
@@ -141,20 +136,6 @@ describe('schema contracts: parsed output matrix', () => {
       const changed = ['reorder', 'insert', 'remove'].includes(state)
         ? 'rows'
         : 'rows.0';
-      if (state === 'fresh') {
-        // V1 limitation (documented in schema_relationships.md): a first
-        // focused run over an untouched union has no branch witness, and no
-        // predicate-free rule can select the validation branch (e.g. a
-        // numeric parser succeeds on booleans the validator rejects). The
-        // run fails explicitly instead of emitting raw input under the
-        // schema-output type. A prior full run establishes the witness that
-        // the warm states below reuse.
-        expect(() => suite.changed(changed).run({ rows })).toThrow(
-          /mapping|focused|union/i,
-        );
-        expect(seen).toEqual([]);
-        return;
-      }
       const result = suite.changed(changed).run({ rows });
       const expected = {
         rows: rows.map(value =>
@@ -162,7 +143,12 @@ describe('schema contracts: parsed output matrix', () => {
         ),
       };
       expect(result.isValid()).toBe(true);
-      expect(seen.at(-1)).toEqual(expected);
+      if (changed === 'rows.0') {
+        expected.rows = Object.assign(new Array(rows.length), {
+          0: Number(rows[0]),
+        });
+      }
+      expect(seen.at(-1)).toEqual({ rows });
       expect(result.value).toStrictEqual(expected);
     },
   );
@@ -197,10 +183,10 @@ describe('schema contracts: parsed output matrix', () => {
     );
     suite.run({ rows: ['a', 'b'] });
     expect(suite.changed('rows.0').run({ rows: ['c', 'b'] }).value).toEqual({
-      rows: ['c!', 'b!'],
+      rows: Object.assign(new Array(2), { 0: 'c!' }),
     });
     expect(suite.changed('rows.0').run({ rows: ['d', 'b'] }).value).toEqual({
-      rows: ['d!', 'b!'],
+      rows: Object.assign(new Array(2), { 0: 'd!' }),
     });
   });
 
@@ -223,7 +209,7 @@ describe('schema contracts: parsed output matrix', () => {
     expect(Object.hasOwn(seen[2] as object, 'a')).toBe(true);
   });
 
-  it('[SC-PRESENCE] first skip-only mapping preserves a present undefined parser output', () => {
+  it('[SC-PRESENCE] skip-only callbacks retain supplied input without parsing the skipped field', () => {
     let seen: unknown;
     const suite = create(
       data => {
@@ -238,11 +224,11 @@ describe('schema contracts: parsed output matrix', () => {
 
     suite.focus({ skip: 'b' }).run({ a: 'ok', b: 'input' });
 
-    expect(seen).toEqual({ a: 'ok', b: undefined });
+    expect(seen).toEqual({ a: 'ok', b: 'input' });
     expect(Object.hasOwn(seen as object, 'b')).toBe(true);
   });
 
-  it('[SC-FAILURE-MAP] failed focused validation cannot poison the retained successful parser mapping', () => {
+  it('[SC-FAILURE-MAP] failed focused validation exposes no output and later runs use current evidence', () => {
     const seen: unknown[] = [];
     const suite = create(
       data => {
@@ -258,24 +244,16 @@ describe('schema contracts: parsed output matrix', () => {
     const invalid = suite.changed('note').run({ n: '42', note: '' });
     expect(invalid.isValid()).toBe(false);
     expect(invalid.value).toBeUndefined();
-    expect(seen[1]).toEqual({ n: 42, note: '' });
+    expect(seen[1]).toEqual({ n: '42', note: '' });
     const repaired = suite.changed('note').run({ n: '42', note: 'fixed' });
-    expect(repaired.value).toEqual({ n: 42, note: 'fixed' });
+    expect(repaired.value).toEqual({ note: 'fixed' });
   });
 });
 
-describe('schema contracts: parser mapping matrix (EX08b)', () => {
-  // Nested parsers (a parser chained after a parser) and custom registered
-  // parsers under exclusion: mapping stays honest while excluded validation
-  // stays at zero. A trailing composed condition observes validation
-  // execution only — pure parser mapping never runs it.
-  it('[SC-PARSER-MATRIX] nested built-in parsers on a skipped field map honestly from retention', () => {
-    const validated = vi.fn(() => true);
+describe('schema contracts: selected parser execution matrix (EX08b)', () => {
+  it('[SC-PARSER-MATRIX] nested built-in parsers on a skipped field leave callback input unchanged', () => {
     const schema = enforce.shape({
-      deep: compose(
-        enforce.isNumeric().toNumber().clamp(0, 120),
-        enforce.condition(validated),
-      ),
+      deep: enforce.isNumeric().toNumber().clamp(0, 120).contractTap(),
       note: enforce.isString(),
     });
     const seen: unknown[] = [];
@@ -283,12 +261,13 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
       seen.push(data);
       test('note', () => true);
     }, schema as never);
+    contractTapCalls = 0;
     const full = suite.run({ deep: '90', note: 'first' });
     expect(full.isValid()).toBe(true);
     expect(seen[0]).toEqual({ deep: 90, note: 'first' });
-    expect(validated).toHaveBeenCalledTimes(1);
+    expect(contractTapCalls).toBe(1);
 
-    validated.mockClear();
+    contractTapCalls = 0;
     seen.length = 0;
     const result = suite
       .changed('note')
@@ -296,10 +275,8 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
       .run({ deep: '50', note: 'second' });
 
     expect(result.hasErrors()).toBe(false);
-    // Both parser stages map honestly, but from the retained run ('90'):
-    // the skipped field is never revalidated and never remapped from raw.
-    expect(seen[0]).toEqual({ deep: 90, note: 'second' });
-    expect(validated).not.toHaveBeenCalled();
+    expect(seen[0]).toEqual({ deep: '50', note: 'second' });
+    expect(contractTapCalls).toBe(0);
   });
 
   it('[SC-PARSER-MATRIX] nested built-in parsers on a selected field validate exactly once with fresh output', () => {
@@ -322,12 +299,11 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
     const result = suite.changed('deep').run({ deep: '70', note: 'first' });
 
     expect(result.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ deep: 70, note: 'first' });
-    // No retry-as-probe: the trailing validator runs exactly once.
+    expect(seen[0]).toEqual({ deep: '70', note: 'first' });
     expect(validated).toHaveBeenCalledTimes(1);
   });
 
-  it('[SC-PARSER-MATRIX] nested custom parsers on a skipped field map honestly without validation', () => {
+  it('[SC-PARSER-MATRIX] nested custom parsers on a skipped field stay idle outside selection', () => {
     const validated = vi.fn(() => true);
     const schema = enforce.shape({
       a: compose(
@@ -341,7 +317,7 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
       seen.push(data);
     }, schema as never);
     suite.run({ a: 'x', b: 'ok' });
-    expect(seen[0]).toEqual({ a: 'x!!', b: 'ok' });
+    expect(seen[0]).toEqual({ a: 'x', b: 'ok' });
 
     validated.mockClear();
     seen.length = 0;
@@ -351,7 +327,7 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
       .run({ a: 'y', b: 'ok2' });
 
     expect(result.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ a: 'x!!', b: 'ok2' });
+    expect(seen[0]).toEqual({ a: 'y', b: 'ok2' });
     expect(validated).not.toHaveBeenCalled();
   });
 
@@ -374,11 +350,11 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
     const result = suite.changed('a').run({ a: 'z', b: 'ok' });
 
     expect(result.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ a: 'z!!', b: 'ok' });
+    expect(seen[0]).toEqual({ a: 'z', b: 'ok' });
     expect(validated).toHaveBeenCalledTimes(1);
   });
 
-  it('[SC-PARSER-MATRIX] a skipped custom parser maps its declared output even when validation would fail', () => {
+  it('[SC-PARSER-MATRIX] a skipped custom parser does not run even when its input would fail', () => {
     const validated = vi.fn(() => true);
     const schema = enforce.shape({
       custom: compose(
@@ -396,19 +372,17 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
 
     validated.mockClear();
     seen.length = 0;
-    // 'bad' fails the custom parser's own verdict, but the field is
-    // excluded: its declared output maps honestly without validation.
     const result = suite
       .changed('note')
       .focus({ skip: 'custom' })
       .run({ custom: 'bad', note: 'second' });
 
     expect(result.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ custom: 'good', note: 'second' });
+    expect(seen[0]).toEqual({ custom: 'bad', note: 'second' });
     expect(validated).not.toHaveBeenCalled();
   });
 
-  it('[SC-PARSER-MATRIX] an array member parser with an index skip reuses retention without validation', () => {
+  it('[SC-PARSER-MATRIX] an array member parser with an index skip does not execute', () => {
     const validated = vi.fn(() => true);
     const schema = enforce.shape({
       rows: enforce.isArrayOf(
@@ -421,7 +395,7 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
       seen.push(data);
     }, schema as never);
     suite.run({ rows: ['1', '2'], note: 'first' });
-    expect(seen[0]).toEqual({ rows: [1, 2], note: 'first' });
+    expect(seen[0]).toEqual({ rows: ['1', '2'], note: 'first' });
 
     validated.mockClear();
     seen.length = 0;
@@ -431,15 +405,13 @@ describe('schema contracts: parser mapping matrix (EX08b)', () => {
       .run({ rows: ['9', '2'], note: 'second' });
 
     expect(result.hasErrors()).toBe(false);
-    // The excluded index maps from retention (1, not fresh 9); the sibling
-    // keeps its parsed value and no excluded validation runs.
-    expect(seen[0]).toEqual({ rows: [1, 2], note: 'second' });
+    expect(seen[0]).toEqual({ rows: ['9', '2'], note: 'second' });
     expect(validated).not.toHaveBeenCalled();
   });
 });
 
 describe('schema contracts: parser before/after container with skip (T1 parser placement)', () => {
-  it('[SC-PARSER-CONTAINER] toNumber on a skipped field maps from retention with zero validation', () => {
+  it('[SC-PARSER-CONTAINER] toNumber on a skipped field stays idle with zero validation', () => {
     const validated = vi.fn(() => true);
     const schema = enforce.shape({
       age: compose(
@@ -454,7 +426,7 @@ describe('schema contracts: parser before/after container with skip (T1 parser p
     }, schema as never);
     const full = suite.run({ age: '42', note: 'first' } as never);
     expect(full.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ age: 42, note: 'first' });
+    expect(seen[0]).toEqual({ age: '42', note: 'first' });
     expect(validated).toHaveBeenCalledTimes(1);
 
     validated.mockClear();
@@ -466,9 +438,7 @@ describe('schema contracts: parser before/after container with skip (T1 parser p
 
     expect(result.hasErrors()).toBe(false);
     expect(result.hasErrors('age')).toBe(false);
-    // Honest retention: the excluded parser output stays 42, the mapped
-    // sibling carries the fresh input, and no excluded validation runs.
-    expect(seen[0]).toEqual({ age: 42, note: 'second' });
+    expect(seen[0]).toEqual({ age: '43', note: 'second' });
     expect(validated).not.toHaveBeenCalled();
   });
 
@@ -494,11 +464,11 @@ describe('schema contracts: parser before/after container with skip (T1 parser p
       .run({ age: '43', note: 'first' } as never);
 
     expect(result.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ age: 43, note: 'first' });
+    expect(seen[0]).toEqual({ age: '43', note: 'first' });
     expect(validated).toHaveBeenCalledTimes(1);
   });
 
-  it('[SC-PARSER-CONTAINER] custom parsers before/after on a skipped field map honestly with explicit counts', () => {
+  it('[SC-PARSER-CONTAINER] custom parsers before/after on a skipped field stay idle with explicit counts', () => {
     const validated = vi.fn(() => true);
     const schema = enforce.shape({
       deep: compose(
@@ -514,7 +484,7 @@ describe('schema contracts: parser before/after container with skip (T1 parser p
     exclBeforeCalls = 0;
     exclAfterCalls = 0;
     suite.run({ deep: 'x', note: 'first' } as never);
-    expect(seen[0]).toEqual({ deep: 'x<>', note: 'first' });
+    expect(seen[0]).toEqual({ deep: 'x', note: 'first' });
     expect(validated).toHaveBeenCalledTimes(1);
     expect(exclBeforeCalls).toBe(1);
     expect(exclAfterCalls).toBe(1);
@@ -529,13 +499,10 @@ describe('schema contracts: parser before/after container with skip (T1 parser p
       .run({ deep: 'y', note: 'second' } as never);
 
     expect(result.hasErrors()).toBe(false);
-    // Both parser stages map honestly from retention ('x<>', not fresh 'y');
-    // the excluded validator never runs. Parser stages execute for honest
-    // mapping without validation.
-    expect(seen[0]).toEqual({ deep: 'x<>', note: 'second' });
+    expect(seen[0]).toEqual({ deep: 'y', note: 'second' });
     expect(validated).not.toHaveBeenCalled();
-    expect(exclBeforeCalls).toBe(1);
-    expect(exclAfterCalls).toBe(1);
+    expect(exclBeforeCalls).toBe(0);
+    expect(exclAfterCalls).toBe(0);
   });
 
   it('[SC-PARSER-CONTAINER] custom parsers before/after on a selected field validate once with fresh output', () => {
@@ -560,7 +527,7 @@ describe('schema contracts: parser before/after container with skip (T1 parser p
       .run({ deep: 'z', note: 'first' } as never);
 
     expect(result.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ deep: 'z<>', note: 'first' });
+    expect(seen[0]).toEqual({ deep: 'z', note: 'first' });
     expect(validated).toHaveBeenCalledTimes(1);
   });
 });
@@ -573,12 +540,9 @@ describe('schema contracts: MP04b supported parser combinations', () => {
     { name: 'zero', value: 0 },
     { name: 'empty', value: '' },
   ])(
-    '[SC-MP04b-OUTPUT] $name parser output keeps callback/output parity under allowed focus',
+    '[SC-MP04b-OUTPUT] $name parser output keeps input and output distinct under focus',
     ({ value }) => {
-      const rule = compose(
-        (enforce as any).contractEmit(value),
-        enforce.condition(() => true),
-      );
+      const rule = (enforce as any).contractEmit(value).contractTap();
       const schema = enforce.shape({
         v: rule,
         note: enforce.isString(),
@@ -594,18 +558,15 @@ describe('schema contracts: MP04b supported parser combinations', () => {
       expect(seen[0]).toEqual({ v: value, note: 'first' });
 
       seen.length = 0;
-      // Allowed focus selects the parser field itself: fresh input maps to
-      // the declared output and callback, value, and parsed output agree.
       const focused = suite
         .changed('v')
         .run({ v: 'fresh', note: 'first' } as never);
 
       expect(focused.hasErrors()).toBe(false);
-      expect(seen[0]).toEqual({ v: value, note: 'first' });
-      expect(focused.value).toEqual({ v: value, note: 'first' });
+      expect(seen[0]).toEqual({ v: 'fresh', note: 'first' });
+      expect(focused.value).toEqual({ v: value });
       expect((focused as any).run.data.parsed).toEqual({
         v: value,
-        note: 'first',
       });
       if (value === undefined)
         expect(Object.hasOwn(seen[0] as object, 'v')).toBe(true);
@@ -613,12 +574,8 @@ describe('schema contracts: MP04b supported parser combinations', () => {
   );
 
   it('[SC-MP04b-NESTED] nested parsers keep parity on a selected field', () => {
-    const validated = vi.fn(() => true);
     const schema = enforce.shape({
-      deep: compose(
-        enforce.isNumeric().toNumber().clamp(0, 120),
-        enforce.condition(validated),
-      ),
+      deep: enforce.isNumeric().toNumber().clamp(0, 120).contractTap(),
       note: enforce.isString(),
     });
     const seen: unknown[] = [];
@@ -627,7 +584,7 @@ describe('schema contracts: MP04b supported parser combinations', () => {
       test('marker', () => true);
     }, schema as never);
     suite.run({ deep: '90', note: 'first' } as never);
-    validated.mockClear();
+    contractTapCalls = 0;
     seen.length = 0;
 
     const result = suite
@@ -635,12 +592,12 @@ describe('schema contracts: MP04b supported parser combinations', () => {
       .run({ deep: '70', note: 'first' } as never);
 
     expect(result.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ deep: 70, note: 'first' });
-    expect(result.value).toEqual({ deep: 70, note: 'first' });
-    expect(validated).toHaveBeenCalledTimes(1);
+    expect(seen[0]).toEqual({ deep: '70', note: 'first' });
+    expect(result.value).toEqual({ deep: 70 });
+    expect(contractTapCalls).toBe(1);
   });
 
-  it('[SC-MP04b-COMPOSED] composed parser stages keep parity under allowed focus', () => {
+  it('[SC-MP04b-COMPOSED] opaque root composition rejects focused execution', () => {
     const validated = vi.fn(() => true);
     const schema = compose(
       enforce.shape({
@@ -659,21 +616,21 @@ describe('schema contracts: MP04b supported parser combinations', () => {
     }, schema as never);
     const full = suite.run({ a: 'x', b: 'ok' } as never);
     expect(full.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ a: 'x!!', b: 'ok' });
+    expect(seen[0]).toEqual({ a: 'x', b: 'ok' });
 
     validated.mockClear();
     seen.length = 0;
-    const focused = suite
-      .changed('b')
-      .focus({ skip: 'a' })
-      .run({ a: 'y', b: 'ok2' } as never);
-
-    expect(focused.hasErrors()).toBe(false);
-    expect(seen[0]).toEqual({ a: 'x!!', b: 'ok2' });
+    expect(() =>
+      suite
+        .changed('b')
+        .focus({ skip: 'a' })
+        .run({ a: 'y', b: 'ok2' } as never),
+    ).toThrow(/select|container|schema/i);
+    expect(seen).toEqual([]);
     expect(validated).not.toHaveBeenCalled();
   });
 
-  it('[SC-MP04b-FAIL] failing custom parser on the selected field reports without poisoning retention', () => {
+  it('[SC-MP04b-FAIL] failing custom parser on the selected field reports without exposing failed output', () => {
     const validated = vi.fn(() => true);
     const schema = enforce.shape({
       custom: compose(
@@ -699,9 +656,7 @@ describe('schema contracts: MP04b supported parser combinations', () => {
     expect(failed.hasErrors()).toBe(true);
     expect(failed.hasErrors('custom')).toBe(true);
     expect(failed.value).toBeUndefined();
-    // The failing parser still delivers its declared output to the callback;
-    // retention keeps the last successful mapping for the next run.
-    expect(seen[0]).toEqual({ custom: 'MAPPED', note: 'first' });
+    expect(seen[0]).toEqual({ custom: 'bad', note: 'first' });
     expect(validated).not.toHaveBeenCalled();
 
     seen.length = 0;
@@ -709,7 +664,7 @@ describe('schema contracts: MP04b supported parser combinations', () => {
       .changed('custom')
       .run({ custom: 'good', note: 'first' } as never);
     expect(repaired.hasErrors()).toBe(false);
-    expect(repaired.value).toEqual({ custom: 'good', note: 'first' });
+    expect(repaired.value).toEqual({ custom: 'good' });
     expect(seen[0]).toEqual({ custom: 'good', note: 'first' });
   });
 
@@ -730,25 +685,22 @@ describe('schema contracts: MP04b supported parser combinations', () => {
       .changed('rows.0')
       .run({ rows: ['c', 'b'], note: 'first' } as never);
     expect(first.hasErrors()).toBe(false);
-    expect(first.value).toEqual({ rows: ['c!', 'b!'], note: 'first' });
-    expect(seen.at(-1)).toEqual({ rows: ['c!', 'b!'], note: 'first' });
+    expect(first.value).toEqual({
+      rows: Object.assign(new Array(2), { 0: 'c!' }),
+    });
+    expect(seen.at(-1)).toEqual({ rows: ['c', 'b'], note: 'first' });
 
     const second = suite
       .changed('rows.0')
       .run({ rows: ['d', 'b'], note: 'first' } as never);
     expect(second.hasErrors()).toBe(false);
-    expect(second.value).toEqual({ rows: ['d!', 'b!'], note: 'first' });
+    expect(second.value).toEqual({
+      rows: Object.assign(new Array(2), { 0: 'd!' }),
+    });
   });
 });
 
 describe('schema contracts: draft versus complete output (AC05 characterization)', () => {
-  // ADR (maintainer ruling embedded): focused-run callback data and result
-  // value are DRAFTS with per-field provenance, not certified complete
-  // output. Only full runs certify complete InferSchemaOutput. No signature
-  // changes ship in this patch: these tests pin the current observable
-  // semantics (own-property presence, validity, recovery) so a future
-  // draft-typed callback can be judged against recorded behavior. Unreported
-  // changes to retained fields remain caller invalidation responsibility.
   function draftSuite() {
     const seen: unknown[] = [];
     const suite = create(
@@ -769,22 +721,20 @@ describe('schema contracts: draft versus complete output (AC05 characterization)
     const result = suite.changed('note').run({ note: 'ok' } as never);
     expect(seen).toHaveLength(1);
     expect(Object.hasOwn(seen[0] as object, 'note')).toBe(true);
-    // The untouched schema-only field has no mapping yet: absence (not
-    // undefined) marks the draft.
     expect(Object.hasOwn(seen[0] as object, 'n')).toBe(false);
     expect(result.isValid()).toBe(true);
     expect(Object.hasOwn((result.value ?? {}) as object, 'n')).toBe(false);
   });
 
-  it('[SC-AC05] established mapping hydrates retained fields into later drafts', () => {
+  it('[SC-AC05] prior output is absent from later drafts unless revalidated', () => {
     const { seen, suite } = draftSuite();
     const full = suite.run({ n: '42', note: 'ok' });
     expect(full.isValid()).toBe(true);
     expect(full.value).toEqual({ n: 42, note: 'ok' });
     const focused = suite.changed('note').run({ note: 'next' } as never);
     expect(focused.isValid()).toBe(true);
-    expect(focused.value).toEqual({ n: 42, note: 'next' });
-    expect(seen[1]).toEqual({ n: 42, note: 'next' });
+    expect(focused.value).toEqual({ note: 'next' });
+    expect(seen[1]).toEqual({ note: 'next' });
   });
 
   it('[SC-AC05] valid focused value never carries unvalidated current input', () => {
@@ -805,18 +755,15 @@ describe('schema contracts: draft versus complete output (AC05 characterization)
       }),
     );
     expect(suite.run({ name: 'x', note: 'ok' }).isValid()).toBe(true);
-    // `name` is untouched by this run and invalid in the current input: the
-    // valid result keeps the established 'x', never raw 123, while the
-    // callback still declares under current input.
     const focused = suite
       .changed('note')
       .run({ name: 123, note: 'ok' } as never);
     expect(focused.isValid()).toBe(true);
-    expect(focused.value).toEqual({ name: 'x', note: 'ok' });
+    expect(focused.value).toEqual({ note: 'ok' });
     expect(seen[seen.length - 1]).toEqual({ name: 123, note: 'ok' });
   });
 
-  it('[SC-AC05] absent optional materializes as own undefined everywhere', () => {
+  it('[SC-AC05] optional output materializes only when its schema is executed', () => {
     const seen: unknown[] = [];
     const suite = create(
       (data: unknown) => {
@@ -829,21 +776,18 @@ describe('schema contracts: draft versus complete output (AC05 characterization)
       }),
     );
     const full = suite.run({ note: 'ok' });
-    // Absent optional input is consistently present-undefined (never
-    // absent) in full output, focused output, and callback data alike.
     expect(Object.hasOwn((full.value ?? {}) as object, 'opt')).toBe(true);
     const focused = suite.changed('note').run({ note: 'next' } as never);
     expect(focused.isValid()).toBe(true);
-    expect(Object.hasOwn((focused.value ?? {}) as object, 'opt')).toBe(true);
-    expect(Object.hasOwn(seen[1] as object, 'opt')).toBe(true);
-    expect(seen[1]).toEqual({ note: 'next', opt: undefined });
+    expect(Object.hasOwn((focused.value ?? {}) as object, 'opt')).toBe(false);
+    expect(Object.hasOwn(seen[1] as object, 'opt')).toBe(false);
+    expect(seen[1]).toEqual({ note: 'next' });
   });
 
   it('[SC-AC05] invalid parser input on an untouched field stays a draft without fabrication', () => {
     const { seen, suite } = draftSuite();
     const result = suite.changed('note').run({ note: 'ok' } as never);
     expect(result.isValid()).toBe(true);
-    // No parser ran for n (present nowhere): nothing fabricated.
     expect(seen[0]).toEqual({ note: 'ok' });
   });
 

@@ -1,7 +1,7 @@
 import { isStringValue } from 'vest-utils';
 
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
-import { mapPassing, registerParserRules } from './parserUtils';
+import { mapPassing } from './parserUtils';
 
 /**
  * Total string-transform application: string parsers declare a
@@ -172,5 +172,3 @@ export const stringParsers = {
   trimEnd,
   trimStart,
 } as const;
-
-registerParserRules(stringParsers);

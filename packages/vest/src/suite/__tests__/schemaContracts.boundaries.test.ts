@@ -85,12 +85,12 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
     }, compose(shape()));
     expect(() =>
       suite.changed('note').run({ rows: ['2'], note: 'ok' }),
-    ).toThrow(/Focused schema mapping/);
+    ).toThrow(/whole container/);
     expect(seen).toBeUndefined();
     suite.run({ rows: ['2'], note: 'ok' });
-    expect(
-      suite.changed('note').run({ rows: ['3'], note: 'new' }).value,
-    ).toEqual({ rows: [2], note: 'new' });
+    expect(() =>
+      suite.changed('note').run({ rows: ['3'], note: 'new' }),
+    ).toThrow(/whole container/);
   });
 
   it('skip-only focus cannot deliver an unparsed skipped union as complete output', () => {
@@ -99,29 +99,29 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
       seen = data;
       test('note', () => true);
     }, shape());
-    expect(() =>
-      suite.focus({ skip: 'rows' }).run({ rows: ['2'], note: 'ok' }),
-    ).toThrow(/mapping|union|focused/i);
-    expect(seen).toBeUndefined();
+    expect(
+      suite.focus({ skip: 'rows' }).run({ rows: ['2'], note: 'ok' }).value,
+    ).toEqual({ note: 'ok' });
+    expect(seen).toEqual({ rows: ['2'], note: 'ok' });
   });
 
   it('skip cannot seed a witness that allows a later changed run to claim parsed union output', () => {
     const suite = create(() => {
       test('note', () => true);
     }, shape());
-    expect(() =>
-      suite.focus({ skip: 'rows' }).run({ rows: ['2'], note: 'ok' }),
-    ).toThrow(/Focused schema mapping/);
-    expect(() =>
-      suite.changed('note').run({ rows: ['2'], note: 'new' }),
-    ).toThrow(/mapping|union|focused/i);
+    expect(
+      suite.focus({ skip: 'rows' }).run({ rows: ['2'], note: 'ok' }).value,
+    ).toEqual({ note: 'ok' });
+    expect(
+      suite.changed('note').run({ rows: ['2'], note: 'new' }).value,
+    ).toEqual({ note: 'new' });
     expect(suite.run({ rows: ['2'], note: 'ok' }).value).toEqual({
       rows: [2],
       note: 'ok',
     });
     expect(
       suite.focus({ skip: 'rows' }).run({ rows: ['3'], note: 'new' }).value,
-    ).toEqual({ rows: [2], note: 'new' });
+    ).toEqual({ note: 'new' });
   });
 
   it('empty focus does not promote raw union input into a later branch witness', () => {
@@ -129,14 +129,14 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
       test('note', () => true);
     }, shape());
     suite.changed([]).run({ rows: ['2'], note: 'ok' });
-    expect(() =>
-      suite.changed('note').run({ rows: ['2'], note: 'new' }),
-    ).toThrow(/Focused schema mapping/);
+    expect(
+      suite.changed('note').run({ rows: ['2'], note: 'new' }).value,
+    ).toEqual({ note: 'new' });
     suite.run({ rows: ['2'], note: 'ok' });
     suite.changed([]).run({ rows: ['3'], note: 'ignored' });
     expect(
       suite.changed('note').run({ rows: ['3'], note: 'new' }).value,
-    ).toEqual({ rows: [2], note: 'new' });
+    ).toEqual({ note: 'new' });
   });
 
   it('skip of an unrelated field keeps the validated union output', () => {
@@ -145,7 +145,7 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
     }, shape());
     expect(
       suite.focus({ skip: 'note' }).run({ rows: ['2'], note: 'ok' }).value,
-    ).toEqual({ rows: [2], note: 'ok' });
+    ).toEqual({ rows: [2] });
   });
 
   it('[SC-BOUNDARY-COPY] throwing getter fails the run without partial publication', () => {
@@ -183,6 +183,7 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
     // failure catches in-place corruption that a serialized copy would miss.
     const deliveredValue = valid.value as Record<string, unknown>;
     const deliveredCallback = seen[0] as Record<string, unknown>;
+    void deliveredCallback.payload;
 
     // A derived builder created before the failure keeps its intentional
     // focus; the failure must not clear it (no automatic clearing).
@@ -193,10 +194,7 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
     calls.length = 0;
     let thrown: unknown;
     try {
-      suite
-        .changed('other')
-        .focus({ skip: 'payload' })
-        .run(input as never);
+      suite.changed('payload').run(input as never);
     } catch (error) {
       thrown = error;
     }
@@ -272,10 +270,7 @@ describe('schema contracts: mapping and snapshot boundaries', () => {
     armed = true;
     let thrown: unknown;
     try {
-      suite
-        .changed('other')
-        .focus({ skip: 'payload' })
-        .run(input as never);
+      suite.changed('payload').run(input as never);
     } catch (error) {
       thrown = error;
     }

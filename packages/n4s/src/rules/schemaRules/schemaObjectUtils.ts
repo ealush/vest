@@ -1,4 +1,4 @@
-import { isObject, isUnsafeKey } from 'vest-utils';
+import { hasOwnProperty, isObject, isUnsafeKey } from 'vest-utils';
 
 /**
  * Returns only own enumerable keys for object-like values.
@@ -32,6 +32,7 @@ export function findDangerousOwnKey(value: unknown): string | null {
  */
 export function safeShallowCopy(
   value: Record<string, any>,
+  evaluated?: Record<string, unknown>,
 ): Record<string, any> {
   const output: Record<string, any> = {};
 
@@ -39,11 +40,26 @@ export function safeShallowCopy(
     if (isUnsafeKey(key)) {
       continue;
     }
-
-    output[key] = value[key];
+    copyOwnProperty(output, value, key, evaluated);
   }
 
   return output;
+}
+
+function copyOwnProperty(
+  output: Record<string, any>,
+  value: Record<string, any>,
+  key: string,
+  evaluated: Record<string, unknown> | undefined,
+): void {
+  if (!evaluated || hasOwnProperty(evaluated, key)) {
+    output[key] = value[key];
+    return;
+  }
+  // Projection may carry unrelated properties through its working value.
+  // Preserve their descriptors without invoking their getters.
+  const descriptor = Object.getOwnPropertyDescriptor(value, key);
+  Object.defineProperty(output, key, { ...descriptor, configurable: true });
 }
 
 /**

@@ -128,16 +128,18 @@ function runPartial<T extends Record<string, any>>(
     return { ...RuleRunReturn.Failing(value), path: [invalidKey] };
   }
 
-  const parsedValue = safeShallowCopy(value);
+  const parsedValue = safeShallowCopy(value, schema);
   const parsedEntriesOrFailure = validateProvidedKeys(value, schema);
   if ('pass' in parsedEntriesOrFailure) {
     return parsedEntriesOrFailure;
   }
 
-  return RuleRunReturn.Passing({
-    ...parsedValue,
-    ...parsedEntriesOrFailure.parsedEntries,
-  } as T);
+  return RuleRunReturn.Passing(
+    Object.defineProperties(
+      parsedValue,
+      Object.getOwnPropertyDescriptors(parsedEntriesOrFailure.parsedEntries),
+    ) as T,
+  );
 }
 
 function invalidPartialKey(

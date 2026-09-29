@@ -269,21 +269,26 @@ as the affected set. This preserves `only()` semantics while giving frameworks a
 
 `include()` then becomes a lower-level escape hatch, not the primary way to express cross-field behavior.
 
-`schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs. Selective schema execution additionally re-runs the projected rule per affected array index / record key, so an affected member failure hidden behind an earlier unaffected one is still surfaced.
+`schema.run()` reports only the first failure (pre-existing n4s behavior): with both `a` and `b` invalid, the result carries `path: ['a']` only, so surfacing every error takes repeated runs. Selective schema execution runs each selected array index / record key on its own, so an affected member failure hidden behind an earlier unaffected one is still surfaced.
 
 Split of responsibilities: Enforce owns spatial and structural truth (the graph, schema paths, selective execution); Vest owns temporal truth (retained state, test focus, reconciliation). The handshake between them is narrow — Vest hands n4s the schema, the run data, and the raw changed names; n4s returns the concrete affected set. Vest resolves that set once through the canonical planner, then gives the exact same set to both suite focus and schema execution via `runSchemaPaths(schema, data, options?)`. Everything after that is n4s-owned — container-kind detection, fragment projection, short-circuit supplementation, chain-validator preservation, and member execution. Vest never reverse-engineers container semantics.
 
-For projectable shapes and selected array or tuple members, validators outside the affected set do not execute. Each selected rule executes once; a failed n4s verdict is never retried through another validation entry point. Union elements use ordered any-match evaluation, which can evaluate several alternatives. Keep validators pure: these guarantees do not turn validation into a side-effect scheduler.
+Validators outside the affected set never execute. Each selected rule executes once; a failed n4s verdict is never retried through another validation entry point. Union elements use ordered any-match evaluation, which can evaluate several alternatives. Keep validators pure: these guarantees do not turn validation into a side-effect scheduler.
 
-First focused runs over untouched unions are an explicit error boundary in V1. Parser-only mapping cannot choose a union branch without validation, so when neither the focused fields cover the union member nor a prior mapped result witnesses it, the run throws a focused-mapping error naming the path instead of calling the callback with raw input. Run a full validation first — or focus the union path itself — to establish the witness that warm focused runs reuse.
+Planning decides whether a selection can execute on its own before any validator, parser, or user test runs. When it cannot, `changed()` throws `SchemaExclusionError` instead of running the whole schema and hiding the unselected verdicts. Select the containing field, or run the full suite, in these cases:
 
-This boundary also applies through `compose()` and to unions excluded by `focus({ skip: ... })`. A skip-only run restores skipped regions from a prior complete mapping; without one, an unresolved skipped union throws before the callback runs. Skipping an unrelated field still permits the validated union output. A rejected mapping does not establish a witness for later runs. `changed([])` supplies best-effort declaration data without validating any fields and preserves the previous mapping history; it cannot establish or replace a branch witness. `focus({ skip: true })` (skip-all) likewise validates nothing and establishes no witness, but unlike `changed([])` it destructively clears retained verdicts for the skipped (all) fields; a later full run revalidates from scratch.
+- a member of a `compose()` root, or a descendant of any container with validators chained after it (for example `enforce.shape({...}).someRule()`);
+- an index of a root-level array schema;
+- a descendant inside a union member (`rows.0.kind` under `isArrayOf(A, B)`) — select the member (`rows.0`) instead;
+- a descendant of a scalar field, or an unknown property whose value is explicitly `undefined` on a strict shape.
+
+Record keys are selected independently: `changed('dict.key')` runs the record's key and value rules for that entry only. Unknown fields and prototype-sensitive names (`__proto__`, `constructor`, `prototype`) select nothing. Schemas that are not n4s schemas (foreign Standard Schema validators) have no member structure and validate whole; Vest's focus then scopes which results are reported.
 
 Affected-path planning never invokes input accessors, including concrete array-index getters. Accessor-backed subtrees expand from declared schema keys only; dynamic data keys behind an accessor cannot be enumerated without reading it.
 
-Container validators and schemas without recognizable metadata can require a full-schema fallback. That fallback can execute untouched validators — explicitly skipped fields are still excluded (composed chains omit skipped top-level keys and keep the root chain, including skip-only runs over composed schemas) — and failures are then narrowed to the affected paths. Skips that descend inside a `record()` region cannot be honored (every key shares one value rule) and fail closed with a `SchemaExclusionError` before any validator runs; skipping the whole record remains supported. An untouched dependency source does not, by itself, require full execution: ordinary object-schema projections can validate a dependent without revalidating its sources. Relationships describe invalidation, not execution prerequisites. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
+Skips that descend inside a `record()` region cannot be honored (every key shares one value rule) and fail closed with a `SchemaExclusionError` before any validator runs; skipping the whole record remains supported. An untouched dependency source does not, by itself, require full execution: ordinary object-schema projections can validate a dependent without revalidating its sources. Relationships describe invalidation, not execution prerequisites. Schema validation remains short-circuiting, and selective execution supplements affected members hidden behind the first failure. A focused result is not proof that the entire current input passed the schema. Run the full suite before submission.
 
-Focused callback data and result values are drafts with per-field provenance, not certified complete output. A first focused run exposes only the fields it executed — untouched required properties are absent (never fabricated), and only a full run certifies complete schema output. Later focused runs hydrate retained fields from the last complete mapping. An absent optional input materializes as an own `undefined` consistently across full output, focused output, and callback data. Unreported changes to retained fields remain caller invalidation responsibility: `changed()` reports invalidation for the fields you name, it does not deep-diff your data.
+A `changed()` run's callback receives the input exactly as supplied: unselected fields are neither parsed nor validated to prepare it. Its `result.value` and `run.data.parsed` are drafts holding only the values this run established — unselected properties are absent and unselected array positions are holes. Output from earlier runs is never carried forward, and resuming serialized state restores verdicts, not output. Only a full run certifies complete schema output. Unreported changes to other fields remain caller invalidation responsibility: `changed()` reports invalidation for the fields you name, it does not deep-diff your data.
 
 For Vest 6 compatibility, the existing suite callback, `only()`, `focus()`, and `suite.get()` types keep their complete-output contract even though focused runtime data can be incomplete. The new `changed()` result is draft-typed, while a full-run result after `if (result.valid)` remains complete. Narrow callback reads defensively when the suite can run in a focused mode. The fully sound callback and existing-focused-result retype is planned for Vest 7 in [#1327](https://github.com/ealush/vest/issues/1327):
 
@@ -314,7 +319,7 @@ const full = suite.run({ n: '7', note: 'ok' });
 if (full.valid) full.value.n.toFixed(); // complete: compiles
 ```
 
-Nested `only()` selects known nested leaves in shape/partial/loose hierarchies: `only('box.b').focus({ skip: ['box.a'] })` (and plain `only('box.b')`) validates `box.b` exactly once while `box.a` never executes; `only(['box.a','box.b'])` runs both. Parent `only('box')` keeps existing inclusion semantics and wins over synthesized sibling skips. Numeric brackets (`rows[0]`) normalize to dotted form; quoted-string brackets (`box["b"]`) are not supported and preserve empty-selection. Array, tuple, and record descents fail closed with `SchemaExclusionError` before excluded work executes. Union and composed-opaque descents are currently unresolvable (empty selection, open follow-up to make fail-closed); unknown paths and scalar descents preserve the established empty-selection behavior.
+Nested `only()` selects known nested leaves in shape/partial/loose hierarchies: `only('box.b').focus({ skip: ['box.a'] })` (and plain `only('box.b')`) validates `box.b` exactly once while `box.a` never executes; `only(['box.a','box.b'])` runs both. Parent `only('box')` keeps existing inclusion semantics and wins over synthesized sibling skips at any depth: `only(['box.inner', 'box.inner.a'])` runs all of `box.inner`. Numeric brackets (`rows[0]`) normalize to dotted form; quoted-string brackets (`box["b"]`) are not supported and preserve empty-selection. Array, tuple, and record descents fail closed with `SchemaExclusionError` before excluded work executes. Union and composed-opaque descents are currently unresolvable (empty selection, open follow-up to make fail-closed); unknown paths and scalar descents preserve the established empty-selection behavior.
 
 Projection reads construction-time metadata and never probes validators with synthetic data. Partial fragments preserve the distinction between an absent property and an own property holding `undefined`, including declared non-enumerable properties. A shape of `optional()` members has different semantics from `partial()`.
 
@@ -339,7 +344,7 @@ Behavior notes:
 
 - Returns a focused suite, so it chains with the other focus APIs: `suite.changed('password').only('confirmPassword').run(data)`. Combining `only()` with `changed()` runs the union — the `only()` base fields plus the affected set. This is not "only b": to run exactly `b` and nothing else, use `only('b')` without `changed()`.
 - Unknown changed names select nothing and fail silently: selectors accept arbitrary strings, so a misspelled `changed('pasword')` validates an empty region instead of throwing. The result then reflects retained state, not the misspelled field. There is no compile-time check for changed names in V1 — verify field names when a changed run reports no executed tests.
-- Selective means narrowed reporting, not guaranteed non-execution: when the schema cannot be projected for the affected set (unprojectable composition), the run executes the full schema and filters failures to the affected set afterwards. Untouched validators may execute — including any side effects in user tests declared under them — even though their failures are not reported. Hard `skip` is the only exclusion that guarantees a validator never executes.
+- Selective means non-execution: schema rules outside the affected set never run. When the schema cannot execute the affected set on its own (see above), the run throws `SchemaExclusionError` before any rule or user test executes.
 - Changing a whole object selects its descendants; changing a descendant also invalidates rules that depend on that whole object. Expansion remains direct, not transitive.
 - Changed names accept dotted spelling or numeric brackets. Vest normalizes `travelers[1].passportCountry` to the canonical dotted form `travelers.1.passportCountry` before planning and reporting focus. Quoted-string brackets (e.g. `box["b"]`) do not resolve to the property and preserve empty selection. Literal property names containing dots and all-numeric record keys are ambiguous in this string API and cannot be targeted as single segments — this concerns string-path addressing only; declared numeric record keys keep exact graph identity as described above.
 - Without a schema, or when the schema declares no `dependsOn` edges, `changed()` degrades gracefully: the affected set is the named fields themselves, equivalent to `only()` for that run.
@@ -360,7 +365,7 @@ The core composition contract is below. `affected(a)` is the named fields plus e
 | `changed(a).focus({ onlyGroup: g })`              | Selected user tests must also belong to `g`; synthetic schema tests remain top-level.                                                                                                                                              |
 | `changed(a).focus({ skipGroup: g })`              | User tests in `g` do not execute. Existing excluded group history is retained; this is not destructive field skip.                                                                                                                 |
 | `only(b)` without `changed()`                     | Selects `b`; dependents are not expanded. Inclusion narrows reporting, not predicate execution: schema predicates outside `b` (especially under composition) may still execute, unlike hard `skip` exclusions which never execute. |
-| `focus({ skip: s })`, with or without `changed()` | `s` is excluded from execution and follows destructive skip semantics: its retained state is cleared, and mapping for skipped regions is restored from a prior complete run — or throws for an unwitnessed union.                  |
+| `focus({ skip: s })`, with or without `changed()` | `s` is excluded from execution and follows destructive skip semantics: its retained state is cleared and its input is passed through unparsed.                                                                                     |
 
 ### End-to-End: Revalidating a Form on Change
 
@@ -405,164 +410,13 @@ result = suite.changed(['password', 'email']).run(nextData);
 
 ### Custom Parsers and Selective Runs
 
-Selective runs apply parser steps (built-in steps like `trim()` or `toNumber()`, which only transform data) to untouched fields without executing validation predicates — so those transforms must be pure. Custom rules added with `enforce.extend` are treated as validators by default and are never executed speculatively. If a custom rule is really a parser — a pure transformation that cannot fail on its own — register it explicitly so selective runs can apply it:
+Parser steps — built-in ones like `trim()` or `toNumber()` and custom `enforce.extend` rules that return a transformed `type` — run only as part of validating a selected field. Selective runs never apply them to untouched fields, so custom transforms need no registration. See [Input vs output types with parsers](./schema_validation#input-vs-output-types-with-parsers) for the full typing story.
 
-```ts
-enforce.extend(
-  {
-    normalizeId: (value: string) => ({
-      pass: true,
-      type: value.trim().toUpperCase(),
-    }),
-  },
-  { parsers: ['normalizeId'] },
-);
-```
-
-Unlisted custom rules keep validator treatment: they run only when their own field is in the affected set, never as mapping helpers. See [Input vs output types with parsers](./schema_validation#input-vs-output-types-with-parsers) for the full typing story.
-
-## Dependencies Are Not Automatically Transitive
-
-```text
-A → B
-B → C
-```
-
-where `A → B` means "target `B` may be stale when `A` changes."
-
-If `A` changes, `B` must be reconsidered. `C` does not — `B`'s value didn't change. Expansion is on changed values, not transitive closure. If `C` also depends on `A`, declare it explicitly. Revalidation does not imply mutation: rerunning `B` because `A` changed does not mean `B` changed, so `B`'s dependents remain valid.
-
-## Circular Dependencies
-
-Cycles are valid.
-
-```ts
-const schema = enforce.shape({
-  startDate: enforce.isString().dependsOn($ => $.endDate),
-  endDate: enforce.isString().dependsOn($ => $.startDate),
-});
-```
-
-Changing `startDate` invalidates `endDate` and vice versa. No loop occurs because dependencies describe invalidation, not imperative calls.
-
-> **Deferred to v2 — `effect: 'revalidate'`**
->
-> V1: only `effect: 'invalidate'` ("previous result is stale") is supported.
-> Supplying `effect: 'revalidate'` (immediately rerun vs stale) is **deferred to v2** and will throw with `err.message` exactly `effect:'revalidate' deferred to v2 — only 'invalidate' supported in V1`.
-> The assertion is at composition time (`enforce` + `lazy.ts`):
->
-> ```ts
-> /** @deferred v2 — effect:'revalidate' deferred, only 'invalidate' supported in V1 */
-> if (effect !== 'invalidate')
->   throw new Error(
->     `effect:'${effect}' deferred to v2 — only 'invalidate' supported in V1`,
->   );
-> ```
->
-> Future `revalidate` vs `invalidate` distinction (immediately rerun vs stale) is deferred.
->
-> `revalidates()` was removed before V1; use `.dependsOn()` for the same edge.
-
-## Introspection
-
-Dependency information is part of the Enforce schema and inspectable without running a suite:
-
-```ts
-schema.describe();
-```
-
-Serializable form:
-
-```json
-{
-  "dependencies": [
-    {
-      "target": [{ "type": "property", "key": "confirmPassword" }],
-      "sources": [[{ "type": "property", "key": "password" }]]
-    }
-  ],
-  "relationships": [
-    {
-      "source": [{ "type": "property", "key": "password" }],
-      "target": [{ "type": "property", "key": "confirmPassword" }],
-      "effect": "invalidate"
-    }
-  ]
-}
-```
-
-Array item (the item binding is `<arrayKey>.$item`):
-
-```json
-{
-  "target": [
-    { "type": "property", "key": "travelers" },
-    { "type": "item", "binding": "travelers.$item" },
-    { "type": "property", "key": "passportNumber" }
-  ],
-  "sources": [
-    [
-      { "type": "property", "key": "travelers" },
-      { "type": "item", "binding": "travelers.$item" },
-      { "type": "property", "key": "passportCountry" }
-    ]
-  ]
-}
-```
-
-The representation is:
-
-```ts
-type PropertySegment = { type: 'property'; key: PropertyKey };
-type ItemSegment = { type: 'item'; binding: string };
-type SchemaPath = readonly (PropertySegment | ItemSegment)[];
-interface SchemaRelationship {
-  source: SchemaPath;
-  target: SchemaPath;
-  effect: 'invalidate';
-  metadata?: { reason?: string };
-}
-interface SchemaDependency {
-  target: SchemaPath;
-  sources: readonly SchemaPath[];
-}
-```
-
-Consumable by Vest, framework adapters, devtools, docs, and agents. Relationships stay out of `~standard`.
-
-## What Dependencies Intentionally Do Not Do
-
-- Does not execute anything or impose validation order — purely invalidation metadata.
-- Does not inspect suite closures.
-- Does not make arbitrary JS declarative.
-- Does not replicate `test()`/`group()`/`warn()`/`only()`/`skipWhen`/async inside Enforce.
-- Does not require deps for every cross-field test.
-- Does not change Standard Schema.
-- Does not change `only()` — `changed()` is separate.
-
-## Interaction with Other Features
-
-Schema Relationships are **metadata + `suite.changed()` in V1**. `describe()` records the graph without running a suite; `suite.changed()` consumes it to select affected tests.
-
-| Feature                                     | Effect on `describe()`                                                                                                                  | Effect on suite `run()` / `suite.changed()` in V1                                                                                                                                   |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `skipWhen` (retains)                        | records                                                                                                                                 | `run()` unchanged; `changed()` treats dependent as candidate but Vest skips if `skipWhen` hides it                                                                                  |
-| `omitWhen` (removes)                        | records                                                                                                                                 | `run()` unchanged; `changed()` still records edge but omitted test never runs                                                                                                       |
-| `optional('field')`                         | records                                                                                                                                 | `run()` unchanged — edge exists even if optional field is absent; `changed()` includes it when source changes                                                                       |
-| `include().when()`                          | **does not record** — `include` is a Vest suite modifier, not an n4s schema relationship; `schema.describe()` has no `include` metadata | `changed()` remains the interaction-aware operation                                                                                                                                 |
-| `only` / `skip` / `onlyGroup` / `skipGroup` | records (expansion ignores focus: `only('password')` does not auto-include `confirmPassword`)                                           | `changed('password')` does include it; `only` merges into the affected set; synthesized failures are top-level tests, so field focus and the documented top-level group rules apply |
-| `group` / `each`                            | records (rebased)                                                                                                                       | `run()` unchanged; `changed()` respects rebasing and same-item scoping; keyed `each` results follow item identity across reordered array positions                                  |
-| `warn`                                      | records                                                                                                                                 | `run()` unchanged; `changed()` includes warn dependents as normal tests                                                                                                             |
-
-V1 ships `suite.changed(field).run(data)` with dependency-aware affected-set expansion (flat, nested, reusable, array same-item, and root→array fan-out via run-time `data`). There is no options overload in V1:
-
-> `suite.changed()` takes only the changed fields. AbortSignal-based cancellation is not a V1 feature, so no typed option implies it. JavaScript callers passing any second argument fail explicitly — `{ signal }` with `Error('suite.changed({ signal: AbortSignal }) deferred to v2')`, anything else with `Error('suite.changed() accepts no options in V1')` — instead of being silently ignored. Async test callbacks still receive their own `AbortSignal`.
->
 > No behavior change for current V1 usage `suite.changed(field).run(data)`.
 
 ## Parsed Callback Snapshot Ownership
 
-Schema-backed runs keep the caller's input, Vest's retained mapping, callback data, and published result as separate ownership boundaries. For supported data containers:
+Schema-backed runs keep the caller's input, callback data, and published result as separate ownership boundaries. For supported data containers:
 
 - callback and result mutations do not mutate the caller's input;
 - repeated references remain aliases within each copy;
@@ -580,11 +434,11 @@ These are ownership guarantees, not a promise that every copied JavaScript value
 
 ## Related
 
-- [Schema Validation](./schema_validation) — passing a schema to `create()`, parsed data, and registering custom `parsers`.
+- [Schema Validation](./schema_validation) — passing a schema to `create()` and parsed data.
 - [Focused Updates](./focused_updates) — the `only()` / `skip()` / `focus()` semantics that `changed()` builds on.
 - [Handling User Interaction](./dirty_checking) — the `onBlur` / `onChange` patterns where `changed()` fits.
-- [Creating Custom Rules](../enforce/creating_custom_rules) — `enforce.extend`, including parser-style rules.
-- [Data Parsers](../enforce/builtin-enforce-plugins/data_parsers) — the built-in parser steps selective runs can apply safely.
+- [Creating Custom Rules](../enforce/creating_custom_rules) — `enforce.extend`, including transforming rules.
+- [Data Parsers](../enforce/builtin-enforce-plugins/data_parsers) — the built-in parser steps.
 
 ## Acceptance and interaction guarantees
 
@@ -628,6 +482,14 @@ export function registrationAcceptance() {
     confirm: 'new',
     note: 'ready',
   });
-  return { errorsAfterChange, value: repaired.value };
+  // Focused output holds only what this run established: { note: 'ready' }.
+  void repaired.value;
+  // A full run establishes the complete value (e.g. on submit).
+  const submitted = suite.run({
+    password: 'new',
+    confirm: 'new',
+    note: 'ready',
+  });
+  return { errorsAfterChange, value: submitted.value };
 }
 ```

@@ -1,11 +1,5 @@
-import {
-  FocusedSchemaMappingError,
-  mapWithoutValidation,
-  parseAffectedFieldName,
-  runSchemaPaths,
-} from 'n4s/exports/internal';
+import { runSchemaPaths } from 'n4s/exports/internal';
 import type {
-  MappingProvenance,
   SelectiveExecutionCoverage,
   SelectiveSchemaResult,
 } from 'n4s/exports/internal';
@@ -14,15 +8,10 @@ import {
   asArray,
   CB,
   freezeAssign,
-  hasOwnProperty,
   isArray,
-  isArrayPrefix,
   isBoolean,
   isNullish,
-  isObject,
-  isRecord,
   isStringValue,
-  isUnsafeKey,
   withResolvers,
 } from 'vest-utils';
 
@@ -31,10 +20,6 @@ import { useEmit } from '../core/VestBus/VestBus';
 import { SuiteContext } from '../core/context/SuiteContext';
 import { IsolateReorderable, VestRuntime } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
-import type {
-  MappedSchemaOutput,
-  TIsolateSuite,
-} from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
 import { only, skip } from '../hooks/focused/focused';
 import {
@@ -42,7 +27,7 @@ import {
   TFieldName,
   TGroupName,
   TSchema,
-  InferSchemaOutput,
+  DraftSchemaOutput,
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
@@ -54,7 +39,8 @@ import {
   SuiteCallbackWithSchema,
   SuiteRunArguments,
 } from './SuiteTypes';
-import { cloneDataTree, cloneDetachedDataTree } from './cloneDataTree';
+import { cloneDataTree, cloneDeclarationInput } from './cloneDataTree';
+import { applySchemaOutput, schemaOutput } from './schemaOutput';
 import {
   schemaFailureField,
   schemaFailureKey,
@@ -220,7 +206,6 @@ export function useCreateSuiteRunner<
         })
       : undefined;
 
-    const parsedDataChunk = getParsedDataChunk(schemaRunResult);
     // Retention follows the evaluated region: the resolved affected set for
     // changed() runs, the `only` names for inclusion-focused runs. Full runs
     // re-evaluate everything and skip-only runs follow destructive skip
@@ -231,47 +216,39 @@ export function useCreateSuiteRunner<
       coverage.rootReevaluated,
     );
 
-    const parsedData = (
-      schema ? snapshotParsedData(parsedDataChunk) : undefined
-    ) as Partial<InferSchemaOutput<S>> | undefined;
-
-    const callbackMapping = getCallbackMapping({
-      affected: mappedAffected,
-      fallback: schemaInput,
-      previous: usePreviousMappedSchemaOutput(),
-      schema,
-      schemaRunResult,
-      // Only boolean skip-all reaches the unfocused mapping path with this
-      // flag: changed([]) carries __skipAll with an explicitly empty (non-
-      // null) affected set, which already preserves history by contract.
-      skipAll: transformedModifiers.skip === true,
-      skipped: skippedFocusPaths(transformedModifiers.skip),
-    });
-    const callbackInput = callbackMapping.input;
-    const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
-    const runData =
-      schema && schemaRunResult?.every(result => result.pass)
-        ? parsedDataChunk
-        : schemaInput;
-    // Schema-mapped callback data, public output, and the retained cache must
-    // never share mutable containers. Preserve the established raw-input
-    // identity for schema failures and schema-less suites.
-    // Proof boundary: a valid result's typed `value` carries only established
-    // output (proven retention overlaid with the validated region), never
-    // best-effort callback data holding unvalidated raw input.
-    const provenOutput =
-      successfulSchemaResult(schemaRunResult) !== null
-        ? callbackMapping.proven
-        : undefined;
-    const resultOutput = schema
-      ? cloneDetachedDataTree(
-          provenOutput !== undefined ? provenOutput : callbackInput,
+    const fullSchemaRun = isFullSchemaRun(changedFields, transformedModifiers);
+    const output = schema
+      ? schemaOutput(
+          schemaRunResult,
+          fullSchemaRun ? null : mappedAffected,
+          skippedFocusPaths(transformedModifiers.skip),
+          transformedModifiers.skip === true ||
+            transformedModifiers.__skipAll === true,
         )
-      : callbackInput;
-    const runDataSnapshot =
-      schema && schemaRunResult?.every(result => result.pass)
-        ? cloneDataTree(runData)
-        : runData;
+      : schemaInput;
+    const parsedData = (schema ? cloneDataTree(output, true) : undefined) as
+      | DraftSchemaOutput<S>
+      | undefined;
+    // Vest 6 contract: a passing run hands the callback its input with this
+    // run's parsed values applied (complete output on a full run).
+    // changed() runs and failed runs describe the supplied input. Callbacks
+    // never trigger a second parser pass.
+    const appliesOutput =
+      !!schema && !changedFields && schemaPassed(schemaRunResult);
+    const callbackInput = !schema
+      ? schemaInput
+      : appliesOutput
+        ? fullSchemaRun
+          ? cloneDataTree(output)
+          : applySchemaOutput(cloneDeclarationInput(schemaInput), output)
+        : cloneDeclarationInput(schemaInput);
+    const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
+    const resultOutput = schema ? cloneDataTree(output) : callbackInput;
+    // run.data.raw keeps the established raw-input identity unless this run
+    // applied parsed output to it.
+    const runDataSnapshot = appliesOutput
+      ? cloneDataTree(callbackInput)
+      : schemaInput;
 
     const suiteResult = SuiteContext.run(
       {
@@ -310,7 +287,6 @@ export function useCreateSuiteRunner<
             useResolver,
           }),
           useResolver,
-          callbackMapping.retained,
         ).output;
       },
     );
@@ -405,6 +381,29 @@ function onlyInclusionOf<F extends TFieldName, G extends TGroupName>(
   return baseOnlyListOf(only);
 }
 
+/**
+ * A run that validates the whole schema: no changed() scope, no inclusion
+ * focus, and nothing skipped. Only such a run can establish complete output.
+ */
+function isFullSchemaRun<F extends TFieldName, G extends TGroupName>(
+  changedFields: unknown,
+  modifiers: Pick<InternalSuiteModifiers<F, G>, 'only' | 'skip' | '__skipAll'>,
+): boolean {
+  return (
+    !changedFields &&
+    !modifiers.__skipAll &&
+    modifiers.skip !== true &&
+    onlyInclusionOf(modifiers.only) === null &&
+    skippedFocusPaths(modifiers.skip) === null
+  );
+}
+
+function schemaPassed(
+  results: readonly SchemaRunResult[] | undefined,
+): boolean {
+  return !!results?.length && results.every(result => result.pass);
+}
+
 // A plain empty `only` list restricts nothing (the established runtime
 // no-op), so it normalizes to null — a full un-narrowed run.
 function nullIfEmptyFocusList<F extends TFieldName, G extends TGroupName>(
@@ -440,989 +439,6 @@ function mappedFocusPaths<F extends TFieldName, G extends TGroupName>(
   return asArray(modifiers.only)
     .filter(isStringValue)
     .filter(entry => !skipped.has(entry));
-}
-
-/**
- * Resolves the partial parsed data chunk from the schema run payload.
- */
-function getParsedDataChunk(
-  schemaRunResult: SchemaRunResult[] | undefined,
-): unknown {
-  if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
-    return {};
-  }
-
-  const [firstResult] = schemaRunResult;
-  // Output presence is distinguished from output value: present null and
-  // present undefined are both valid parser outputs. Only a missing type
-  // key falls back to the empty mapping.
-  if (firstResult === undefined || !hasOwnProperty(firstResult, 'type')) {
-    return {};
-  }
-  return firstResult.type;
-}
-
-/**
- * Creates a defensive snapshot of the parsed data to prevent mutations
- * in the suite callback from affecting the result object.
- */
-function snapshotParsedData(data: unknown): unknown {
-  return cloneDataTree(data, true);
-}
-
-type CallbackInputParams = {
-  affected: string[] | null;
-  fallback: unknown;
-  previous: MappedSchemaOutput | undefined;
-  schema: unknown;
-  schemaRunResult: SchemaRunResult[] | undefined;
-  skipAll?: boolean;
-  skipped: readonly string[] | null;
-};
-
-type CallbackMapping = {
-  input: unknown;
-  retained?: MappedSchemaOutput;
-  /**
-   * Proof-boundary value: output whose type is established by validation.
-   * Unlike `input` (best-effort declaration data that must carry current
-   * raw values so tests declare under latest input), `proven` overlays the
-   * current run's validated region onto previously proven retention and
-   * never fills unexecuted paths with raw input. Set on success paths
-   * only; the public result `value` is cloned from it when valid.
-   */
-  proven?: unknown;
-};
-
-/**
- * Resolves the value passed into the user suite callback.
- *
- * Full successful schema runs replace the retained mapped value. Focused
- * successful runs patch only their executed paths into that retained value.
- * This keeps the callback's schema-output type truthful without changing the
- * intentionally per-run semantics of SuiteResult.run.data.parsed.
- * Validation failures keep the established raw-input fallback and do not
- * poison the last successful mapped value. Skip-all runs executed no
- * validators, so they likewise deliver raw input and preserve (never
- * establish) the retained mapping: a skip-all run must not manufacture a
- * branch witness from unvalidated data.
- */
-function getCallbackMapping(params: CallbackInputParams): CallbackMapping {
-  const {
-    affected,
-    fallback,
-    previous,
-    schema,
-    schemaRunResult,
-    skipAll,
-    skipped,
-  } = params;
-  if (!schema) return { input: fallback };
-  const successfulResult = successfulSchemaResult(schemaRunResult);
-  if (successfulResult === null) {
-    return failedCallbackMapping(affected, fallback, previous, schema);
-  }
-  if (skipAll === true) {
-    // No validators executed: deliver best-effort parser mapping as the
-    // callback input, and re-store the previous retained mapping unchanged.
-    // A skip-all run establishes no witness of its own, but it must not
-    // wipe a previously proven one either (each run replaces the stored
-    // isolate, so preservation is active, not automatic).
-    return {
-      input: cloneDetachedDataTree(mappedFailureInput(schema, fallback)),
-      ...(previous === undefined ? {} : { retained: previous }),
-    };
-  }
-  return successfulCallbackMapping({
-    affected,
-    fallback,
-    previous,
-    schema,
-    schemaRunResult: successfulResult,
-    skipped,
-  });
-}
-
-function successfulSchemaResult(
-  schemaRunResult: SchemaRunResult[] | undefined,
-): SchemaRunResult[] | null {
-  return schemaRunResult?.every(result => result.pass) ? schemaRunResult : null;
-}
-
-/**
- * Installs a successful output as the complete callback mapping. Skip-only
- * runs omit skipped paths from schema execution, so their projected output
- * holds raw input at those paths: restore parsed values from the retained
- * mapping (or a validation-free parser mapping on first runs) first.
- */
-function fullCallbackMapping(params: {
-  current: unknown;
-  fallback: unknown;
-  previous: MappedSchemaOutput | undefined;
-  schema: unknown;
-  skipped: readonly string[] | null;
-}): CallbackMapping {
-  const { current, fallback, previous, schema, skipped } = params;
-  if (skipped !== null) {
-    const { fresh, unions } = focusedMappingSource(schema, fallback, false);
-    const base = previous === undefined ? fresh : previous.value;
-    assertSkippedUnionCoverage({ base, fallback, previous, skipped, unions });
-    const repaired = repairSkippedPaths(current, base, skipped);
-    // Full validation passed, so the repaired output is established
-    // throughout. Proven aliases the detached retained copy (never the live
-    // schema output) so publishing the value reads no accessors twice.
-    const mapped = mappedCallbackResult(repaired);
-    return { ...mapped, proven: mapped.retained?.value };
-  }
-  // mappedCallbackResult already creates separate retained and callback
-  // copies. Passing the schema output directly avoids a third full-tree copy
-  // while preserving both ownership boundaries.
-  const mapped = mappedCallbackResult(current);
-  return { ...mapped, proven: mapped.retained?.value };
-}
-
-function failedCallbackMapping(
-  affected: string[] | null,
-  fallback: unknown,
-  previous: MappedSchemaOutput | undefined,
-  schema: unknown,
-): CallbackMapping {
-  // The callback type promises schema output, so a failing run delivers
-  // best-effort parser mapping instead of raw input. Only pure parser
-  // steps run here (validators already ran as part of validation);
-  // unmappable input falls back to raw rather than throwing the run.
-  // Fields that failed parsing keep the values mapping produced for them.
-  return {
-    input: cloneDetachedDataTree(mappedFailureInput(schema, fallback)),
-    ...(affected === null || previous === undefined
-      ? {}
-      : { retained: previous }),
-  };
-}
-
-function mappedFailureInput(schema: unknown, fallback: unknown): unknown {
-  // No fallback catch: mapWithoutValidation runs pure parser steps, and any
-  // exception from them is an unexpected user fault that must propagate
-  // with its identity. A failing run must not deliver fabricated raw input
-  // as schema output while losing the cause (C11/R2). There is no
-  // framework-owned mapping-unavailable producer — mapping walks metadata
-  // and never throws framework errors — so a class-based fallback would
-  // only ever swallow user exceptions.
-  return mapWithoutValidation(schema, fallback);
-}
-
-function successfulCallbackMapping(
-  params: Omit<CallbackInputParams, 'schemaRunResult'> & {
-    schemaRunResult: SchemaRunResult[];
-  },
-): CallbackMapping {
-  const { affected, fallback, previous, schema, schemaRunResult, skipped } =
-    params;
-  const [firstResult] = schemaRunResult;
-  // Output presence is distinguished from output value: present null and
-  // present undefined are both valid parser outputs. Only a missing type
-  // key falls back to the raw input.
-  const current =
-    firstResult !== undefined && hasOwnProperty(firstResult, 'type')
-      ? firstResult.type
-      : fallback;
-  if (affected === null) {
-    // A null affected set is either a true full run or a skip-only run; the
-    // latter carries an omit-projected output that must be repaired first.
-    return fullCallbackMapping({
-      current,
-      fallback,
-      previous,
-      schema,
-      skipped,
-    });
-  }
-
-  return focusedCallbackMapping({
-    affected,
-    current,
-    fallback,
-    previous,
-    schema,
-  });
-}
-
-function focusedCallbackMapping(params: {
-  affected: string[];
-  current: unknown;
-  fallback: unknown;
-  previous: MappedSchemaOutput | undefined;
-  schema: unknown;
-}): CallbackMapping {
-  const { affected, current, fallback, previous, schema } = params;
-  const replacesArray = affected.some(field =>
-    concreteFieldPath(field).some(segment => typeof segment === 'number'),
-  );
-  // Pure parser mapping of the current input, with provenance: which paths
-  // a parser step actually produced. Array merging uses it to prefer
-  // current-run parser output over stale retained mappings when values
-  // alone cannot decide (an idempotent parser output equals raw input).
-  const { fresh, mapping, mappedPaths, unions } = focusedMappingSource(
-    schema,
-    fallback,
-    replacesArray,
-  );
-  assertUnionBranchCoverage(unions, affected, previous, fallback);
-  const value = mergeMappedPaths(
-    mergeBase(fresh, previous, unions, fallback),
-    current,
-    affected,
-    true,
-    fallback,
-    mapping,
-  );
-  // Proven public value: parser-established current output and previously
-  // proven retention overlaid with the validated region. Unexecuted paths
-  // keep retained proof or stay absent — never current raw input.
-  const proven = overlayProvenAffected(
-    overlayFreshMapped(previous?.value ?? {}, fresh, mappedPaths),
-    current,
-    affected,
-  );
-  // Empty focus is best-effort declaration data, not a successful mapping
-  // proof. Preserve history without promoting raw union passthrough to a
-  // witness for the next nonempty run.
-  if (affected.length === 0) {
-    return {
-      input: cloneDetachedDataTree(value),
-      retained: previous,
-      proven,
-    };
-  }
-  return { ...mappedCallbackResult(value), proven };
-}
-
-function assertSkippedUnionCoverage(params: {
-  unions: ReadonlyArray<readonly ConcretePathSegment[]>;
-  skipped: readonly string[];
-  base: unknown;
-  fallback: unknown;
-  previous: MappedSchemaOutput | undefined;
-}): void {
-  const { unions, skipped, base, fallback, previous } = params;
-  const restored = skipped.map(field =>
-    retainedMergePath(concreteFieldPath(field)),
-  );
-  for (const union of unions) {
-    if (!restored.some(path => sharesValidationLine(path, union))) continue;
-    const members = readPathDeep(
-      hasPathDeep(base, union) ? base : fallback,
-      union,
-    );
-    if (isArray(members)) assertUnionMembers(union, members, [], previous);
-  }
-}
-
-function focusedMappingSource(
-  schema: unknown,
-  fallback: unknown,
-  replacesArray: boolean,
-): {
-  fresh: unknown;
-  mapping: ArrayMergeMapping | undefined;
-  mappedPaths: ReadonlyArray<readonly ConcretePathSegment[]>;
-  unions: ReadonlyArray<readonly ConcretePathSegment[]>;
-} {
-  // Union incompleteness is collected on every focused mapping: the error
-  // boundary needs it even when array merging does not run. The fresh
-  // parser mapping always runs: besides provenance, it seeds the merge
-  // base so declaration-time control flow observes current input values.
-  const provenance: MappingProvenance = { mapped: [], unions: [] };
-  const fresh = mapWithoutValidation(schema, fallback, provenance);
-  return {
-    fresh,
-    mappedPaths: provenance.mapped,
-    mapping: replacesArray ? { fresh, mapped: provenance.mapped } : undefined,
-    unions: provenance.unions,
-  };
-}
-
-/**
- * Merge base for focused callback data. Scalar leaves present in the
- * current input read current values when no observable transform produced
- * a new one (identity mapping preserves types by construction), so
- * declaration-time control flow (each lists, conditionals) observes the
- * input a test was declared under: a test that only exists under new input
- * must still be declared before focus matching can select it. Everything
- * else stays retained: containers merge as units (deep structure, union
- * witnesses, and parser consistency inside an object travel together),
- * transformed scalars keep the mapping that preserves the raw/parsed gap,
- * and absent paths fill from retention (hydration). Affected paths overlay
- * from the current run afterwards, as before. The merge is pure: inputs
- * are never mutated, so sharing stored references into the base is safe.
- */
-function mergeBase(
-  fresh: unknown,
-  previous: MappedSchemaOutput | undefined,
-  unions: ReadonlyArray<readonly ConcretePathSegment[]>,
-  fallback: unknown,
-): unknown {
-  if (previous === undefined) return fresh;
-  const retained = previous.value;
-  const seeded = seedUnionWitnesses(
-    freshOrRetained(fresh, retained),
-    retained,
-    unions,
-  );
-  if (!isRecord(seeded) || !isRecord(fallback) || !isRecord(retained)) {
-    return seeded;
-  }
-  return reconcileTopLevel(seeded, retained, fallback);
-}
-
-function freshOrRetained(fresh: unknown, retained: unknown): unknown {
-  return fresh !== undefined ? fresh : retained;
-}
-
-function seedUnionWitnesses(
-  base: unknown,
-  retained: unknown,
-  unions: ReadonlyArray<readonly ConcretePathSegment[]>,
-): unknown {
-  let next = base;
-  for (const union of unions) {
-    if (hasPathDeep(retained, union)) {
-      next = writePathAt(next, union, readPathDeep(retained, union));
-    }
-  }
-  return next;
-}
-
-function reconcileTopLevel(
-  base: Record<PropertyKey, unknown>,
-  retained: Record<PropertyKey, unknown>,
-  fallback: Record<PropertyKey, unknown>,
-): unknown {
-  return fillAbsentKeys(
-    restoreTopLevelKeys(base, retained, fallback),
-    retained,
-    fallback,
-  );
-}
-
-function restoreTopLevelKeys(
-  base: Record<PropertyKey, unknown>,
-  retained: Record<PropertyKey, unknown>,
-  fallback: Record<PropertyKey, unknown>,
-): unknown {
-  let next: unknown = base;
-  for (const key of Object.keys(fallback)) {
-    next = restoreTopLevelKey(next, retained, fallback[key], key);
-  }
-  return next;
-}
-
-function restoreTopLevelKey(
-  next: unknown,
-  retained: Record<PropertyKey, unknown>,
-  inputValue: unknown,
-  key: string,
-): unknown {
-  if (isContainerValue(inputValue)) {
-    // Containers merge as retained units; a freshly added container has
-    // no retained unit and keeps its fresh mapping.
-    return restoreIfRetained(next, retained, key);
-  }
-  // Identity-mapped scalars already hold the current input value in the
-  // fresh base. A transformed scalar (fresh output observably differs from
-  // the input) keeps the retained mapping; without retention the fresh
-  // output stands on its own.
-  if (Object.is(readPathValue(next, key), inputValue)) return next;
-  return restoreIfRetained(next, retained, key);
-}
-
-function restoreIfRetained(
-  next: unknown,
-  retained: Record<PropertyKey, unknown>,
-  key: string,
-): unknown {
-  if (!hasOwnProperty(retained, key)) return next;
-  return writePathValue(next, key, retained[key]);
-}
-
-function isContainerValue(value: unknown): boolean {
-  return isObject(value);
-}
-
-function fillAbsentKeys(
-  next: unknown,
-  retained: Record<PropertyKey, unknown>,
-  fallback: Record<PropertyKey, unknown>,
-): unknown {
-  let filled: unknown = next;
-  for (const key of Object.keys(retained)) {
-    if (!hasOwnProperty(fallback, key) && !hasOwnProperty(filled, key)) {
-      filled = writePathValue(filled, key, retained[key]);
-    }
-  }
-  return filled;
-}
-
-/**
- * Explicit error boundary for untouched unions without a mapping witness.
- * Parser-only mapping cannot choose a union branch without validation; when
- * neither focus coverage (the current run validated the member) nor a
- * retained prior mapping proves the output, the typed callback must not
- * observe raw input as schema output. changed([]) promises no mapping and
- * is exempt. Failure-path callbacks are best-effort by contract and never
- * reach this boundary.
- */
-function assertUnionBranchCoverage(
-  unions: ReadonlyArray<readonly ConcretePathSegment[]>,
-  affected: string[],
-  previous: MappedSchemaOutput | undefined,
-  fallback: unknown,
-): void {
-  if (affected.length === 0) return;
-  const covering = affected
-    .map(concreteFieldPath)
-    .filter(path => !path.some(isUnsafePathSegment));
-  for (const union of unions) {
-    const members = readPathDeep(fallback, union);
-    if (isArray(members)) {
-      assertUnionMembers(union, members, covering, previous);
-    }
-  }
-}
-
-function assertUnionMembers(
-  union: readonly ConcretePathSegment[],
-  members: unknown[],
-  covering: ConcretePathSegment[][],
-  previous: MappedSchemaOutput | undefined,
-): void {
-  for (let index = 0; index < members.length; index++) {
-    const member = [...union, index];
-    if (isUnionMemberCovered(member, covering, previous)) continue;
-    throw new FocusedSchemaMappingError(
-      `Focused schema mapping cannot select a union branch at "${formatUnionPath(member)}" without running validation or reusing a prior mapped result. Run a full validation first to establish a branch witness, or include the union path in the focused fields.`,
-    );
-  }
-}
-
-function isUnionMemberCovered(
-  member: readonly ConcretePathSegment[],
-  covering: ConcretePathSegment[][],
-  previous: MappedSchemaOutput | undefined,
-): boolean {
-  if (covering.some(path => sharesValidationLine(path, member))) return true;
-  return previous !== undefined && hasPathDeep(previous.value, member);
-}
-
-// Two paths share a validation line when one reaches (or passes through)
-// the other: validation at or above a member maps it via expansion, and
-// validation at or below it maps it directly. Siblings share no line.
-function sharesValidationLine(
-  path: readonly ConcretePathSegment[],
-  member: readonly ConcretePathSegment[],
-): boolean {
-  return isArrayPrefix(path, member) || isArrayPrefix(member, path);
-}
-
-function formatUnionPath(path: readonly ConcretePathSegment[]): string {
-  return path
-    .map(segment =>
-      typeof segment === 'number' ? `[${segment}]` : `.${segment}`,
-    )
-    .join('')
-    .replace(/^\./, '');
-}
-
-/**
- * Current-run parser mapping for array merging. `fresh` is the pure
- * parser output; `mapped` lists the paths a parser step produced, so an
- * idempotent output (equal to raw input) still counts as mapped.
- */
-type ArrayMergeMapping = {
-  readonly fresh: unknown;
-  readonly mapped: ReadonlyArray<readonly ConcretePathSegment[]>;
-};
-
-function mappedCallbackResult(value: unknown): CallbackMapping {
-  const retained = cloneDetachedDataTree(value);
-  return {
-    input: cloneDetachedDataTree(retained),
-    retained: { hasValue: true, value: retained },
-  };
-}
-
-function usePreviousMappedSchemaOutput(): MappedSchemaOutput | undefined {
-  const previous =
-    VestRuntime.useAvailableRoot<TIsolateSuite>()?.data.mappedSchemaOutput;
-  return previous?.hasValue === true ? previous : undefined;
-}
-
-function mergeMappedPaths(
-  previous: unknown,
-  current: unknown,
-  affected: readonly string[],
-  replaceArrays = true,
-  fallback: unknown = current,
-  mapping?: ArrayMergeMapping,
-): unknown {
-  const fields = affected.map(concreteFieldPath);
-  if (fields.some(isEmptyPath)) return current;
-  let merged = previous;
-  for (const full of topmostFields(fields)) {
-    merged = mergeMappedField(
-      merged,
-      current,
-      fallback,
-      full,
-      replaceArrays,
-      mapping,
-    );
-  }
-  return merged;
-}
-
-/**
- * An affected ancestor subsumes its descendant merge paths: merging the
- * parent already covers the whole subtree, and merging a descendant
- * afterward would recreate a parent the merge deleted (e.g. removing an
- * optional object resurrects it as empty).
- */
-function topmostFields(
-  fields: readonly ConcretePathSegment[][],
-): ConcretePathSegment[][] {
-  return fields.filter(
-    (field, index) =>
-      !fields.some(
-        (other, otherIndex) =>
-          otherIndex !== index && isStrictPrefixPath(other, field),
-      ),
-  );
-}
-
-function isStrictPrefixPath(
-  prefix: readonly ConcretePathSegment[],
-  path: readonly ConcretePathSegment[],
-): boolean {
-  return prefix.length < path.length && isArrayPrefix(prefix, path);
-}
-
-function isEmptyPath(full: readonly ConcretePathSegment[]): boolean {
-  return full.length === 0;
-}
-
-function mergeMappedField(
-  merged: unknown,
-  current: unknown,
-  fallback: unknown,
-  full: readonly ConcretePathSegment[],
-  replaceArrays: boolean,
-  mapping?: ArrayMergeMapping,
-): unknown {
-  if (full.some(isUnsafePathSegment)) return merged;
-  return replaceArrays
-    ? mergeArrayField(merged, current, fallback, full, mapping)
-    : setPathValue(merged, current, full, 0);
-}
-
-/**
- * Merges one affected path when arrays replace wholesale. Non-array paths
- * merge at full depth. For array ancestors with matching structure, the
- * executed index comes from the current output while unexecuted members
- * prefer the retained mapping whenever the current output left them
- * identical to the raw input (unmapped union members); mapped members keep
- * current-input provenance. Structural changes replace the whole array.
- */
-function mergeArrayField(
-  merged: unknown,
-  current: unknown,
-  fallback: unknown,
-  full: readonly ConcretePathSegment[],
-  mapping?: ArrayMergeMapping,
-): unknown {
-  const firstIndex = full.findIndex(segment => typeof segment === 'number');
-  if (firstIndex === -1) {
-    if (full.length === 0) return current;
-    return setPathValue(merged, current, full, 0);
-  }
-  const ancestor = full.slice(0, firstIndex);
-  if (ancestor.some(isUnsafePathSegment)) return merged;
-  const pair = arrayPairAt(merged, current, ancestor);
-  if (pair === null) {
-    return setPathValue(merged, current, ancestor, 0);
-  }
-  const executed = full[firstIndex] as number;
-  return writePathAt(
-    merged,
-    ancestor,
-    mergeArrayMembers(pair, fallback, ancestor, executed, mapping),
-  );
-}
-
-type ArrayMergePair = {
-  readonly previous: unknown[];
-  readonly current: unknown[];
-};
-
-function arrayPairAt(
-  merged: unknown,
-  current: unknown,
-  ancestor: readonly ConcretePathSegment[],
-): ArrayMergePair | null {
-  const previousArray = readPathDeep(merged, ancestor);
-  const currentArray = readPathDeep(current, ancestor);
-  if (!isArray(previousArray) || !isArray(currentArray)) return null;
-  if (previousArray.length !== currentArray.length) return null;
-  return { current: currentArray, previous: previousArray };
-}
-
-function mergeArrayMembers(
-  pair: ArrayMergePair,
-  fallback: unknown,
-  ancestor: readonly ConcretePathSegment[],
-  executed: number,
-  mapping?: ArrayMergeMapping,
-): unknown[] {
-  const inputArray = readPathDeep(fallback, ancestor);
-  const next = [...pair.current];
-  for (let index = 0; index < next.length; index++) {
-    next[index] = mergedMember(
-      pair,
-      inputArray,
-      index,
-      executed,
-      ancestor,
-      mapping,
-    );
-  }
-  return next;
-}
-
-function mergedMember(
-  pair: ArrayMergePair,
-  inputArray: unknown,
-  index: number,
-  executed: number,
-  ancestor: readonly ConcretePathSegment[],
-  mapping?: ArrayMergeMapping,
-): unknown {
-  if (index === executed) return pair.current[index];
-  // A parser-mapped member carries current-run output even when it equals
-  // the raw input (idempotent parsers): prefer it over stale retention.
-  // Unmapped members keep the retained mapping (e.g. union branches the
-  // pure mapping pass cannot choose without validation).
-  if (
-    mapping !== undefined &&
-    isParserMapped(mapping.mapped, [...ancestor, index])
-  ) {
-    return readPathDeep(mapping.fresh, [...ancestor, index]);
-  }
-  return retainedMember(pair, inputArray, index);
-}
-
-function retainedMember(
-  pair: ArrayMergePair,
-  inputArray: unknown,
-  index: number,
-): unknown {
-  const inputMember = isArray(inputArray) ? inputArray[index] : undefined;
-  if (Object.is(pair.current[index], inputMember)) {
-    return pair.previous[index];
-  }
-  return pair.current[index];
-}
-
-/**
- * Seeds the proven base with parser-established current output. Pure parser
- * steps carry their declared output type, so fresh values at provenance
- * paths are established even without validation. Identity passthrough
- * (unmapped paths) is never copied: unexecuted, unproven leaves stay
- * retained or absent instead of leaking current raw input. Paths already
- * proven by retention keep the detached retained copy so publishing the
- * value reads no accessor twice.
- */
-function overlayFreshMapped(
-  base: unknown,
-  fresh: unknown,
-  mappedPaths: ReadonlyArray<readonly ConcretePathSegment[]>,
-): unknown {
-  let next = base;
-  for (const path of mappedPaths) {
-    if (path.length === 0 || path.some(isUnsafePathSegment)) continue;
-    if (hasPathDeep(next, path)) continue;
-    next = setPathValue(next, fresh, path, 0);
-  }
-  return next;
-}
-
-/**
- * Overlays the validated region onto proven base data for the public
- * result value. Non-array paths set directly; arrays merge member-wise
- * (executed from current, rest from base) or, without a pairable retained
- * array, keep executed members only.
- */
-function overlayProvenAffected(
-  base: unknown,
-  current: unknown,
-  affected: readonly string[],
-): unknown {
-  let out = base;
-  for (const full of topmostFields(affected.map(concreteFieldPath))) {
-    out = overlayProvenField(out, current, full);
-  }
-  return out;
-}
-
-function overlayProvenField(
-  base: unknown,
-  current: unknown,
-  full: readonly ConcretePathSegment[],
-): unknown {
-  if (full.some(isUnsafePathSegment)) return base;
-  const firstIndex = full.findIndex(segment => typeof segment === 'number');
-  if (firstIndex === -1) {
-    return full.length === 0 ? current : setPathValue(base, current, full, 0);
-  }
-  return overlayProvenArray(base, current, full, firstIndex);
-}
-
-function overlayProvenArray(
-  base: unknown,
-  current: unknown,
-  full: readonly ConcretePathSegment[],
-  firstIndex: number,
-): unknown {
-  const ancestor = full.slice(0, firstIndex);
-  if (ancestor.some(isUnsafePathSegment)) return base;
-  const pair = arrayPairAt(base, current, ancestor);
-  if (pair !== null) {
-    return writePathAt(
-      base,
-      ancestor,
-      mergeProvenMembers(pair, full[firstIndex]),
-    );
-  }
-  return writeUnpairedProvenArray(base, current, full, firstIndex);
-}
-
-function mergeProvenMembers(
-  pair: ArrayMergePair,
-  executed: ConcretePathSegment | undefined,
-): unknown[] {
-  return pair.current.map((member, index) =>
-    index === executed ? member : pair.previous[index],
-  );
-}
-
-/**
- * No retained array pairs with the current one (first run or resize): keep
- * the executed member from validated current output and leave every other
- * member absent rather than filling unvalidated raw input.
- */
-function writeUnpairedProvenArray(
-  base: unknown,
-  current: unknown,
-  full: readonly ConcretePathSegment[],
-  firstIndex: number,
-): unknown {
-  const ancestor = full.slice(0, firstIndex);
-  const currentArray = readPathDeep(current, ancestor);
-  if (!isArray(currentArray)) {
-    return setPathValue(base, current, ancestor, 0);
-  }
-  const executed = full[firstIndex];
-  if (typeof executed !== 'number' || executed >= currentArray.length) {
-    return base;
-  }
-  const built = new Array<unknown>(currentArray.length);
-  built[executed] = provenArrayMember(
-    currentArray,
-    executed,
-    full.slice(firstIndex + 1),
-  );
-  return writePathAt(base, ancestor, built);
-}
-
-function provenArrayMember(
-  currentArray: unknown[],
-  executed: number,
-  rest: readonly ConcretePathSegment[],
-): unknown {
-  if (rest.length === 0) return currentArray[executed];
-  return setPathValue({}, currentArray[executed], rest, 0);
-}
-
-/**
- * Whether a parser step produced this run's value at (or under) the member
- * path. Marks strictly above the member never count: a container-level
- * parser may pass members through untouched (e.g. an array slot over union
- * members it cannot choose), so only execution for the member itself —
- * including idempotent output equal to raw input — proves mapping.
- */
-function isParserMapped(
-  mapped: ReadonlyArray<readonly ConcretePathSegment[]>,
-  path: readonly ConcretePathSegment[],
-): boolean {
-  return mapped.some(candidate => isAtOrUnderPath(candidate, path));
-}
-
-function isAtOrUnderPath(
-  candidate: readonly ConcretePathSegment[],
-  path: readonly ConcretePathSegment[],
-): boolean {
-  return isArrayPrefix(path, candidate);
-}
-
-/**
- * Restores parsed values at skipped paths from a complete mapping. Paths the
- * base cannot supply keep the projected output's value rather than being
- * clobbered with undefined.
- */
-function repairSkippedPaths(
-  current: unknown,
-  base: unknown,
-  skipped: readonly string[],
-): unknown {
-  let repaired = cloneDetachedDataTree(current);
-  for (const field of skipped) {
-    const path = retainedMergePath(concreteFieldPath(field));
-    if (path.length === 0 || path.some(isUnsafePathSegment)) continue;
-    // Presence decides: an explicitly undefined mapped value restores
-    // undefined; only a path the base cannot supply keeps the projected
-    // output's value.
-    if (!hasPathDeep(base, path)) continue;
-    repaired = setPathValue(repaired, base, path, 0);
-  }
-  return repaired;
-}
-
-/**
- * Whether a path resolves through present own properties. Unlike
- * readPathDeep, a present undefined reads as present — presence metadata
- * for values where undefined is a legitimate mapped output.
- */
-function hasPathDeep(
-  value: unknown,
-  path: readonly ConcretePathSegment[],
-): boolean {
-  let node = value;
-  for (const key of path) {
-    if (!isObject(node)) return false;
-    if (!hasOwnProperty(node, key)) return false;
-    node = readPathValue(node, key);
-  }
-  return true;
-}
-
-function readPathDeep(
-  value: unknown,
-  path: readonly ConcretePathSegment[],
-): unknown {
-  let node = value;
-  for (const key of path) {
-    node = readPathValue(node, key);
-    if (node === undefined) return undefined;
-  }
-  return node;
-}
-
-/**
- * Writes a complete replacement value at a path. Unlike setPathValue (which
- * walks a parallel current tree), the value here is used as-is.
- */
-function writePathAt(
-  base: unknown,
-  path: readonly ConcretePathSegment[],
-  value: unknown,
-): unknown {
-  if (path.length === 0) return value;
-  const [head, ...tail] = path;
-  if (head === undefined) return base;
-  return writePathValue(
-    base,
-    head,
-    writePathAt(readPathValue(base, head), tail, value),
-  );
-}
-
-/**
- * Array indices describe positions, not stable identities. When a path
- * enters an array, replace the containing array wholesale so no stale
- * structure is assembled. Skipped regions keep no current values at all:
- * whole subtrees come from the trusted base mapping.
- */
-function retainedMergePath(
-  path: readonly ConcretePathSegment[],
-): ConcretePathSegment[] {
-  const firstIndex = path.findIndex(segment => typeof segment === 'number');
-  return firstIndex === -1 ? [...path] : path.slice(0, firstIndex);
-}
-
-type ConcretePathSegment = string | number;
-
-function concreteFieldPath(field: string): ConcretePathSegment[] {
-  return parseAffectedFieldName(field).map(segment => {
-    if (segment.type === 'property') return String(segment.key);
-    const index = Number(segment.binding);
-    return Number.isSafeInteger(index) && index >= 0 ? index : segment.binding;
-  });
-}
-
-function isUnsafePathSegment(segment: ConcretePathSegment): boolean {
-  return isStringValue(segment) && isUnsafeKey(segment);
-}
-
-function setPathValue(
-  previous: unknown,
-  current: unknown,
-  path: readonly ConcretePathSegment[],
-  index: number,
-): unknown {
-  if (index >= path.length) return current;
-  const key = path[index];
-  if (key === undefined) return previous;
-
-  if (index === path.length - 1 && isMissingOwnKey(current, key)) {
-    return copyWithoutKey(previous, key);
-  }
-
-  const previousChild = readPathValue(previous, key);
-  const currentChild = readPathValue(current, key);
-  const nextChild = setPathValue(previousChild, currentChild, path, index + 1);
-  return writePathValue(previous, key, nextChild);
-}
-
-function isMissingOwnKey(value: unknown, key: ConcretePathSegment): boolean {
-  return !isObject(value) || !hasOwnProperty(value, key);
-}
-
-function copyWithoutKey(value: unknown, key: ConcretePathSegment): unknown {
-  const copy = isArray(value)
-    ? [...value]
-    : { ...(isObject(value) ? value : {}) };
-  Reflect.deleteProperty(copy, key);
-  return copy;
-}
-
-function readPathValue(value: unknown, key: ConcretePathSegment): unknown {
-  if (!isObject(value)) return undefined;
-  return (value as Record<PropertyKey, unknown>)[key];
-}
-
-function writePathValue(
-  value: unknown,
-  key: ConcretePathSegment,
-  nextChild: unknown,
-): unknown {
-  if (isArray(value)) {
-    const copy = [...value];
-    copy[Number(key)] = nextChild;
-    return copy;
-  }
-  const copy: Record<string, unknown> = isObject(value)
-    ? { ...(value as Record<string, unknown>) }
-    : {};
-  copy[String(key)] = nextChild;
-  return copy;
 }
 
 /**

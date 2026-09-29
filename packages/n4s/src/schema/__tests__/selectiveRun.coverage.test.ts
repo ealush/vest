@@ -1,7 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { compose, enforce } from '../../n4s';
-import { resolveAffectedPaths, runSchemaPaths } from '../../exports/internal';
+import {
+  resolveAffectedPaths,
+  runSchemaPaths,
+  SchemaExclusionError,
+} from '../../exports/internal';
 
 /**
  * Branch coverage for selective-run edge routes. Each case pins observable
@@ -67,18 +71,21 @@ describe('selectiveRun edge coverage', () => {
     expect(results.every(result => result.pass)).toBe(true);
   });
 
-  it('non-intersecting skips on composed schemas run everything narrowed', () => {
+  it('rejects member selection inside an opaque composition before execution', () => {
     const selected = vi.fn(() => true);
-    const results = runSchemaPaths(
-      compose(
-        enforce.shape({ b: enforce.condition(selected) }),
-        enforce.condition(() => true),
+    const root = vi.fn(() => true);
+    expect(() =>
+      runSchemaPaths(
+        compose(
+          enforce.shape({ b: enforce.condition(selected) }),
+          enforce.condition(root),
+        ),
+        { b: 'b' },
+        { affected: ['b'], skip: ['zzz'] },
       ),
-      { b: 'b' },
-      { affected: ['b'], skip: ['zzz'] },
-    );
-    expect(selected).toHaveBeenCalledTimes(1);
-    expect(results.every(result => result.pass)).toBe(true);
+    ).toThrow(SchemaExclusionError);
+    expect(selected).not.toHaveBeenCalled();
+    expect(root).not.toHaveBeenCalled();
   });
 
   it('absent required members fail correctly through the supplement', () => {
@@ -153,7 +160,7 @@ describe('selectiveRun edge coverage', () => {
     expect(b).toHaveBeenCalled();
   });
 
-  it('falls back to full execution when a standalone member orphans a root edge', () => {
+  it('rejects a composed member selection instead of running the full schema', () => {
     const region = vi.fn(() => true);
     const tax = vi.fn(() => true);
     const schema = compose(
@@ -172,15 +179,14 @@ describe('selectiveRun edge coverage', () => {
       region: 'ok',
       travelers: [{ country: 'A', tax: 't' }],
     };
-    const results = runSchemaPaths(schema, data, {
-      affected: ['travelers.0.tax'],
-    });
-    expect(results.every(result => result.pass)).toBe(true);
-    expect(tax).toHaveBeenCalled();
-    expect(region).toHaveBeenCalled();
+    expect(() =>
+      runSchemaPaths(schema, data, { affected: ['travelers.0.tax'] }),
+    ).toThrow(SchemaExclusionError);
+    expect(tax).not.toHaveBeenCalled();
+    expect(region).not.toHaveBeenCalled();
   });
 
-  it('vendor rules with standard validation map values without rerunning', () => {
+  it('rejects member selection on an opaque n4s-branded rule before validating', () => {
     const seen: unknown[] = [];
     const vendor = {
       '~standard': {
@@ -192,13 +198,13 @@ describe('selectiveRun edge coverage', () => {
       },
       parse: () => ({ mapped: true }),
     };
-    const results = runSchemaPaths(vendor, { a: 1 }, { affected: ['a'] });
-    expect(seen).toHaveLength(1);
-    expect(results.every(result => result.pass)).toBe(true);
-    expect(results[0]).toMatchObject({ pass: true });
+    expect(() => runSchemaPaths(vendor, { a: 1 }, { affected: ['a'] })).toThrow(
+      SchemaExclusionError,
+    );
+    expect(seen).toHaveLength(0);
   });
 
-  it('vendor validation issues fall back to run output', () => {
+  it('never falls back to running an opaque n4s-branded rule', () => {
     const ran: unknown[] = [];
     const vendor = {
       '~standard': {
@@ -213,9 +219,10 @@ describe('selectiveRun edge coverage', () => {
         return { pass: true, type: value };
       },
     };
-    const results = runSchemaPaths(vendor, { a: 1 }, { affected: ['a'] });
-    expect(ran).toHaveLength(1);
-    expect(results.every(result => result.pass)).toBe(true);
+    expect(() => runSchemaPaths(vendor, { a: 1 }, { affected: ['a'] })).toThrow(
+      SchemaExclusionError,
+    );
+    expect(ran).toHaveLength(0);
   });
 
   it('empty and non-string changed entries resolve to no paths', () => {
@@ -388,7 +395,7 @@ describe('selectiveRun edge coverage', () => {
     ).toEqual(['p.x', 'p.y']);
   });
 
-  it('supplements members hidden by divergence short-circuit exactly once', () => {
+  it('rejects a divergent unknown selection before any member executes', () => {
     const calls: string[] = [];
     const member = (field: string, valid: (value: unknown) => boolean) =>
       enforce.condition((value: unknown) => {
@@ -401,17 +408,18 @@ describe('selectiveRun edge coverage', () => {
         state: member('state', value => value !== 'bad'),
       }),
     });
-    const failures = runSchemaPaths(
-      schema,
-      {
-        a: 'ok',
-        profile: { state: 'bad' },
-        extra: undefined as unknown as string,
-      },
-      { affected: ['profile.state', 'extra'] },
-    ).filter(result => !result.pass);
-    expect(failures.map(result => result.path)).toEqual([['profile', 'state']]);
-    expect(calls.filter(call => call.startsWith('state:'))).toHaveLength(1);
+    expect(() =>
+      runSchemaPaths(
+        schema,
+        {
+          a: 'ok',
+          profile: { state: 'bad' },
+          extra: undefined as unknown as string,
+        },
+        { affected: ['profile.state', 'extra'] },
+      ),
+    ).toThrow(SchemaExclusionError);
+    expect(calls).toEqual([]);
   });
 
   it('skip-all by name runs nothing and passes', () => {
@@ -490,11 +498,13 @@ describe('selectiveRun edge coverage', () => {
     expect(member).not.toHaveBeenCalled();
   });
 
-  it('supplements array roots without object traversal', () => {
+  it('rejects index selection on an array root before members execute', () => {
     const member = vi.fn(() => true);
     const schema = enforce.isArrayOf(enforce.condition(member));
-    const results = runSchemaPaths(schema, ['a', 'b'], { affected: ['0'] });
-    expect(results.every(result => result.pass)).toBe(true);
+    expect(() =>
+      runSchemaPaths(schema, ['a', 'b'], { affected: ['0'] }),
+    ).toThrow(SchemaExclusionError);
+    expect(member).not.toHaveBeenCalled();
   });
 
   it('picks only-focused top-level members without affected', () => {
@@ -584,54 +594,56 @@ describe('selectiveRun edge coverage', () => {
     expect(b).toHaveBeenCalledTimes(1);
   });
 
-  it('reports unknown explicit-undefined keys first on partial tops', () => {
+  it('rejects explicit-undefined unknown keys on strict tops before members run', () => {
     const aFail = vi.fn(() => false);
     const bSpy = vi.fn(() => true);
-    const failures = runSchemaPaths(
-      enforce.partial({
-        a: enforce.condition(aFail),
-        b: enforce.condition(bSpy),
-      }),
-      { a: 1, extra: undefined } as Record<string, unknown>,
-      { affected: ['b', 'extra'] },
-    ).filter(result => !result.pass);
-    // Partial evaluates the unknown explicit-undefined key before declared
-    // members, so the main run short-circuits at `extra` and the absent
-    // shadowed member never executes standalone.
-    expect(failures.map(result => result.path)).toEqual([['extra']]);
+    // Projection cannot reproduce a strict container's unknown-key verdict
+    // for an explicitly undefined value, so it fails closed.
+    expect(() =>
+      runSchemaPaths(
+        enforce.shape({
+          a: enforce.condition(aFail),
+          b: enforce.condition(bSpy),
+        }),
+        { a: 1, extra: undefined } as Record<string, unknown>,
+        { affected: ['b', 'extra'] },
+      ),
+    ).toThrow(SchemaExclusionError);
+    expect(aFail).not.toHaveBeenCalled();
     expect(bSpy).not.toHaveBeenCalled();
   });
 
-  it('runs absent required members standalone in the flat supplement', () => {
+  it('rejects an explicit-undefined unknown selection before absent members run', () => {
     const aFail = vi.fn(() => false);
     const bSpy = vi.fn(() => false);
-    const failures = runSchemaPaths(
-      enforce.shape({
-        a: enforce.condition(aFail),
-        b: enforce.condition(bSpy),
-      }),
-      { a: 1, extra: undefined } as Record<string, unknown>,
-      { affected: ['b', 'extra'] },
-    ).filter(result => !result.pass);
-    expect(failures.map(result => result.path)).toEqual([['b']]);
-    expect(bSpy).toHaveBeenCalledTimes(1);
-    expect(bSpy).toHaveBeenCalledWith(undefined);
+    expect(() =>
+      runSchemaPaths(
+        enforce.shape({
+          a: enforce.condition(aFail),
+          b: enforce.condition(bSpy),
+        }),
+        { a: 1, extra: undefined } as Record<string, unknown>,
+        { affected: ['b', 'extra'] },
+      ),
+    ).toThrow(SchemaExclusionError);
+    expect(aFail).not.toHaveBeenCalled();
+    expect(bSpy).not.toHaveBeenCalled();
   });
 
-  it('skips flat supplement members orphaned from their root edge', () => {
+  it('rejects an explicit-undefined unknown selection before orphaned members run', () => {
     const aFail = vi.fn(() => false);
     const schema = enforce.shape({
       a: enforce.condition(aFail),
       b: enforce.isString().dependsOn($ => $.root.a),
     });
-    const results = runSchemaPaths(
-      schema,
-      { a: 42, b: 'x', extra: undefined } as Record<string, unknown>,
-      { affected: ['b', 'extra'] },
-    );
-    expect(Array.isArray(results)).toBe(true);
-    expect(results.every(result => result.pass)).toBe(true);
-    expect(aFail).toHaveBeenCalled();
+    expect(() =>
+      runSchemaPaths(
+        schema,
+        { a: 42, b: 'x', extra: undefined } as Record<string, unknown>,
+        { affected: ['b', 'extra'] },
+      ),
+    ).toThrow(SchemaExclusionError);
+    expect(aFail).not.toHaveBeenCalled();
   });
 
   it('reproduces tuple container failures when the value is too long', () => {
@@ -816,7 +828,7 @@ describe('selectiveRun edge coverage', () => {
     expect(results.every(result => result.pass)).toBe(true);
   });
 
-  it('marks root reevaluated on a passing full fallback with coverage', () => {
+  it('marks root reevaluated when a root selection runs the full schema', () => {
     const schema = compose(
       enforce.shape({ a: enforce.isString() }),
       enforce.condition(() => true),
@@ -825,24 +837,21 @@ describe('selectiveRun edge coverage', () => {
     const results = runSchemaPaths(
       schema,
       { a: 'ok' },
-      { affected: ['a'], coverage },
+      { affected: [''], coverage },
     );
     expect(results.every(result => result.pass)).toBe(true);
     expect(coverage.rootReevaluated).toBe(true);
   });
 
-  it('leaves root unevaluated on a failing full fallback with coverage', () => {
+  it('leaves root unevaluated when a composed member selection is rejected', () => {
     const schema = compose(
       enforce.shape({ a: enforce.isString() }),
       enforce.condition(() => true),
     );
     const coverage = { rootReevaluated: false };
-    const failures = runSchemaPaths(
-      schema,
-      { a: 42 },
-      { affected: ['a'], coverage },
-    ).filter(result => !result.pass);
-    expect(failures.map(result => result.path)).toEqual([['a']]);
+    expect(() =>
+      runSchemaPaths(schema, { a: 42 }, { affected: ['a'], coverage }),
+    ).toThrow(SchemaExclusionError);
     expect(coverage.rootReevaluated).toBe(false);
   });
 
@@ -1144,5 +1153,111 @@ describe('selectiveRun nested only() planning', () => {
     expect(selected).toHaveBeenCalledTimes(1);
     expect(excluded).toHaveBeenCalledTimes(1);
     expect(results.some(r => !r.pass)).toBe(true);
+  });
+
+  it('full runs of n4s-branded rules map through standard validation once', () => {
+    const seen: unknown[] = [];
+    const vendor = {
+      '~standard': {
+        vendor: 'n4s',
+        validate: (value: unknown) => {
+          seen.push(value);
+          return { value: { mapped: true } };
+        },
+      },
+      parse: () => ({ mapped: true }),
+    };
+    const results = runSchemaPaths(vendor, { a: 1 });
+    expect(seen).toHaveLength(1);
+    expect(results).toEqual([{ pass: true, type: { mapped: true } }]);
+  });
+
+  it('full runs of n4s-branded rules fall back to run output on issues', () => {
+    const ran: unknown[] = [];
+    const vendor = {
+      '~standard': {
+        vendor: 'n4s',
+        validate: () => ({ issues: [{ message: 'nope' }] }),
+      },
+      parse: () => {
+        throw new Error('unreachable');
+      },
+      run: (value: unknown) => {
+        ran.push(value);
+        return { pass: false, type: value };
+      },
+    };
+    const results = runSchemaPaths(vendor, { a: 1 });
+    expect(ran).toHaveLength(1);
+    expect(results.some(result => !result.pass)).toBe(true);
+  });
+
+  it('skip-only focus omits a skipped member of a composed root', () => {
+    const skipped = vi.fn(() => true);
+    const selected = vi.fn(() => true);
+    const root = vi.fn(() => true);
+    const results = runSchemaPaths(
+      compose(
+        enforce.shape({
+          a: enforce.condition(skipped),
+          b: enforce.condition(selected),
+        }),
+        enforce.condition(root),
+      ),
+      { a: 'a', b: 'b' },
+      { skip: ['a'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(skipped).not.toHaveBeenCalled();
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(root).toHaveBeenCalledTimes(1);
+  });
+
+  it('skip-only focus omits through nested compositions', () => {
+    const skipped = vi.fn(() => true);
+    const results = runSchemaPaths(
+      compose(
+        compose(
+          enforce.shape({
+            profile: enforce.shape({
+              a: enforce.condition(skipped),
+              b: enforce.isString(),
+            }),
+          }),
+        ),
+        enforce.condition(() => true),
+      ),
+      { profile: { a: 'a', b: 'b' } },
+      { skip: ['profile.a'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(skipped).not.toHaveBeenCalled();
+  });
+
+  it('skip-only focus keeps a composed root whole when nothing matches', () => {
+    const member = vi.fn(() => true);
+    const results = runSchemaPaths(
+      compose(enforce.shape({ a: enforce.condition(member) })),
+      { a: 'a' },
+      { skip: ['zzz'] },
+    );
+    expect(results.every(result => result.pass)).toBe(true);
+    expect(member).toHaveBeenCalledTimes(1);
+  });
+
+  it('skip-only focus rejects an index skip under a composed array', () => {
+    const member = vi.fn(() => true);
+    expect(() =>
+      runSchemaPaths(
+        compose(
+          enforce.shape({
+            rows: enforce.isArrayOf(enforce.condition(member)),
+          }),
+        ),
+        { rows: ['x', 'y'] },
+        { skip: ['rows.0'] },
+      ),
+    ).toThrow(SchemaExclusionError);
+    expect(member).not.toHaveBeenCalled();
   });
 });

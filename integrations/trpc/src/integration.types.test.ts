@@ -3,7 +3,7 @@ import { expectTypeOf, it } from 'vitest';
 
 import type { AppRouter } from './router';
 
-it('preserves the Vest 6 Standard Schema output contract', () => {
+it('infers Vest input and transformed procedure output', () => {
   type Inputs = inferRouterInputs<AppRouter>;
   type Outputs = inferRouterOutputs<AppRouter>;
 
@@ -13,6 +13,6 @@ it('preserves the Vest 6 Standard Schema output contract', () => {
   }>();
   expectTypeOf<Outputs['createAccount']>().toEqualTypeOf<{
     accepted: true;
-    account: { email: string; profile: { age: string | number } };
+    account: { email: string; profile: { age: number } };
   }>();
 });

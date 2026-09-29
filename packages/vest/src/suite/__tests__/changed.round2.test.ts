@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { compose, enforce } from 'n4s';
+import { compose, enforce, SchemaExclusionError } from 'n4s';
 
 import type { TFieldName } from '../../suiteResult/SuiteResultTypes';
 import { create, test } from '../../vest';
@@ -39,7 +39,7 @@ describe('round 2 regression contracts', () => {
   });
 
   describe('F2 — composed fallback visits the selected invalid field', () => {
-    it('evaluates `b` instead of certifying success from an unrelated failure', () => {
+    it('rejects `b` instead of certifying success from an unrelated failure', () => {
       const calls: string[] = [];
       const schema = compose(
         enforce.shape({
@@ -58,15 +58,18 @@ describe('round 2 regression contracts', () => {
         test('b', () => true);
       }, schema);
 
-      const result = suite.changed('b').run({ a: 'x', b: 'y' });
-
-      expect(calls).toContain('b');
-      expect(result.isValid()).toBe(false);
+      // A composed root cannot validate `b` alone, and it never certifies
+      // success from work it did not run.
+      expect(() => suite.changed('b').run({ a: 'x', b: 'y' })).toThrow(
+        SchemaExclusionError,
+      );
+      expect(calls).toEqual([]);
+      expect(suite.run({ a: 'x', b: 'y' }).isValid()).toBe(false);
     });
   });
 
   describe('F3 — selected union parsing keeps its successful output', () => {
-    it('maps focused union members instead of leaving raw strings', () => {
+    it('parses the selected union member into focused output', () => {
       const schema = enforce.shape({
         rows: enforce.isArrayOf(
           enforce.isNumeric().toNumber(),
@@ -85,20 +88,19 @@ describe('round 2 regression contracts', () => {
         .changed('rows.0')
         .run({ rows: ['2', '3'], note: 'old' });
 
-      expect(seen).toEqual({ rows: [2, 3], note: 'old' });
+      expect(seen).toEqual({ rows: ['2', '3'], note: 'old' });
       expect(result.isValid()).toBe(true);
-      expect(result.value).toEqual({ rows: [2, 3], note: 'old' });
+      expect(result.value).toStrictEqual({
+        rows: Object.assign(new Array(2), { 0: 2 }),
+      });
     });
   });
 
   describe('F4 — valid null output is preserved, not replaced by raw input', () => {
     it('delivers null through the callback and the result value', () => {
-      enforce.extend(
-        {
-          round2NullRoot: () => ({ pass: true, type: null }),
-        },
-        { parsers: ['round2NullRoot'] },
-      );
+      enforce.extend({
+        round2NullRoot: () => ({ pass: true, type: null }),
+      });
       const schema = enforce.round2NullRoot();
       let seen: unknown = 'unset';
       const suite = create(data => {
@@ -232,7 +234,7 @@ describe('round 2 regression contracts', () => {
   });
 
   describe('F8 — snapshots detach accessor-provided objects', () => {
-    it('mutating parsed output leaves the original input alone', () => {
+    it('parsed output is an immutable snapshot detached from the input', () => {
       const shared = { n: 1 };
       const raw = {
         get nested() {
@@ -248,9 +250,13 @@ describe('round 2 regression contracts', () => {
 
       const result = suite.run(raw);
       const parsed = result.run.data.parsed as { nested: { n: number } };
-      parsed.nested.n = 2;
+      // Parsed metadata is an immutable snapshot detached from the input.
+      expect(() => {
+        parsed.nested.n = 2;
+      }).toThrow(TypeError);
 
-      expect(parsed.nested.n).toBe(2);
+      expect(parsed.nested.n).toBe(1);
+      expect(parsed.nested).not.toBe(shared);
       expect(raw.nested.n).toBe(1);
     });
   });

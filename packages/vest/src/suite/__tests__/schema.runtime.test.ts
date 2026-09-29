@@ -1,4 +1,4 @@
-import { compose, enforce } from 'n4s';
+import { compose, enforce, SchemaExclusionError } from 'n4s';
 import { describe, it, expect } from 'vitest';
 
 import { create, test } from '../../vest';
@@ -461,17 +461,15 @@ describe('Schema Runtime Validation', () => {
         score: '2',
       });
 
-      // The focused run retains the last successfully mapped untouched field,
-      // but never the callback's mutation of that field.
-      expect(callbackNames).toEqual(['original', 'original']);
-      expect(second.types?.output).toEqual({
+      // The focused callback sees this run's input; neither earlier output
+      // nor the callback's own mutation leaks into it.
+      expect(callbackNames).toEqual(['original', 'new-raw-value']);
+      expect(first.types?.output).toEqual({
         profile: { name: 'original' },
-        score: 2,
+        score: 1,
       });
-      expect(second.run.data.parsed).toEqual({
-        profile: { name: 'new-raw-value' },
-        score: 2,
-      });
+      expect(second.types?.output).toEqual({ score: 2 });
+      expect(second.run.data.parsed).toEqual({ score: 2 });
     });
 
     it('prevents mutation through Map, Set, and Date parsed snapshots', () => {
@@ -893,11 +891,7 @@ describe('Schema input vs output type inference', () => {
   });
 
   describe('root retention coverage', () => {
-    it('clears a retained root failure the focused run re-evaluated clean', async () => {
-      // A composed root condition cannot project: the changed run executes
-      // the full schema. Freshly passing proves the root anew, so the
-      // retained root failure must clear instead of holding the suite
-      // invalid.
+    it('rejects a composed-root focus and clears the root failure on a full run', async () => {
       const schema = compose(
         enforce.shape({ a: enforce.isString() }),
         enforce.condition((value: { a: string }) => value.a !== 'bad'),
@@ -908,7 +902,10 @@ describe('Schema input vs output type inference', () => {
       const before = suite.run({ a: 'bad' });
       expect(before.isValid()).toBe(false);
 
-      const after = await suite.changed('a').run({ a: 'ok' });
+      expect(() => suite.changed('a').run({ a: 'ok' })).toThrow(
+        SchemaExclusionError,
+      );
+      const after = await suite.run({ a: 'ok' });
       expect(after.isValid()).toBe(true);
       expect(after.hasErrors()).toBe(false);
     });
@@ -935,7 +932,7 @@ describe('Schema input vs output type inference', () => {
   });
 
   describe('failing-run callback mapping', () => {
-    it('delivers mapped output so output-typed operations do not throw', () => {
+    it('falls back to the supplied input when schema validation fails', () => {
       const schema = enforce.shape({
         age: enforce.isNumeric().toNumber(),
         note: enforce.isString(),
@@ -948,8 +945,8 @@ describe('Schema input vs output type inference', () => {
       const result = suite.run({ age: '42', note: 42 });
 
       expect(result.isValid()).toBe(false);
-      expect(seen).toEqual({ age: 42, note: 42 });
-      expect(() => (seen as { age: number }).age.toFixed()).not.toThrow();
+      // No partial parse is published from a failed schema run.
+      expect(seen).toEqual({ age: '42', note: 42 });
     });
   });
 
@@ -957,10 +954,9 @@ describe('Schema input vs output type inference', () => {
     it('delivers undefined through the callback and the result value', () => {
       // Presence decides: a parser returning an own 'type' of undefined
       // produces undefined output, not a raw-input fallback.
-      enforce.extend(
-        { undefOutputRoot: () => ({ pass: true, type: undefined }) },
-        { parsers: ['undefOutputRoot'] },
-      );
+      enforce.extend({
+        undefOutputRoot: () => ({ pass: true, type: undefined }),
+      });
       const schema = enforce.undefOutputRoot();
       const native = schema.run('raw');
       expect(Object.prototype.hasOwnProperty.call(native, 'type')).toBe(true);
@@ -977,11 +973,10 @@ describe('Schema input vs output type inference', () => {
       expect(result.value).toBe(undefined);
     });
 
-    it('restores a mapped undefined at skipped paths instead of raw input', () => {
-      enforce.extend(
-        { undefOutputMember: () => ({ pass: true, type: undefined }) },
-        { parsers: ['undefOutputMember'] },
-      );
+    it('keeps supplied input at skipped paths', () => {
+      enforce.extend({
+        undefOutputMember: () => ({ pass: true, type: undefined }),
+      });
       const schema = enforce.shape({
         a: enforce.undefOutputMember(),
         b: enforce.isString(),
@@ -995,8 +990,7 @@ describe('Schema input vs output type inference', () => {
 
       expect(result.isValid()).toBe(true);
       const record = seen as Record<string, unknown>;
-      expect(Object.prototype.hasOwnProperty.call(record, 'a')).toBe(true);
-      expect(record.a).toBe(undefined);
+      expect(record.a).toBe('raw-a');
       expect(record.b).toBe('ok');
     });
   });

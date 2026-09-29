@@ -40,7 +40,7 @@ describe('runStatic', () => {
     expect(suite2.hasErrors('t4')).toBe(false);
   });
 
-  it('restores mapped schema output for a focused run after static hydration', async () => {
+  it('does not restore schema output for a focused run after static hydration', async () => {
     const schema = enforce.shape({
       age: enforce.isNumeric().toNumber(),
       note: enforce.isString(),
@@ -57,7 +57,9 @@ describe('runStatic', () => {
     SuiteSerializer.resume(clientSuite, serialized);
     await clientSuite.changed('note').run({ note: 'client' });
 
-    expect(seen).toEqual([{ age: 10, note: 'client' }]);
+    // Hydration restores verdicts, never output: the focused callback sees
+    // only its own input.
+    expect(seen).toEqual([{ note: 'client' }]);
   });
 
   describe('runStatic (promise)', () => {

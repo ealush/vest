@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { create, enforce, test } from '../../vest';
 import { enforce as n4sEnforce } from 'n4s';
@@ -234,7 +234,7 @@ describe('suite schema integration', () => {
     expect(result.isValid()).toBe(true);
   });
 
-  it('uses parser mapping in callback when validation fails in schema parse', () => {
+  it('uses the supplied input in the callback when schema validation fails', () => {
     const schema = n4sEnforce.shape({
       subscribed: n4sEnforce.isString().trim().toBoolean(),
     });
@@ -250,30 +250,18 @@ describe('suite schema integration', () => {
 
     const result = suite.run({ subscribed: 'unknown' });
 
-    // The parser maps 'unknown' to false while validation still fails: the
-    // callback keeps the output type truthful instead of raw input.
-    expect(callbackData).toEqual({ subscribed: false });
+    // Failed runs publish no parsed values: the callback sees the input.
+    expect(callbackData).toEqual({ subscribed: 'unknown' });
     expect(result.value).toBeUndefined();
     expect(result.hasErrors('subscribed')).toBe(true);
   });
 
-  it('propagates parser mapping throws instead of raw fallback', () => {
-    const mappingBoom = new Error('cannot map');
-    n4sEnforce.extend(
-      {
-        throwingParser: (value: unknown) => {
-          // Validation short-circuits on the failing field before this
-          // parser runs as a validator; failure mapping executes every
-          // parser stage, so it throws only there.
-          if (value === 'x') throw mappingBoom;
-          return { pass: true, type: value };
-        },
-      },
-      { parsers: ['throwingParser'] },
-    );
+  it('never runs a parser past an earlier failing field', () => {
+    const parser = vi.fn((value: unknown) => ({ pass: true, type: value }));
+    n4sEnforce.extend({ countedParser: parser });
     const schema = n4sEnforce.shape({
       name: n4sEnforce.isString(),
-      mapped: (n4sEnforce as any).throwingParser(),
+      mapped: (n4sEnforce as any).countedParser(),
     });
 
     let callbackData: any;
@@ -285,23 +273,16 @@ describe('suite schema integration', () => {
       });
     }, schema);
 
-    // Validation fails on 'name' before the throwing parser runs, so the
-    // run reports the failure; failure mapping then throws, and the
-    // unexpected parser exception propagates with its identity instead of
-    // delivering fabricated raw input to the schema-typed callback.
-    let thrown: unknown;
-    try {
-      // @ts-expect-error - Invalid data
-      suite.run({ name: 42, mapped: 'x' });
-    } catch (error) {
-      thrown = error;
-    }
-
-    expect(thrown).toBe(mappingBoom);
-    expect(callbackData).toBeUndefined();
+    // Validation stops at 'name'; no second pass maps later fields.
+    // @ts-expect-error - Invalid data
+    const failed = suite.run({ name: 42, mapped: 'x' });
+    expect(failed.hasErrors('name')).toBe(true);
+    expect(parser).not.toHaveBeenCalled();
+    expect(callbackData).toEqual({ name: 42, mapped: 'x' });
 
     const recovery = suite.run({ name: 'ok', mapped: 'y' });
     expect(recovery.isValid()).toBe(true);
+    expect(parser).toHaveBeenCalledTimes(1);
     expect(callbackData).toEqual({ name: 'ok', mapped: 'y' });
   });
 });

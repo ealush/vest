@@ -17,6 +17,7 @@ const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const ts = require('typescript');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 let failures = 0;
@@ -51,9 +52,6 @@ function isSourceFile(name) {
   return /\.(ts|tsx|js|jsx|mjs|cjs)$/.test(name);
 }
 
-const IMPORT_RE =
-  /(?:import|export)[^'"]*?from\s*['"]([^'"]+)["']|require\(\s*['"]([^'"]+)['"]\s*\)/g;
-
 // Workspace aliases resolved to package roots for direction checks. Bare
 // external imports (including vest-utils) are governed by the per-check
 // forbidden patterns, not by this map. `vast`/`anyone` have no imports in
@@ -70,14 +68,60 @@ const ALIAS_ROOTS = new Map([
   ['anyone', path.join(REPO_ROOT, 'packages', 'anyone')],
 ]);
 
+/**
+ * The module specifier expression of any static, re-export, import-equals,
+ * dynamic import, or require() form; undefined for other nodes.
+ */
+function moduleSpecifierOf(node) {
+  if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+    return node.moduleSpecifier;
+  }
+  if (ts.isImportEqualsDeclaration(node)) {
+    return importEqualsSpecifier(node);
+  }
+  return isModuleCall(node) ? node.arguments[0] : undefined;
+}
+
+function importEqualsSpecifier(node) {
+  return ts.isExternalModuleReference(node.moduleReference)
+    ? node.moduleReference.expression
+    : undefined;
+}
+
+function isModuleCall(node) {
+  if (!ts.isCallExpression(node)) return false;
+  const callee = node.expression;
+  return (
+    callee.kind === ts.SyntaxKind.ImportKeyword ||
+    (ts.isIdentifier(callee) && callee.text === 'require')
+  );
+}
+
 function importsOf(file) {
   const source = fs.readFileSync(file, 'utf8');
+  const scriptKind = /\.(tsx|jsx)$/.test(file)
+    ? ts.ScriptKind.TSX
+    : ts.ScriptKind.TS;
+  const ast = ts.createSourceFile(
+    file,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    scriptKind,
+  );
   const found = [];
-  let match;
-  IMPORT_RE.lastIndex = 0;
-  while ((match = IMPORT_RE.exec(source)) !== null) {
-    found.push(match[1] ?? match[2]);
-  }
+  const addLiteral = node => {
+    if (
+      node &&
+      (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node))
+    )
+      found.push(node.text);
+  };
+  const visit = node => {
+    addLiteral(moduleSpecifierOf(node));
+    ts.forEachChild(node, visit);
+  };
+  visit(ast);
   return found;
 }
 

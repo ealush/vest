@@ -13,23 +13,20 @@ declare global {
 }
 
 const snapshotCounts = { parserRuns: 0, getterReads: 0 };
-enforce.extend(
-  {
-    snapshotCounted: (value: string) => {
-      snapshotCounts.parserRuns += 1;
-      const carrier: Record<string, unknown> = {};
-      Object.defineProperty(carrier, 'val', {
-        enumerable: true,
-        get: () => {
-          snapshotCounts.getterReads += 1;
-          return `fixed:${value}`;
-        },
-      });
-      return { pass: true, type: carrier };
-    },
+enforce.extend({
+  snapshotCounted: (value: string) => {
+    snapshotCounts.parserRuns += 1;
+    const carrier: Record<string, unknown> = {};
+    Object.defineProperty(carrier, 'val', {
+      enumerable: true,
+      get: () => {
+        snapshotCounts.getterReads += 1;
+        return `fixed:${value}`;
+      },
+    });
+    return { pass: true, type: carrier };
   },
-  { parsers: ['snapshotCounted'] },
-);
+});
 
 function snapshotSchema() {
   return enforce.shape({
@@ -135,7 +132,7 @@ describe('schema contracts: ownership and snapshot boundaries', () => {
 });
 
 describe('schema contracts: parser-created accessor detachment (MP08b)', () => {
-  it('[SC-ACCESSOR] a parser-created accessor materializes once per boundary copy with detached identities', () => {
+  it('[SC-ACCESSOR] a parser-created accessor materializes once with detached published copies', () => {
     snapshotCounts.parserRuns = 0;
     snapshotCounts.getterReads = 0;
     const seen: unknown[] = [];
@@ -146,10 +143,10 @@ describe('schema contracts: parser-created accessor detachment (MP08b)', () => {
     const result = suite.run({ doc: 'd', note: 'n' });
 
     expect(result.isValid()).toBe(true);
-    // One parser run (no validation retry); one materializing read per
-    // published copy (suite callback input + result value).
+    // One parser run (no validation retry); the accessor materializes once
+    // when output is established, and every published copy is detached.
     expect(snapshotCounts.parserRuns).toBe(1);
-    expect(snapshotCounts.getterReads).toBe(2);
+    expect(snapshotCounts.getterReads).toBe(1);
     const callbackDoc = (seen[0] as { doc: Record<string, unknown> }).doc;
     const resultDoc = (result.value as { doc: Record<string, unknown> }).doc;
     expect(callbackDoc).not.toBe(resultDoc);
@@ -157,14 +154,14 @@ describe('schema contracts: parser-created accessor detachment (MP08b)', () => {
     // getter invocations.
     expect(callbackDoc.val).toBe('fixed:d');
     expect(resultDoc.val).toBe('fixed:d');
-    expect(snapshotCounts.getterReads).toBe(2);
+    expect(snapshotCounts.getterReads).toBe(1);
     // Mutating one published copy touches nothing else.
     (callbackDoc as Record<string, unknown>).val = 'MUT';
     expect(resultDoc.val).toBe('fixed:d');
-    expect(snapshotCounts.getterReads).toBe(2);
+    expect(snapshotCounts.getterReads).toBe(1);
   });
 
-  it('[SC-ACCESSOR] a retained parser-created accessor is reused without re-reading the getter', () => {
+  it('[SC-ACCESSOR] a focused run never re-reads an unselected parser-created accessor', () => {
     snapshotCounts.parserRuns = 0;
     snapshotCounts.getterReads = 0;
     const seen: unknown[] = [];
@@ -173,16 +170,16 @@ describe('schema contracts: parser-created accessor detachment (MP08b)', () => {
       test('note', () => true);
     }, snapshotSchema() as never);
     suite.run({ doc: 'd', note: 'n' });
-    expect(snapshotCounts.getterReads).toBe(2);
+    expect(snapshotCounts.getterReads).toBe(1);
 
     const next = suite.changed('note').run({ doc: 'd', note: 'n2' });
     expect(next.isValid()).toBe(true);
-    // The retained mapping stays detached: no new accessor reads and the
-    // delivered value is stable across runs.
-    expect(snapshotCounts.getterReads).toBe(2);
-    expect((next.value as { doc: { val: unknown } }).doc.val).toBe('fixed:d');
-    expect((seen[1] as { doc: { val: unknown } }).doc.val).toBe('fixed:d');
-    expect(snapshotCounts.getterReads).toBe(2);
+    // The unselected parser neither runs nor re-materializes; output holds
+    // only the selected field and the callback sees the supplied input.
+    expect(snapshotCounts.parserRuns).toBe(1);
+    expect(snapshotCounts.getterReads).toBe(1);
+    expect(next.value).toEqual({ note: 'n2' });
+    expect((seen[1] as { doc: unknown }).doc).toBe('d');
   });
 
   it('[SC-ACCESSOR] two suites sharing one schema keep parser-created accessors detached', () => {

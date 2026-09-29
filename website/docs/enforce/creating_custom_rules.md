@@ -64,25 +64,23 @@ enforce.extend({
 enforce(user.email).isValidEmail();
 ```
 
-### Parser-style custom rules and selective runs
+### Transforming custom rules and selective runs
 
-Custom rules are validators by default: Vest never executes them speculatively. That matters for dependency-aware runs — when `suite.changed()` revalidates an affected subset, untouched fields are mapped without running their validators. If your custom rule is really a **parser** (a pure transformation that cannot fail on its own, like upper-casing or trimming), declare it in `parsers` so selective runs can apply it to untouched fields:
+A custom rule may transform its value by returning `{ pass, type }`. Like every
+rule, it runs only as part of validation: when `suite.changed()` or a focus
+method selects a subset of fields, rules for unselected fields never execute —
+not even to prepare callback data. No registration is needed.
 
 ```js
-enforce.extend(
-  {
-    normalizeId: value => ({
-      pass: true,
-      type: value.trim().toUpperCase(),
-    }),
-  },
-  { parsers: ['normalizeId'] },
-);
+enforce.extend({
+  normalizeId: value => ({
+    pass: true,
+    type: value.trim().toUpperCase(),
+  }),
+});
 ```
 
-Rules left out of `parsers` keep validator treatment. Field-level validators run when their field is in the affected set; validators attached to a retained container can also run when a descendant changes. See [Input vs output types with parsers](../writing_your_suite/schema_validation#input-vs-output-types-with-parsers) and [Custom Parsers and Selective Runs](../writing_your_suite/schema_relationships#custom-parsers-and-selective-runs).
-
-Parser registration is validated immediately: every parser name must appear exactly once as an own, callable rule in the same extension object. Unknown, inherited, duplicate, or non-callable entries throw `EnforceSchemaError` before any rule is registered. This catches configuration mistakes; it cannot prove purity, so parser functions must still be deterministic and side-effect free.
+See [Input vs output types with parsers](../writing_your_suite/schema_validation#input-vs-output-types-with-parsers).
 
 ## Custom rules return value
 

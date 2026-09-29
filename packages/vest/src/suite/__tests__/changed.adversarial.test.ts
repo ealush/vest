@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { compose, enforce } from 'n4s';
+import { compose, enforce, SchemaExclusionError } from 'n4s';
 import { resolveAffectedPaths, runSchemaPaths } from 'n4s/exports/internal';
 
 import { create, test } from '../../vest';
@@ -14,13 +14,19 @@ describe('adversarial relationship contracts', () => {
     expect(predicate).toHaveBeenCalledTimes(1);
   });
 
-  it('reports a root container failure during a changed run', () => {
+  it('rejects a member selection under a composed root instead of hiding its verdict', () => {
+    const root = vi.fn(() => false);
     const schema = compose(
       enforce.shape({ a: enforce.isString() }),
-      enforce.condition(() => false),
+      enforce.condition(root),
     );
     const suite = create(() => {}, schema);
-    expect(suite.changed('a').run({ a: 'ok' }).hasErrors()).toBe(true);
+    expect(() => suite.changed('a').run({ a: 'ok' })).toThrow(
+      SchemaExclusionError,
+    );
+    expect(root).not.toHaveBeenCalled();
+    // A full run reports the root failure.
+    expect(suite.run({ a: 'ok' }).hasErrors()).toBe(true);
   });
 
   it('reports descendant schema failures when changing a whole object', () => {
@@ -93,7 +99,7 @@ describe('adversarial relationship contracts', () => {
     expect(skipped).not.toHaveBeenCalled();
   });
 
-  it('does not execute a nested skipped schema predicate during composed fallback', () => {
+  it('does not execute any nested predicate when a composed selection is rejected', () => {
     const skipped = vi.fn(() => true);
     const selected = vi.fn(() => true);
     const schema = compose(
@@ -106,13 +112,15 @@ describe('adversarial relationship contracts', () => {
       enforce.condition(() => true),
     );
 
-    create(() => {}, schema)
-      .changed('profile.b')
-      .focus({ skip: 'profile.a' })
-      .run({ profile: { a: 'a', b: 'b' } });
+    expect(() =>
+      create(() => {}, schema)
+        .changed('profile.b')
+        .focus({ skip: 'profile.a' })
+        .run({ profile: { a: 'a', b: 'b' } }),
+    ).toThrow(SchemaExclusionError);
 
     expect(skipped).not.toHaveBeenCalled();
-    expect(selected).toHaveBeenCalledTimes(1);
+    expect(selected).not.toHaveBeenCalled();
   });
 
   it('does not expose the mutable Map behind a snapshot through forEach', () => {
@@ -149,7 +157,7 @@ describe('adversarial relationship contracts', () => {
     expect(Object.hasOwn(received[1] as object, 'optional')).toBe(false);
   });
 
-  it('exposes the complete mapped output through result.value', () => {
+  it('exposes only the output this run established through result.value', () => {
     const schema = enforce.shape({
       age: enforce.isNumeric().toNumber(),
       note: enforce.isString(),
@@ -160,10 +168,10 @@ describe('adversarial relationship contracts', () => {
     suite.run({ age: '42', note: 'first' });
     const result = suite.changed('note').run({ age: '42', note: 'second' });
     expect(result.isValid()).toBe(true);
-    expect(result.value).toEqual({ age: 42, note: 'second' });
+    expect(result.value).toEqual({ note: 'second' });
   });
 
-  it('keeps untouched array members mapped after a focused item change', () => {
+  it('supplies focused callbacks with the current input', () => {
     const seen: unknown[] = [];
     const schema = enforce.shape({
       rows: enforce.isArrayOf(enforce.isNumeric().toNumber()),
@@ -173,7 +181,7 @@ describe('adversarial relationship contracts', () => {
     }, schema);
     suite.run({ rows: ['1', '2'] });
     suite.changed('rows.0').run({ rows: ['3', '2'] });
-    expect(seen[1]).toEqual({ rows: [3, 2] });
+    expect(seen).toEqual([{ rows: [1, 2] }, { rows: ['3', '2'] }]);
   });
 
   it.each(['resetField', 'remove'] as const)(
@@ -232,7 +240,7 @@ describe('adversarial relationship contracts', () => {
     );
   });
 
-  it('keeps schema failure attribution from widening user test selection', () => {
+  it('rejects a composed member selection before any user test runs', () => {
     const parent = vi.fn(() => {});
     const schema = compose(
       enforce.shape({ a: enforce.isString() }),
@@ -241,7 +249,9 @@ describe('adversarial relationship contracts', () => {
     const suite = create(() => {
       test('__root__', parent);
     }, schema);
-    expect(suite.changed('a').run({ a: 'ok' }).hasErrors()).toBe(true);
+    expect(() => suite.changed('a').run({ a: 'ok' })).toThrow(
+      SchemaExclusionError,
+    );
     expect(parent).not.toHaveBeenCalled();
   });
 

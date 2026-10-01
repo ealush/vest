@@ -5,6 +5,14 @@ description: Guides for upgrading Vest
 keywords: [Vest, Upgrade]
 ---
 
+# Vest 6 behavior updates
+
+This section covers fixes and additions within Vest 6 for applications already using version 6.
+
+## Field names for retained keyed tests
+
+Keyed tests retain their verdict under their current field name after reordering, including when focus leaves the test out of the run. Reusing a key for a different field moves the retained verdict to that field. Use stable keys for the validation identity you intend to preserve.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

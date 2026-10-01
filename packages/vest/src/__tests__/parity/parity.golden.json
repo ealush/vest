@@ -1,0 +1,3205 @@
+{
+  "async: a newer run replaces pending work": [
+    {
+      "label": "latest",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "after",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "async: awaited results": [
+    {
+      "label": "sync part",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 1,
+      "errors": [
+        {
+          "fieldName": "email",
+          "message": "required"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 1,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        },
+        "email": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["required"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "required",
+          "path": ["email"]
+        }
+      ],
+      "isValid": false,
+      "isPending": true,
+      "value": "<undefined>"
+    },
+    {
+      "label": "settled",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "username",
+          "message": "taken"
+        },
+        {
+          "fieldName": "email",
+          "message": "required"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["taken"],
+          "warnings": [],
+          "valid": false
+        },
+        "email": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["required"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "taken",
+          "path": ["username"]
+        },
+        {
+          "message": "required",
+          "path": ["email"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "email": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "username": "free",
+        "email": "a"
+      },
+      "isValid": true,
+      "isPending": false
+    }
+  ],
+  "callbacks: afterEach and afterField": [
+    {
+      "calls": ["each", "field b", "each"]
+    },
+    {
+      "label": "",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        },
+        {
+          "fieldName": "b",
+          "message": "b async"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b async"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        },
+        {
+          "message": "b async",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "conditions: omitWhen removes tests from the result": [
+    {
+      "label": "included",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "email",
+          "message": "required for newsletter"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "email": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["required for newsletter"],
+          "warnings": [],
+          "valid": false
+        },
+        "name": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "required for newsletter",
+          "path": ["email"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "omitted",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "name": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "wantsNewsletter": false,
+        "name": "a"
+      },
+      "isValid": true,
+      "isPending": false
+    }
+  ],
+  "conditions: skipWhen keeps previous results": [
+    {
+      "label": "online",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "username",
+          "message": "taken"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 2,
+          "pendingCount": 0,
+          "errors": ["taken"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "taken",
+          "path": ["username"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "offline",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "username",
+          "message": "taken"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 2,
+          "pendingCount": 0,
+          "errors": ["taken"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "taken",
+          "path": ["username"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "each: keyed tests follow their item across reorders": [
+    {
+      "label": "initial",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 3,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "rows.0.v",
+          "message": "required"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "rows.0.v": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["required"],
+          "warnings": [],
+          "valid": false
+        },
+        "rows.1.v": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "other": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "required",
+          "path": ["rows.0.v"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "reordered",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 3,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "rows.1.v",
+          "message": "required"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "rows.0.v": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "rows.1.v": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["required"],
+          "warnings": [],
+          "valid": false
+        },
+        "other": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "required",
+          "path": ["rows.1.v"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "reordered while focused out",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "rows.1.v",
+          "message": "required"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "rows.1.v": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["required"],
+          "warnings": [],
+          "valid": false
+        },
+        "other": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "required",
+          "path": ["rows.1.v"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "focus: focus({ skip }) keeps the skipped result": [
+    {
+      "label": "full",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        },
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        },
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "skip a",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "skip both",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "focus: only and skip together": [
+    {
+      "label": "full",
+      "errorCount": 3,
+      "warnCount": 0,
+      "testCount": 3,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        },
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        },
+        {
+          "fieldName": "c",
+          "message": "c fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "c": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["c fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        },
+        {
+          "message": "b fails",
+          "path": ["b"]
+        },
+        {
+          "message": "c fails",
+          "path": ["c"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "only a,b skip b",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 3,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        },
+        {
+          "fieldName": "c",
+          "message": "c fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "c": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["c fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "b fails",
+          "path": ["b"]
+        },
+        {
+          "message": "c fails",
+          "path": ["c"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "focus: only() inside the callback": [
+    {
+      "label": "full",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        },
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        },
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "only a",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "focus: skip() inside the callback": [
+    {
+      "label": "full",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        },
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        },
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "skip a",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "focus: suite.only() sequence keeps unfocused results": [
+    {
+      "label": "full",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        },
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        },
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "only a",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "only b",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "b": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "a": "ok",
+        "b": "ok"
+      },
+      "isValid": true,
+      "isPending": false
+    }
+  ],
+  "groups: named groups and group skip(true)": [
+    {
+      "label": "full",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "email",
+          "message": "email required",
+          "groupName": "signup"
+        },
+        {
+          "fieldName": "name",
+          "message": "name required",
+          "groupName": "profile"
+        }
+      ],
+      "warnings": [],
+      "groups": {
+        "signup": {
+          "email": {
+            "errorCount": 1,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": ["email required"],
+            "warnings": [],
+            "valid": false
+          }
+        },
+        "profile": {
+          "name": {
+            "errorCount": 1,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": ["name required"],
+            "warnings": [],
+            "valid": false
+          }
+        }
+      },
+      "tests": {
+        "email": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["email required"],
+          "warnings": [],
+          "valid": false
+        },
+        "name": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["name required"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "email required",
+          "path": ["email"]
+        },
+        {
+          "message": "name required",
+          "path": ["name"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "profile skipped",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "name",
+          "message": "name required",
+          "groupName": "profile"
+        }
+      ],
+      "warnings": [],
+      "groups": {
+        "signup": {
+          "email": {
+            "errorCount": 0,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": [],
+            "warnings": [],
+            "valid": true
+          }
+        },
+        "profile": {
+          "name": {
+            "errorCount": 1,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": ["name required"],
+            "warnings": [],
+            "valid": false
+          }
+        }
+      },
+      "tests": {
+        "email": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "name": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["name required"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "name required",
+          "path": ["name"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "groups: onlyGroup and skipGroup": [
+    {
+      "label": "full",
+      "errorCount": 3,
+      "warnCount": 0,
+      "testCount": 3,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails",
+          "groupName": "g1"
+        },
+        {
+          "fieldName": "b",
+          "message": "b fails",
+          "groupName": "g2"
+        },
+        {
+          "fieldName": "c",
+          "message": "c fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {
+        "g1": {
+          "a": {
+            "errorCount": 1,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": ["a fails"],
+            "warnings": [],
+            "valid": false
+          }
+        },
+        "g2": {
+          "b": {
+            "errorCount": 1,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": ["b fails"],
+            "warnings": [],
+            "valid": false
+          }
+        }
+      },
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "c": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["c fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        },
+        {
+          "message": "b fails",
+          "path": ["b"]
+        },
+        {
+          "message": "c fails",
+          "path": ["c"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "g1",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 3,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "b",
+          "message": "b fails",
+          "groupName": "g2"
+        },
+        {
+          "fieldName": "c",
+          "message": "c fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {
+        "g1": {
+          "a": {
+            "errorCount": 0,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": [],
+            "warnings": [],
+            "valid": true
+          }
+        },
+        "g2": {
+          "b": {
+            "errorCount": 1,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": ["b fails"],
+            "warnings": [],
+            "valid": false
+          }
+        }
+      },
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "c": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["c fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "b fails",
+          "path": ["b"]
+        },
+        {
+          "message": "c fails",
+          "path": ["c"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 3,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "b",
+          "message": "b fails",
+          "groupName": "g2"
+        }
+      ],
+      "warnings": [],
+      "groups": {
+        "g1": {
+          "a": {
+            "errorCount": 0,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": [],
+            "warnings": [],
+            "valid": true
+          }
+        },
+        "g2": {
+          "b": {
+            "errorCount": 1,
+            "warnCount": 0,
+            "testCount": 1,
+            "pendingCount": 0,
+            "errors": ["b fails"],
+            "warnings": [],
+            "valid": false
+          }
+        }
+      },
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "c": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "include: when() pulls a field into focus": [
+    {
+      "label": "",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "confirm",
+          "message": "must match"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "password": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "confirm": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["must match"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "must match",
+          "path": ["confirm"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "lifecycle: resetField while a test is pending": [
+    {
+      "label": "",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "late failure"
+        },
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["late failure"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "late failure",
+          "path": ["a"]
+        },
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "lifecycle: resetField, remove and reset": [
+    {
+      "label": "full",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        },
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        },
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "resetField a",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 0,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "remove b",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 0,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 0,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "reset",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 0,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {},
+      "valid": false,
+      "issues": [],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "modes: ALL runs every test": [
+    {
+      "label": "",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "first"
+        },
+        {
+          "fieldName": "a",
+          "message": "second"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 2,
+          "warnCount": 0,
+          "testCount": 2,
+          "pendingCount": 0,
+          "errors": ["first", "second"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "first",
+          "path": ["a"]
+        },
+        {
+          "message": "second",
+          "path": ["a"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "modes: ONE stops the suite at the first failure": [
+    {
+      "label": "",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "first"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["first"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 0,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "first",
+          "path": ["a"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "modes: default eager stops a field at its first failure": [
+    {
+      "label": "",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "first"
+        },
+        {
+          "fieldName": "b",
+          "message": "other"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["first"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["other"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "first",
+          "path": ["a"]
+        },
+        {
+          "message": "other",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "optional: blank optional fields stay valid": [
+    {
+      "label": "nickname untested",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "nickname",
+          "message": "too short"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "nickname": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["too short"],
+          "warnings": [],
+          "valid": false
+        },
+        "name": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "too short",
+          "path": ["nickname"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "nickname bad",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "nickname",
+          "message": "too short"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "nickname": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["too short"],
+          "warnings": [],
+          "valid": false
+        },
+        "name": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "too short",
+          "path": ["nickname"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "optional: custom optional condition": [
+    {
+      "label": "not needed",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 0,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "phone": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 0,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "isValid": true,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "needed",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "phone",
+          "message": "required"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "phone": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["required"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "required",
+          "path": ["phone"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "plain: passing and failing tests": [
+    {
+      "label": "both fail",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "username",
+          "message": "Username is required"
+        },
+        {
+          "fieldName": "email",
+          "message": "Email is required"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["Username is required"],
+          "warnings": [],
+          "valid": false
+        },
+        "email": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["Email is required"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "Username is required",
+          "path": ["username"]
+        },
+        {
+          "message": "Email is required",
+          "path": ["email"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "one fixed",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "email",
+          "message": "Email is required"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "email": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["Email is required"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "Email is required",
+          "path": ["email"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "all pass",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "username": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "email": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "username": "a",
+        "email": "b"
+      },
+      "isValid": true,
+      "isPending": false
+    }
+  ],
+  "plain: warnings": [
+    {
+      "label": "warns",
+      "errorCount": 0,
+      "warnCount": 1,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [
+        {
+          "fieldName": "password",
+          "message": "Weak password"
+        }
+      ],
+      "groups": {},
+      "tests": {
+        "password": {
+          "errorCount": 0,
+          "warnCount": 1,
+          "testCount": 2,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": ["Weak password"],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "password": "short"
+      },
+      "isValid": true,
+      "isPending": false
+    },
+    {
+      "label": "warns and fails",
+      "errorCount": 1,
+      "warnCount": 1,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "password",
+          "message": "Required"
+        }
+      ],
+      "warnings": [
+        {
+          "fieldName": "password",
+          "message": "Weak password"
+        }
+      ],
+      "groups": {},
+      "tests": {
+        "password": {
+          "errorCount": 1,
+          "warnCount": 1,
+          "testCount": 2,
+          "pendingCount": 0,
+          "errors": ["Required"],
+          "warnings": ["Weak password"],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "Required",
+          "path": ["password"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "clean",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "password": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 2,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "password": "long enough password"
+      },
+      "isValid": true,
+      "isPending": false
+    }
+  ],
+  "schema: Standard Schema validate on the suite": [
+    {
+      "valid": {
+        "value": {
+          "a": "x"
+        }
+      },
+      "invalid": {
+        "issues": [
+          {
+            "message": "a fails",
+            "path": ["a"]
+          }
+        ]
+      }
+    }
+  ],
+  "schema: callback data with parsers": [
+    {
+      "seen": ["number", "number"]
+    },
+    {
+      "label": "full",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "age": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "age": 20
+      },
+      "types": {
+        "input": {
+          "age": 20
+        },
+        "output": {
+          "age": 20
+        }
+      },
+      "isValid": true,
+      "isPending": false
+    },
+    {
+      "label": "only",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "age",
+          "message": "adult"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "age": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["adult"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "adult",
+          "path": ["age"]
+        }
+      ],
+      "types": {
+        "input": {
+          "age": 10
+        },
+        "output": {
+          "age": 10
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "schema: compose() as the suite schema": [
+    {
+      "label": "invalid",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "a": "x"
+        },
+        "output": {
+          "a": "x"
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "valid",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 0,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {},
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "a": 1
+        },
+        "output": {
+          "a": 1
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "schema: focus({ skip }) after a failing full run": [
+    {
+      "label": "full",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "b"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "a": "x",
+          "b": 1
+        },
+        "output": {
+          "a": "x",
+          "b": 1
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 0,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {},
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "a": "x",
+          "b": 1
+        },
+        "output": {
+          "a": "x",
+          "b": 1
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "schema: full runs report errors and parsed value": [
+    {
+      "label": "valid",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 0,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {},
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "name": "a",
+          "age": 7
+        },
+        "output": {
+          "name": "a",
+          "age": 7
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "invalid name",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "name"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "name": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "name": 1,
+          "age": "7"
+        },
+        "output": {
+          "name": 1,
+          "age": "7"
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "schema: loose, partial and isArrayOf": [
+    {
+      "label": "valid",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 0,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {},
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "meta": {
+            "id": "x",
+            "extra": 1
+          },
+          "prefs": {},
+          "tags": ["a"]
+        },
+        "output": {
+          "meta": {
+            "id": "x",
+            "extra": 1
+          },
+          "prefs": {},
+          "tags": ["a"]
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "bad tag",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "tags.1"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "tags.1": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "meta": {
+            "id": "x"
+          },
+          "prefs": {},
+          "tags": ["a", 2]
+        },
+        "output": {
+          "meta": {
+            "id": "x"
+          },
+          "prefs": {},
+          "tags": ["a", 2]
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "schema: nested shapes and focus": [
+    {
+      "label": "full",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "profile.name"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "profile.name": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "profile": {
+            "name": 1
+          },
+          "other": "x"
+        },
+        "output": {
+          "profile": {
+            "name": 1
+          },
+          "other": "x"
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "only profile",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 0,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {},
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "profile": {
+            "name": "ok"
+          },
+          "other": "x"
+        },
+        "output": {
+          "profile": {
+            "name": "ok"
+          },
+          "other": "x"
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "schema: only() after a failing full run": [
+    {
+      "label": "full",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "b"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "a": "x",
+          "b": 1
+        },
+        "output": {
+          "a": "x",
+          "b": 1
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "only a",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "a": "x",
+        "b": 1
+      },
+      "types": {
+        "input": {
+          "a": "x",
+          "b": 1
+        },
+        "output": {
+          "a": "x",
+          "b": 1
+        }
+      },
+      "isValid": true,
+      "isPending": false
+    },
+    {
+      "label": "only b",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "a": "x",
+        "b": "y"
+      },
+      "types": {
+        "input": {
+          "a": "x",
+          "b": "y"
+        },
+        "output": {
+          "a": "x",
+          "b": "y"
+        }
+      },
+      "isValid": true,
+      "isPending": false
+    }
+  ],
+  "schema: root failure on non-object input": [
+    {
+      "label": "null",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "__root__"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "__root__": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": null,
+        "output": null
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "valid",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 0,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {},
+      "valid": false,
+      "issues": [],
+      "types": {
+        "input": {
+          "a": "x"
+        },
+        "output": {
+          "a": "x"
+        }
+      },
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "serialization: resume restores verdicts": [
+    {
+      "label": "resumed",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "focused after",
+      "errorCount": 2,
+      "warnCount": 0,
+      "testCount": 2,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        },
+        {
+          "fieldName": "b",
+          "message": "b fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["b fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        },
+        {
+          "message": "b fails",
+          "path": ["b"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    }
+  ],
+  "static: runStatic is stateless": [
+    {
+      "label": "static fail",
+      "errorCount": 1,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [
+        {
+          "fieldName": "a",
+          "message": "a fails"
+        }
+      ],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": ["a fails"],
+          "warnings": [],
+          "valid": false
+        }
+      },
+      "valid": false,
+      "issues": [
+        {
+          "message": "a fails",
+          "path": ["a"]
+        }
+      ],
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
+    },
+    {
+      "label": "static pass",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "a": "ok"
+      },
+      "isValid": true,
+      "isPending": false
+    },
+    {
+      "label": "suite untouched",
+      "errorCount": 0,
+      "warnCount": 0,
+      "testCount": 1,
+      "pendingCount": 0,
+      "errors": [],
+      "warnings": [],
+      "groups": {},
+      "tests": {
+        "a": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
+        }
+      },
+      "valid": true,
+      "value": {
+        "a": "ok"
+      },
+      "isValid": true,
+      "isPending": false
+    }
+  ]
+}

@@ -24,6 +24,7 @@ export default [
       '**/dist/**',
       '**/types/**',
       'coverage/**',
+      'packages/vest/src/__tests__/parity/parity.golden.json',
     ],
   },
 

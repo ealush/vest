@@ -24,6 +24,8 @@
     "integrations:status": "tsx scripts/integrations/status.js",
     "docs:examples:test": "yarn workspace vest vitest run src/suite/__tests__/docsExamples.test.ts && yarn workspace website test",
     "ai:eval": "node scripts/score-ai-eval.js",
+    "size:check": "node scripts/check-bundle-size.mjs",
+    "size:update": "node scripts/check-bundle-size.mjs --update",
     "postinstall": "husky install"
   },
   "homepage": "https://vestjs.dev",
@@ -47,6 +49,7 @@
     "@typescript-eslint/parser": "^7",
     "@vitest/coverage-v8": "4.0.18",
     "@vitest/ui": "4.0.18",
+    "esbuild": "~0.27.0",
     "eslint": "^9",
     "eslint-config-prettier": "^9",
     "eslint-import-resolver-typescript": "^3",

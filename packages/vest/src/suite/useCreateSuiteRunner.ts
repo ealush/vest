@@ -28,6 +28,12 @@ import {
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
+import {
+  RetainedSchemaFailure,
+  ROOT_SCHEMA_FIELD,
+  schemaFocusOf,
+  useRetainedSchemaFailures,
+} from './retainedSchemaFailures';
 
 type SchemaRunResult = {
   readonly message?: string;
@@ -74,6 +80,14 @@ export function useCreateSuiteRunner<
       schema ? snapshotParsedData(parsedDataChunk) : undefined
     ) as Partial<InferSchemaOutput<S>> | undefined;
 
+    // Schema failures outside this run's focus keep their previous verdict,
+    // like user tests that focus leaves out. Read before the new root exists.
+    const retainedSchemaFailures = shouldRunSchema(schema)
+      ? useRetainedSchemaFailures(
+          schemaFocusOf(transformedModifiers, isN4sSchema(schema)),
+        )
+      : [];
+
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
     const runData = callbackInput;
@@ -108,6 +122,7 @@ export function useCreateSuiteRunner<
           useRunSuiteCallback<F, T, S, G>({
             args: callbackArgs,
             modifiers: transformedModifiers,
+            retainedSchemaFailures,
             schema,
             schemaRunResult,
             suiteCallback,
@@ -179,12 +194,14 @@ function useRunSuiteCallback<
   modifiers: ReturnType<typeof useTransformedModifiers<F, G>>;
   schema: S | undefined;
   schemaRunResult?: SchemaRunResult[];
+  retainedSchemaFailures: RetainedSchemaFailure[];
   suiteCallback: SuiteCallbackWithSchema<S, T>;
   useResolver: () => SuiteResult<F, G, S, D>;
 }) {
   const {
     args,
     modifiers,
+    retainedSchemaFailures,
     schema,
     schemaRunResult,
     suiteCallback,
@@ -199,9 +216,10 @@ function useRunSuiteCallback<
     (suiteCallback as CB)(...args);
 
     IsolateReorderable(
-      runSchemaValidation(schema, schemaRunResult),
+      runSchemaValidation(schema, schemaRunResult, retainedSchemaFailures),
       undefined,
       {
+        ...(schema ? { schemaValidation: true } : {}),
         tests: [],
       },
     );
@@ -267,6 +285,7 @@ function snapshotGroup<F extends TFieldName, G extends TGroupName>(
 function runSchemaValidation<S extends TSchema = undefined>(
   schema: S | undefined,
   schemaRunResult?: SchemaRunResult[],
+  retainedSchemaFailures: RetainedSchemaFailure[] = [],
 ) {
   // eslint-disable-next-line complexity
   return () => {
@@ -280,11 +299,24 @@ function runSchemaValidation<S extends TSchema = undefined>(
         continue;
       }
 
-      const fieldName = error.path?.length ? error.path.join('.') : '__root__';
-      const testKey = `${fieldName}_${i}`;
-      test(fieldName, error.message, () => false, testKey);
+      emitSchemaFailure(error, JSON.stringify([error.path, i]));
+    }
+
+    // Retained tests keep both identity and source path, including when
+    // focus causes the reconciler to create a replacement test.
+    for (const failure of retainedSchemaFailures) {
+      emitSchemaFailure(failure, failure.key);
     }
   };
+}
+
+function emitSchemaFailure(
+  { path, message }: { path?: readonly string[]; message?: string },
+  key: string,
+) {
+  const fieldName = path?.length ? path.join('.') : ROOT_SCHEMA_FIELD;
+  const schemaTest = test(fieldName, message, () => false, key);
+  (schemaTest.data as { schemaPath?: readonly string[] }).schemaPath = path;
 }
 
 /**

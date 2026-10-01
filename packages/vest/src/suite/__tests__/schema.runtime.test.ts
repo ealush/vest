@@ -10,11 +10,14 @@ describe('Schema Runtime Validation', () => {
     tags: enforce.isArray(),
   });
 
-  const suite = create(data => {
-    test('name', 'Name must be present', () => {
-      enforce(data.name).isNotBlank();
-    });
-  }, schema);
+  const createSuite = () =>
+    create(data => {
+      test('name', 'Name must be present', () => {
+        enforce(data.name).isNotBlank();
+      });
+    }, schema);
+
+  const suite = createSuite();
 
   describe('run() validation behavior', () => {
     it('should validate schema when no focus criteria is active', () => {
@@ -31,6 +34,8 @@ describe('Schema Runtime Validation', () => {
     });
 
     it('should validate only the focused fields when "only" is active', () => {
+      // Fresh suite: focused runs keep schema errors from earlier runs.
+      const suite = createSuite();
       // Invalid data for schema (age is string), but we focus on 'name'
       // The schema validation should pick 'name' and skip 'age'
       const result = suite
@@ -43,6 +48,8 @@ describe('Schema Runtime Validation', () => {
     });
 
     it('should validate only the focused fields when "only" is active via suite.focus().run()', () => {
+      // Fresh suite: focused runs keep schema errors from earlier runs.
+      const suite = createSuite();
       // Invalid data for schema
       const result = suite
         .focus({ only: ['name'] })
@@ -54,6 +61,8 @@ describe('Schema Runtime Validation', () => {
     });
 
     it('should drop intersected fields and parse schemas securely when only and skip intersect', () => {
+      // Fresh suite: focused runs keep schema errors from earlier runs.
+      const suite = createSuite();
       // Only runs fields uniquely listed in `only` missing from `skip` natively.
       // Expected execution: 'name' evaluates. 'age' and 'tags' bypass safely.
       const result = suite

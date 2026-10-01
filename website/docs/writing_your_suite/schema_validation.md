@@ -156,6 +156,7 @@ suite.only('username').run({
 });
 ```
 
+Schema errors on fields outside the focus are kept from the previous run, the same way results of user tests that focus leaves out are kept. If an earlier run reported a schema error on `age`, `suite.only('username')` still reports it and the result stays invalid until `age` is validated again, the field is reset, or a full run passes.
 :::
 
 ## Schema Types

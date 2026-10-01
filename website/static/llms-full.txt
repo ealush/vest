@@ -5716,6 +5716,14 @@ app.post('/register', (req, res) => {
 Vest's statefulness is a feature, not a limitation. It's what makes incremental validation fast and accurate. When you need to escape it, the tools above give you full control.
 
 
+# Vest 6 behavior updates
+
+This section covers fixes and additions within Vest 6 for applications already using version 6.
+
+## Schema errors outside focused runs
+
+Focused runs retain schema errors outside their focus. After a failing full run, `only()` on another field still reports the failing field and keeps `valid: false` until that error is cleared. Repeated parent skips preserve nested schema failures.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.
@@ -9566,6 +9574,7 @@ suite.only('username').run({
 });
 ```
 
+Schema errors on fields outside the focus are kept from the previous run, the same way results of user tests that focus leaves out are kept. If an earlier run reported a schema error on `age`, `suite.only('username')` still reports it and the result stays invalid until `age` is validated again, the field is reset, or a full run passes.
 :::
 
 ## Schema Types

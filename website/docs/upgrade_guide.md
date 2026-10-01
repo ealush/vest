@@ -5,6 +5,14 @@ description: Guides for upgrading Vest
 keywords: [Vest, Upgrade]
 ---
 
+# Vest 6 behavior updates
+
+This section covers fixes and additions within Vest 6 for applications already using version 6.
+
+## Schema errors outside focused runs
+
+Focused runs retain schema errors outside their focus. After a failing full run, `only()` on another field still reports the failing field and keeps `valid: false` until that error is cleared. Repeated parent skips preserve nested schema failures.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

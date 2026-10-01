@@ -5,6 +5,14 @@ description: Guides for upgrading Vest
 keywords: [Vest, Upgrade]
 ---
 
+# Vest 6 behavior updates
+
+This section covers fixes and additions within Vest 6 for applications already using version 6.
+
+## Validator type dependency
+
+The `n4s` package now includes `@types/validator` as a regular dependency because its emitted TypeScript declarations import types from `validator/es/lib`. Consumers receive those types when installing `n4s`.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

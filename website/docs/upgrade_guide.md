@@ -5,6 +5,14 @@ description: Guides for upgrading Vest
 keywords: [Vest, Upgrade]
 ---
 
+# Vest 6 behavior updates
+
+This section covers fixes and additions within Vest 6 for applications already using version 6.
+
+## Custom validation rules must be functions
+
+`enforce.extend()` now rejects non-function rules immediately. Valid custom rules continue to work as before; malformed extensions throw when registered instead of failing later during validation.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

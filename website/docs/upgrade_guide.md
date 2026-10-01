@@ -5,6 +5,14 @@ description: Guides for upgrading Vest
 keywords: [Vest, Upgrade]
 ---
 
+# Vest 6 behavior updates
+
+This section covers fixes and additions within Vest 6 for applications already using version 6.
+
+## Composed validation rules
+
+Rules returned by `compose()` now also support `.validate()`, `.parse()`, and the Standard Schema `~standard.validate` interface, in addition to `.run()` and `.test()`.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

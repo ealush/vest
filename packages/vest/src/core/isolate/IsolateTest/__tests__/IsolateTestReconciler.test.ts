@@ -21,6 +21,23 @@ describe('IsolateTestReconciler', () => {
   });
 
   describe('useOrderResult', () => {
+    it('Should not report a reorder for a test with an empty field name', () => {
+      const suite = vest.create(() => {
+        vest.test('', 'form level error', () => false);
+        vest.test('f1', () => false);
+      });
+
+      suite.run();
+      suite.run();
+      const res = suite.run();
+
+      expect(deferThrow).not.toHaveBeenCalled();
+      expect(res.getErrors()).toEqual({
+        '': ['form level error'],
+        f1: [],
+      });
+    });
+
     it('Should emit DEFER_THROW event and call deferThrow when tests are called in different order', () => {
       const suite = vest.create(() => {
         // First run: test f1

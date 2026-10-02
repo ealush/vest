@@ -74,6 +74,8 @@ jobs:
         run: yarn format
       - name: Lint
         run: yarn lint
+      - name: Bundle size
+        run: yarn size:check
       - name: Release
         run: yarn release
       - name: Run benchmarks

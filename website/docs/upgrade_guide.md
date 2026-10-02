@@ -13,6 +13,10 @@ This section covers fixes and additions within Vest 6 for applications already u
 
 When a new run supersedes a pending run of the same suite, awaiting the older handle now resolves with the newest run's result. Superseded handles previously could remain pending indefinitely.
 
+## Resetting a field with pending validation
+
+`resetField(fieldName)` cancels pending async tests for that field. Late results cannot restore its errors, including after repeated resets. The field can be validated normally on the next run.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

@@ -1,6 +1,6 @@
 {
   "name": "vest",
-  "version": "6.3.2",
+  "version": "6.3.3",
   "description": "TypeScript validation-state framework for complex forms: incremental, async, conditional, client and server.",
   "license": "MIT",
   "author": "ealush",

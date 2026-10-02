@@ -21,7 +21,7 @@ keywords:
 
 # Enforce: The Assertion Library for Vest
 
-Enforce is a powerful assertion library that powers Vest's validations. It's designed to be:
+Enforce is the assertion library used inside Vest tests. Its rules are:
 
 - **Fluent** - Chain multiple assertions together naturally
 - **Composable** - Build reusable validators from smaller pieces

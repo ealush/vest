@@ -114,8 +114,10 @@ The V5 pattern of calling `only()` and `skip()` inside the callback still works,
 Vest implements the [Standard Schema](https://github.com/standard-schema/standard-schema) spec. You can now use Vest suites directly with libraries that support this standard.
 
 ```javascript
-const result = await suite.validate(data);
+const result = await suite['~standard'].validate(data);
 ```
+
+Compatible libraries normally invoke this hook for you. Continue to use `suite.run(data)` for stateful Vest execution and `suite.runStatic(data)` for independent server execution.
 
 ---
 

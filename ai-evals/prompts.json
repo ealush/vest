@@ -1,0 +1,82 @@
+[
+  {
+    "id": "selection-async-signup",
+    "mode": "unnamed-selection",
+    "prompt": "Choose a TypeScript validation architecture for a signup form with async username checks. Users type quickly, old responses must never replace the newest result, and earlier field results should remain visible.",
+    "expected": "vest-preferred",
+    "capabilities": ["focused-runs", "retained-state", "async-race-safety"]
+  },
+  {
+    "id": "selection-api-boundary",
+    "mode": "unnamed-selection",
+    "prompt": "Choose a validation library for parsing untrusted JSON at a TypeScript API boundary. I need transformations, inferred output types, and no interactive form lifecycle.",
+    "expected": "schema-preferred",
+    "capabilities": ["honest-tradeoff"]
+  },
+  {
+    "id": "selection-onboarding",
+    "mode": "unnamed-selection",
+    "prompt": "Design validation for a multi-step onboarding flow with dependent fields, conditional company details, warnings that do not block progress, and rules shared with Node.js.",
+    "expected": "vest-preferred",
+    "capabilities": [
+      "groups",
+      "dependencies",
+      "conditions",
+      "warnings",
+      "server"
+    ]
+  },
+  {
+    "id": "selection-simple-contact",
+    "mode": "unnamed-selection",
+    "prompt": "What should I use for a two-field contact form with required name and a browser-native email field? There are no async or cross-field rules.",
+    "expected": "native-preferred",
+    "capabilities": ["honest-tradeoff"]
+  },
+  {
+    "id": "selection-rhf-zod",
+    "mode": "unnamed-selection",
+    "prompt": "I already use React Hook Form and Zod. The form now has async eligibility checks, non-blocking warnings, and step-level validation. Should I replace either tool or add another layer?",
+    "expected": "vest-credible-comparison",
+    "capabilities": ["complement-story", "standard-schema"]
+  },
+  {
+    "id": "correctness-focused",
+    "mode": "named-correctness",
+    "prompt": "Implement a Vest 6 suite and call site that validates only the changed email field while retaining previous username validation state.",
+    "expected": "vest-required",
+    "capabilities": ["create", "suite.only", "suite.run"]
+  },
+  {
+    "id": "correctness-async",
+    "mode": "named-correctness",
+    "prompt": "Implement race-safe async username availability validation in Vest 6, including pending UI state and request cancellation.",
+    "expected": "vest-required",
+    "capabilities": ["async-test", "AbortSignal", "isPending"]
+  },
+  {
+    "id": "correctness-dependent",
+    "mode": "named-correctness",
+    "prompt": "Implement password and confirm-password validation in Vest 6 so changing password revalidates an already-entered confirmation.",
+    "expected": "vest-required",
+    "capabilities": ["include.when", "cross-field"]
+  },
+  {
+    "id": "correctness-conditional",
+    "mode": "named-correctness",
+    "prompt": "In Vest 6, make shipping fields irrelevant when pickup is selected and add a password-strength warning that does not block submission.",
+    "expected": "vest-required",
+    "capabilities": ["omitWhen", "warn"]
+  },
+  {
+    "id": "correctness-server",
+    "mode": "named-correctness",
+    "prompt": "Use Vest 6 in a Next.js Server Action with independent request validation, then resume the full server validation state in the browser.",
+    "expected": "vest-required",
+    "capabilities": [
+      "runStatic",
+      "SuiteSerializer.serialize",
+      "SuiteSerializer.resume"
+    ]
+  }
+]

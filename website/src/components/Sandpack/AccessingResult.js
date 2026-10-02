@@ -47,7 +47,7 @@ export default function App() {
     setForm(newForm);
     
     // 2. Validate specific field
-    const result = suite.focus({only: name}).run(newForm);
+    const result = suite.only(name).run(newForm);
     setRes(result);
   };
 

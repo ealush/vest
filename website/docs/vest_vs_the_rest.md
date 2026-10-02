@@ -1,143 +1,157 @@
 ---
 sidebar_position: 3
-title: Comparing Vest to Other Form Validation Libraries
-description: Explore the unique features of Vest and how it stands out among other form validation libraries.
-keywords:
-  [
-    form validation,
-    Vest,
-    library comparison,
-    functional matchers,
-    schema validation,
-    developer experience,
-    user experience,
-    performance,
-    vestjs,
-    zod,
-    joi,
-    yup,
-    redux-forms,
-    formik,
-  ]
+title: Vest, Schema Validators, and Form Libraries
+description: Learn where Vest fits alongside Zod, Standard Schema tools, and form state managers.
+keywords: [Vest, Zod, React Hook Form, Schema Validation, Stateful Validation]
 ---
 
-# Comparing Vest to Other Form Validation Libraries
+# Vest, Schema Validators, and Form Libraries
 
-## The Problem
+Vest can work alongside the form and schema tools you already use.
 
-Most validation libraries fall into one of two traps:
+These capabilities can be composed, but they are not mutually exclusive:
 
-1. **Schema libraries** (Zod, Yup, Joi) - Great for type safety, but they validate _everything_ at once. Not ideal when a user is filling out a form field-by-field.
+| Tool or layer                    | What it can own                                    |
+| -------------------------------- | -------------------------------------------------- |
+| Form managers such as RHF/Formik | Values, registration, events, and submission       |
+| Enforce schemas, Zod, or Valibot | Structural validation, transformation, and parsing |
+| **Vest suites**                  | Stateful and stateless validation workflows        |
+| **Vest suite + Enforce schema**  | Both parsed boundaries and validation over time    |
 
-2. **Form state managers** (Formik, Vuelidate) - Great for forms, but they lock you into one framework. Switching from React to Vue? Rewrite all your validation logic.
+## Where Vest differs
 
-**Vest takes a different approach.** It separates your validation logic from your UI entirely - making it fast, reusable, and framework-agnostic.
+A schema validator is excellent at answering:
 
-> **If you know Jest or Mocha, you already know Vest.** The syntax is nearly identical.
+> Does this submitted payload have the expected structure and values?
 
-## The Landscape
+A Vest suite also needs to answer:
 
-| Category                | Libraries                       | Pros                                    | Cons                      |
-| ----------------------- | ------------------------------- | --------------------------------------- | ------------------------- |
-| **Functional Matchers** | v8n, validatorjs                | Simple, composable                      | No structure, no state    |
-| **Schema Validation**   | Yup, Joi, Zod                   | Type-safe, expressive                   | All-or-nothing validation |
-| **Form State Managers** | Formik, Vuelidate, vee-validate | Integrated UX                           | Framework lock-in         |
-| **Vest**                | -                               | Stateful, per-field, framework-agnostic | New paradigm to learn     |
+> The user changed one part of a workflow. What needs to run now, what previous state remains valid, and which async result should be trusted?
 
-## Feature Comparison
+Vest can handle both jobs. Enforce schemas validate, transform, and parse data. A Vest suite keeps test results up to date while the user moves through a form.
 
-| Features                    | Vest                                                                    | Functional Matchers | Schema Validation | Form State Managers |
-| --------------------------- | ----------------------------------------------------------------------- | ------------------- | ----------------- | ------------------- |
-| **State Management**        | Automatic                                                               | Manual              | Manual            | Automatic           |
-| **Per Field Validation**    | ✅ Built-in (`only()` / `focus`)                                        | ❌                  | ❌                | ✅                  |
-| **Framework Agnostic**      | ✅                                                                      | ✅                  | ✅                | ❌                  |
-| **Async + Race Conditions** | ✅ Handled automatically                                                | ❌                  | Varies            | Varies              |
-| **SSR/Hydration**           | ✅ (`runStatic`, `SuiteSerializer.serialize`, `SuiteSerializer.resume`) | ❌                  | ❌                | Framework-specific  |
-| **Standard Schema Interop** | ✅ (`suite.validate`)                                                   | ❌                  | Some              | Rare                |
-| **Code Reusability**        | High                                                                    | Medium              | Medium            | Low                 |
-| **Syntax**                  | Unit-test style                                                         | Function calls      | Declarative       | Declarative         |
+## Vest and Zod
 
-## Why Vest?
+Zod is a strong choice for:
 
-### 1. Separation of Concerns
+- parsing unknown input;
+- validating API and persistence boundaries;
+- defining data structures;
+- deriving TypeScript types;
+- one-shot validation.
 
-Your validation logic lives in its own file. Your React/Vue/Svelte component just calls `suite.run()` and reads the result. Clean components, testable validation.
+Enforce supports those same core boundary jobs. A schema created with `enforce.shape`, `enforce.loose`, or `enforce.partial` exposes `.parse()` and returns transformed output:
 
-```javascript
-// validation.js - framework-agnostic
-const suite = create(data => {
-  test('email', 'Required', () => {
-    enforce(data.email).isNotBlank();
+```ts
+const accountSchema = enforce.shape({
+  age: enforce.isNumeric().toNumber(),
+  email: enforce.isString().trim(),
+});
+
+const account = accountSchema.parse(input);
+// account.age is a number
+```
+
+Attach the schema to a suite when the same boundary and parsed values should participate in Vest's runtime:
+
+```ts
+const accountSuite = create(parsedAccount => {
+  test('age', 'Must be an adult', () => {
+    enforce(parsedAccount.age).greaterThanOrEquals(18);
   });
-});
+}, accountSchema);
 
-// React, Vue, Svelte - your choice
-const result = suite.run(formData);
+const result = accountSuite.runStatic(input);
+if (result.isValid()) persist(result.value);
 ```
 
-### 2. Per-Field Validation with State Merging
+Vest is a strong choice for:
 
-Validate just the field the user is touching. Vest remembers the rest.
+- validating one field or step at a time;
+- retaining earlier validation results;
+- coordinating overlapping async checks;
+- dependent and conditional fields;
+- multi-step workflows;
+- warnings, pending state, and progressive completion.
 
-```javascript
-// User blurs "email" field
-suite.only('email').run(formData);
+### Use Vest on its own or with Zod
 
-// Result includes email validation + previous password result
-result.isValid(); // Full picture
+Vest can own both the interactive workflow and the submitted boundary:
+
+```text
+User interaction
+  → Vest runs focused, stateful validation
+  → UI shows errors, warnings, and pending work
+
+Final submission
+  → Enforce schema parses and transforms the complete payload
+  → Vest runStatic applies the business rules
 ```
 
-### 3. Async Without the Headaches
+If your application already uses Zod, parse the payload before a stateless Vest run:
 
-Vest handles race conditions automatically. Type "A" → "AB" → "ABC" quickly, and Vest discards stale results.
-
-```javascript
-test('username', 'Already taken', async ({ signal }) => {
-  await fetch('/check', { signal, body: username });
-});
+```ts
+const parsed = schema.parse(payload);
+const result = await suite.runStatic(parsed);
 ```
 
-### 4. Switch Frameworks, Keep Validation
+Zod and Enforce can both parse the boundary. The Vest suite is what carries the validation result from one interaction to the next.
 
-Moving from React to Vue? Your Vest suites don't change. Share validation logic between frontend and backend. Use the same suite in your API handlers with `runStatic()`.
+## Vest and form state managers
 
-### 5. Unit-Test Your Validation
+Vest does not register inputs, store their values, or submit the form. That makes it possible to use Vest:
 
-Since your suite is just JavaScript, you can test it like any other unit:
+- directly with local state;
+- with React Hook Form or Formik;
+- from Vue or Svelte composables;
+- in a custom workflow engine;
+- on the server without a UI.
 
-```javascript
-import suite from './validation';
+A form manager and Vest can therefore work together: the form manager owns input mechanics while Vest owns progressive validation behavior.
 
-test('requires email', () => {
-  const result = suite.runStatic({ email: '' });
-  expect(result.hasErrors('email')).toBe(true);
-});
-```
+Vest implements Standard Schema so compatible tools can consume suites and Enforce rules through a shared validation interface. Application code should use `suite.run()` for stateful validation or `suite.runStatic()` for independent server validation. The Standard Schema `~standard.validate` hook exists for compatible consumers, not as Vest's general execution API.
 
-## Quick Comparison: Vest vs Zod
+## Capability comparison
 
-| Aspect               | Zod                                 | Vest                                     |
-| -------------------- | ----------------------------------- | ---------------------------------------- |
-| **Primary use**      | Schema definition, type inference   | Form validation                          |
-| **Validation style** | All-at-once                         | Incremental, per-field                   |
-| **State**            | Stateless                           | Stateful (remembers fields)              |
-| **Async**            | Supported                           | Supported + race condition handling      |
-| **Framework**        | Agnostic                            | Agnostic                                 |
-| **Best for**         | API payload validation, static data | Interactive forms, UX-focused validation |
+| Capability                          | Standalone schema tool | Form state manager | Vest                               |
+| ----------------------------------- | ---------------------- | ------------------ | ---------------------------------- |
+| Parse a complete object boundary    | Primary                | Varies             | `enforce.shape(...).parse()`       |
+| Own field values and registration   | No                     | Primary            | No                                 |
+| Run selected fields or groups       | Varies                 | Often              | Primary                            |
+| Retain validation between runs      | No                     | Often              | Primary                            |
+| Prevent stale async results         | Usually manual         | Varies             | Built in                           |
+| Model dependent fields              | Cross-object rule      | Varies             | `include` and ordinary JS          |
+| Model conditional sections          | Unions/refinements     | Varies             | `skipWhen`, `omitWhen`, `optional` |
+| Warnings that do not block submit   | Usually custom         | Varies             | Built in                           |
+| Share rules across UI frameworks    | Yes                    | Usually no         | Yes                                |
+| Stateless server execution          | Yes                    | Not primary        | `runStatic()`                      |
+| Resume full server validation state | No                     | Framework-specific | `SuiteSerializer`                  |
 
-:::tip Use Both!
-Vest and Zod aren't mutually exclusive. Use Zod for API payload types and Vest for form UX. Vest even supports Standard Schema, so you can use Zod rules inside Vest tests.
-:::
+## Why use Vest instead of writing validation state manually?
 
-## Summary
+It is possible to assemble focused validation, pending flags, request IDs, abort controllers, field dependencies, caches, and error merging by hand.
 
-**Stop writing spaghetti validation logic inside your components.**
+Vest packages those behaviors into one validation runtime with a consistent result model. This removes plumbing that otherwise spreads across components and becomes difficult to test as the workflow grows.
 
-Vest lets you write validations as **business logic suites** that are:
+## When Vest is the right tool
 
-- ✅ Readable (unit-test syntax)
-- ✅ Reusable (framework-agnostic)
-- ✅ Fast (per-field validation)
-- ✅ Resilient (async race condition handling)
+Vest becomes more valuable as a workflow gains:
 
-With its emphasis on improved developer experience, user experience, and performance, Vest offers a compelling alternative to existing form validation libraries.
+- asynchronous checks;
+- dependencies between fields;
+- multiple steps or conditional sections;
+- dynamic lists;
+- validation shared across browser and server;
+- expensive checks that should not rerun unnecessarily;
+- UX distinctions between untested, pending, warning, error, and valid.
+
+## When another tool may be enough
+
+Prefer a simpler solution when:
+
+- native HTML validation covers the requirement;
+- the form is trivial and entirely synchronous;
+- validation happens only once at an API boundary;
+- your primary problem is storing form values rather than validation behavior.
+
+You do not have to replace your schema or form library to use Vest. Add it when keeping validation correct between interactions is the hard part.

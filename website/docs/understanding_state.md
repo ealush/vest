@@ -7,7 +7,7 @@ keywords: [Vest, Stateful Validations, Field merge, Resetting, Removing fields]
 
 # Understanding Vest's State
 
-One of Vest's most powerful features is its **stateful validation**. Unlike schema-based validators that start fresh every time, Vest remembers previous results and merges them intelligently.
+Vest suites keep validation state between runs. A focused run updates the fields it checked and leaves the other field results in place.
 
 ## Why Stateful Validation?
 
@@ -16,7 +16,7 @@ Imagine a form with 10 fields. When a user updates just the "username" field, yo
 1. **Re-validate everything** - Slow, and might flash errors on untouched fields
 2. **Validate only "username"** - Fast, but you lose the state of other fields
 
-Vest gives you the best of both worlds: **validate one field, keep the full picture**.
+With Vest, you can validate one field and keep the rest of the result.
 
 ### How It Works
 

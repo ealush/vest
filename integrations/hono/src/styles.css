@@ -1,0 +1,43 @@
+:root {
+  color: #e8eefc;
+  background: #0c1220;
+  font-family: system-ui, sans-serif;
+}
+body {
+  margin: 0;
+}
+main {
+  display: grid;
+  gap: 18px;
+  width: min(700px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0;
+}
+.eyebrow {
+  color: #8eafff;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+textarea,
+button,
+pre {
+  border: 1px solid #334365;
+  border-radius: 9px;
+  padding: 12px;
+  color: inherit;
+  background: #141d30;
+  font: inherit;
+}
+textarea,
+pre {
+  font-family: ui-monospace, monospace;
+}
+button {
+  background: #315dbd;
+  cursor: pointer;
+  font-weight: 700;
+}
+pre {
+  min-height: 110px;
+  white-space: pre-wrap;
+}

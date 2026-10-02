@@ -26,7 +26,10 @@ export default function App() {
       runCheck(val);
       return { pass: true, message: "Valid!" };
     } catch (e) {
-      return { pass: false, message: e };
+      return {
+        pass: false,
+        message: e instanceof Error ? e.message : String(e),
+      };
     }
   }
 

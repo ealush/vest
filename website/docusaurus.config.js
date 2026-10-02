@@ -19,8 +19,7 @@ const config = {
   baseUrl: '/',
   favicon: 'favicon.ico',
   title: 'Vest',
-  tagline:
-    'A framework-agnostic library that separates your validation rules from your feature code.',
+  tagline: 'Form validation written like unit tests.',
   url: 'https://vestjs.dev',
   onBrokenLinks: 'throw',
   markdown: {
@@ -53,6 +52,10 @@ const config = {
               banner: 'none',
             },
           },
+        },
+        sitemap: {
+          // Legacy docs remain available for direct links but are not promoted to crawlers.
+          ignorePatterns: ['/docs/4.x/**', '/docs/5.x/**'],
         },
         pages: {
           path: 'src/pages',
@@ -89,12 +92,12 @@ const config = {
         {
           name: 'keywords',
           content:
-            'vest, validations, javascript validations, unit tests, enforce, async validations, react validation, vue validation, svelte validation, reactjs, vuejs, angular, schema validation, js, unit tests, declarative, framework agnostic',
+            'vest, validation state, stateful validation, progressive validation, typescript form validation, async form validation, standard schema, javascript validations, unit tests, enforce, react validation, vue validation, svelte validation, angular validation, schema validation, framework agnostic',
         },
         {
           name: 'description',
           content:
-            'Vest is an open source validations framework that makes it easy to write your JS form validation.',
+            'Vest validates what changed, remembers what already passed, and prevents stale asynchronous validation results.',
         },
       ],
 

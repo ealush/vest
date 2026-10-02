@@ -83,5 +83,5 @@ export function RegistrationForm({ actionData }) {
 
 :::caution Why not just pass the errors?
 You might wonder, "Why not just pass the error object?"
-If you only pass errors, your suite doesn't know _which_ tests passed, which are pending, or which groups were skipped. By resuming the full state, Vest can continue validation seamlessly (e.g., when the user edits a field) without losing the context of the server-side run.
+If you only pass errors, your suite doesn't know _which_ tests passed, which are pending, or which groups were skipped. Resuming the full state lets the next field edit continue from the server result without rebuilding that context in the client.
 :::

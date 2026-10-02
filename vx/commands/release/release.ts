@@ -34,6 +34,11 @@ async function releaseAll(): Promise<void> {
 
   const { packageListToRelease, isTopLevelChange } = packagesToRelease();
 
+  if (packageListToRelease.length === 0) {
+    logger.info('📭 No packages to release. Skipping.');
+    return;
+  }
+
   for (const name of packageListToRelease) {
     await withPackage(name, () => release({ isTopLevelChange }));
   }

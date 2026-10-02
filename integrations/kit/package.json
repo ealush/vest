@@ -1,0 +1,22 @@
+{
+  "name": "@vest/integration-kit",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run --config vitest.config.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "1.0.0",
+    "vest": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vitest": "4.0.18"
+  }
+}

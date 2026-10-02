@@ -116,6 +116,24 @@ yarn website:build
 
 _Note: This command also runs `yarn build:llms` to generate the LLM-friendly documentation files._
 
+#### Executable examples
+
+Non-trivial examples must be exercised as the exact code readers see, rather than copied into a separate test fixture.
+
+- Markdown contracts in `packages/vest/src/suite/__tests__/docsExamples.test.ts` read fenced blocks directly from `website/docs`, transpile them, and execute them against the real Vest implementation.
+- Playground contracts in `website/src/components/codePlaygrounds.test.js` read the code strings embedded in the Sandpack components and execute those exact strings.
+- Interactive components and full applications keep ordinary colocated behavior tests, such as the async race demo and the production registration example.
+
+When adding or substantially changing a non-trivial example, add a behavioral assertion to the appropriate contract. Small fragments that only demonstrate a selector or call site may rely on the canonical suite test they reference.
+
+Run all executable documentation and demo contracts with:
+
+```bash
+yarn docs:examples:test
+```
+
+CI runs this command independently, so a displayed example and its behavior cannot drift silently.
+
 ## Making Changes
 
 1. **Create a Branch**: Create a new branch for your feature or fix.

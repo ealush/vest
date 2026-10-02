@@ -1,12 +1,10 @@
 import React from 'react';
-import clsx from 'clsx';
 import Sandpack from './Sandpack';
-import commonStyles from './Common.module.css';
 import styles from './RawExample.module.css';
 
 const SuiteCode = `import { create, test, enforce } from 'vest';
-import {memo} from 'vest/memo';
-import { doesUserExist } from './api';
+import { memo } from 'vest/memo';
+import { checkUsername } from './api';
 
 const suite = create((data = {}) => {
   test("username", "Username is required", () => {
@@ -18,8 +16,9 @@ const suite = create((data = {}) => {
   });
 
   memo(() => {
-    test('username', 'Username already taken', async () => {
-      await doesUserExist(data.username);
+    test('username', 'Username already taken', async ({ signal }) => {
+      const { available } = await checkUsername(data.username, { signal });
+      enforce(available).isTruthy();
     });
   }, [data.username]);
 });
@@ -27,17 +26,24 @@ const suite = create((data = {}) => {
 export default suite;
 `;
 
-const ApiCode = `export async function doesUserExist(username) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // Mock API call: reject if username contains "taken"
-      if (username && username.includes("taken")) {
-        reject();
-      } else {
-        resolve();
-      }
-    }, 1000);
+const ApiCode = `export async function checkUsername(username, { signal } = {}) {
+  await new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
+
+    const timeout = setTimeout(resolve, 1000);
+
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timeout);
+      reject(new DOMException('Aborted', 'AbortError'));
+    }, { once: true });
   });
+
+  return {
+    available: !username?.toLowerCase().includes('taken'),
+  };
 }
 `;
 
@@ -55,7 +61,7 @@ export default function App() {
     setForm(newForm);
     
     suite
-      .focus({only: name})
+      .only(name)
       .afterEach(() => {
         setIsPending(suite.isPending());
       })
@@ -172,18 +178,15 @@ input:focus {
 
 export default function RawExample() {
   return (
-    <section
-      className={clsx(styles.section, commonStyles.main_section_centered)}
-    >
+    <section className={styles.section}>
       <div className={styles.desc}>
-        <strong>
-          Vest looks and feels like a unit testing framework, but for your
-          forms.
-        </strong>
-        <br />
-        By separating validation logic from your UI, you get a system that
-        handles async checks, dependent fields, and conditional logic without
-        cluttering your component state.
+        <span className={styles.kicker}>THE SUITE / 02</span>
+        <strong>Rules read like tests. State lives outside the UI.</strong>
+        <p>
+          Your suite contains the business rules. Vest manages how their truth
+          changes over time: focused runs, retained results, pending work, and
+          stale async responses.
+        </p>
       </div>
       <div className={styles.codeWindow}>
         <Sandpack

@@ -33,7 +33,10 @@ export default function App() {
   try {
     runCheck(value);
   } catch (e) {
-    result = { pass: false, message: e };
+    result = {
+      pass: false,
+      message: e instanceof Error ? e.message : String(e),
+    };
   }
 
   const handleChange = (e) => {

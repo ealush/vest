@@ -41,7 +41,7 @@ export default function App() {
     setForm(newForm);
     
     // Run the validation
-    const result = suite.focus({only: name}).run(newForm);
+    const result = suite.only(name).run(newForm);
     setRes(result);
   };
 

@@ -1,7 +1,7 @@
 {
   "name": "vest",
   "version": "6.3.2",
-  "description": "Declarative Form Validations Framework",
+  "description": "TypeScript validation-state framework for complex forms: incremental, async, conditional, client and server.",
   "license": "MIT",
   "author": "ealush",
   "main": "./dist/vest.cjs",
@@ -9,22 +9,23 @@
   "unpkg": "./dist/vest.mjs",
   "jsdelivr": "./dist/vest.mjs",
   "types": "./types/vest.d.cts",
+  "homepage": "https://vestjs.dev",
   "keywords": [
-    "Form validation",
-    "Unit testing",
-    "Framework-agnostic",
-    "Validation",
-    "Declarative",
-    "Asynchronous validations",
-    "Async validations",
-    "Testing",
-    "Data validation",
-    "Form validation",
-    "React Validation",
-    "Angular Validation",
-    "Vue Validation",
-    "Svelte Validation",
-    "nodejs Validation",
+    "form validation",
+    "stateful validation",
+    "validation state",
+    "typescript validation",
+    "async validation",
+    "progressive validation",
+    "conditional validation",
+    "cross-field validation",
+    "react validation",
+    "angular validation",
+    "vue validation",
+    "svelte validation",
+    "standard schema",
+    "client server validation",
+    "form workflow",
     "enforce"
   ],
   "repository": {
@@ -33,7 +34,7 @@
     "directory": "packages/vest"
   },
   "bugs": {
-    "url": "https://github.com/ealush/vest.git/issues"
+    "url": "https://github.com/ealush/vest/issues"
   },
   "scripts": {
     "bench": "vitest bench --run --config ./vitest.config.ts"

@@ -11,11 +11,12 @@ describe('getStandardSchema', () => {
 
   describe('validate', () => {
     it('Should return value on success', () => {
+      const input = { a: 1 };
       const runner = vi.fn().mockReturnValue({
         hasErrors: () => false,
+        value: input,
       });
       const schema = getStandardSchema(runner);
-      const input = { a: 1 };
 
       const result = schema.validate(input);
       expect(result).toEqual({ value: input });
@@ -41,7 +42,7 @@ describe('getStandardSchema', () => {
       ]);
     });
 
-    it('Should keep issue message empty when no message exists', () => {
+    it('Should provide a fallback issue message when no message exists', () => {
       const errors = [{ fieldName: 'field1' }];
       const runner = vi.fn().mockReturnValue({
         hasErrors: () => true,
@@ -51,7 +52,9 @@ describe('getStandardSchema', () => {
 
       const result = schema.validate({});
       // @ts-ignore
-      expect(result.issues).toEqual([{ path: ['field1'] }]);
+      expect(result.issues).toEqual([
+        { message: 'Validation failed', path: ['field1'] },
+      ]);
     });
 
     it('Should split nested field names', () => {

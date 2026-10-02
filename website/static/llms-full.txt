@@ -28,6 +28,7 @@ Runs the suite. Passes arguments to the suite callback.
 - **Returns**: A `SuiteResult` object.
   - If the suite contains async tests, the result object **also implements the Promise interface**, allowing you to `await` it.
   - You can always access synchronous result data immediately (e.g., `result.hasErrors()`), even if the promise is pending.
+  - If another `suite.run()` of the same suite starts while an earlier run is pending, awaiting the earlier result resolves with the newer run's result instead of waiting on work the newer run replaced. `runStatic()` runs are independent of each other.
 - [Read more about `suite.run`](https://vestjs.dev/docs/writing_your_suite/vests_suite#running-validations)
 
 #### `suite.runStatic(...args)`
@@ -5719,6 +5720,10 @@ Vest's statefulness is a feature, not a limitation. It's what makes incremental 
 # Vest 6 behavior updates
 
 This section covers fixes and additions within Vest 6 for applications already using version 6.
+
+## Awaiting superseded runs
+
+When a new run supersedes a pending run of the same suite, awaiting the older handle now resolves with the newest run's result. Superseded handles previously could remain pending indefinitely.
 
 ## Resetting a field with pending validation
 

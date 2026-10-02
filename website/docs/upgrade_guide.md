@@ -9,6 +9,14 @@ keywords: [Vest, Upgrade]
 
 This section covers fixes and additions within Vest 6 for applications already using version 6.
 
+## Awaiting superseded runs
+
+When a new run supersedes a pending run of the same suite, awaiting the older handle now resolves with the newest run's result. Superseded handles previously could remain pending indefinitely.
+
+## Resetting a field with pending validation
+
+`resetField(fieldName)` cancels pending async tests for that field. Late results cannot restore its errors, including after repeated resets. The field can be validated normally on the next run.
+
 ## Field names for retained keyed tests
 
 Keyed tests retain their verdict under their current field name after reordering, including when focus leaves the test out of the run. Reusing a key for a different field moves the retained verdict to that field. Use stable keys for the validation identity you intend to preserve.

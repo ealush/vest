@@ -7,6 +7,16 @@ describe('Tests isString rule', () => {
     expect(isStringValue([])).toBe(false);
   });
 
+  it('does not coerce or inspect non-string values', () => {
+    const value = {
+      toString() {
+        throw new Error('must not run');
+      },
+    };
+
+    expect(isStringValue(value)).toBe(false);
+  });
+
   it('Should return true for string values', () => {
     expect(isStringValue('I love you')).toBe(true);
   });

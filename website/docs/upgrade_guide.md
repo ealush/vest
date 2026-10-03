@@ -41,6 +41,8 @@ Focused runs retain schema errors outside their focus. After a failing full run,
 
 Import `vest/relationships` to use `suite.changed(field).run(data)`. Rules can declare direct dependencies with `.dependsOn($ => $.other)`, so a changed run checks the named field and its dependents while keeping unrelated results. `schema.describe()` is available after importing `n4s/relationships`. Without the opt-in imports, `changed()` and `describe()` give a setup error when called. Changed runs currently validate each affected top-level schema field; [the relationships guide](./guides/schema-relationships.md) explains nested paths and focus behavior.
 
+`dependsOn()` returns an independent rule, including its validation chain and message. A changed result contains only validated output fields. Focused results and `suite.get()` are now typed with partial output because the run may cover a subset of schema fields; complete `run()` and `runStatic()` output types remain available. Resolve schemas once their definitions and dependency callbacks are finalized.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

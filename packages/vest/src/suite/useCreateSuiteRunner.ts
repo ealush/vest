@@ -13,7 +13,7 @@ import {
 import { useEmit } from '../core/VestBus/VestBus';
 
 import { SuiteContext } from '../core/context/SuiteContext';
-import { IsolateReorderable } from 'vestjs-runtime';
+import { IsolateReorderable, VestRuntime } from 'vestjs-runtime';
 import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
 import { only, skip } from '../hooks/focused/focused';
@@ -43,6 +43,61 @@ type SchemaRunResult = {
 };
 
 /**
+ * Pending runs per suite, keyed by (suite callback, suite state).
+ *
+ * Every focus/only chain of a suite shares its callback, and the state
+ * object keeps separate suites apart. Neither key works alone: one callback
+ * can back several suites (and every runStatic call), while a persisted
+ * wrapper can reuse a state object.
+ *
+ * When a newer run of the same suite starts while older runs are still
+ * pending, each older run's promise adopts the newer run's promise. Awaiting
+ * a superseded handle therefore settles with the latest outcome instead of
+ * hanging when the reconciler cancels the older run's pending tests.
+ */
+const pendingRuns = new WeakMap<CB, WeakMap<object, unknown>>();
+
+function pendingRunsFor(suiteCallback: CB): WeakMap<object, unknown> {
+  const existing = pendingRuns.get(suiteCallback);
+  if (existing !== undefined) return existing;
+  const created = new WeakMap<object, unknown>();
+  pendingRuns.set(suiteCallback, created);
+  return created;
+}
+
+/**
+ * Registers this run as the latest pending run of its suite and hands every
+ * older pending run the latest promise. Returns a cleanup that unregisters
+ * this run once it settles.
+ */
+function chainSupersededRuns<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+>(
+  suiteCallback: CB,
+  state: object,
+  latest: Promise<SuiteResult<F, G, S>>,
+  ownResolve: (
+    value: SuiteResult<F, G, S> | PromiseLike<SuiteResult<F, G, S>>,
+  ) => void,
+): () => void {
+  const byState = pendingRunsFor(suiteCallback);
+  const previous = byState.get(state);
+  // Only the latest resolver is needed: older promises already adopt it.
+  byState.set(state, ownResolve);
+  if (previous !== undefined) {
+    // A callback/state pair belongs to this runner's suite result type.
+    (previous as (value: Promise<SuiteResult<F, G, S>>) => void)(latest);
+  }
+  return () => {
+    if (byState.get(state) === ownResolve) {
+      byState.delete(state);
+    }
+  };
+}
+
+/**
  * Creates the suite runner bound to a callback, modifiers and (optional) schema.
  *
  * The runner performs schema preprocessing once per run, stores the original input
@@ -67,7 +122,20 @@ export function useCreateSuiteRunner<
       : [data: InferSchemaData<S>, ...args: any[]]
   ): SuiteResult<F, G, S> {
     const runTime = new Date();
-    const { resolve, promise } = withResolvers<SuiteResult<F, G, S>>();
+    const { resolve: rawResolve, promise } =
+      withResolvers<SuiteResult<F, G, S>>();
+    const suiteState = VestRuntime.useXAppData();
+
+    // Registration waits until synchronous setup succeeds: if the callback
+    // throws, an older pending run must stay owned by itself rather than
+    // adopt a promise that will never settle.
+    let forgetPendingRun = (): void => {};
+    const resolve = (
+      result: SuiteResult<F, G, S> | PromiseLike<SuiteResult<F, G, S>>,
+    ): void => {
+      forgetPendingRun();
+      rawResolve(result);
+    };
 
     const schemaInput = args[0];
     const schemaRunResult = shouldRunSchema(schema)
@@ -133,7 +201,20 @@ export function useCreateSuiteRunner<
       },
     );
 
-    return bindSuiteResultMethods(promise, suiteResult, runData, runTime);
+    const boundResult = bindSuiteResultMethods(
+      promise,
+      suiteResult,
+      runData,
+      runTime,
+    );
+    forgetPendingRun = chainSupersededRuns(
+      suiteCallback,
+      suiteState,
+      promise,
+      rawResolve,
+    );
+    if (!suiteResult.isPending()) forgetPendingRun();
+    return boundResult;
   };
 }
 

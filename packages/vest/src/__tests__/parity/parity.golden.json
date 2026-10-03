@@ -510,18 +510,18 @@
       "label": "reordered while focused out",
       "errorCount": 1,
       "warnCount": 0,
-      "testCount": 2,
+      "testCount": 3,
       "pendingCount": 0,
       "errors": [
         {
-          "fieldName": "rows.1.v",
+          "fieldName": "rows.0.v",
           "message": "required"
         }
       ],
       "warnings": [],
       "groups": {},
       "tests": {
-        "rows.1.v": {
+        "rows.0.v": {
           "errorCount": 1,
           "warnCount": 0,
           "testCount": 1,
@@ -529,6 +529,15 @@
           "errors": ["required"],
           "warnings": [],
           "valid": false
+        },
+        "rows.1.v": {
+          "errorCount": 0,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": true
         },
         "other": {
           "errorCount": 0,
@@ -544,7 +553,7 @@
       "issues": [
         {
           "message": "required",
-          "path": ["rows.1.v"]
+          "path": ["rows.0.v"]
         }
       ],
       "isValid": false,
@@ -1628,15 +1637,11 @@
   "lifecycle: resetField while a test is pending": [
     {
       "label": "",
-      "errorCount": 2,
+      "errorCount": 1,
       "warnCount": 0,
-      "testCount": 2,
+      "testCount": 1,
       "pendingCount": 0,
       "errors": [
-        {
-          "fieldName": "a",
-          "message": "late failure"
-        },
         {
           "fieldName": "b",
           "message": "b fails"
@@ -1646,11 +1651,11 @@
       "groups": {},
       "tests": {
         "a": {
-          "errorCount": 1,
+          "errorCount": 0,
           "warnCount": 0,
-          "testCount": 1,
+          "testCount": 0,
           "pendingCount": 0,
-          "errors": ["late failure"],
+          "errors": [],
           "warnings": [],
           "valid": false
         },
@@ -1666,10 +1671,6 @@
       },
       "valid": false,
       "issues": [
-        {
-          "message": "late failure",
-          "path": ["a"]
-        },
         {
           "message": "b fails",
           "path": ["b"]

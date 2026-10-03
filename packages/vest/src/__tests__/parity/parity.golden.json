@@ -2515,8 +2515,10 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": false,
-      "issues": [],
+      "valid": true,
+      "value": {
+        "a": 1
+      },
       "types": {
         "input": {
           "a": 1
@@ -2525,9 +2527,8 @@
           "a": 1
         }
       },
-      "isValid": false,
-      "isPending": false,
-      "value": "<undefined>"
+      "isValid": true,
+      "isPending": false
     }
   ],
   "schema: focus({ skip }) after a failing full run": [
@@ -2623,8 +2624,11 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": false,
-      "issues": [],
+      "valid": true,
+      "value": {
+        "name": "a",
+        "age": 7
+      },
       "types": {
         "input": {
           "name": "a",
@@ -2635,9 +2639,8 @@
           "age": 7
         }
       },
-      "isValid": false,
-      "isPending": false,
-      "value": "<undefined>"
+      "isValid": true,
+      "isPending": false
     },
     {
       "label": "invalid name",
@@ -2691,8 +2694,15 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": false,
-      "issues": [],
+      "valid": true,
+      "value": {
+        "meta": {
+          "id": "x",
+          "extra": 1
+        },
+        "prefs": {},
+        "tags": ["a"]
+      },
       "types": {
         "input": {
           "meta": {
@@ -2711,9 +2721,8 @@
           "tags": ["a"]
         }
       },
-      "isValid": false,
-      "isPending": false,
-      "value": "<undefined>"
+      "isValid": true,
+      "isPending": false
     },
     {
       "label": "bad tag",
@@ -2817,8 +2826,13 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": false,
-      "issues": [],
+      "valid": true,
+      "value": {
+        "profile": {
+          "name": "ok"
+        },
+        "other": "x"
+      },
       "types": {
         "input": {
           "profile": {
@@ -2833,9 +2847,8 @@
           "other": "x"
         }
       },
-      "isValid": false,
-      "isPending": false,
-      "value": "<undefined>"
+      "isValid": true,
+      "isPending": false
     }
   ],
   "schema: only() after a failing full run": [
@@ -3021,8 +3034,10 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": false,
-      "issues": [],
+      "valid": true,
+      "value": {
+        "a": "x"
+      },
       "types": {
         "input": {
           "a": "x"
@@ -3031,9 +3046,8 @@
           "a": "x"
         }
       },
-      "isValid": false,
-      "isPending": false,
-      "value": "<undefined>"
+      "isValid": true,
+      "isPending": false
     }
   ],
   "serialization: resume restores verdicts": [

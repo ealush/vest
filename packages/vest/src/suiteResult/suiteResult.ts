@@ -30,10 +30,14 @@ export function useCreateSuiteResult<
   runTime: Date = new Date(),
   parsedData?: Partial<InferSchemaOutput<S>>,
   focus?: SuiteModifiers<F, G>,
+  schemaPassed?: boolean,
 ): SuiteResult<F, G, S, D> {
   return useSuiteResultCache<F, G, S, D>(() => {
     // @vx-allow use-use
     const summary = useProduceSuiteSummary<F, G, D, S>();
+    if (schemaPassed && Object.keys(summary.tests).length === 0) {
+      summary.valid = true;
+    }
     summary.run = {
       data: {
         raw: inputData,

@@ -177,6 +177,7 @@ export function useCreateSuiteRunner<
             runTime,
             parsedData,
             snapshotFocus(transformedModifiers),
+            schemaRunResult?.every(result => result.pass),
           );
 
           if (!result.isPending()) {

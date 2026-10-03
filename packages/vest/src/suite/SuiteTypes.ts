@@ -48,7 +48,7 @@ type SuiteMethods<
 > = {
   dump: CB<TIsolateSuite>;
 
-  get: CB<PartialSuiteResult<F, G, S>>;
+  get: CB<ObservedSuiteResult<F, G, S>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
@@ -78,16 +78,13 @@ type FocusedMethods<
   G extends TGroupName,
   T extends CB,
   S extends TSchema,
-  R = PartialSuiteResult<F, G, S>,
+  R = ObservedSuiteResult<F, G, S>,
 > = {
   afterEach: CB<FocusedMethods<F, G, T, S, R>, [callback: CB]>;
   afterField: CB<FocusedMethods<F, G, T, S, R>, [fieldName: F, callback: CB]>;
   focus: CB<FocusedMethods<F, G, T, S, R>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S, R>, [onlyField: FieldExclusion<F>]>;
-  changed: CB<
-    ChangedMethods<F, G, T, S>,
-    [fields?: string | readonly string[]]
-  >;
+  changed: ChangedMethod<F, G, T, S>;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
   run: (
@@ -107,10 +104,7 @@ type AfterMethods<
   afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
-  changed: CB<
-    ChangedMethods<F, G, T, S>,
-    [fields?: string | readonly string[]]
-  >;
+  changed: ChangedMethod<F, G, T, S>;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
@@ -122,6 +116,7 @@ type PartialSuiteResult<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema,
+  Output = PartialSchemaOutput<InferSchemaOutput<S>>,
 > = SuiteResult<
   F,
   G,
@@ -131,11 +126,34 @@ type PartialSuiteResult<
         '~standard': {
           types: {
             input: InferSchemaData<S>;
-            output: PartialSchemaOutput<InferSchemaOutput<S>>;
+            output: Output;
           };
         };
       }
 >;
+
+// Ordinary focus keeps unchecked input fields. Observing accumulated state
+// cannot prove that a present field has already been parsed.
+type ObservedSuiteResult<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+> = PartialSuiteResult<
+  F,
+  G,
+  S,
+  ObservedSchemaOutput<InferSchemaData<S>, InferSchemaOutput<S>>
+>;
+
+type ObservedSchemaOutput<Input, Output> = Output extends readonly unknown[]
+  ? PartialSchemaOutput<Output>
+  : Output extends object
+    ? {
+        [K in keyof Output]?:
+          | Output[K]
+          | (K extends keyof Input ? Input[K] : never);
+      }
+    : PartialSchemaOutput<Output>;
 
 // An empty selection produces an empty record. Unlike object schemas,
 // primitive and array outputs cannot represent that state with Partial alone.
@@ -151,6 +169,17 @@ type ChangedMethods<
   T extends CB,
   S extends TSchema,
 > = FocusedMethods<F, G, T, S, PartialSuiteResult<F, G, S>>;
+
+type ChangedMethod<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB,
+  S extends TSchema,
+> = {
+  (fields: string | readonly string[]): ChangedMethods<F, G, T, S>;
+  (fields?: undefined): FocusedMethods<F, G, T, S>;
+  (fields?: string | readonly string[]): FocusedMethods<F, G, T, S>;
+};
 
 /**
  * Modifiers that control which fields and groups are included or excluded

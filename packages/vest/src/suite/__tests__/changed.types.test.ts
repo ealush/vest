@@ -53,3 +53,38 @@ it('includes the empty output state for array and primitive schemas', () => {
       number | Record<never, never>
     >();
 });
+
+it('types legacy focus and observed state with independent raw/parsed fields', () => {
+  const schema = enforce.shape({
+    age: enforce.isNumeric().toNumber(),
+    active: enforce.isNumeric().toBoolean(),
+  });
+  const suite = create(() => test('active', () => true), schema);
+  const input = { age: '42', active: '1' };
+  type Observed = {
+    age?: string | number;
+    active?: string | number | boolean;
+  };
+  const focused = suite.only('active').run(input);
+  if (focused.valid) {
+    expectTypeOf(focused.value).toEqualTypeOf<Observed>();
+    expectTypeOf(focused.types.output).toEqualTypeOf<Observed>();
+  }
+  const latest = suite.get();
+  if (latest.valid) expectTypeOf(latest.value).toEqualTypeOf<Observed>();
+  const changed = suite.changed('active').only('active').run(input);
+  if (changed.valid)
+    expectTypeOf(changed.value).toEqualTypeOf<
+      Partial<{ age: number; active: boolean }>
+    >();
+  const cleared = suite.changed('active').only('active').changed().run(input);
+  if (cleared.valid) expectTypeOf(cleared.value).toEqualTypeOf<Observed>();
+  const undefinedSelection = suite.changed(undefined).run(input);
+  if (undefinedSelection.valid)
+    expectTypeOf(undefinedSelection.value).toEqualTypeOf<Observed>();
+  function dynamicSelection(fields: string | readonly string[] | undefined) {
+    return suite.changed(fields).run(input);
+  }
+  const dynamic = dynamicSelection('active');
+  if (dynamic.valid) expectTypeOf(dynamic.value).toEqualTypeOf<Observed>();
+});

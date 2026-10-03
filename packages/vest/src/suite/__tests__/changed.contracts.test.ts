@@ -424,6 +424,26 @@ it('preserves group-filtered schema reporting without accepting a failed schema'
   expect(passed.value).toEqual({ a: 1 });
 });
 
+it('distinguishes validated changed output from legacy unchecked focused values', () => {
+  const suite = create(
+    () => test('active', () => true),
+    enforce.shape({
+      age: enforce.isNumeric().toNumber(),
+      active: enforce.isNumeric().toBoolean(),
+    }),
+  );
+  const input = { age: '42', active: '1' };
+  expect(suite.only('active').run(input).value).toEqual({
+    age: '42',
+    active: true,
+  });
+  expect(suite.get().value).toEqual({ age: '42', active: true });
+  expect(suite.changed('active').run(input).value).toEqual({ active: true });
+  expect(
+    suite.changed('active').only('active').changed().run(input).value,
+  ).toEqual({ age: '42', active: true });
+});
+
 it('keeps independent changed builders and lifecycle removals isolated', () => {
   const calls: string[] = [];
   const suite = create(

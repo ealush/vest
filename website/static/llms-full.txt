@@ -5749,6 +5749,10 @@ The `n4s` package now includes `@types/validator` as a regular dependency becaus
 
 Focused runs retain schema errors outside their focus. After a failing full run, `only()` on another field still reports the failing field and keeps `valid: false` until that error is cleared. Repeated parent skips preserve nested schema failures.
 
+## Complete and consistent validation issues
+
+Schema and user-test failures without a message are included in `result.issues` with `Validation failed`. Nested issue paths use the same segments as the Standard Schema adapter.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

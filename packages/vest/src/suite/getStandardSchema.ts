@@ -5,6 +5,7 @@ import {
   InferSchemaOutput,
   TSchema,
 } from '../suiteResult/SuiteResultTypes';
+import { standardSchemaIssues } from '../suiteResult/standardSchemaIssues';
 
 export function getStandardSchema<S extends TSchema = undefined>(
   staticRunner: any,
@@ -36,11 +37,7 @@ function toStandardSchemaResult<S extends TSchema = undefined>(
   }
 
   return {
-    issues: result.errors.map((error: any) => ({
-      message:
-        typeof error.message === 'string' ? error.message : 'Validation failed',
-      path: error.fieldName ? error.fieldName.split('.') : undefined,
-    })),
+    issues: standardSchemaIssues(result.errors),
   };
 }
 

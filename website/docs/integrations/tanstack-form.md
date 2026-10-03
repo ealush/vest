@@ -21,7 +21,7 @@ The compatibility workspace pins @tanstack/react-form 1.33.3 and imports only pu
 
 ## Runnable demonstration
 
-The playground loads its tested source directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-form). Edit name or email, then inspect the separate relationship-aware password adapter in the file tabs.
+The playground loads its tested source directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-form). Edit name or email, then change the password and see its confirmation revalidate through the relationship adapter.
 
 <TanStackFormIntegration />
 

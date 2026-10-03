@@ -23,18 +23,25 @@ export type RetainedSchemaFailure = {
 export function schemaFocusOf(
   modifiers: { only?: unknown; skip?: unknown },
   focusesSchema: boolean,
-): ((schemaField: string | undefined) => boolean) | null {
+): ((path: readonly string[] | undefined) => boolean) | null {
   if (!focusesSchema) return null;
   const only = fieldList(modifiers.only);
   const skip = fieldList(modifiers.skip);
   if (only === null && skip === null) return null;
 
-  return schemaField => {
-    if (schemaField === undefined) return true;
-    const picked = only === null || only.includes(schemaField);
-    const skipped = skip !== null && skip.includes(schemaField);
-    return picked && !skipped;
-  };
+  return path => isSelected(path?.[0], only, skip);
+}
+
+function isSelected(
+  field: string | undefined,
+  only: string[] | null,
+  skip: string[] | null,
+): boolean {
+  if (field === undefined) return true;
+  return (
+    (only === null || only.includes(field)) &&
+    (skip === null || !skip.includes(field))
+  );
 }
 
 /**
@@ -47,7 +54,7 @@ export function schemaFocusOf(
  * Must run before the new suite root is created.
  */
 export function useRetainedSchemaFailures(
-  isEvaluated: ((schemaField: string | undefined) => boolean) | null,
+  isEvaluated: ((path: readonly string[] | undefined) => boolean) | null,
 ): RetainedSchemaFailure[] {
   if (isEvaluated === null) return [];
   const container = VestRuntime.useAvailableRoot()?.children?.find(
@@ -66,8 +73,7 @@ export function useRetainedSchemaFailures(
       const { schemaPath: path } = node.data as {
         schemaPath?: readonly string[];
       };
-      if (!isEvaluated(schemaFieldOf(path)))
-        retained.push({ path, message, key: node.key });
+      if (!isEvaluated(path)) retained.push({ path, message, key: node.key });
     }
     return makeResult.Ok(undefined);
   });
@@ -78,10 +84,4 @@ function fieldList(value: unknown): string[] | null {
   if (!value) return null;
   const list = asArray(value).filter(isStringValue);
   return list.length > 0 ? list : null;
-}
-
-function schemaFieldOf(
-  path: readonly string[] | undefined,
-): string | undefined {
-  return path?.[0];
 }

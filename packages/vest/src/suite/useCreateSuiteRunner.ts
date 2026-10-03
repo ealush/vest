@@ -150,11 +150,14 @@ export function useCreateSuiteRunner<
 
     // Schema failures outside this run's focus keep their previous verdict,
     // like user tests that focus leaves out. Read before the new root exists.
+    const schemaFocus = schemaFocusOf(
+      transformedModifiers,
+      isN4sSchema(schema),
+    );
     const retainedSchemaFailures = shouldRunSchema(schema)
-      ? useRetainedSchemaFailures(
-          schemaFocusOf(transformedModifiers, isN4sSchema(schema)),
-        )
+      ? useRetainedSchemaFailures(schemaFocus)
       : [];
+    const schemaPassed = isCompleteSchemaPass(schemaFocus, schemaRunResult);
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
@@ -177,6 +180,7 @@ export function useCreateSuiteRunner<
             runTime,
             parsedData,
             snapshotFocus(transformedModifiers),
+            schemaPassed,
           );
 
           if (!result.isPending()) {
@@ -216,6 +220,18 @@ export function useCreateSuiteRunner<
     if (!suiteResult.isPending()) forgetPendingRun();
     return boundResult;
   };
+}
+
+/**
+ * Only a schema run that covered every field can make a test-free suite valid.
+ */
+function isCompleteSchemaPass(
+  schemaFocus: ReturnType<typeof schemaFocusOf>,
+  schemaRunResult: SchemaRunResult[] | undefined,
+): boolean {
+  return (
+    schemaFocus === null && !!schemaRunResult?.every(result => result.pass)
+  );
 }
 
 /**

@@ -2,66 +2,67 @@
 
 | Suite                             | Benchmark                          | Ops/sec (Hz) | P99 (ms) | Margin of Error | Diff (Abs) | Diff (%) |
 | :-------------------------------- | :--------------------------------- | :----------- | :------- | :-------------- | :--------- | :------- |
-| Reconciler & History Diffing      | Reconciler (Stable List)           | **4.978**    | 220.27   | 2.96%           | 0          | 0.00%    |
-| Reconciler & History Diffing      | Reconciler (Full Invalidation)     | **5.172**    | 196.55   | 0.77%           | 0          | 0.00%    |
-| Reconciler & History Diffing      | Reconciler (Prepend Item)          | **5.193**    | 195.52   | 0.53%           | 0          | 0.00%    |
-| Reconciler & History Diffing      | Reconciler (Append Item)           | **5.169**    | 197.03   | 0.67%           | 0          | 0.00%    |
-| Reconciler & History Diffing      | Reconciler (Interleaved)           | **5.18**     | 195.7    | 0.51%           | 0          | 0.00%    |
-| Reconciler & History Diffing      | Isolate Reordering (Reverse)       | **5.161**    | 202.51   | 1.19%           | 0          | 0.00%    |
-| Reconciler & History Diffing      | Isolate Reordering (Shuffle)       | **5.142**    | 197.69   | 0.61%           | 0          | 0.00%    |
-| Reconciler & History Diffing      | Orphan GC Pressure                 | **10.237**   | 98.4187  | 0.30%           | 0          | 0.00%    |
-| Result Selectors & Reporting      | getErrors (Group Lookup)           | **641.53**   | 1.8133   | 0.55%           | 0          | 0.00%    |
-| Result Selectors & Reporting      | Summary Generation (Large)         | **4.228**    | 240.3    | 0.65%           | 0          | 0.00%    |
-| Async & Concurrency Stress        | Pending Storm (Memory)             | **5.021**    | 208.42   | 1.26%           | 0          | 0.00%    |
-| Async & Concurrency Stress        | Resolve Storm (Throughput)         | **5.072**    | 200.18   | 0.60%           | 0          | 0.00%    |
-| Async & Concurrency Stress        | Reject Storm                       | **5.05**     | 200.56   | 0.52%           | 0          | 0.00%    |
-| Async & Concurrency Stress        | Async Race                         | **226.57**   | 6.1798   | 3.31%           | 0          | 0.00%    |
-| Control Flow & Hooks Internals    | test.memo (Thrashing)              | **229.5**    | 5.5473   | 2.13%           | 0          | 0.00%    |
-| Control Flow & Hooks Internals    | test.memo (Stagnation)             | **797.03**   | 2.4056   | 1.62%           | 0          | 0.00%    |
-| Control Flow & Hooks Internals    | skipWhen (Active)                  | **10.432**   | 103.79   | 2.17%           | 0          | 0.00%    |
-| Control Flow & Hooks Internals    | only Starvation (Early)            | **8.775**    | 118.9    | 1.36%           | 0          | 0.00%    |
-| Control Flow & Hooks Internals    | only Starvation (Late)             | **8.876**    | 114.79   | 0.60%           | 0          | 0.00%    |
-| VestBus & Internals               | Bus Scaling                        | **271.23**   | 4.8412   | 2.15%           | 0          | 0.00%    |
-| VestBus & Internals               | State Refill                       | **174.94**   | 8.7533   | 2.88%           | 0          | 0.00%    |
-| Memory & Object Lifecycle         | Test Object Allocator              | **10.393**   | 132.37   | 9.57%           | 0          | 0.00%    |
-| Memory & Object Lifecycle         | Garbage Collection Friendly        | **11.001**   | 91.6137  | 0.32%           | 0          | 0.00%    |
-| Serialization                     | Serialize (Large)                  | **195.76**   | 6.563    | 2.31%           | 0          | 0.00%    |
-| Serialization                     | Deserialize (Large)                | **122.5**    | 9.4675   | 1.72%           | 0          | 0.00%    |
-| Edge Cases & Integration          | Broad Group                        | **5.144**    | 200.23   | 0.79%           | 0          | 0.00%    |
-| Edge Cases & Integration          | Namespace Collision                | **5.099**    | 199.72   | 0.69%           | 0          | 0.00%    |
-| Edge Cases & Integration          | Large Field Names                  | **272.07**   | 4.8646   | 2.19%           | 0          | 0.00%    |
-| Edge Cases & Integration          | Large Failure Messages             | **461.81**   | 3.7705   | 2.61%           | 0          | 0.00%    |
-| Complex Data Validation           | Enforce Huge String                | **286.38**   | 8.0263   | 6.80%           | 0          | 0.00%    |
-| State Management                  | Serialize Large                    | **382.73**   | 6.0846   | 4.10%           | 0          | 0.00%    |
-| Integration & Edge Cases          | Callback Overhead                  | **5.039**    | 202.18   | 0.62%           | 0          | 0.00%    |
-| Reordering & Reconciliation       | each (Reorder - Reverse)           | **152.66**   | 12.2927  | 5.48%           | 0          | 0.00%    |
-| Reordering & Reconciliation       | each (Reorder - Insert Middle)     | **143.12**   | 20.4153  | 6.22%           | 0          | 0.00%    |
-| Reordering & Reconciliation       | each (Reorder - Delete Middle)     | **152.09**   | 8.865    | 3.27%           | 0          | 0.00%    |
-| Reordering & Reconciliation       | each (Key Thrashing)               | **364.55**   | 5.0438   | 4.07%           | 0          | 0.00%    |
-| State Mutation & Reset            | suite.remove() (Many Fields)       | **183.06**   | 24.9503  | 9.44%           | 0          | 0.00%    |
-| State Mutation & Reset            | suite.reset() (Memory Reclamation) | **11.174**   | 91.6525  | 0.79%           | 0          | 0.00%    |
-| Concurrency & Events              | Bus Stress                         | **5.182**    | 239.33   | 6.13%           | 0          | 0.00%    |
-| Feature Coverage Matrix           | enforce matrix (small payload)     | **612**      | 4.5157   | 6.96%           | 0          | 0.00%    |
-| Feature Coverage Matrix           | enforce matrix (larger payload)    | **951.51**   | 6.6741   | 9.34%           | 0          | 0.00%    |
-| Feature Coverage Matrix           | flow control eager mode            | **581.94**   | 5.3918   | 7.97%           | 0          | 0.00%    |
-| Feature Coverage Matrix           | flow control one mode              | **433.23**   | 6.5445   | 7.75%           | 0          | 0.00%    |
-| Core Test Functionality           | test (High Volume, Same Name)      | **5.19**     | 198.37   | 1.01%           | 0          | 0.00%    |
-| Core Test Functionality           | test (High Volume, Unique Names)   | **5.168**    | 197.39   | 0.64%           | 0          | 0.00%    |
-| Nested Fields with Hooks          | depth 3 with 40 fields per level   | **15.93**    | 74.0025  | 13.57%          | 0          | 0.00%    |
-| Nested Fields with Hooks          | depth 4 with 60 fields per level   | **8.722**    | 118.28   | 11.71%          | 0          | 0.00%    |
-| Nested Fields with Hooks          | depth 5 with 80 fields per level   | **8.059**    | 124.24   | 1.48%           | 0          | 0.00%    |
-| Complex Feature Mix               | full run with feature flags        | **220.38**   | 8.7159   | 6.76%           | 0          | 0.00%    |
-| Complex Feature Mix               | focused/conditional run            | **352.26**   | 6.3163   | 3.15%           | 0          | 0.00%    |
-| Deep Nesting Stress               | depth 10                           | **118.54**   | 15.199   | 6.30%           | 0          | 0.00%    |
-| Deep Nesting Stress               | depth 50                           | **46.121**   | 24.3198  | 1.50%           | 0          | 0.00%    |
-| Deep Nesting Stress               | depth 100                          | **29.544**   | 34.5622  | 0.66%           | 0          | 0.00%    |
-| Complex Combinations & Edge Cases | High Frequency test Creation       | **269.87**   | 5.5345   | 2.37%           | 0          | 0.00%    |
-| Conditional isolates              | skip even indices                  | **964.45**   | 1.9402   | 5.11%           | 0          | 0.00%    |
-| Conditional isolates              | omit multiples of 4                | **719.7**    | 8.1933   | 17.04%          | 0          | 0.00%    |
-| Field Volume Stress               | 10 fields                          | **570.35**   | 7.6203   | 5.92%           | 0          | 0.00%    |
-| Field Volume Stress               | 500 fields                         | **6.321**    | 161.37   | 0.52%           | 0          | 0.00%    |
-| Field Volume Stress               | 1000 fields                        | **2.655**    | 377.7    | 0.13%           | 0          | 0.00%    |
-| Dynamic each and groups           | longer list                        | **331.59**   | 15.4411  | 27.55%          | 0          | 0.00%    |
+| Reconciler & History Diffing      | Reconciler (Stable List)           | **3.363**    | 312.19   | 1.68%           | 0          | 0.00%    |
+| Reconciler & History Diffing      | Reconciler (Full Invalidation)     | **3.458**    | 295.59   | 0.85%           | 0          | 0.00%    |
+| Reconciler & History Diffing      | Reconciler (Prepend Item)          | **3.443**    | 300.16   | 1.05%           | 0          | 0.00%    |
+| Reconciler & History Diffing      | Reconciler (Append Item)           | **3.469**    | 291.58   | 0.43%           | 0          | 0.00%    |
+| Reconciler & History Diffing      | Reconciler (Interleaved)           | **3.476**    | 290.75   | 0.58%           | 0          | 0.00%    |
+| Reconciler & History Diffing      | Isolate Reordering (Reverse)       | **3.486**    | 290.9    | 0.53%           | 0          | 0.00%    |
+| Reconciler & History Diffing      | Isolate Reordering (Shuffle)       | **3.486**    | 294.23   | 0.72%           | 0          | 0.00%    |
+| Reconciler & History Diffing      | Orphan GC Pressure                 | **7.149**    | 141.34   | 0.53%           | 0          | 0.00%    |
+| Result Selectors & Reporting      | hasErrors (Volume)                 | **800.45**   | 1.6983   | 0.90%           | 0          | 0.00%    |
+| Result Selectors & Reporting      | getErrors (Group Lookup)           | **489.64**   | 2.5023   | 0.85%           | 0          | 0.00%    |
+| Result Selectors & Reporting      | Summary Generation (Large)         | **2.476**    | 410.83   | 0.55%           | 0          | 0.00%    |
+| Async & Concurrency Stress        | Pending Storm (Memory)             | **3.336**    | 329.8    | 2.55%           | 0          | 0.00%    |
+| Async & Concurrency Stress        | Resolve Storm (Throughput)         | **3.44**     | 293.28   | 0.42%           | 0          | 0.00%    |
+| Async & Concurrency Stress        | Reject Storm                       | **3.387**    | 297.74   | 0.34%           | 0          | 0.00%    |
+| Async & Concurrency Stress        | Async Race                         | **187.12**   | 8.8465   | 3.60%           | 0          | 0.00%    |
+| Control Flow & Hooks Internals    | test.memo (Thrashing)              | **180.45**   | 8.63     | 3.04%           | 0          | 0.00%    |
+| Control Flow & Hooks Internals    | test.memo (Stagnation)             | **702.56**   | 2.8642   | 1.98%           | 0          | 0.00%    |
+| Control Flow & Hooks Internals    | skipWhen (Active)                  | **7.243**    | 140.61   | 0.85%           | 0          | 0.00%    |
+| Control Flow & Hooks Internals    | only Starvation (Early)            | **6.228**    | 191.92   | 4.96%           | 0          | 0.00%    |
+| Control Flow & Hooks Internals    | only Starvation (Late)             | **6.321**    | 164.14   | 1.25%           | 0          | 0.00%    |
+| VestBus & Internals               | Bus Scaling                        | **212.31**   | 6.0089   | 2.31%           | 0          | 0.00%    |
+| VestBus & Internals               | State Refill                       | **135.96**   | 10.1857  | 2.96%           | 0          | 0.00%    |
+| Memory & Object Lifecycle         | Test Object Allocator              | **7.319**    | 138.1    | 0.36%           | 0          | 0.00%    |
+| Memory & Object Lifecycle         | Garbage Collection Friendly        | **7.38**     | 137.71   | 0.50%           | 0          | 0.00%    |
+| Serialization                     | Serialize (Large)                  | **153.77**   | 8.3668   | 2.37%           | 0          | 0.00%    |
+| Serialization                     | Deserialize (Large)                | **95.069**   | 12.0241  | 1.68%           | 0          | 0.00%    |
+| Edge Cases & Integration          | Broad Group                        | **3.439**    | 293.31   | 0.32%           | 0          | 0.00%    |
+| Edge Cases & Integration          | Namespace Collision                | **3.496**    | 289.3    | 0.38%           | 0          | 0.00%    |
+| Edge Cases & Integration          | Large Field Names                  | **212.9**    | 6.2288   | 2.62%           | 0          | 0.00%    |
+| Edge Cases & Integration          | Large Failure Messages             | **419.74**   | 4.4216   | 3.32%           | 0          | 0.00%    |
+| Complex Data Validation           | Enforce Huge String                | **232.51**   | 8.1979   | 4.81%           | 0          | 0.00%    |
+| State Management                  | Serialize Large                    | **286.85**   | 4.2102   | 1.56%           | 0          | 0.00%    |
+| Integration & Edge Cases          | Callback Overhead                  | **3.379**    | 307.08   | 1.07%           | 0          | 0.00%    |
+| Reordering & Reconciliation       | each (Reorder - Reverse)           | **123.78**   | 12.7739  | 4.77%           | 0          | 0.00%    |
+| Reordering & Reconciliation       | each (Reorder - Insert Middle)     | **115.31**   | 16.9967  | 6.45%           | 0          | 0.00%    |
+| Reordering & Reconciliation       | each (Reorder - Delete Middle)     | **122.98**   | 11.7506  | 4.34%           | 0          | 0.00%    |
+| Reordering & Reconciliation       | each (Key Thrashing)               | **294.51**   | 6.7392   | 4.93%           | 0          | 0.00%    |
+| State Mutation & Reset            | suite.remove() (Many Fields)       | **147.5**    | 53.2721  | 19.12%          | 0          | 0.00%    |
+| State Mutation & Reset            | suite.reset() (Memory Reclamation) | **7.179**    | 142.46   | 0.70%           | 0          | 0.00%    |
+| Concurrency & Events              | Bus Stress                         | **3.408**    | 294.71   | 0.24%           | 0          | 0.00%    |
+| Feature Coverage Matrix           | enforce matrix (small payload)     | **519.8**    | 5.1975   | 8.04%           | 0          | 0.00%    |
+| Feature Coverage Matrix           | enforce matrix (larger payload)    | **907.17**   | 5.6337   | 15.46%          | 0          | 0.00%    |
+| Feature Coverage Matrix           | flow control eager mode            | **477.84**   | 6.8752   | 9.14%           | 0          | 0.00%    |
+| Feature Coverage Matrix           | flow control one mode              | **391.24**   | 5.8043   | 7.05%           | 0          | 0.00%    |
+| Core Test Functionality           | test (High Volume, Same Name)      | **3.381**    | 308.84   | 1.62%           | 0          | 0.00%    |
+| Core Test Functionality           | test (High Volume, Unique Names)   | **3.328**    | 302.61   | 0.44%           | 0          | 0.00%    |
+| Nested Fields with Hooks          | depth 3 with 40 fields per level   | **12.198**   | 88.1527  | 7.25%           | 0          | 0.00%    |
+| Nested Fields with Hooks          | depth 4 with 60 fields per level   | **6.035**    | 174.6    | 14.85%          | 0          | 0.00%    |
+| Nested Fields with Hooks          | depth 5 with 80 fields per level   | **5.166**    | 194.31   | 4.78%           | 0          | 0.00%    |
+| Complex Feature Mix               | full run with feature flags        | **189.61**   | 10.98    | 7.64%           | 0          | 0.00%    |
+| Complex Feature Mix               | focused/conditional run            | **314.2**    | 7.2833   | 3.63%           | 0          | 0.00%    |
+| Deep Nesting Stress               | depth 10                           | **99.721**   | 17.5074  | 6.80%           | 0          | 0.00%    |
+| Deep Nesting Stress               | depth 50                           | **36.039**   | 29.5542  | 1.12%           | 0          | 0.00%    |
+| Deep Nesting Stress               | depth 100                          | **21.292**   | 48.7031  | 0.95%           | 0          | 0.00%    |
+| Complex Combinations & Edge Cases | High Frequency test Creation       | **195.91**   | 7.6676   | 2.56%           | 0          | 0.00%    |
+| Conditional isolates              | skip even indices                  | **736.25**   | 3.052    | 7.63%           | 0          | 0.00%    |
+| Conditional isolates              | omit multiples of 4                | **648.35**   | 4.6313   | 11.21%          | 0          | 0.00%    |
+| Field Volume Stress               | 10 fields                          | **506.4**    | 8.4936   | 6.39%           | 0          | 0.00%    |
+| Field Volume Stress               | 500 fields                         | **4.377**    | 232.7    | 0.58%           | 0          | 0.00%    |
+| Field Volume Stress               | 1000 fields                        | **1.733**    | 585.65   | 0.58%           | 0          | 0.00%    |
+| Dynamic each and groups           | longer list                        | **236.88**   | 13.6005  | 20.60%          | 0          | 0.00%    |
 
 <details>
 <summary>Raw Output</summary>

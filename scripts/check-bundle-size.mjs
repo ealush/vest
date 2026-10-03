@@ -45,6 +45,18 @@ const ENTRIES = {
     import { enforce } from 'n4s';
     globalThis.result = enforce.isString().test('x');
   `,
+  'relationships suite (vest/relationships)': `
+    import 'vest/relationships';
+    import { create, enforce, test } from 'vest';
+    const schema = enforce.shape({
+      password: enforce.isString(),
+      confirm: enforce.isString().dependsOn($ => $.password),
+    });
+    const suite = create(data => {
+      test('confirm', () => enforce(data.confirm).isString());
+    }, schema);
+    globalThis.result = suite.changed('password').run({ password: 'a', confirm: 'a' });
+  `,
 };
 
 /**

@@ -4,7 +4,11 @@ import { installDescribe } from '../ruleMeta';
 
 installDescribe(describeSchema);
 
-export { EnforceSchemaError } from '../relationshipGraph';
+export {
+  /** @internal Used by `vest/relationships`; not part of the public API. */
+  canPickRelationshipSchema,
+  EnforceSchemaError,
+} from '../relationshipGraph';
 export { resolveAffected } from '../relationshipPlanner';
 export type { ConcretePath } from '../relationshipPlanner';
 export { FIELD } from '../ruleMeta';

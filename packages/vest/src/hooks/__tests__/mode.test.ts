@@ -200,6 +200,39 @@ describe('mode', () => {
     });
   });
 
+  describe('Eager with an empty field name', () => {
+    it('should run an empty-name test after a different field failed', () => {
+      suite = create(() => {
+        dummyTest.failing('field_1', 'first-of-field_1');
+        dummyTest.failing('', 'form-level');
+      });
+
+      const res = suite.run();
+
+      expect(res.errorCount).toBe(2);
+      expect(res.getErrors()).toEqual({
+        field_1: ['first-of-field_1'],
+        '': ['form-level'],
+      });
+    });
+
+    it('should stop after the first failing empty-name test', () => {
+      suite = create(() => {
+        dummyTest.failing('', 'first-form-level');
+        dummyTest.failing('', 'second-form-level'); // Should not run
+        dummyTest.failing('field_1', 'first-of-field_1');
+      });
+
+      const res = suite.run();
+
+      expect(res.testCount).toBe(2);
+      expect(res.getErrors()).toEqual({
+        '': ['first-form-level'],
+        field_1: ['first-of-field_1'],
+      });
+    });
+  });
+
   describe('All', () => {
     beforeEach(() => {
       suite = create(include => {

@@ -5741,6 +5741,10 @@ Keyed tests retain their verdict under their current field name after reordering
 
 Rules returned by `compose()` now also support `.validate()`, `.parse()`, and the Standard Schema `~standard.validate` interface, in addition to `.run()` and `.test()`.
 
+## Validator type dependency
+
+The `n4s` package now includes `@types/validator` as a regular dependency because its emitted TypeScript declarations import types from `validator/es/lib`. Consumers receive those types when installing `n4s`.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

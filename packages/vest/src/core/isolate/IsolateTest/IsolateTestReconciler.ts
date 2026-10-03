@@ -76,12 +76,30 @@ function useHandleTestWithKey(newNode: TIsolateTest): Result<TIsolateTest> {
       }
 
       if (useIsExcluded(newNode)) {
+        retainCurrentFieldName(prevNode, newNode);
         return false;
       }
 
       return true;
     }),
   );
+}
+
+/**
+ * A keyed test keeps its previous verdict when focused out, but its
+ * declaration may have moved, for example to another index of a list. The
+ * retained verdict takes the field name declared by the current run, so
+ * selectors follow the item's identity instead of its former position.
+ */
+function retainCurrentFieldName(
+  retainedNode: TIsolateTest,
+  currentNode: TIsolateTest,
+): void {
+  const currentFieldName = VestTest.getData(currentNode).fieldName;
+  VestTest.setData(retainedNode, retainedData => ({
+    ...retainedData,
+    fieldName: currentFieldName,
+  }));
 }
 
 function cancelOverriddenPendingTestOnTestReRun(

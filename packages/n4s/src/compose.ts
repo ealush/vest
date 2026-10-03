@@ -3,6 +3,7 @@ import { StringObject, assign, invariant, mapFirst } from 'vest-utils';
 import { ctx } from './enforceContext';
 import { RuleInstance } from './utils/RuleInstance';
 import { RuleRunReturn } from './utils/RuleRunReturn';
+import { registerRule } from './ruleMeta';
 
 type ComposeResult<T = any> = RuleInstance<T, [T]> & {
   (value: T): void;
@@ -54,6 +55,7 @@ export function compose<T = any>(
     invariant(res.pass, StringObject(res.message));
   }, RuleInstance.create<RuleInstance<T, [T]>, T, [T]>(run));
 
+  registerRule(composedFn, 'compose', composites);
   return composedFn as ComposeResult<T>;
 
   function run(value: T): RuleRunReturn<T> {

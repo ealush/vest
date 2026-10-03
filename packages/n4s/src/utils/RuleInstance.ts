@@ -1,4 +1,6 @@
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
+import type { Description, Scope } from '../ruleMeta';
+import { declareDependency, describeRule } from '../ruleMeta';
 
 import { RuleRunReturn } from './RuleRunReturn';
 
@@ -43,6 +45,9 @@ export class RuleInstance<T, Args extends any[] = any[]> {
 
   // Type-only declaration for parse helper that throws on issues
   parse!: (...args: Args) => T;
+
+  dependsOn!: (resolver: (scope: Scope) => unknown) => this;
+  describe!: () => Description;
 
   // Type-only declaration for StandardSchema property.
   // The intersection with `{ readonly types: ... }` narrows `types` from optional
@@ -117,6 +122,13 @@ export class RuleInstance<T, Args extends any[] = any[]> {
         return !result.issues;
       },
       validate,
+      dependsOn(resolver: (scope: Scope) => unknown) {
+        declareDependency(this, resolver);
+        return this;
+      },
+      describe() {
+        return describeRule(this);
+      },
     } as unknown as R;
   }
 }

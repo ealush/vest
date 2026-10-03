@@ -17,6 +17,7 @@ import { lazy as lazyRule } from './rules/schemaRules/lazy';
 import type { SchemaRuleLazyTypes } from './rules/schemaRules/schemaRules';
 import { type RuleInstance } from './utils/RuleInstance';
 import { RuleRunReturn } from './utils/RuleRunReturn';
+import { registerRule } from './ruleMeta';
 
 /**
  * Extracts the output type from a custom matcher function.
@@ -84,33 +85,35 @@ const schemaAttacher =
   };
 
 // Build the final schema rules object with special handling for arrays and base evaluators
+function arraySchemaRule<T>(...rules: any[]): ArrayRuleInstance<T> {
+  const rule = addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
+    const result = ctx.run({ value }, () =>
+      schemaRules.isArrayOf(value, ...rules),
+    );
+    return RuleRunReturn.create(result, value);
+  });
+  registerRule(rule, 'isArrayOf', rules);
+  return rule;
+}
+
 const schemaRulesWithArrayChaining = {
   ...schemaModifiers,
-  isArrayOf: <T>(...rules: any[]): ArrayRuleInstance<T> =>
-    addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
-      const result = ctx.run({ value }, () =>
-        schemaRules.isArrayOf(value, ...rules),
-      );
-      return RuleRunReturn.create(result, value);
-    }),
+  isArrayOf: arraySchemaRule,
   lazy: lazyRule,
-  list: <T>(...rules: any[]): ArrayRuleInstance<T> =>
-    addToChain<ArrayRuleInstance<T>>(arrayRules, (value: any) => {
-      const result = ctx.run({ value }, () =>
-        schemaRules.isArrayOf(value, ...rules),
-      );
-      return RuleRunReturn.create(result, value);
-    }),
+  list: arraySchemaRule,
   loose: schemaAttacher(schemaEvaluators.loose),
   record: recordEvaluators.record,
   shape: schemaAttacher(schemaEvaluators.shape),
-  tuple: (...rules: any[]) =>
-    addToChain(arrayRules, (value: any) => {
+  tuple: (...rules: any[]) => {
+    const rule = addToChain(arrayRules, (value: any) => {
       const result = ctx.run({ value }, () =>
         schemaRules.tuple(value, ...rules),
       );
       return RuleRunReturn.create(result, value);
-    }),
+    });
+    registerRule(rule, 'tuple', rules);
+    return rule;
+  },
 };
 
 const baseEnforceLazy = {

@@ -25,7 +25,6 @@ export type RuleMeta = {
 };
 
 const rules = new WeakMap<object, RuleMeta>();
-export let revision = 0;
 let describeImplementation: ((rule: object) => Description) | undefined;
 
 export function meta(rule: object): RuleMeta {
@@ -47,12 +46,35 @@ export function registerRule(
   value.children = children;
 }
 
-export function declareDependency(
-  rule: object,
+/**
+ * Returns a rule that behaves like `base` and adds one dependency declaration.
+ * `base` is left untouched, so a rule constant reused across fields does not
+ * carry one field's dependencies into the others.
+ */
+export function deriveDependency<T extends object>(
+  base: T,
   resolver: (scope: Scope) => unknown,
-): void {
-  meta(rule).declarations.push(resolver);
-  revision++;
+): T {
+  const derived: T = new Proxy(base, {
+    get(target, key) {
+      if (key === 'dependsOn') {
+        return (next: (scope: Scope) => unknown) =>
+          deriveDependency(derived, next);
+      }
+      const value = Reflect.get(target, key);
+      if (typeof value !== 'function') return value;
+      return (...args: unknown[]) => {
+        const result = value.apply(target, args);
+        return result === target ? derived : result;
+      };
+    },
+  });
+  // Structure stays shared with the base; only declarations differ.
+  const baseMeta = meta(base);
+  const derivedMeta: RuleMeta = Object.create(baseMeta);
+  derivedMeta.declarations = [...baseMeta.declarations, resolver];
+  rules.set(derived, derivedMeta);
+  return derived;
 }
 
 export function installDescribe(

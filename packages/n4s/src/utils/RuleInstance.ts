@@ -1,6 +1,6 @@
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 import type { Description, Scope } from '../ruleMeta';
-import { declareDependency, describeRule } from '../ruleMeta';
+import { deriveDependency, describeRule } from '../ruleMeta';
 
 import { RuleRunReturn } from './RuleRunReturn';
 
@@ -123,8 +123,7 @@ export class RuleInstance<T, Args extends any[] = any[]> {
       },
       validate,
       dependsOn(resolver: (scope: Scope) => unknown) {
-        declareDependency(this, resolver);
-        return this;
+        return deriveDependency(this, resolver);
       },
       describe() {
         return describeRule(this);

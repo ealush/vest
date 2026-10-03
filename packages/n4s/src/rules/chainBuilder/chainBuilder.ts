@@ -7,7 +7,7 @@ import {
   type Stringable,
 } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
-import { declareDependency, describeRule, meta } from '../../ruleMeta';
+import { deriveDependency, describeRule, meta } from '../../ruleMeta';
 import type { Scope } from '../../ruleMeta';
 
 import { RuleInstance } from '../../utils/RuleInstance';
@@ -133,10 +133,8 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
         version: 1 as const,
       } as StandardSchemaV1.Props<any, any>,
       add,
-      dependsOn: (resolver: (scope: Scope) => unknown) => {
-        declareDependency(proxy, resolver);
-        return proxy;
-      },
+      dependsOn: (resolver: (scope: Scope) => unknown) =>
+        deriveDependency(proxy, resolver),
       describe: () => describeRule(proxy),
       message,
       parse,

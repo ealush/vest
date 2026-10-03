@@ -46,6 +46,6 @@ export function lazy<T>(
     const result = ctx.run({ value }, () => resolve().run(value));
     return RuleRunReturn.create(result, value);
   });
-  registerRule(rule, 'lazy', factory);
+  registerRule(rule, 'lazy', resolve);
   return rule;
 }

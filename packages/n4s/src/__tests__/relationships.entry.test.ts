@@ -130,7 +130,7 @@ it('scopes dependencies to the same array item or record key', () => {
   ]);
 });
 
-it('records tuple positions and leaves a lazy factory unexecuted', () => {
+it('records tuple positions and resolves a lazy factory once', () => {
   let calls = 0;
   const schema = enforce.shape({
     tuple: enforce.tuple(
@@ -142,8 +142,12 @@ it('records tuple positions and leaves a lazy factory unexecuted', () => {
     ),
     deferred: enforce.lazy(() => {
       calls++;
-      return enforce.shape({ value: enforce.isString() });
+      return enforce.shape({
+        value: enforce.isString(),
+        copy: enforce.isString().dependsOn($ => $.value),
+      });
     }),
+    mirror: enforce.isString().dependsOn($ => $.deferred.value),
   });
   expect(schema.describe().relationships).toEqual([
     {
@@ -151,8 +155,67 @@ it('records tuple positions and leaves a lazy factory unexecuted', () => {
       target: ['tuple', '1', 'b'],
       effect: 'invalidate',
     },
+    {
+      source: ['deferred', 'value'],
+      target: ['deferred', 'copy'],
+      effect: 'invalidate',
+    },
+    {
+      source: ['deferred', 'value'],
+      target: ['mirror'],
+      effect: 'invalidate',
+    },
   ]);
-  expect(calls).toBe(0);
+  expect(
+    schema.test({
+      tuple: ['x', { a: 'a', b: 'b' }],
+      deferred: { value: 'v', copy: 'c' },
+      mirror: 'm',
+    }),
+  ).toBe(true);
+  expect(calls).toBe(1);
+});
+
+it('rejects dependsOn inside a recursive lazy schema', () => {
+  const category: any = enforce.shape({
+    name: enforce.isString(),
+    title: enforce.isString().dependsOn($ => $.name),
+    children: enforce.isArrayOf(enforce.lazy(() => category)),
+  });
+  expect(() => category.describe()).toThrow(
+    /children\.\*.*recursive lazy\(\).*dependsOn is not supported/,
+  );
+});
+
+it('allows recursive lazy schemas without declarations', () => {
+  const tree: any = enforce.shape({
+    name: enforce.isString(),
+    children: enforce.isArrayOf(enforce.lazy(() => tree)),
+  });
+  expect(tree.describe().relationships).toEqual([]);
+
+  const fresh = (): any =>
+    enforce.shape({ next: enforce.optional(enforce.lazy(() => fresh())) });
+  expect(fresh().describe().relationships).toEqual([]);
+});
+
+it('describes declarations and references inside compound rules', () => {
+  const schema = enforce.shape({
+    a: enforce.isString(),
+    b: enforce.anyOf(
+      enforce.isString().dependsOn($ => $.a),
+      enforce.isNumber(),
+    ),
+    contact: enforce.oneOf(
+      enforce.shape({ email: enforce.isString() }),
+      enforce.shape({ phone: enforce.isString() }),
+    ),
+    c: enforce.isString().dependsOn($ => $.contact.phone),
+  });
+  expect(schema.describe().relationships).toEqual([
+    { source: ['a'], target: ['b'], effect: 'invalidate' },
+    { source: ['contact', 'phone'], target: ['c'], effect: 'invalidate' },
+  ]);
 });
 
 it('resolves root references against the mounted schema and composed shapes', () => {
@@ -172,12 +235,49 @@ it('resolves root references against the mounted schema and composed shapes', ()
   ]);
 });
 
-it('rebuilds the graph when dependsOn is added after describe', () => {
-  const b = enforce.isString();
-  const schema = enforce.shape({ a: enforce.isString(), b });
-  expect(schema.describe().relationships).toEqual([]);
-  b.dependsOn($ => $.a);
-  expect(schema.describe().relationships).toHaveLength(1);
+it('returns a new rule and leaves a shared rule unchanged', () => {
+  const text = enforce.isString();
+  const confirm = text.dependsOn($ => $.password);
+  expect(confirm).not.toBe(text);
+
+  const schema = enforce.shape({
+    password: text,
+    username: text,
+    confirm,
+  });
+  const other = enforce.shape({ password: text, other: text });
+  expect(schema.describe().relationships).toEqual([
+    { source: ['password'], target: ['confirm'], effect: 'invalidate' },
+  ]);
+  expect(other.describe().relationships).toEqual([]);
+});
+
+it('keeps a derived rule validating like its base and chainable', () => {
+  const schema = enforce.shape({
+    a: enforce.isString(),
+    b: enforce
+      .isString()
+      .dependsOn($ => $.a)
+      .minLength(2),
+  });
+  expect(schema.test({ a: 'a', b: 'bb' })).toBe(true);
+  expect(schema.test({ a: 'a', b: 'b' })).toBe(false);
+  expect(schema.describe().relationships).toEqual([
+    { source: ['a'], target: ['b'], effect: 'invalidate' },
+  ]);
+});
+
+it('hints at FIELD for a field named root', () => {
+  const schema = enforce.shape({
+    root: enforce.isString(),
+    x: enforce.isString().dependsOn($ => $.root),
+  });
+  expect(() => schema.describe()).toThrow(/\$\[FIELD\]\('name'\).*root/);
+  const fixed = enforce.shape({
+    root: enforce.isString(),
+    x: enforce.isString().dependsOn($ => $[FIELD]('root')),
+  });
+  expect(fixed.describe().relationships[0].source).toEqual(['root']);
 });
 
 it('runs no validators or getters and returns independent JSON data', () => {

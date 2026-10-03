@@ -134,6 +134,7 @@ Vest composes with schema validators and form managers; these categories are not
 ## Integrations
 - [Vest with Hono](https://vestjs.dev/docs/integrations/hono)
 - [Ecosystem Integrations](https://vestjs.dev/docs/integrations/index)
+- [Vest with React Hook Form](https://vestjs.dev/docs/integrations/react-hook-form)
 - [Vest with Standard Schema](https://vestjs.dev/docs/integrations/standard-schema)
 - [Vest with T3 Env](https://vestjs.dev/docs/integrations/t3-env)
 - [Vest with TanStack Form](https://vestjs.dev/docs/integrations/tanstack-form)

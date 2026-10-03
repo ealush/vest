@@ -37,3 +37,13 @@ it('does not treat a focused schema-only run as valid', () => {
   expect(result.valid).toBe(false);
   expect(result.isValid()).toBe(false);
 });
+
+it('recomputes schema-only validity after a failed or focused run', () => {
+  const suite = create(
+    () => {},
+    enforce.shape({ a: enforce.isString(), b: enforce.isString() }),
+  );
+  expect(suite.run({ a: 1, b: 'x' } as never).valid).toBe(false);
+  expect(suite.only('a').run({ a: 'x', b: 'x' }).valid).toBe(false);
+  expect(suite.run({ a: 'x', b: 'x' }).valid).toBe(true);
+});

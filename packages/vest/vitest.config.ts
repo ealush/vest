@@ -8,14 +8,14 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   resolve: {
-    alias: {
-      vest: resolve(__dirname, 'src/vest.ts'),
-      'n4s/exports/relationships': resolve(
-        __dirname,
-        '../n4s/src/exports/relationships.ts',
-      ),
-      n4s: resolve(__dirname, '../n4s/src/n4s.ts'),
-    },
+    alias: [
+      { find: /^vest$/, replacement: resolve(__dirname, 'src/vest.ts') },
+      {
+        find: /^n4s\/(?:exports\/)?relationships$/,
+        replacement: resolve(__dirname, '../n4s/src/exports/relationships.ts'),
+      },
+      { find: /^n4s$/, replacement: resolve(__dirname, '../n4s/src/n4s.ts') },
+    ],
   },
   root: __dirname,
   test: {

@@ -21,3 +21,18 @@ it('includes message-free user-test failures in result.issues', () => {
     { message: 'Validation failed', path: ['name'] },
   ]);
 });
+
+it('uses the same nested paths in SuiteResult and Standard Schema issues', () => {
+  const suite = create(
+    () => {},
+    enforce.shape({
+      rows: enforce.isArrayOf(enforce.shape({ name: enforce.isString() })),
+    }),
+  );
+  const data = { rows: [{ name: 1 }] };
+  const result = suite.run(data as never);
+  expect(result.issues).toEqual([
+    { message: 'Validation failed', path: ['rows', '0', 'name'] },
+  ]);
+  expect(suite['~standard'].validate(data)).toEqual({ issues: result.issues });
+});

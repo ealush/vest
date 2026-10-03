@@ -8,7 +8,7 @@ import {
 } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 import { deriveDependency, describeRule, meta } from '../../ruleMeta';
-import type { Scope } from '../../ruleMeta';
+import type { DependencyResolver } from '../../ruleMeta';
 
 import { RuleInstance } from '../../utils/RuleInstance';
 
@@ -41,10 +41,11 @@ type LazyMessage = DynamicValue<
  */
 export function createChainBuilder<T extends RuleInstance<any, any>>(
   rules: RuleFunctions<T> | Record<string, (...args: any[]) => any>,
+  initial?: { chain: Predicate[]; lazyMessage: Maybe<LazyMessage> },
 ) {
-  const chain: Predicate[] = [];
+  const chain: Predicate[] = initial ? [...initial.chain] : [];
   const target: Partial<T> = {};
-  let lazyMessage: Maybe<LazyMessage> = undefined;
+  let lazyMessage: Maybe<LazyMessage> = initial?.lazyMessage;
 
   const add = (p: Predicate): T => {
     chain.push(p);
@@ -116,6 +117,7 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
   const message = (msg: Stringable): T => {
     if (msg) {
       lazyMessage = msg;
+      meta(proxy).chained = true;
     }
     return proxy;
   };
@@ -133,8 +135,12 @@ export function createChainBuilder<T extends RuleInstance<any, any>>(
         version: 1 as const,
       } as StandardSchemaV1.Props<any, any>,
       add,
-      dependsOn: (resolver: (scope: Scope) => unknown) =>
-        deriveDependency(proxy, resolver),
+      dependsOn: (resolver: DependencyResolver) =>
+        deriveDependency(
+          proxy,
+          resolver,
+          createChainBuilder<T>(rules, { chain, lazyMessage }).proxy,
+        ),
       describe: () => describeRule(proxy),
       message,
       parse,

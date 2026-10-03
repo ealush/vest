@@ -49,7 +49,7 @@ it('rejects invalid resolver returns and handles the reserved then field', () =>
     () => Promise.resolve('then'),
   ]) {
     const invalid = enforce.shape({
-      target: enforce.isString().dependsOn(resolver),
+      target: enforce.isString().dependsOn(resolver as never),
     });
     expect(() => invalid.describe()).toThrow(/target.*field reference/);
   }
@@ -196,7 +196,19 @@ it('allows recursive lazy schemas without declarations', () => {
 
   const fresh = (): any =>
     enforce.shape({ next: enforce.optional(enforce.lazy(() => fresh())) });
-  expect(fresh().describe().relationships).toEqual([]);
+  expect(() => fresh().describe()).toThrow(/32 nested lazy\(\) expansions/);
+});
+
+it('rejects excessive lazy depth instead of silently omitting deeper dependencies', () => {
+  let rule: any = enforce.shape({
+    a: enforce.isString(),
+    b: enforce.isString().dependsOn($ => $.a),
+  });
+  for (let i = 0; i < 34; i++) {
+    const child = rule;
+    rule = enforce.lazy(() => child);
+  }
+  expect(() => rule.describe()).toThrow(/32 nested lazy\(\) expansions/);
 });
 
 it('describes declarations and references inside compound rules', () => {
@@ -265,6 +277,37 @@ it('keeps a derived rule validating like its base and chainable', () => {
   expect(schema.describe().relationships).toEqual([
     { source: ['a'], target: ['b'], effect: 'invalidate' },
   ]);
+});
+
+it('isolates validation chains and messages when deriving a shared rule', () => {
+  const text = enforce.isString();
+  const short = text
+    .dependsOn($ => $.a)
+    .maxLength(2)
+    .message('short');
+  const long = text
+    .dependsOn($ => $.a)
+    .minLength(3)
+    .message('long');
+  expect(text.test('x')).toBe(true);
+  expect(text.test('xxxx')).toBe(true);
+  expect(short.test('x')).toBe(true);
+  expect(short.run('xxx').message).toBe('short');
+  expect(long.test('xxx')).toBe(true);
+  expect(long.run('x').message).toBe('long');
+  expect(
+    enforce.shape({ a: text, short, long }).describe().relationships,
+  ).toHaveLength(2);
+});
+
+it('keeps a derived composed rule callable and describes its own metadata', () => {
+  const base = compose(enforce.isString());
+  const derived = base.dependsOn($ => $.a);
+  expect(() => derived('x')).not.toThrow();
+  expect(() => derived(1 as never)).toThrow();
+  // Describing this rule alone has no sibling a; its declaration must be seen.
+  expect(() => derived.describe()).toThrow(/unknown field "a"/);
+  expect(base.describe().relationships).toEqual([]);
 });
 
 it('hints at FIELD for a field named root', () => {

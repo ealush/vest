@@ -6,4 +6,10 @@ installDescribe(describeSchema);
 
 export { EnforceSchemaError } from '../relationshipGraph';
 export { FIELD } from '../ruleMeta';
-export type { Description, Relationship, SchemaPath, Scope } from '../ruleMeta';
+export type {
+  DependencyResolver,
+  Description,
+  Relationship,
+  SchemaPath,
+  Scope,
+} from '../ruleMeta';

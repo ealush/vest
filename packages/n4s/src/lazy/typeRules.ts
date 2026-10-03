@@ -67,7 +67,18 @@ type LazyStringRuleInstance = BuildRuleInstance<
   ExtractRuleFunctions<typeof lazyStringRules>
 >;
 
-export const typeRules = {
+export type TypeRules = {
+  isArray: <T = any>() => LazyArrayRuleInstance<T>;
+  isBoolean: () => BooleanRuleInstance;
+  isNull: () => NullRuleInstance;
+  isNullish: () => NullishRuleInstance;
+  isNumber: () => LazyNumberRuleInstance;
+  isNumeric: () => LazyNumericRuleInstance;
+  isString: () => LazyStringRuleInstance;
+  isUndefined: () => UndefinedRuleInstance;
+};
+
+export const typeRules: TypeRules = {
   isArray: <T = any>(): LazyArrayRuleInstance<T> =>
     addToChain<LazyArrayRuleInstance<T>>(lazyArrayRules, isArray),
   isBoolean: (): BooleanRuleInstance => addToChain(booleanRules, isBoolean),

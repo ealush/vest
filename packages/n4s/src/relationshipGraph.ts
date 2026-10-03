@@ -1,4 +1,6 @@
 /** Relationship graph internals behind the opt-in `n4s/relationships` entry. */
+import { isFunction, isObject } from 'vest-utils';
+
 import {
   FIELD,
   meta,
@@ -37,16 +39,17 @@ export function describeSchema(schema: object): Description {
 
 function buildGraph(root: object): Description {
   const context: GraphContext = {
-    root,
-    relationships: [],
-    seen: new Set<string>(),
     checked: new Map<string, Walk>(),
+    relationships: [],
+    root,
+    seen: new Set<string>(),
   };
   const ancestors = new Set<object>();
 
   function visit(rule: unknown, path: SchemaPath, lazyDepth: number): void {
     if (!isNode(rule)) return;
-    if (isRecursion(ancestors, rule, lazyDepth)) {
+    checkLazyDepth(lazyDepth);
+    if (ancestors.has(rule)) {
       rejectRecursiveDeclarations(rule, path);
       return;
     }
@@ -67,12 +70,11 @@ function buildGraph(root: object): Description {
   return { relationships: context.relationships };
 }
 
-function isRecursion(
-  ancestors: Set<object>,
-  rule: object,
-  lazyDepth: number,
-): boolean {
-  return ancestors.has(rule) || lazyDepth > MAX_LAZY_DEPTH;
+function checkLazyDepth(depth: number): void {
+  if (depth <= MAX_LAZY_DEPTH) return;
+  throw new EnforceSchemaError(
+    'Relationship graphs support at most 32 nested lazy() expansions; recursive factories must reuse a schema instance',
+  );
 }
 
 function nextLazyDepth(kind: string | undefined, lazyDepth: number): number {
@@ -90,7 +92,8 @@ function rejectRecursiveDeclarations(rule: object, path: SchemaPath): void {
 function hasDeclarations(root: object): boolean {
   const seen = new Set<object>();
   function search(rule: unknown, lazyDepth: number): boolean {
-    if (!isNode(rule) || isRecursion(seen, rule, lazyDepth)) return false;
+    if (!isNode(rule) || seen.has(rule)) return false;
+    checkLazyDepth(lazyDepth);
     seen.add(rule);
     const info = meta(rule);
     if (info.declarations.length) return true;
@@ -194,7 +197,7 @@ function shapeChildren(
 }
 
 function itemChildren(
-  kind: string,
+  kind: 'isArrayOf' | 'record',
   args: unknown[],
   path: SchemaPath,
 ): Array<[unknown, SchemaPath]> {
@@ -390,6 +393,10 @@ function shapeStep(
   next: unknown[];
   keys: string[];
 } {
+  const descriptor = ownDataDescriptor(args[0], segment);
+  if (descriptor && isSelectedKey(kind, args, segment)) {
+    return { next: [descriptor.value], keys: [] };
+  }
   const available = selectedEntries(kind, args, args[0]);
   return {
     next: available
@@ -397,6 +404,27 @@ function shapeStep(
       .map(([, child]) => child),
     keys: available.map(([name]) => name),
   };
+}
+
+function ownDataDescriptor(
+  value: unknown,
+  key: string,
+): PropertyDescriptor | undefined {
+  if (!isNode(value)) return;
+  const descriptor = Object.getOwnPropertyDescriptor(value, key);
+  return descriptor?.enumerable && 'value' in descriptor
+    ? descriptor
+    : undefined;
+}
+
+function isSelectedKey(
+  kind: string | undefined,
+  args: unknown[],
+  key: string,
+): boolean {
+  if (kind !== 'pick' && kind !== 'omit') return true;
+  const selected = new Set(Array.isArray(args[1]) ? args[1] : [args[1]]);
+  return kind === 'pick' ? selected.has(key) : !selected.has(key);
 }
 
 function isTransparent(kind: string | undefined): boolean {
@@ -414,17 +442,18 @@ function unwrap(rule: unknown, seen = new Set<object>()): object[] {
   );
 }
 
-function isNode(value: unknown): value is object {
-  return (
-    (typeof value === 'object' && value !== null) || typeof value === 'function'
-  );
+export function isNode(value: unknown): value is object {
+  return isObject(value) || isFunction(value);
 }
 
 function entries(value: unknown): Array<[string, unknown]> {
   if (!isNode(value)) return [];
-  return Object.entries(Object.getOwnPropertyDescriptors(value))
-    .filter(([, descriptor]) => 'value' in descriptor)
-    .map(([key, descriptor]) => [key, descriptor.value]);
+  const result: Array<[string, unknown]> = [];
+  for (const key of Object.keys(value)) {
+    const descriptor = ownDataDescriptor(value, key);
+    if (descriptor) result.push([key, descriptor.value]);
+  }
+  return result;
 }
 
 function selectedEntries(

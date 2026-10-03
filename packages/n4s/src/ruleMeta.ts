@@ -1,6 +1,6 @@
 export type SchemaPath = readonly (
   | string
-  | { type: 'item'; binding: string }
+  | { type: 'item'; binding: 'isArrayOf' | 'record' }
 )[];
 export type Relationship = {
   source: SchemaPath;
@@ -15,12 +15,14 @@ export type Scope = {
   [field: string]: Scope;
 };
 
+export type DependencyResolver = (scope: Scope) => Scope | readonly Scope[];
+
 export const FIELD = Symbol('n4s.relationships.field');
 
 export type RuleMeta = {
   kind?: string;
   children?: unknown;
-  declarations: Array<(scope: Scope) => unknown>;
+  declarations: DependencyResolver[];
   chained?: boolean;
 };
 
@@ -53,28 +55,24 @@ export function registerRule(
  */
 export function deriveDependency<T extends object>(
   base: T,
-  resolver: (scope: Scope) => unknown,
+  resolver: DependencyResolver,
+  derived: T = copyRule(base),
 ): T {
-  const derived: T = new Proxy(base, {
-    get(target, key) {
-      if (key === 'dependsOn') {
-        return (next: (scope: Scope) => unknown) =>
-          deriveDependency(derived, next);
-      }
-      const value = Reflect.get(target, key);
-      if (typeof value !== 'function') return value;
-      return (...args: unknown[]) => {
-        const result = value.apply(target, args);
-        return result === target ? derived : result;
-      };
-    },
-  });
-  // Structure stays shared with the base; only declarations differ.
   const baseMeta = meta(base);
-  const derivedMeta: RuleMeta = Object.create(baseMeta);
-  derivedMeta.declarations = [...baseMeta.declarations, resolver];
-  rules.set(derived, derivedMeta);
+  Object.assign(derived, base);
+  rules.set(derived, {
+    ...baseMeta,
+    declarations: [...baseMeta.declarations, resolver],
+  });
   return derived;
+}
+
+function copyRule<T extends object>(base: T): T {
+  const target =
+    typeof base === 'function'
+      ? (...args: unknown[]) => Reflect.apply(base, undefined, args)
+      : {};
+  return Object.assign(target, base);
 }
 
 export function installDescribe(

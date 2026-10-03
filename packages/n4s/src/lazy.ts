@@ -116,7 +116,13 @@ const schemaRulesWithArrayChaining = {
   },
 };
 
-const baseEnforceLazy = {
+type BaseEnforceLazy = CompoundRuleLazyTypes &
+  SchemaRuleLazyTypes &
+  Record<keyof typeof generalRules, (...args: any[]) => AnyRuleInstance> &
+  Record<keyof typeof objectRules, (...args: any[]) => ObjectRulesUnion> &
+  typeof typeRules;
+
+const baseEnforceLazy: BaseEnforceLazy = {
   ...(adaptDynamicRules<RuleInstance<any, [any]>, typeof compoundRules>(
     compoundRules,
   ) as CompoundRuleLazyTypes),

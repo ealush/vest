@@ -2492,7 +2492,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["a"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x"
@@ -2556,7 +2561,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["b"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x",
@@ -2596,7 +2606,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["b"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x",
@@ -2664,7 +2679,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["name"]
+        }
+      ],
       "types": {
         "input": {
           "name": 1,
@@ -2740,7 +2760,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["tags.1"]
+        }
+      ],
       "types": {
         "input": {
           "meta": {
@@ -2788,7 +2813,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["profile.name"]
+        }
+      ],
       "types": {
         "input": {
           "profile": {
@@ -2873,7 +2903,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["b"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x",
@@ -2922,7 +2957,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["b"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x",
@@ -3002,7 +3042,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["__root__"]
+        }
+      ],
       "types": {
         "input": null,
         "output": null

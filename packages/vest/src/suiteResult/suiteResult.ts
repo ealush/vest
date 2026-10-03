@@ -89,15 +89,15 @@ export function constructSuiteResultObject<
       value: outputData,
     };
   } else if (valid === false) {
-    const issues = summary[Severity.ERRORS].reduce((acc, failure) => {
-      if (failure.message) {
-        acc.push({
-          message: failure.message,
-          path: [failure.fieldName],
-        });
-      }
-      return acc;
-    }, [] as StandardSchemaV1.Issue[]);
+    const issues: StandardSchemaV1.Issue[] = summary[Severity.ERRORS].map(
+      failure => ({
+        message:
+          typeof failure.message === 'string'
+            ? failure.message
+            : 'Validation failed',
+        path: [failure.fieldName],
+      }),
+    );
 
     return {
       ...common,

@@ -27,7 +27,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -84,7 +91,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -162,7 +176,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -240,7 +261,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -297,7 +325,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -345,7 +380,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -398,7 +440,20 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -455,7 +510,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -526,7 +588,20 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -597,7 +672,20 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -645,7 +733,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -716,7 +811,20 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -782,7 +890,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -848,7 +963,14 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -919,7 +1041,20 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -990,7 +1125,20 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -1052,7 +1200,20 @@ Promise {
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {

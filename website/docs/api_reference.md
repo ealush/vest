@@ -131,7 +131,9 @@ After `import 'vest/relationships'`, prepares a focused run for the named fields
 - `fields`: `string | readonly string[]`; `changed([])` runs no fields, while `changed(undefined)` clears this focus.
 - `only()` adds explicit fields and `skip` excludes fields from the affected set.
 - Schema validation checks affected top-level fields; nested member selection does not yet narrow schema execution.
-- A successful changed result types `value` as a partial schema output. Await the result when tests are async.
+- Test names should match data paths. The named fields always run, even when they are not schema fields.
+- Schema failures outside the affected names are reported without running those fields' user tests.
+- A successful changed result's `value` contains only the validated fields and is typed as a partial schema output. Its `valid` does not cover unchecked fields, so run the full suite before submitting. Await the result when tests are async.
 - Without the opt-in import, the first changed run throws a setup error.
 - [Read the relationships guide](./guides/schema-relationships.md).
 
@@ -190,7 +192,7 @@ Extends Vest's enforce with custom validation rules.
 
 #### `rule.dependsOn(resolver)`
 
-Declares direct dependencies on a lazy `enforce` schema rule. The resolver receives a field-reference scope (`$`) and returns one reference or an array of references. Use `$.other` for a sibling field or `$.root.other` for a top-level field. The declaration affects `suite.changed()` planning; ordinary schema validation still runs the rule as before.
+Returns a new rule with a direct dependency declared; the original rule is unchanged. The resolver receives a field-reference scope (`$`) and returns one reference or an array of references. Use `$.other` for a sibling field, `$.root.other` for a top-level field, and `$[FIELD]('name')` (from `n4s/relationships`) for fields named `root`, `parent` or `then`. The declaration affects `suite.changed()` planning; ordinary schema validation runs the rule as before. `dependsOn()` inside a recursive `lazy()` schema throws when the graph is described.
 
 #### `schema.describe()` and `resolveAffected(schema, changed, data)`
 

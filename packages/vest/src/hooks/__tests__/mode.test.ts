@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import wait from 'wait';
 
 import { dummyTest } from '../../testUtils/testDummy';
@@ -201,6 +201,89 @@ describe('mode', () => {
   });
 
   describe('Eager with an empty field name', () => {
+    it('should run an async empty-name test after a different field failed', async () => {
+      const formLevelTest = vi.fn(async () => {
+        await Promise.resolve();
+        throw new Error('form-level');
+      });
+      const suite = create(() => {
+        dummyTest.failing('field_1', 'first-of-field_1');
+        Vest.test('', 'form-level', formLevelTest);
+      });
+
+      const result = suite.run();
+
+      expect(formLevelTest).toHaveBeenCalledTimes(1);
+      expect(result.isPending()).toBe(true);
+
+      await result;
+
+      expect(suite.isPending()).toBe(false);
+      expect(suite.getErrors()).toEqual({
+        field_1: ['first-of-field_1'],
+        '': ['form-level'],
+      });
+    });
+
+    it('should run an empty-name warning and then stop on an empty-name error', () => {
+      const warningTest = vi.fn(() => {
+        Vest.warn();
+        return false;
+      });
+      const errorTest = vi.fn(() => false);
+      const skippedTest = vi.fn(() => false);
+      const suite = create(() => {
+        dummyTest.failing('field_1', 'first-of-field_1');
+        Vest.test('', 'form-level warning', warningTest);
+        Vest.test('', 'form-level error', errorTest);
+        Vest.test('', 'second form-level error', skippedTest);
+      });
+
+      const result = suite.run();
+
+      expect(warningTest).toHaveBeenCalledTimes(1);
+      expect(errorTest).toHaveBeenCalledTimes(1);
+      expect(skippedTest).not.toHaveBeenCalled();
+      expect(result.testCount).toBe(3);
+      expect(result.getWarnings()).toEqual({ '': ['form-level warning'] });
+      expect(result.getErrors()).toEqual({
+        field_1: ['first-of-field_1'],
+        '': ['form-level error'],
+      });
+    });
+
+    it('should reevaluate empty-name tests when failures change between runs', () => {
+      const suite = create((data: { name: boolean; form: boolean }) => {
+        Vest.test('name', 'name error', () => data.name);
+        Vest.test('', 'form-level error', () => data.form);
+      });
+
+      const runs = [
+        {
+          data: { name: false, form: true },
+          errors: { name: ['name error'] },
+        },
+        {
+          data: { name: true, form: false },
+          errors: { '': ['form-level error'] },
+        },
+        {
+          data: { name: false, form: false },
+          errors: { name: ['name error'], '': ['form-level error'] },
+        },
+        { data: { name: true, form: true }, errors: {} },
+      ];
+
+      for (const { data, errors } of runs) {
+        const result = suite.run(data);
+
+        expect(result.testCount).toBe(2);
+        expect(result.getErrors()).toEqual(errors);
+        expect(result.tests[''].valid).toBe(data.form);
+        expect(result.valid).toBe(data.name && data.form);
+      }
+    });
+
     it('should run an empty-name test after a different field failed', () => {
       suite = create(() => {
         dummyTest.failing('field_1', 'first-of-field_1');

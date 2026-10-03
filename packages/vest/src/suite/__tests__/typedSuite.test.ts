@@ -107,4 +107,27 @@ describe('typed methods', () => {
     expect(typeof suite.omitWhen).toBe('function');
     expect(typeof suite.optional).toBe('function');
   });
+
+  it('should accept async tests that resolve with booleans inside skipWhen', async () => {
+    const suite = vest.create<{
+      fields: 'username';
+    }>(() => {
+      vest.test('username', 'Username is required', () => {
+        return true;
+      });
+
+      vest.skipWhen(
+        result => result.hasErrors('username'),
+        () => {
+          vest.test('username', 'Username already exists', async () => {
+            return true;
+          });
+        },
+      );
+    });
+
+    await suite.run({});
+
+    expect(suite.get().isValid('username')).toBe(true);
+  });
 });

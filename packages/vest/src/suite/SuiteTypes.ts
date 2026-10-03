@@ -48,7 +48,7 @@ type SuiteMethods<
 > = {
   dump: CB<TIsolateSuite>;
 
-  get: CB<SuiteResult<F, G, S>>;
+  get: CB<PartialSuiteResult<F, G, S>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
@@ -78,11 +78,12 @@ type FocusedMethods<
   G extends TGroupName,
   T extends CB,
   S extends TSchema,
+  R = PartialSuiteResult<F, G, S>,
 > = {
-  afterEach: CB<FocusedMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
-  focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
-  only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
+  afterEach: CB<FocusedMethods<F, G, T, S, R>, [callback: CB]>;
+  afterField: CB<FocusedMethods<F, G, T, S, R>, [fieldName: F, callback: CB]>;
+  focus: CB<FocusedMethods<F, G, T, S, R>, [config: SuiteModifiers<F, G>]>;
+  only: CB<FocusedMethods<F, G, T, S, R>, [onlyField: FieldExclusion<F>]>;
   changed: CB<
     ChangedMethods<F, G, T, S>,
     [fields?: string | readonly string[]]
@@ -93,7 +94,7 @@ type FocusedMethods<
     ...args: S extends undefined
       ? Parameters<T>
       : [data: Partial<InferSchemaData<S>>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
+  ) => R;
 };
 
 type AfterMethods<
@@ -117,37 +118,39 @@ type AfterMethods<
   ) => SuiteResult<F, G, S>;
 };
 
-type ChangedSuiteResult<
+type PartialSuiteResult<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema,
-> =
-  SuiteResult<F, G, S> extends infer R
-    ? R extends { valid: true; value: InferSchemaOutput<S> }
-      ? Omit<R, 'value'> & { value: Partial<InferSchemaOutput<S>> }
-      : R
-    : never;
+> = SuiteResult<
+  F,
+  G,
+  S extends undefined
+    ? undefined
+    : {
+        '~standard': {
+          types: {
+            input: InferSchemaData<S>;
+            output: PartialSchemaOutput<InferSchemaOutput<S>>;
+          };
+        };
+      }
+>;
+
+// An empty selection produces an empty record. Unlike object schemas,
+// primitive and array outputs cannot represent that state with Partial alone.
+type PartialSchemaOutput<T> = T extends readonly unknown[]
+  ? Partial<T> | Record<never, never>
+  : T extends object
+    ? Partial<T>
+    : T | Record<never, never>;
 
 type ChangedMethods<
   F extends TFieldName,
   G extends TGroupName,
   T extends CB,
   S extends TSchema,
-> = {
-  afterEach: CB<ChangedMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<ChangedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
-  focus: CB<ChangedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
-  only: CB<ChangedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
-  changed: CB<
-    ChangedMethods<F, G, T, S>,
-    [fields?: string | readonly string[]]
-  >;
-  run: (
-    ...args: S extends undefined
-      ? Parameters<T>
-      : [data: Partial<InferSchemaData<S>>, ...args: any[]]
-  ) => ChangedSuiteResult<F, G, S>;
-};
+> = FocusedMethods<F, G, T, S, PartialSuiteResult<F, G, S>>;
 
 /**
  * Modifiers that control which fields and groups are included or excluded

@@ -1,8 +1,13 @@
 /** Opt-in suite.changed() support. */
+import { validateRelationshipFields, resolveAffected } from 'n4s/relationships';
 import {
-  canPickRelationshipSchema,
-  resolveAffected,
-} from 'n4s/exports/relationships';
+  asArray,
+  isFunction,
+  isObject,
+  isPromise,
+  isStringValue,
+  noop,
+} from 'vest-utils';
 
 import {
   installChangedHandler,
@@ -15,7 +20,6 @@ import {
 } from '../suite/useCreateSuiteRunner';
 
 const NO_FIELD = '\0vest.changed.none';
-const UNSAFE = new Set(['__proto__', 'constructor', 'prototype']);
 
 installChangedHandler(planRelationshipRun);
 
@@ -28,9 +32,31 @@ function planRelationshipRun(
   const selection = selectFields(schema, fields, data, modifiers);
   const selected = selection.focus.length ? selection.focus : [NO_FIELD];
   if (!schema) return { only: selected, schemaFocus: [], evaluated: null };
-  if (!canPickRelationshipSchema(schema))
+  if (!selection.focus.length) {
+    return {
+      only: selected,
+      schemaFocus: [],
+      schemaResults: [],
+      value: {},
+      evaluated: () => false,
+    };
+  }
+  const validation = validateRelationshipFields(
+    schema,
+    selection.schemaKeys,
+    data,
+  );
+  if (!validation)
     return fullSchemaPlan(schema, data, selected, selection.skip);
-  return pickedSchemaPlan(schema, data, selected, selection);
+  const { results, value, evaluatedKeys } = validation;
+  const checked = evaluatedKeys;
+  return {
+    only: selected,
+    schemaFocus: failurePaths(results, selection.skip),
+    schemaResults: results,
+    value,
+    evaluated: path => isEvaluated(path, checked, selection.skip),
+  };
 }
 
 type Selection = { focus: string[]; schemaKeys: string[]; skip: Set<string> };
@@ -43,24 +69,26 @@ function selectFields(
 ): Selection {
   // The changed names always run, even when they are not schema paths.
   const names = fieldList(fields).filter(Boolean);
-  const skip = new Set(fieldList(modifiers.skip));
-  const affected = (
-    isN4sSchema(schema) ? resolveAffected(schema, names, data) : []
-  ).filter(path => !isSkipped(path.join('.'), skip));
-  const named = [...names, ...fieldList(modifiers.only)].filter(
-    field => !isSkipped(field, skip),
-  );
-  return {
-    focus: [...new Set([...affected.map(path => path.join('.')), ...named])],
+  const skip = new Set(fieldList(modifiers.skip).map(normalizeName));
+  const focus = new Set<string>();
+  const schemaKeys = new Set<string>();
+  for (const path of affectedPaths(schema, names, data)) {
+    const name = path.join('.');
+    if (isSkipped(name, skip)) continue;
+    focus.add(name);
     // Structured paths keep a literal dotted key whole.
-    schemaKeys: [
-      ...new Set([
-        ...affected.map(path => String(path[0])),
-        ...named.map(topLevelKey),
-      ]),
-    ],
-    skip,
-  };
+    schemaKeys.add(String(path[0]));
+  }
+  for (const name of [...names, ...fieldList(modifiers.only)]) {
+    if (isSkipped(name, skip)) continue;
+    focus.add(name);
+    schemaKeys.add(topLevelKey(name));
+  }
+  return { focus: [...focus], schemaKeys: [...schemaKeys], skip };
+}
+
+function affectedPaths(schema: unknown, names: string[], data: unknown) {
+  return isN4sSchema(schema) ? resolveAffected(schema, names, data) : [];
 }
 
 function topLevelKey(field: string): string {
@@ -69,9 +97,24 @@ function topLevelKey(field: string): string {
 
 function isSkipped(name: string, skip: Set<string>): boolean {
   if (skip.size === 0) return false;
+  const normalized = normalizeName(name);
   return [...skip].some(
-    field => name === field || name.startsWith(`${field}.`),
+    field => normalized === field || normalized.startsWith(`${field}.`),
   );
+}
+
+function normalizeName(name: string): string {
+  return name.replace(/\[(\d+)\]/g, '.$1');
+}
+
+function isEvaluated(
+  path: readonly string[] | undefined,
+  checked: ReadonlySet<string>,
+  skip: Set<string>,
+): boolean {
+  return path === undefined
+    ? checked.size > 0
+    : checked.has(path[0]) && !isSkipped(path.join('.'), skip);
 }
 
 function fullSchemaPlan(
@@ -80,42 +123,61 @@ function fullSchemaPlan(
   only: string[],
   skip: Set<string>,
 ): ChangedPlan {
-  const schemaResults = runSchemaWithParse(schema, data, {});
+  const executable = schema as { parse?: unknown; run?: unknown };
+  if (!isFunction(executable.parse) && !isFunction(executable.run)) {
+    throw new TypeError(
+      'suite.changed() needs a synchronous schema with parse() or run()',
+    );
+  }
+  const schemaResults = runSchemaWithParse(
+    synchronousSchema(schema, executable),
+    data,
+    {},
+  );
+  const asyncResults = schemaResults.filter(result => isPromise(result.type));
+  if (asyncResults.length) {
+    asyncResults.forEach(
+      result => void Promise.resolve(result.type).catch(noop),
+    );
+    throw new TypeError(
+      'suite.changed() does not support asynchronous schema parsing',
+    );
+  }
   return {
     only,
     schemaFocus: failurePaths(schemaResults, skip),
     schemaResults,
-    evaluated: null,
+    evaluated: skip.size
+      ? path => !isSkipped(path?.join('.') ?? ROOT_SCHEMA_FIELD, skip)
+      : null,
   };
 }
 
-function pickedSchemaPlan(
-  schema: { __schema: Record<string, unknown> },
-  data: unknown,
-  selected: string[],
-  { schemaKeys: keys, skip }: Selection,
-): ChangedPlan {
-  if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-    return fullSchemaPlan(schema, data, selected, skip);
-  }
-  if (Object.keys(data).some(key => UNSAFE.has(key))) {
-    return fullSchemaPlan(schema, data, selected, skip);
-  }
-  const schemaKeys = new Set(Object.keys(schema.__schema));
-  const validated = keys.filter(key => schemaKeys.has(key));
-  const { results, value } = runSelectedFields(
-    schema.__schema,
-    data,
-    validated,
-  );
-  const checked = new Set(validated);
-  return {
-    only: selected,
-    schemaFocus: failurePaths(results, skip),
-    schemaResults: results,
-    value,
-    evaluated: path =>
-      path === undefined ? validated.length > 0 : checked.has(path[0]),
+function synchronousSchema(
+  schema: unknown,
+  executable: { parse?: unknown; run?: unknown },
+) {
+  return isN4sSchema(schema)
+    ? schema
+    : {
+        parse: synchronousMethod(schema, executable.parse),
+        run: synchronousMethod(schema, executable.run),
+      };
+}
+
+function synchronousMethod(receiver: unknown, method: unknown) {
+  if (!isFunction(method)) return;
+  return (data: unknown) => {
+    const result = method.call(receiver, data);
+    if (isPromise(result)) {
+      void Promise.resolve(result).catch(noop);
+      // Parse-validation TypeErrors trigger run() fallback. This setup error
+      // must propagate before the runner can mistake a promise for parsed data.
+      throw new Error(
+        'suite.changed() does not support asynchronous schema parsing',
+      );
+    }
+    return result;
   };
 }
 
@@ -126,45 +188,8 @@ function failurePaths(results: SchemaRunResult[], skip: Set<string>): string[] {
   return [...new Set(paths)].filter(path => !isSkipped(path, skip));
 }
 
-function runSelectedFields(
-  rules: Record<string, unknown>,
-  data: object,
-  keys: string[],
-): { results: SchemaRunResult[]; value?: Record<string, unknown> } {
-  const failures: SchemaRunResult[] = [];
-  // The callback sees the input with validated fields parsed, like only().
-  const input = copyInput(data);
-  const value: Record<string, unknown> = {};
-  for (const key of keys) {
-    const raw = Object.getOwnPropertyDescriptor(data, key)?.value;
-    const rule = rules[key] as { run: (input: unknown) => SchemaRunResult };
-    const result = rule.run(raw);
-    if (result.pass) input[key] = value[key] = result.type;
-    else failures.push(failureAt(key, result));
-  }
-  if (failures.length) return { results: failures };
-  // The result value holds only what this run validated.
-  return { results: [{ pass: true, type: input }], value };
-}
-
-function failureAt(key: string, result: SchemaRunResult): SchemaRunResult {
-  return { ...result, path: [key, ...(result.path ?? [])] };
-}
-
-function copyInput(data: object): Record<string, unknown> {
-  const output: Record<string, unknown> = {};
-  for (const [key, descriptor] of Object.entries(
-    Object.getOwnPropertyDescriptors(data),
-  )) {
-    if (descriptor.enumerable && 'value' in descriptor && !UNSAFE.has(key)) {
-      output[key] = descriptor.value;
-    }
-  }
-  return output;
-}
-
 function isN4sSchema(value: unknown): value is object {
-  if (typeof value !== 'object' || value === null) return false;
+  if (!isObject(value) && !isFunction(value)) return false;
   return (
     (value as { '~standard'?: { vendor?: string } })['~standard']?.vendor ===
     'n4s'
@@ -172,8 +197,5 @@ function isN4sSchema(value: unknown): value is object {
 }
 
 function fieldList(value: unknown): string[] {
-  if (typeof value === 'string') return [value];
-  return Array.isArray(value)
-    ? value.filter((field): field is string => typeof field === 'string')
-    : [];
+  return value === undefined ? [] : asArray(value).filter(isStringValue);
 }

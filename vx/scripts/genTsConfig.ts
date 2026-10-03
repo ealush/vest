@@ -105,6 +105,7 @@ function rootTsConfigTemplate(): TsConfig {
         anyone: ['./packages/anyone/src'],
         context: ['./packages/context/src'],
         n4s: ['./packages/n4s/src'],
+        'n4s/relationships': ['./packages/n4s/src/exports/relationships.ts'],
         'n4s/*': ['./packages/n4s/src/*'],
         vast: ['./packages/vast/src'],
         vest: ['./packages/vest/src'],

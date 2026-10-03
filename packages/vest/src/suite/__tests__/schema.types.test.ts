@@ -48,7 +48,7 @@ describe('schema driven suite types', () => {
     void (0 as unknown as AssertTrue<
       IsEqual<
         ReturnType<typeof suite.get>['types']['output'],
-        { name: string; age: number }
+        Partial<{ name: string; age: number }>
       >
     >);
 
@@ -126,7 +126,7 @@ describe('schema driven suite types', () => {
     void (0 as unknown as AssertTrue<
       IsEqual<
         ReturnType<typeof looseSuite.get>['types']['output'],
-        Simplify<{ title: string } & Record<string, unknown>>
+        Partial<Simplify<{ title: string } & Record<string, unknown>>>
       >
     >);
 
@@ -885,7 +885,7 @@ describe('lazy schema in suite types', () => {
     void (0 as unknown as AssertTrue<
       IsEqual<
         ReturnType<typeof suite.get>['types']['output'],
-        { name: string; metadata: { key: string; value: number } }
+        Partial<{ name: string; metadata: { key: string; value: number } }>
       >
     >);
 

@@ -24,3 +24,16 @@ it('keeps an empty suite without a schema invalid', () => {
   const result = create(() => {}).run();
   expect(result.valid).toBe(false);
 });
+
+it('does not treat a focused schema-only run as valid', () => {
+  const schema = enforce.shape({
+    a: enforce.isString(),
+    b: enforce.isString(),
+  });
+  const result = create(() => {}, schema)
+    .only('a')
+    .run({ a: 'ok', b: 1 } as never);
+
+  expect(result.valid).toBe(false);
+  expect(result.isValid()).toBe(false);
+});

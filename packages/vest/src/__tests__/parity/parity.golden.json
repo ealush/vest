@@ -2826,13 +2826,8 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": true,
-      "value": {
-        "profile": {
-          "name": "ok"
-        },
-        "other": "x"
-      },
+      "valid": false,
+      "issues": [],
       "types": {
         "input": {
           "profile": {
@@ -2847,8 +2842,9 @@
           "other": "x"
         }
       },
-      "isValid": true,
-      "isPending": false
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
     }
   ],
   "schema: only() after a failing full run": [

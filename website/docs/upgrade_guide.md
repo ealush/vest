@@ -33,6 +33,10 @@ Rules returned by `compose()` now also support `.validate()`, `.parse()`, and th
 
 The `n4s` package now includes `@types/validator` as a regular dependency because its emitted TypeScript declarations import types from `validator/es/lib`. Consumers receive those types when installing `n4s`.
 
+## Schema errors outside focused runs
+
+Focused runs retain schema errors outside their focus. After a failing full run, `only()` on another field still reports the failing field and keeps `valid: false` until that error is cleared. Repeated parent skips preserve nested schema failures.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

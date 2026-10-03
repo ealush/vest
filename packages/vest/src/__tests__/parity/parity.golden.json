@@ -2573,14 +2573,28 @@
     },
     {
       "label": "",
-      "errorCount": 0,
+      "errorCount": 1,
       "warnCount": 0,
-      "testCount": 0,
+      "testCount": 1,
       "pendingCount": 0,
-      "errors": [],
+      "errors": [
+        {
+          "fieldName": "b"
+        }
+      ],
       "warnings": [],
       "groups": {},
-      "tests": {},
+      "tests": {
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
+        }
+      },
       "valid": false,
       "issues": [],
       "types": {
@@ -2876,11 +2890,15 @@
     },
     {
       "label": "only a",
-      "errorCount": 0,
+      "errorCount": 1,
       "warnCount": 0,
-      "testCount": 1,
+      "testCount": 2,
       "pendingCount": 0,
-      "errors": [],
+      "errors": [
+        {
+          "fieldName": "b"
+        }
+      ],
       "warnings": [],
       "groups": {},
       "tests": {
@@ -2892,13 +2910,19 @@
           "errors": [],
           "warnings": [],
           "valid": true
+        },
+        "b": {
+          "errorCount": 1,
+          "warnCount": 0,
+          "testCount": 1,
+          "pendingCount": 0,
+          "errors": [],
+          "warnings": [],
+          "valid": false
         }
       },
-      "valid": true,
-      "value": {
-        "a": "x",
-        "b": 1
-      },
+      "valid": false,
+      "issues": [],
       "types": {
         "input": {
           "a": "x",
@@ -2909,8 +2933,9 @@
           "b": 1
         }
       },
-      "isValid": true,
-      "isPending": false
+      "isValid": false,
+      "isPending": false,
+      "value": "<undefined>"
     },
     {
       "label": "only b",

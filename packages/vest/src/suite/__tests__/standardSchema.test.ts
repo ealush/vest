@@ -26,6 +26,30 @@ describe('StandardSchemaV1 Adherence', () => {
   });
 
   describe('validate function', () => {
+    it('should report a form-level issue after a different field fails in eager mode', async () => {
+      const suite = create(() => {
+        test('name', 'We need a name.', () => {
+          enforce('').isNotBlank();
+        });
+
+        test('', 'Form-level error.', () => {
+          enforce(false).isTruthy();
+        });
+      });
+
+      for (let run = 0; run < 3; run++) {
+        const result = await suite['~standard'].validate({});
+
+        expect(result).toEqual({
+          issues: [
+            { message: 'We need a name.', path: ['name'] },
+            { message: 'Form-level error.' },
+          ],
+        });
+        expect(result.issues?.[1].path).toBeUndefined();
+      }
+    });
+
     it('should return a Standard Schema result', async () => {
       const suite = create(() => {});
       const result = await suite['~standard'].validate({});

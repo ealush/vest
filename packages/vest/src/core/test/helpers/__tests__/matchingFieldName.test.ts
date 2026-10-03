@@ -30,4 +30,10 @@ describe('nonMatchingFieldName', () => {
     );
     expect(nonMatchingFieldName({ fieldName: 'f1' }).unwrap()).toBe(false);
   });
+
+  it('should treat an empty field name as a field name', () => {
+    expect(nonMatchingFieldName({ fieldName: 'f1' }, '').unwrap()).toBe(true);
+    expect(nonMatchingFieldName({ fieldName: '' }, 'f1').unwrap()).toBe(true);
+    expect(nonMatchingFieldName({ fieldName: '' }, '').unwrap()).toBe(false);
+  });
 });

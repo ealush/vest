@@ -209,3 +209,94 @@ it('selects many direct dependents without losing fields', () => {
   expect(performance.now() - start).toBeLessThan(1000);
   expect(result.run.focus?.only).toHaveLength(2001);
 });
+
+it('runs a changed field that has user tests but no schema path', () => {
+  const calls: string[] = [];
+  const suite = create(
+    () => {
+      test('nickname', () => void calls.push('nickname'));
+      test('password', () => void calls.push('password'));
+    },
+    enforce.loose({ password: enforce.isString() }),
+  );
+  suite.changed('nickname').run({ password: 'x', nickname: 'n' } as never);
+  expect(calls).toEqual(['nickname']);
+});
+
+it('reports unrelated whole-schema failures without running their user tests', () => {
+  const calls: string[] = [];
+  const suite = create(
+    () => {
+      test('a', () => void calls.push('a'));
+      test('b', () => void calls.push('b'));
+    },
+    enforce.partial({ a: enforce.isString(), b: enforce.isString() }),
+  );
+  const result = suite.changed('a').run({ a: 'x', b: 5 } as never);
+  expect(calls).toEqual(['a']);
+  expect(result.hasErrors('b')).toBe(true);
+});
+
+it('reports a failing array sibling without running its user test', () => {
+  const calls: string[] = [];
+  const schema = enforce.shape({
+    rows: enforce.isArrayOf(
+      enforce.shape({
+        a: enforce.isString(),
+        b: enforce.isString().dependsOn($ => $.a),
+      }),
+    ),
+  });
+  const suite = create((data: any) => {
+    data.rows.forEach((_: unknown, i: number) => {
+      test(`rows.${i}.a`, () => void calls.push(`rows.${i}.a`));
+      test(`rows.${i}.b`, () => void calls.push(`rows.${i}.b`));
+    });
+  }, schema);
+  const result = suite.changed('rows.0.a').run({
+    rows: [
+      { a: 'x', b: 'y' },
+      { a: 'x', b: 1 },
+    ],
+  } as never);
+  expect(calls).toEqual(['rows.0.a', 'rows.0.b']);
+  expect(result.hasErrors('rows.1.b' as never)).toBe(true);
+});
+
+it('does not report a skipped schema failure', () => {
+  const suite = create(
+    () => {},
+    enforce.partial({ a: enforce.isString(), b: enforce.isString() }),
+  );
+  const result = suite
+    .focus({ skip: 'b' })
+    .changed('a')
+    .run({ a: 'x', b: 5 } as never);
+  expect(result.hasErrors('b')).toBe(false);
+});
+
+it('returns only the validated fields as the parsed value', () => {
+  const suite = create(
+    () => {
+      test('name', () => true);
+      test('other', () => true);
+    },
+    enforce.shape({
+      name: enforce.isString().trim(),
+      other: enforce.isString().trim(),
+    }),
+  );
+  suite.run({ name: ' a ', other: ' b ' });
+  const result = suite.changed('name').run({ name: ' c ', other: ' b ' });
+  expect(result.valid).toBe(true);
+  expect(result.value).toEqual({ name: 'c' });
+});
+
+it('never makes a partially validated schema-only suite valid', () => {
+  const suite = create(
+    () => {},
+    enforce.shape({ a: enforce.isString(), b: enforce.isString() }),
+  );
+  expect(suite.changed('a').run({ a: 'ok', b: 1 } as never).valid).toBe(false);
+  expect(suite.changed([]).run({ a: 1, b: 1 } as never).valid).toBe(false);
+});

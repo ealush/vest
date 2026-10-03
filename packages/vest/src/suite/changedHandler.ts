@@ -1,6 +1,11 @@
 /** The opt-in relationships entry installs the planner used by changed(). */
 export type ChangedPlan = {
+  /** Fields whose user tests run. */
   only: string[];
+  /** Schema failure fields to report without running their user tests. */
+  schemaFocus: string[];
+  /** Parsed output of the validated fields, when it differs from schemaResults. */
+  value?: unknown;
   schemaResults?: Array<{
     pass: boolean;
     message?: string;
@@ -18,7 +23,9 @@ type Handler = (
 ) => ChangedPlan;
 
 export let planChanged: Handler = () => {
-  throw new Error("suite.changed() needs: import 'vest/relationships'");
+  throw new Error(
+    "suite.changed() needs: import 'vest/relationships' (same module format as vest)",
+  );
 };
 
 export function installChangedHandler(value: Handler): void {

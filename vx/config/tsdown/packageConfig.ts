@@ -48,6 +48,7 @@ export function createPackageConfig({
       resolver: 'oxc',
     },
     entry: [mainEntry, vxPath.packageSrcExports(packageName, '*.ts')],
+    external: [packageName],
     exports: {
       all: true,
       devExports,
@@ -86,6 +87,20 @@ export function createPackageConfig({
       },
     },
     name: packageName,
+    // Keep n4s validation and its helpers together. The opt-in entry may use
+    // them, but normal CJS validators must not repeatedly cross chunk getters.
+    outputOptions: (options, _format, { cjsDts }) => {
+      if (packageName !== 'n4s' || cjsDts) return;
+      options.advancedChunks = {
+        groups: [
+          {
+            name: 'n4s-core',
+            // Declaration modules share the build graph but need separate chunks.
+            test: /[\\/]n4s[\\/]src[\\/](?!(?:exports[\\/]|n4s\.ts$|relationship))(?!.*\.d\.ts$).*\.ts$/,
+          },
+        ],
+      };
+    },
     outDir: dir.DIST,
     platform: 'node',
     shims: true,

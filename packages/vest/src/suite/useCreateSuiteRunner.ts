@@ -177,7 +177,7 @@ export function useCreateSuiteRunner<
         const useResolver = () => {
           const result = useCreateSuiteResult<F, G, S>(
             schema,
-            value ?? callbackInput,
+            value === undefined ? callbackInput : parsedData,
             runData,
             runTime,
             parsedData,

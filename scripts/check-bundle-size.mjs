@@ -77,9 +77,12 @@ function workspaceSourcePlugin() {
       pluginBuild.onResolve({ filter }, args => {
         const [, name, subpath = ''] = args.path.match(filter);
         const sourceDir = path.join(ROOT, paths[name][0]);
-        const entry = subpath
-          ? subpathEntry(sourceDir, subpath.slice(1))
-          : path.join(sourceDir, `${name}.ts`);
+        const entry =
+          path.extname(sourceDir) === '.ts'
+            ? sourceDir
+            : subpath
+              ? subpathEntry(sourceDir, subpath.slice(1))
+              : path.join(sourceDir, `${name}.ts`);
         return { path: entry };
       });
     },

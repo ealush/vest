@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 import {
   transformResult,
@@ -66,6 +66,15 @@ describe('ruleResult helpers', () => {
   });
 
   describe('validateResult', () => {
+    it('formats diagnostics only for malformed rule results', () => {
+      const toJSON = vi.fn(() => 'diagnostic');
+      validateResult({ pass: true, toJSON });
+      expect(toJSON).not.toHaveBeenCalled();
+      expect(() => validateResult({ pass: 'bad', toJSON })).toThrow(
+        'Incorrect return value for rule: "diagnostic"',
+      );
+      expect(toJSON).toHaveBeenCalledOnce();
+    });
     it('accepts boolean and object with boolean pass', () => {
       expect(() => validateResult(true)).not.toThrow();
       expect(() => validateResult({ pass: false })).not.toThrow();

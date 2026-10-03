@@ -37,19 +37,6 @@ export function describeSchema(schema: object): Description {
   };
 }
 
-/** Whether a top-level schema can be safely validated one key at a time. */
-export function canPickRelationshipSchema(schema: unknown): schema is {
-  __schema: Record<string, unknown>;
-} {
-  if (!isNode(schema)) return false;
-  const { kind, chained } = meta(schema);
-  const childSchema = Object.getOwnPropertyDescriptor(
-    schema,
-    '__schema',
-  )?.value;
-  return isShapeKind(kind) && !chained && isNode(childSchema);
-}
-
 function buildGraph(root: object): Description {
   const context: GraphContext = {
     checked: new Map<string, Walk>(),

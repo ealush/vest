@@ -4,6 +4,7 @@ exports[`suite.focus: only > focus return value > should be the rest of the suit
 {
   "afterEach": [Function],
   "afterField": [Function],
+  "changed": [Function],
   "dump": [Function],
   "focus": [Function],
   "get": [Function],

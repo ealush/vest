@@ -31,6 +31,11 @@ export type Suite<
 > = SuiteMethods<F, G, T, S> &
   StandardSchemaV1<InferSchemaData<S>, InferSchemaOutput<S>>;
 
+export type SuiteRuntimeModifiers<
+  F extends TFieldName,
+  G extends TGroupName,
+> = SuiteModifiers<F, G> & { changed?: readonly string[] };
+
 type SuiteMethods<
   F extends TFieldName,
   G extends TGroupName,
@@ -74,6 +79,10 @@ type FocusedMethods<
   afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
+  changed: CB<
+    ChangedMethods<F, G, T, S>,
+    [fields?: string | readonly string[]]
+  >;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
   run: (
@@ -93,11 +102,47 @@ type AfterMethods<
   afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
+  changed: CB<
+    ChangedMethods<F, G, T, S>,
+    [fields?: string | readonly string[]]
+  >;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
   ) => SuiteResult<F, G, S>;
+};
+
+type ChangedSuiteResult<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+> =
+  SuiteResult<F, G, S> extends infer R
+    ? R extends { valid: true; value: InferSchemaOutput<S> }
+      ? Omit<R, 'value'> & { value: Partial<InferSchemaOutput<S>> }
+      : R
+    : never;
+
+type ChangedMethods<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB,
+  S extends TSchema,
+> = {
+  afterEach: CB<ChangedMethods<F, G, T, S>, [callback: CB]>;
+  afterField: CB<ChangedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
+  focus: CB<ChangedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
+  only: CB<ChangedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
+  changed: CB<
+    ChangedMethods<F, G, T, S>,
+    [fields?: string | readonly string[]]
+  >;
+  run: (
+    ...args: S extends undefined
+      ? Parameters<T>
+      : [data: Partial<InferSchemaData<S>>, ...args: any[]]
+  ) => ChangedSuiteResult<F, G, S>;
 };
 
 /**

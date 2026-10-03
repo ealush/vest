@@ -27,7 +27,12 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
-import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
+import {
+  SuiteModifiers,
+  SuiteRuntimeModifiers,
+  SuiteCallbackWithSchema,
+} from './SuiteTypes';
+import { planChanged } from './changedHandler';
 import {
   RetainedSchemaFailure,
   ROOT_SCHEMA_FIELD,
@@ -35,7 +40,7 @@ import {
   useRetainedSchemaFailures,
 } from './retainedSchemaFailures';
 
-type SchemaRunResult = {
+export type SchemaRunResult = {
   readonly message?: string;
   readonly pass: boolean;
   readonly path?: readonly string[];
@@ -111,7 +116,7 @@ export function useCreateSuiteRunner<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: SuiteRuntimeModifiers<F, G>,
   schema?: S,
 ) {
   const transformedModifiers = useTransformedModifiers<F, G>(modifiers);
@@ -138,9 +143,11 @@ export function useCreateSuiteRunner<
     };
 
     const schemaInput = args[0];
-    const schemaRunResult = shouldRunSchema(schema)
-      ? runSchemaWithParse(schema, schemaInput, transformedModifiers)
-      : undefined;
+    const { runModifiers, schemaRunResult, evaluated } = prepareRun(
+      schema,
+      schemaInput,
+      transformedModifiers,
+    );
 
     const parsedDataChunk = getParsedDataChunk(schemaRunResult);
 
@@ -151,9 +158,7 @@ export function useCreateSuiteRunner<
     // Schema failures outside this run's focus keep their previous verdict,
     // like user tests that focus leaves out. Read before the new root exists.
     const retainedSchemaFailures = shouldRunSchema(schema)
-      ? useRetainedSchemaFailures(
-          schemaFocusOf(transformedModifiers, isN4sSchema(schema)),
-        )
+      ? useRetainedSchemaFailures(evaluated)
       : [];
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
@@ -164,7 +169,7 @@ export function useCreateSuiteRunner<
       {
         suiteParams: callbackArgs,
         schema,
-        modifiers: transformedModifiers,
+        modifiers: runModifiers,
       },
       () => {
         useEmit('SUITE_RUN_STARTED');
@@ -176,7 +181,7 @@ export function useCreateSuiteRunner<
             runData,
             runTime,
             parsedData,
-            snapshotFocus(transformedModifiers),
+            snapshotFocus(runModifiers),
           );
 
           if (!result.isPending()) {
@@ -189,7 +194,7 @@ export function useCreateSuiteRunner<
         return IsolateSuite(
           useRunSuiteCallback<F, T, S, G>({
             args: callbackArgs,
-            modifiers: transformedModifiers,
+            modifiers: runModifiers,
             retainedSchemaFailures,
             schema,
             schemaRunResult,
@@ -215,6 +220,32 @@ export function useCreateSuiteRunner<
     );
     if (!suiteResult.isPending()) forgetPendingRun();
     return boundResult;
+  };
+}
+
+function prepareRun<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+>(
+  schema: S | undefined,
+  data: unknown,
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
+) {
+  if (modifiers.changed === undefined) {
+    return {
+      runModifiers: modifiers,
+      schemaRunResult: shouldRunSchema(schema)
+        ? runSchemaWithParse(schema, data, modifiers)
+        : undefined,
+      evaluated: schemaFocusOf(modifiers, isN4sSchema(schema)),
+    };
+  }
+  const plan = planChanged(schema, modifiers.changed, data, modifiers);
+  return {
+    runModifiers: { ...modifiers, only: plan.only as F[] },
+    schemaRunResult: plan.schemaResults,
+    evaluated: plan.evaluated,
   };
 }
 
@@ -314,7 +345,7 @@ function useRunSuiteCallback<
  * Normalizes user-provided modifiers into deterministic sets for O(1) membership checks.
  */
 function useTransformedModifiers<F extends TFieldName, G extends TGroupName>(
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: SuiteRuntimeModifiers<F, G>,
 ) {
   return {
     ...modifiers,
@@ -428,7 +459,7 @@ function tryParseSchema(
  * 2) if parse succeeds, treat it as the authoritative validation output
  * 3) on expected parse validation failures, fallback to run(raw)
  */
-function runSchemaWithParse(
+export function runSchemaWithParse(
   schema: any,
   data: unknown,
   modifiers: { only?: unknown; skip?: unknown },

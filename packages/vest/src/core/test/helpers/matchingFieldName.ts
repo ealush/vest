@@ -8,7 +8,8 @@ export function nonMatchingFieldName(
   fieldName?: Maybe<TFieldName>,
 ): Result<boolean> {
   return makeResult.Ok(
-    !!fieldName && !matchingFieldName(WithFieldName, fieldName).unwrap(),
+    isNotNullish(fieldName) &&
+      !matchingFieldName(WithFieldName, fieldName).unwrap(),
   );
 }
 

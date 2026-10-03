@@ -1,3 +1,5 @@
+import { invariant, isFunction } from 'vest-utils';
+
 import { extendEager } from './eager';
 import { ctx } from './enforceContext';
 import { addToChain, registerLazyRule } from './rules/genRuleChain';
@@ -43,6 +45,9 @@ export function extendEnforce(
   enforce: any,
   rules: Record<string, (...args: any[]) => any>,
 ) {
+  // Validate every rule before registering any, so a bad entry never leaves
+  // enforce partially extended.
+  assertCallableRules(rules);
   extendEager(rules);
 
   Object.keys(rules).forEach(ruleName => {
@@ -62,4 +67,14 @@ export function extendEnforce(
           ruleWrapper(value, ...args),
     );
   });
+}
+
+function assertCallableRules(rules: Record<string, unknown>): void {
+  for (const ruleName of Object.keys(rules)) {
+    const rule = rules[ruleName];
+    invariant(
+      isFunction(rule),
+      `enforce.extend: rule "${ruleName}" must be a function, received ${typeof rule}`,
+    );
+  }
 }

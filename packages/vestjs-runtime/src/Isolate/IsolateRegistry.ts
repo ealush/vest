@@ -1,4 +1,4 @@
-import { Nullable, isEmptySet, isNotEmptySet } from 'vest-utils';
+import { Nullable, isEmptySet, isNotEmptySet, isNullish } from 'vest-utils';
 
 import { useAvailableRoot } from '../VestRuntime';
 import { TIsolate } from './Isolate';
@@ -47,7 +47,9 @@ export function useGetFromRegistry(
 
   const index = useEnsureRegistryIndex(root, category);
 
-  if (key) {
+  // An empty string is a valid key (a form-level test), so only a missing key
+  // falls through to "all keys".
+  if (!isNullish(key)) {
     return index.get(key) ?? new Set();
   }
 

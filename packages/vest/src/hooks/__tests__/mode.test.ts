@@ -285,7 +285,7 @@ describe('mode', () => {
     });
 
     it('should run an empty-name test after a different field failed', () => {
-      suite = create(() => {
+      const suite = create(() => {
         dummyTest.failing('field_1', 'first-of-field_1');
         dummyTest.failing('', 'form-level');
       });
@@ -300,7 +300,7 @@ describe('mode', () => {
     });
 
     it('should stop after the first failing empty-name test', () => {
-      suite = create(() => {
+      const suite = create(() => {
         dummyTest.failing('', 'first-form-level');
         dummyTest.failing('', 'second-form-level'); // Should not run
         dummyTest.failing('field_1', 'first-of-field_1');

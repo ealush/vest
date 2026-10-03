@@ -128,12 +128,12 @@ Shorthand for `suite.focus({ only: fieldName })`. Restricts the next run to the 
 
 After `import 'vest/relationships'`, prepares a focused run for the named fields and their direct schema dependents. Call `.run(data)` on the returned suite.
 
-- `fields`: `string | readonly string[]`; `changed([])` runs no fields, while `changed(undefined)` clears this focus.
-- `only()` adds explicit fields and `skip` excludes fields from the affected set.
+- `fields`: `string | readonly string[]`; `changed([])` selects no fields itself, while `changed(undefined)` clears this focus. The suite callback and explicit inclusion hooks keep their ordinary behavior.
+- `only()` adds explicit fields and `skip` excludes fields and their descendants from the affected set. Numeric bracket paths are normalized for skip comparisons.
 - Schema validation checks affected top-level fields; nested member selection does not yet narrow schema execution.
-- Test names should match data paths. The named fields always run, even when they are not schema fields.
+- Use canonical dotted data paths for dependent test names. Explicitly named fields run unless skipped, even when they are not schema fields. Dependencies on a container also respond to changes in its descendants.
 - Schema failures outside the affected names are reported without running those fields' user tests.
-- A successful changed result's `value` contains only the validated fields and is typed as a partial schema output. Its `valid` does not cover unchecked fields, so run the full suite before submitting. Await the result when tests are async.
+- A successful changed result's `value` contains only the validated fields and is typed as a partial schema output. Observing the current state through `suite.get()` also gives a partial output type. Its `valid` does not cover unchecked fields, so run the full suite before submitting. Await the result when tests are async.
 - Without the opt-in import, the first changed run throws a setup error.
 - [Read the relationships guide](./guides/schema-relationships.md).
 

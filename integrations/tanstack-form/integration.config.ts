@@ -18,11 +18,12 @@ export default {
     example: {
       component: 'TanStackFormIntegration',
       description:
-        'Edit name or email, then inspect the separate relationship-aware password adapter in the file tabs.',
+        'Edit name or email, then change the password and see its confirmation revalidate through the relationship adapter.',
       files: [
         'DemoApp.tsx',
         'suite.ts',
         'relationshipAdapter.ts',
+        'PasswordRelationshipDemo.tsx',
         'styles.css',
       ],
       sourceExport: 'tanStackFormFiles',
@@ -33,7 +34,7 @@ export default {
       'TanStack Form owns field state while an instance-owned Vest suite provides relationship-aware change validation and Standard Schema submission validation.',
   },
   id: 'tanstack-form',
-  lastVerified: '2026-10-03',
+  lastVerified: '2026-10-04',
   limitations: [
     "TanStack Form's generic Standard Schema submission validation does not expose Vest's focused execution or retained state; the field validators use the Suite Object API directly.",
     'TanStack Form validates Standard Schema output but does not forward transformed output to the submit callback.',

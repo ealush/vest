@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 
 import { createRegistrationIntegration } from './suite';
+import { PasswordRelationshipDemo } from './PasswordRelationshipDemo';
 import './styles.css';
 
 function errorMessage(error: unknown) {
@@ -91,6 +92,7 @@ export default function DemoApp() {
         <button type="submit">Submit</button>
       </form>
       {submitted && <pre>{submitted}</pre>}
+      <PasswordRelationshipDemo />
     </main>
   );
 }

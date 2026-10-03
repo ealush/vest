@@ -1,6 +1,7 @@
 import { ctx } from '../../enforceContext';
 import { RuleInstance } from '../../utils/RuleInstance';
 import { RuleRunReturn } from '../../utils/RuleRunReturn';
+import { registerRule } from '../../ruleMeta';
 import { addToChain } from '../genRuleChain';
 
 export type LazyRuleInstance<T> = RuleInstance<T, [T]>;
@@ -41,8 +42,10 @@ export function lazy<T>(
     return cached;
   };
 
-  return addToChain<LazyRuleInstance<T>>({}, (value: any) => {
+  const rule = addToChain<LazyRuleInstance<T>>({}, (value: any) => {
     const result = ctx.run({ value }, () => resolve().run(value));
     return RuleRunReturn.create(result, value);
   });
+  registerRule(rule, 'lazy', resolve);
+  return rule;
 }

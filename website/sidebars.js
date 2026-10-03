@@ -36,6 +36,7 @@ const sidebars = {
         'guides/async-validation-race-conditions',
         'guides/focused-validation',
         'guides/dependent-fields',
+        'guides/schema-relationships',
         'guides/multi-step-workflows',
         'guides/conditional-sections',
         'guides/dynamic-lists',

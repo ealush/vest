@@ -1,7 +1,10 @@
 import { expect, it } from 'vitest';
-import { FormApi } from '@tanstack/react-form';
+import { FieldApi, FormApi } from '@tanstack/react-form';
 
-import { createPasswordRelationshipAdapter } from './relationshipAdapter';
+import {
+  createPasswordChangeValidator,
+  createPasswordRelationshipAdapter,
+} from './relationshipAdapter';
 
 function deferred() {
   let release: () => void = () => {};
@@ -88,4 +91,80 @@ it('keeps each adapter instance and Standard Schema submission independent', asy
       confirm: 'a',
     }),
   ).toEqual({ value: { password: 'a', confirm: 'a' } });
+});
+
+it('propagates and clears dependent errors through actual field change validators', async () => {
+  const adapter = createPasswordRelationshipAdapter();
+  const form = new FormApi({
+    defaultValues: { password: 'old', confirm: 'old' },
+    validators: { onSubmit: adapter.suite },
+    onSubmit: () => {},
+  });
+  const unmount = form.mount();
+  const report = (name: 'password' | 'confirm', errors: string[] | undefined) =>
+    form.setFieldMeta(name, previous => ({
+      ...previous,
+      errorMap: { ...previous.errorMap, onChange: errors },
+    }));
+  const passwordValidator = createPasswordChangeValidator(
+    adapter,
+    'password',
+    report,
+  );
+  const confirmValidator = createPasswordChangeValidator(
+    adapter,
+    'confirm',
+    report,
+  );
+  const password = new FieldApi({
+    form,
+    name: 'password',
+    validators: {
+      onChangeAsync: ({ fieldApi }) =>
+        passwordValidator(fieldApi.form.state.values),
+    },
+  });
+  const confirm = new FieldApi({
+    form,
+    name: 'confirm',
+    validators: {
+      onChangeAsync: ({ fieldApi }) =>
+        confirmValidator(fieldApi.form.state.values),
+    },
+  });
+  const unmountPassword = password.mount();
+  const unmountConfirm = confirm.mount();
+  password.handleChange('new');
+  await password.validate('change');
+  expect(form.state.fieldMeta.confirm?.errors).toEqual([
+    'Passwords do not match',
+  ]);
+  confirm.handleChange('new');
+  await confirm.validate('change');
+  expect(form.state.fieldMeta.confirm?.errors).toEqual([]);
+  unmountConfirm();
+  unmountPassword();
+  unmount();
+});
+
+it('attributes remote password failures to password and cancels obsolete checks', async () => {
+  const signals: AbortSignal[] = [];
+  const gate = deferred();
+  const adapter = createPasswordRelationshipAdapter((password, signal) => {
+    signals.push(signal);
+    if (password === 'old') return gate.promise;
+    if (password === 'taken') throw new Error('unavailable');
+  });
+  const older = adapter.validateChange('password', {
+    password: 'old',
+    confirm: 'old',
+  });
+  const newer = await adapter.validateChange('password', {
+    password: 'taken',
+    confirm: 'taken',
+  });
+  expect(signals[0].aborted).toBe(true);
+  expect(newer).toEqual({ password: ['Password is unavailable'] });
+  gate.release();
+  expect(await older).toEqual(newer);
 });

@@ -106,6 +106,12 @@ export class VestTest {
     );
   }
 
+  static isSuccessSeverity(test: TIsolateTest): Result<boolean> {
+    return makeResult.Ok(
+      VestTest.getData(test).severity === TestSeverity.Success,
+    );
+  }
+
   static isOmitted(test: TIsolateTest): Result<boolean> {
     return makeResult.Ok(VestTest.statusEquals(test, TestStatus.OMITTED));
   }

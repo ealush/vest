@@ -1,13 +1,21 @@
-import { childrenOf, describeSchema } from './relationshipGraph';
+import { isUnsafeKey } from 'vest-utils';
+
+import { childrenOf, describeSchema, isNode } from './relationshipGraph';
 import { meta, type RuleMeta, type SchemaPath } from './ruleMeta';
 
 export type ConcretePath = readonly (string | number)[];
 
-type Edge = { source: SchemaPath; target: SchemaPath };
+type Edge = {
+  source: SchemaPath;
+  target: SchemaPath;
+  concrete?: readonly string[];
+};
 type Index = Map<string, Edge[]>;
 // Graphs are immutable, so each schema's reverse index is built once.
 const indexes = new WeakMap<object, Index>();
-const unsafe = new Set(['__proto__', 'constructor', 'prototype']);
+// Only scalar schema fields with entirely static targets are cached. Dynamic
+// item paths always expand against this run's data, and returned paths are fresh.
+const scalarSelections = new WeakMap<object, Map<string, ConcretePath[]>>();
 
 /** Plan one hop of invalidation without running rules or reading data getters. */
 export function resolveAffected(
@@ -16,28 +24,130 @@ export function resolveAffected(
   data: unknown,
 ): ConcretePath[] {
   const index = reverseIndex(schema);
+  const cached = scalarSelection(schema, changed, index, data);
+  if (cached) return cached;
+  return expandSelection(schema, changed, data, index);
+}
+
+function expandSelection(
+  schema: object,
+  changed: readonly string[],
+  data: unknown,
+  index: Index,
+): ConcretePath[] {
   const selected = new Map<string, ConcretePath>();
   const affected = new Map<string, ConcretePath>();
+
+  function include(path: ConcretePath): void {
+    affected.set(JSON.stringify(path), path);
+  }
 
   function add(path: ConcretePath, pattern: SchemaPath): void {
     const key = JSON.stringify(path);
     if (selected.has(key)) return;
     selected.set(key, path);
     affected.set(key, path);
-    const bindings = bindingsFor(pattern, path);
-    for (const edge of index.get(JSON.stringify(pattern)) ?? []) {
-      instantiate(edge.target, data, bindings, target => {
-        affected.set(JSON.stringify(target), target);
-      });
-    }
+    invalidateSources(pattern, path, index, data, include);
   }
 
   for (const name of changed) {
     const segments = parseName(name);
     if (!segments) continue;
-    select(schema, segments, data, add);
+    if (segments.length === 1 && isScalarRootField(schema, segments[0])) {
+      add(segments, segments);
+    } else {
+      select(schema, segments, data, add);
+    }
   }
   return [...affected.values()];
+}
+
+function invalidateSources(
+  pattern: SchemaPath,
+  path: ConcretePath,
+  index: Index,
+  data: unknown,
+  include: (path: ConcretePath) => void,
+): void {
+  for (let length = 1; length <= pattern.length; length++) {
+    const source = pattern.slice(0, length);
+    const bindings = bindingsFor(source, path);
+    for (const edge of index.get(JSON.stringify(source)) ?? []) {
+      if (edge.concrete) include([...edge.concrete]);
+      else instantiate(edge.target, data, bindings, include);
+    }
+  }
+}
+
+function scalarSelection(
+  schema: object,
+  changed: readonly string[],
+  index: Index,
+  data: unknown,
+): ConcretePath[] | undefined {
+  if (changed.length !== 1) return;
+  const segments = parseName(changed[0]);
+  if (!isScalarSelection(schema, segments)) return;
+  const name = segments[0];
+  const selections = scalarSelectionsFor(schema);
+  const paths = selections.get(name) ?? staticPaths(name, index);
+  if (!paths) return singleDynamicTarget(name, index, data);
+  selections.set(name, paths);
+  return paths.map(path => [...path]);
+}
+
+// One item pattern cannot produce duplicate concrete paths. Avoid serializing
+// an entire fan-out just to deduplicate it; expand anew for each input.
+function singleDynamicTarget(
+  name: string,
+  index: Index,
+  data: unknown,
+): ConcretePath[] | undefined {
+  const edges = index.get(JSON.stringify([name]));
+  if (edges?.length !== 1) return;
+  const paths: ConcretePath[] = [[name]];
+  instantiate(edges[0].target, data, new Map(), path => paths.push(path));
+  return paths;
+}
+
+function scalarSelectionsFor(schema: object): Map<string, ConcretePath[]> {
+  let selections = scalarSelections.get(schema);
+  if (!selections) {
+    selections = new Map();
+    scalarSelections.set(schema, selections);
+  }
+  return selections;
+}
+
+function isScalarSelection(
+  schema: object,
+  segments: string[] | undefined,
+): segments is [string] {
+  return (
+    !!segments &&
+    segments.length === 1 &&
+    isScalarRootField(schema, segments[0])
+  );
+}
+
+function staticPaths(name: string, index: Index): ConcretePath[] | undefined {
+  const edges = index.get(JSON.stringify([name])) ?? [];
+  if (edges.some(edge => !edge.concrete)) return;
+  return [[name], ...edges.map(edge => edge.concrete!)];
+}
+
+function isScalarRootField(schema: object, name: string): boolean {
+  const fields = staticRootFields(schema);
+  const descriptor = fields && Object.getOwnPropertyDescriptor(fields, name);
+  if (!descriptor?.enumerable) return false;
+  return isNode(descriptor.value) && !meta(descriptor.value).kind;
+}
+
+function staticRootFields(schema: object): object | undefined {
+  const info = meta(schema);
+  if (info.kind !== 'shape' && info.kind !== 'loose') return undefined;
+  const fields = (info.children as unknown[])?.[0];
+  return isNode(fields) ? fields : undefined;
 }
 
 function reverseIndex(schema: object): Index {
@@ -47,7 +157,7 @@ function reverseIndex(schema: object): Index {
     for (const edge of describeSchema(schema).relationships) {
       const key = JSON.stringify(edge.source);
       const list = edges.get(key) ?? [];
-      list.push(edge);
+      list.push({ ...edge, concrete: concreteTarget(edge.target) });
       edges.set(key, list);
     }
     indexes.set(schema, edges);
@@ -55,12 +165,18 @@ function reverseIndex(schema: object): Index {
   return edges;
 }
 
+function concreteTarget(path: SchemaPath): readonly string[] | undefined {
+  return path.every(segment => typeof segment === 'string')
+    ? (path as readonly string[])
+    : undefined;
+}
+
 function parseName(name: string): string[] | undefined {
   if (!name || typeof name !== 'string') return undefined;
   const normalized = name.replace(/\[(\d+)\]/g, '.$1');
   if (/[\[\]]/.test(normalized)) return undefined;
   const parts = normalized.split('.');
-  if (parts.some(part => !part || unsafe.has(part))) return undefined;
+  if (parts.some(part => !part || isUnsafeKey(part))) return undefined;
   return parts;
 }
 
@@ -255,9 +371,10 @@ function instantiate(
   bindings: Map<string, string | number>,
   add: (path: ConcretePath) => void,
 ): void {
+  const suffix = staticSuffix(pattern);
   function visit(offset: number, path: ConcretePath, value: unknown): void {
-    if (offset === pattern.length) {
-      add(path);
+    if (offset >= suffix.offset) {
+      add([...path, ...suffix.path]);
       return;
     }
     const segment = pattern[offset];
@@ -268,15 +385,40 @@ function instantiate(
       const keys =
         bound === undefined ? itemKeys(value, segment.binding) : [bound];
       for (const key of keys) {
+        // A static tail needs no more data reads, including the final item value.
+        const nextValue = itemValueBeforeSuffix(
+          offset,
+          suffix.offset,
+          value,
+          key,
+        );
         visit(
           offset + 1,
           [...path, concreteKey(key, segment.binding)],
-          ownValue(value, String(key)),
+          nextValue,
         );
       }
     }
   }
   visit(0, [], data);
+}
+
+function itemValueBeforeSuffix(
+  offset: number,
+  suffixOffset: number,
+  value: unknown,
+  key: string | number,
+): unknown {
+  return offset + 1 < suffixOffset ? ownValue(value, String(key)) : undefined;
+}
+
+function staticSuffix(pattern: SchemaPath): {
+  offset: number;
+  path: readonly string[];
+} {
+  let offset = pattern.length;
+  while (offset > 0 && typeof pattern[offset - 1] === 'string') offset--;
+  return { offset, path: pattern.slice(offset) as readonly string[] };
 }
 
 function itemKeys(value: unknown, kind: string): string[] {
@@ -286,7 +428,7 @@ function itemKeys(value: unknown, kind: string): string[] {
       : [];
   }
   return isNode(value) && !Array.isArray(value)
-    ? Object.keys(value).filter(key => !unsafe.has(key))
+    ? Object.keys(value).filter(key => !isUnsafeKey(key))
     : [];
 }
 
@@ -298,10 +440,4 @@ function ownValue(value: unknown, key: string): unknown {
   return isNode(value)
     ? Object.getOwnPropertyDescriptor(value, key)?.value
     : undefined;
-}
-
-function isNode(value: unknown): value is object {
-  return (
-    (typeof value === 'object' && value !== null) || typeof value === 'function'
-  );
 }

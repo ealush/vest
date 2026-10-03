@@ -10,6 +10,10 @@ export default defineConfig({
   resolve: {
     alias: {
       vest: resolve(__dirname, 'src/vest.ts'),
+      'n4s/exports/relationships': resolve(
+        __dirname,
+        '../n4s/src/exports/relationships.ts',
+      ),
       n4s: resolve(__dirname, '../n4s/src/n4s.ts'),
     },
   },

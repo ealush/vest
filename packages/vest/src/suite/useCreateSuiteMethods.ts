@@ -14,7 +14,11 @@ import {
 import { bindSuiteSelectors } from '../suiteResult/selectors/suiteSelectors';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
-import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
+import {
+  SuiteModifiers,
+  SuiteRuntimeModifiers,
+  SuiteCallbackWithSchema,
+} from './SuiteTypes';
 import { useDeferDoneCallback } from './after/deferDoneCallback';
 import { createSuite } from './createSuite';
 import { getStandardSchema } from './getStandardSchema';
@@ -36,7 +40,7 @@ export function useCreateSuiteMethods<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: SuiteRuntimeModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {
@@ -64,7 +68,7 @@ function useCreateSuiteMethodsHelper<
   S extends TSchema = undefined,
 >(ctx: {
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  modifiers: SuiteModifiers<F, G>;
+  modifiers: SuiteRuntimeModifiers<F, G>;
   subscribe: Subscribe;
   schema?: S;
   persistedRun: any;
@@ -87,7 +91,7 @@ function useGetSuiteMethods<
   S extends TSchema = undefined,
 >(ctx: {
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  modifiers: SuiteModifiers<F, G>;
+  modifiers: SuiteRuntimeModifiers<F, G>;
   subscribe: Subscribe;
   schema?: S;
   persistedRun: any;
@@ -102,7 +106,18 @@ function useGetSuiteMethods<
     get,
     ...bindSuiteSelectors<F, G, S>(get),
     ...getTypedMethods<F, G>(),
-    // focus and only must come after the spreads to prevent spread keys from overriding them
+    // Focus methods come after the spreads so their keys cannot be overridden.
+    changed: VestRuntime.persist((fields?: string | readonly string[]) =>
+      useCreateSuiteMethods<F, G, T, S>(
+        suiteCallback,
+        {
+          ...modifiers,
+          changed: typeof fields === 'string' ? [fields] : fields,
+        },
+        subscribe,
+        schema,
+      ),
+    ),
     focus: VestRuntime.persist(
       useCreateFocus<F, G, T, S>(suiteCallback, modifiers, subscribe, schema),
     ),
@@ -119,7 +134,7 @@ function useGetLifecycleMethods<
   S extends TSchema = undefined,
 >(ctx: {
   suiteCallback: SuiteCallbackWithSchema<S, T>;
-  modifiers: SuiteModifiers<F, G>;
+  modifiers: SuiteRuntimeModifiers<F, G>;
   subscribe: Subscribe;
   schema?: S;
   persistedRun: any;
@@ -161,7 +176,7 @@ function useAddAfterHelper<
 >(
   ctx: {
     suiteCallback: SuiteCallbackWithSchema<S, T>;
-    modifiers: SuiteModifiers<F, G>;
+    modifiers: SuiteRuntimeModifiers<F, G>;
     subscribe: Subscribe;
     schema?: S;
     persistedRun: any;
@@ -213,7 +228,7 @@ function useCreateFocus<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: SuiteRuntimeModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {
@@ -244,7 +259,7 @@ function useCreateOnly<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: SuiteRuntimeModifiers<F, G>,
   subscribe: Subscribe,
   schema?: S,
 ) {

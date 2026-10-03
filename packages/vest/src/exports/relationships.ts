@@ -8,6 +8,7 @@ import {
   installChangedHandler,
   type ChangedPlan,
 } from '../suite/changedHandler';
+import { ROOT_SCHEMA_FIELD } from '../suite/retainedSchemaFailures';
 import {
   runSchemaWithParse,
   type SchemaRunResult,
@@ -26,32 +27,44 @@ function planRelationshipRun(
 ): ChangedPlan {
   const selection = selectFields(schema, fields, data, modifiers);
   const selected = selection.focus.length ? selection.focus : [NO_FIELD];
-  if (!schema) return { only: selected, evaluated: null };
+  if (!schema) return { only: selected, schemaFocus: [], evaluated: null };
   if (!canPickRelationshipSchema(schema))
-    return fullSchemaPlan(schema, data, selected);
-  return pickedSchemaPlan(schema, data, selected, selection.schemaKeys);
+    return fullSchemaPlan(schema, data, selected, selection.skip);
+  return pickedSchemaPlan(schema, data, selected, selection);
 }
+
+type Selection = { focus: string[]; schemaKeys: string[]; skip: Set<string> };
 
 function selectFields(
   schema: unknown,
   fields: readonly string[],
   data: unknown,
   modifiers: { only?: unknown; skip?: unknown },
-): { focus: string[]; schemaKeys: string[] } {
-  const affected = isN4sSchema(schema)
-    ? resolveAffected(schema, fields, data)
-    : fields.map(field => [field]);
-  const explicit = fieldList(modifiers.only);
+): Selection {
+  // The changed names always run, even when they are not schema paths.
+  const names = fieldList(fields).filter(Boolean);
   const skip = new Set(fieldList(modifiers.skip));
-  const active = affected.filter(path => !isSkipped(path.join('.'), skip));
+  const affected = (
+    isN4sSchema(schema) ? resolveAffected(schema, names, data) : []
+  ).filter(path => !isSkipped(path.join('.'), skip));
+  const named = [...names, ...fieldList(modifiers.only)].filter(
+    field => !isSkipped(field, skip),
+  );
   return {
-    focus: [
-      ...new Set([...active.map(path => path.join('.')), ...explicit]),
-    ].filter(field => !isSkipped(field, skip)),
+    focus: [...new Set([...affected.map(path => path.join('.')), ...named])],
+    // Structured paths keep a literal dotted key whole.
     schemaKeys: [
-      ...new Set([...active.map(path => String(path[0])), ...explicit]),
-    ].filter(field => !skip.has(field)),
+      ...new Set([
+        ...affected.map(path => String(path[0])),
+        ...named.map(topLevelKey),
+      ]),
+    ],
+    skip,
   };
+}
+
+function topLevelKey(field: string): string {
+  return field.split(/[.[]/)[0];
 }
 
 function isSkipped(name: string, skip: Set<string>): boolean {
@@ -65,10 +78,12 @@ function fullSchemaPlan(
   schema: unknown,
   data: unknown,
   only: string[],
+  skip: Set<string>,
 ): ChangedPlan {
   const schemaResults = runSchemaWithParse(schema, data, {});
   return {
-    only: includeFailurePaths(only, schemaResults),
+    only,
+    schemaFocus: failurePaths(schemaResults, skip),
     schemaResults,
     evaluated: null,
   };
@@ -78,60 +93,62 @@ function pickedSchemaPlan(
   schema: { __schema: Record<string, unknown> },
   data: unknown,
   selected: string[],
-  only: string[],
+  { schemaKeys: keys, skip }: Selection,
 ): ChangedPlan {
   if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-    return fullSchemaPlan(schema, data, selected);
+    return fullSchemaPlan(schema, data, selected, skip);
   }
   if (Object.keys(data).some(key => UNSAFE.has(key))) {
-    return fullSchemaPlan(schema, data, selected);
+    return fullSchemaPlan(schema, data, selected, skip);
   }
   const schemaKeys = new Set(Object.keys(schema.__schema));
-  const validated = only.filter(key => schemaKeys.has(key));
-  const schemaResults = runSelectedFields(schema.__schema, data, validated);
+  const validated = keys.filter(key => schemaKeys.has(key));
+  const { results, value } = runSelectedFields(
+    schema.__schema,
+    data,
+    validated,
+  );
   const checked = new Set(validated);
   return {
-    only: includeFailurePaths(selected, schemaResults),
-    schemaResults,
+    only: selected,
+    schemaFocus: failurePaths(results, skip),
+    schemaResults: results,
+    value,
     evaluated: path =>
       path === undefined ? validated.length > 0 : checked.has(path[0]),
   };
 }
 
-function includeFailurePaths(
-  only: string[],
-  results: SchemaRunResult[],
-): string[] {
+function failurePaths(results: SchemaRunResult[], skip: Set<string>): string[] {
   const paths = results
     .filter(result => !result.pass)
-    .map(result => result.path?.join('.') ?? '__root__');
-  return [...new Set([...only, ...paths])];
+    .map(result => result.path?.join('.') ?? ROOT_SCHEMA_FIELD);
+  return [...new Set(paths)].filter(path => !isSkipped(path, skip));
 }
 
 function runSelectedFields(
   rules: Record<string, unknown>,
   data: object,
   keys: string[],
-): SchemaRunResult[] {
+): { results: SchemaRunResult[]; value?: Record<string, unknown> } {
   const failures: SchemaRunResult[] = [];
-  const parsed = copyInput(data);
+  // The callback sees the input with validated fields parsed, like only().
+  const input = copyInput(data);
+  const value: Record<string, unknown> = {};
   for (const key of keys) {
-    const value = Object.getOwnPropertyDescriptor(data, key)?.value;
+    const raw = Object.getOwnPropertyDescriptor(data, key)?.value;
     const rule = rules[key] as { run: (input: unknown) => SchemaRunResult };
-    recordResult(key, rule.run(value), parsed, failures);
+    const result = rule.run(raw);
+    if (result.pass) input[key] = value[key] = result.type;
+    else failures.push(failureAt(key, result));
   }
-  if (failures.length) return failures;
-  return [{ pass: true, type: parsed }];
+  if (failures.length) return { results: failures };
+  // The result value holds only what this run validated.
+  return { results: [{ pass: true, type: input }], value };
 }
 
-function recordResult(
-  key: string,
-  result: SchemaRunResult,
-  parsed: Record<string, unknown>,
-  failures: SchemaRunResult[],
-): void {
-  if (result.pass) parsed[key] = result.type;
-  else failures.push({ ...result, path: [key, ...(result.path ?? [])] });
+function failureAt(key: string, result: SchemaRunResult): SchemaRunResult {
+  return { ...result, path: [key, ...(result.path ?? [])] };
 }
 
 function copyInput(data: object): Record<string, unknown> {

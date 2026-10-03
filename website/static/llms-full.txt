@@ -5737,6 +5737,10 @@ Keyed tests retain their verdict under their current field name after reordering
 
 `enforce.extend()` now rejects non-function rules immediately. Valid custom rules continue to work as before; malformed extensions throw when registered instead of failing later during validation.
 
+## Composed validation rules
+
+Rules returned by `compose()` now also support `.validate()`, `.parse()`, and the Standard Schema `~standard.validate` interface, in addition to `.run()` and `.test()`.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

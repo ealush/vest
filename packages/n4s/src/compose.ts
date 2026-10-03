@@ -47,17 +47,12 @@ type ComposeResult<T = any> = RuleInstance<T, [T]> & {
 export function compose<T = any>(
   ...composites: RuleInstance<any, [any]>[]
 ): ComposeResult<T> {
-  const composedFn = assign(
-    (value: T) => {
-      const res = run(value);
-      invariant(res.pass, StringObject(res.message));
-    },
-    {
-      run,
-      test: (value: T) => run(value).pass,
-      infer: {} as T,
-    },
-  );
+  // A full RuleInstance (test, run, validate, parse, ~standard), matching
+  // the ComposeResult type, plus the callable assertion form.
+  const composedFn = assign((value: T) => {
+    const res = run(value);
+    invariant(res.pass, StringObject(res.message));
+  }, RuleInstance.create<RuleInstance<T, [T]>, T, [T]>(run));
 
   return composedFn as ComposeResult<T>;
 

@@ -34,7 +34,11 @@ export type Suite<
 export type SuiteRuntimeModifiers<
   F extends TFieldName,
   G extends TGroupName,
-> = SuiteModifiers<F, G> & { changed?: readonly string[] };
+> = SuiteModifiers<F, G> & {
+  changed?: readonly string[];
+  /** Set by a changed plan: schema failures reported outside `only`. */
+  schemaFocus?: string[];
+};
 
 type SuiteMethods<
   F extends TFieldName,

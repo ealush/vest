@@ -2,13 +2,13 @@ import type { IntegrationRecord } from '../kit/src/types.js';
 
 export default {
   capabilities: {
-    asynchronous: false,
+    asynchronous: true,
     focusedExecution: true,
     inputInference: true,
     multipleIssues: true,
     nestedPaths: true,
     outputInference: false,
-    raceSafety: false,
+    raceSafety: true,
     retainedState: true,
     synchronous: true,
     transformedOutput: false,
@@ -18,17 +18,22 @@ export default {
     example: {
       component: 'TanStackFormIntegration',
       description:
-        'Edit either field and use the file tabs to inspect focused change validation and full-form submission validation.',
-      files: ['DemoApp.tsx', 'suite.ts', 'styles.css'],
+        'Edit name or email, then inspect the separate relationship-aware password adapter in the file tabs.',
+      files: [
+        'DemoApp.tsx',
+        'suite.ts',
+        'relationshipAdapter.ts',
+        'styles.css',
+      ],
       sourceExport: 'tanStackFormFiles',
       type: 'sandpack',
     },
     install: 'vest @tanstack/react-form',
     purpose:
-      'TanStack Form owns field state while an instance-owned Vest suite provides focused change validation and Standard Schema submission validation.',
+      'TanStack Form owns field state while an instance-owned Vest suite provides relationship-aware change validation and Standard Schema submission validation.',
   },
   id: 'tanstack-form',
-  lastVerified: '2026-08-04',
+  lastVerified: '2026-10-03',
   limitations: [
     "TanStack Form's generic Standard Schema submission validation does not expose Vest's focused execution or retained state; the field validators use the Suite Object API directly.",
     'TanStack Form validates Standard Schema output but does not forward transformed output to the submit callback.',

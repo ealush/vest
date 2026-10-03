@@ -21,6 +21,10 @@ When a new run supersedes a pending run of the same suite, awaiting the older ha
 
 Keyed tests retain their verdict under their current field name after reordering, including when focus leaves the test out of the run. Reusing a key for a different field moves the retained verdict to that field. Use stable keys for the validation identity you intend to preserve.
 
+## Custom validation rules must be functions
+
+`enforce.extend()` now rejects non-function rules immediately. Valid custom rules continue to work as before; malformed extensions throw when registered instead of failing later during validation.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

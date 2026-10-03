@@ -46,6 +46,7 @@ function buildGraph(root: object): Description {
     root,
     relationships: [],
     seen: new Set<string>(),
+    checked: new Map<string, Walk>(),
   };
   const ancestors = new Set<object>();
 
@@ -72,6 +73,7 @@ type GraphContext = {
   root: object;
   relationships: Relationship[];
   seen: Set<string>;
+  checked: Map<string, Walk>;
 };
 
 function appendDeclarations(
@@ -95,12 +97,22 @@ function appendRelationship(
     ? reference.path
     : [...target.slice(0, -1), ...reference.path];
   if (samePath(source, target)) return;
-  const checked = walkSchemaPath(context.root, source);
+  const checked = checkedReference(context, source);
   if (!checked.found) unknownReference(target, source, checked);
   const key = JSON.stringify([source, target]);
   if (context.seen.has(key)) return;
   context.seen.add(key);
   context.relationships.push({ source, target, effect: 'invalidate' });
+}
+
+function checkedReference(context: GraphContext, source: SchemaPath): Walk {
+  const key = JSON.stringify(source);
+  let result = context.checked.get(key);
+  if (!result) {
+    result = walkSchemaPath(context.root, source);
+    context.checked.set(key, result);
+  }
+  return result;
 }
 
 function unknownReference(

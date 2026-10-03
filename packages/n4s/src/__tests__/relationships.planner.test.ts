@@ -60,6 +60,58 @@ it('expands a named whole object through declared fields and current items', () 
   ]);
 });
 
+it('invalidates direct dependencies on an ancestor of a changed field', () => {
+  const item = enforce.shape({
+    details: enforce.shape({ name: enforce.isString() }),
+    summary: enforce.isString().dependsOn($ => $.details),
+  });
+  const schema = enforce.shape({
+    rows: enforce.isArrayOf(item),
+    total: enforce.isNumber().dependsOn($ => $.rows),
+    next: enforce.isString().dependsOn($ => $.total),
+  });
+  expect(
+    resolveAffected(schema, ['rows.1.details.name'], { rows: [{}, {}] }),
+  ).toEqual([
+    ['rows', 1, 'details', 'name'],
+    ['total'],
+    ['rows', 1, 'summary'],
+  ]);
+});
+
+it('does not cache fan-out against an earlier array or record value', () => {
+  const schema = enforce.shape({
+    source: enforce.isString(),
+    rows: enforce.isArrayOf(enforce.isString().dependsOn($ => $.root.source)),
+    dict: enforce.record(enforce.isString().dependsOn($ => $.root.source)),
+  });
+  expect(
+    resolveAffected(schema, ['source'], { rows: ['a'], dict: { a: 'x' } }),
+  ).toHaveLength(3);
+  expect(
+    resolveAffected(schema, ['source'], {
+      rows: ['a', 'b'],
+      dict: { b: 'x', c: 'x' },
+    }),
+  ).toEqual([
+    ['source'],
+    ['rows', 0],
+    ['rows', 1],
+    ['dict', 'b'],
+    ['dict', 'c'],
+  ]);
+});
+
+it('returns cache results that cannot mutate later selections', () => {
+  const schema = enforce.shape({
+    a: enforce.isString(),
+    b: enforce.isString().dependsOn($ => $.a),
+  });
+  const first = resolveAffected(schema, ['a'], {});
+  first.pop();
+  expect(resolveAffected(schema, ['a'], {})).toEqual([['a'], ['b']]);
+});
+
 it('binds a record dependency to its own key', () => {
   const item = enforce.shape({
     a: enforce.isString(),
@@ -116,7 +168,9 @@ it('follows recursive lazy schemas as deep as the data goes', () => {
 
   const fresh = (): any =>
     enforce.shape({ next: enforce.optional(enforce.lazy(() => fresh())) });
-  expect(resolveAffected(fresh(), ['next'], {})).toEqual([['next']]);
+  expect(() => resolveAffected(fresh(), ['next'], {})).toThrow(
+    /32 nested lazy\(\) expansions/,
+  );
 });
 
 it('keeps a literal dotted key separate from nested paths', () => {

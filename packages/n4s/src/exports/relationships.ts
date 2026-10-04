@@ -5,6 +5,8 @@ import { installDescribe } from '../ruleMeta';
 installDescribe(describeSchema);
 
 export { EnforceSchemaError } from '../relationshipGraph';
+export { resolveAffected } from '../relationshipPlanner';
+export type { ConcretePath } from '../relationshipPlanner';
 export { FIELD } from '../ruleMeta';
 export type {
   DependencyResolver,

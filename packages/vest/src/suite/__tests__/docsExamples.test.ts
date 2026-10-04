@@ -9,6 +9,9 @@ import debounce from '../../exports/debounce';
 import { memo } from '../../exports/memo';
 import { SuiteSerializer } from '../../exports/SuiteSerializer';
 import * as vest from '../../vest';
+import * as relationships from '../../exports/relationships';
+import * as n4s from 'n4s';
+import * as n4sRelationships from 'n4s/relationships';
 
 type Runtime = Record<string, unknown>;
 
@@ -22,6 +25,9 @@ const moduleMap: Runtime = {
   'vest/debounce': { __esModule: true, default: debounce },
   'vest/exports/SuiteSerializer': { SuiteSerializer },
   'vest/memo': { memo },
+  'vest/relationships': relationships,
+  n4s,
+  'n4s/relationships': n4sRelationships,
 };
 
 function throwOnTranspileDiagnostics(output: ts.TranspileOutput): void {
@@ -135,6 +141,57 @@ describe('executable documentation examples', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.useRealTimers();
+  });
+
+  it('runs the exact schema relationship and graph examples', () => {
+    const { suite, result } = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      0,
+      {
+        formData: { password: 'new', confirm: 'old' },
+      },
+    ) as { suite: ReturnType<typeof vest.create>; result: vest.SuiteResult };
+    expect(result.hasErrors('confirm')).toBe(true);
+    expect(
+      suite
+        .changed('confirm')
+        .run({ password: 'new', confirm: 'new' })
+        .hasErrors(),
+    ).toBe(false);
+
+    const graph = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      5,
+    );
+    expect(graph.description).toEqual({
+      relationships: [
+        { source: ['password'], target: ['confirm'], effect: 'invalidate' },
+      ],
+    });
+    expect(graph.affected).toEqual([['password'], ['confirm']]);
+  });
+
+  it('runs the exact root and array relationship example', () => {
+    const { rowSuite } = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      2,
+      {
+        create: vest.create,
+        enforce: vest.enforce,
+        data: {
+          currency: 'USD',
+          rows: Array.from({ length: 6 }, () => ({
+            country: 'US',
+            state: 'CA',
+            price: 1,
+          })),
+        },
+      },
+    ) as { rowSuite: ReturnType<typeof vest.create> };
+    expect(rowSuite.get().run.focus?.only).toEqual([
+      'currency',
+      ...Array.from({ length: 6 }, (_, i) => `rows.${i}.price`),
+    ]);
   });
 
   it('runs the Getting Started suite exactly as documented', async () => {

@@ -8,6 +8,10 @@ keywords:
     API,
     Reference,
     create,
+    changed,
+    dependsOn,
+    describe,
+    resolveAffected,
     suite.get,
     suite.remove,
     suite.reset,
@@ -120,6 +124,19 @@ Shorthand for `suite.focus({ only: fieldName })`. Restricts the next run to the 
 - Returns a chainable suite with `run`, `afterEach`, `afterField`, `focus`, and `only`.
 - [Read more about Focused Updates](./writing_your_suite/focused_updates.md#running-only-specific-fields)
 
+#### `suite.changed(fields)`
+
+After `import 'vest/relationships'`, prepares a focused run for the named fields and their direct schema dependents. Call `.run(data)` on the returned suite.
+
+- `fields`: `string | readonly string[]`; `changed([])` selects no fields itself, while `changed(undefined)` clears this focus. The suite callback and explicit inclusion hooks keep their ordinary behavior.
+- `only()` adds explicit fields and `skip` excludes fields and their descendants from the affected set. Numeric bracket paths are normalized for skip comparisons.
+- Schema validation checks affected top-level fields; nested member selection does not yet narrow schema execution.
+- Use canonical dotted data paths for dependent test names. Explicitly named fields run unless skipped, even when they are not schema fields. Dependencies on a container also respond to changes in its descendants.
+- Schema failures outside the affected names are reported without running those fields' user tests.
+- A successful changed result's `value` contains only the validated fields and is typed as a partial schema output. Ordinary focused results and `suite.get()` make fields optional and allow unchecked input forms as well as parsed output. Clearing changed focus returns those ordinary focused types. Its `valid` does not cover unchecked fields, so run the full suite before submitting. Await the result when tests are async.
+- Without the opt-in import, the first changed run throws a setup error.
+- [Read the relationships guide](./guides/schema-relationships.md).
+
 #### `suite.afterEach(callback)`
 
 Registers a callback to run after each test completes (including the initial sync run and every async completion). The callback receives **no arguments**; you should access the result using `suite.get()`.
@@ -172,6 +189,16 @@ Retrieves the current validation context during a suite run. Useful within custo
 Extends Vest's enforce with custom validation rules.
 
 - **Tip**: To add TypeScript support for your custom rules, see [TypeScript Support](./typescript_support.md#custom-enforce-rules).
+
+#### `rule.dependsOn(resolver)`
+
+Returns a new rule with a direct dependency declared; the original rule is unchanged. The resolver receives a field-reference scope (`$`) and returns one reference or an array of references. Use `$.other` for a sibling field, `$.root.other` for a top-level field, and `$[FIELD]('name')` (from `n4s/relationships`) for fields named `root`, `parent` or `then`. The declaration affects `suite.changed()` planning; ordinary schema validation runs the rule as before. `dependsOn()` inside a recursive `lazy()` schema throws when the graph is described.
+
+#### `schema.describe()` and `resolveAffected(schema, changed, data)`
+
+After `import 'n4s/relationships'`, `schema.describe()` returns the declared graph as `relationships` with `source`, `target`, and `effect: 'invalidate'` entries. Import `resolveAffected` from `n4s/relationships` to compute concrete affected paths for the current data. `import 'vest/relationships'` also loads this graph implementation. Calling `describe()` without either entry throws a setup error.
+
+- [Read the relationships guide](./guides/schema-relationships.md).
 
 #### `memo(callback, deps, options?)`
 

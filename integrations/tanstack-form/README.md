@@ -11,7 +11,9 @@ Local implementation, tests, types, demo, and Vest documentation are complete. N
 
 ## What this proves
 
-TanStack Form accepts a Vest suite as a form-level Standard Schema validator and maps nested and multiple issues into field state.
+TanStack Form accepts a Vest suite as a form-level Standard Schema validator and maps nested and multiple issues into field state. The opt-in `relationshipAdapter.ts` example uses `suite.changed(field)` so a password change revalidates its confirmation.
+
+The running `PasswordRelationshipDemo.tsx` wires this adapter into native field change validators. Its remote password check belongs to the password field and receives Vest's cancellation signal; the confirmation comparison runs independently.
 
 ## What this does not prove
 
@@ -23,7 +25,17 @@ Run this workspace's `test`, `typecheck`, `build`, or `dev` script through Yarn.
 
 ## Runtime behavior
 
-Tests cover invalid and valid forms, nested paths, multiple issues, focused retained-state isolation, corrected errors, submission, and independent instances.
+Tests cover invalid and valid forms, nested paths, multiple issues, focused retained-state isolation, corrected errors, submission, and independent instances. Relationship tests also cover dependent error mapping into TanStack field state and settlement when a newer change supersedes a pending async run.
+
+`createPasswordChangeValidator` returns the changed field's errors to TanStack's native validator and reports dependent errors through the form's `errorMap`. Assign `undefined` to clear a corrected error:
+
+```ts
+const errors = await adapter.validateChange('password', form.state.values);
+form.setFieldMeta('confirm', previous => ({
+  ...previous,
+  errorMap: { ...previous?.errorMap, onChange: errors.confirm },
+}));
+```
 
 ## Type behavior
 

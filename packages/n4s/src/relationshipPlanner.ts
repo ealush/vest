@@ -373,10 +373,6 @@ function instantiate(
 ): void {
   const suffix = staticSuffix(pattern);
   function visit(offset: number, path: ConcretePath, value: unknown): void {
-    if (offset >= suffix.offset) {
-      add([...path, ...suffix.path]);
-      return;
-    }
     const segment = pattern[offset];
     if (typeof segment === 'string') {
       visit(offset + 1, [...path, segment], ownValue(value, segment));
@@ -385,31 +381,21 @@ function instantiate(
       const keys =
         bound === undefined ? itemKeys(value, segment.binding) : [bound];
       for (const key of keys) {
-        // A static tail needs no more data reads, including the final item value.
-        const nextValue = itemValueBeforeSuffix(
-          offset,
-          suffix.offset,
-          value,
-          key,
-        );
-        visit(
-          offset + 1,
-          [...path, concreteKey(key, segment.binding)],
-          nextValue,
-        );
+        const item = concreteKey(key, segment.binding);
+        // Emit the final item and static tail together, without another path
+        // allocation or reading the item value. Earlier items still need data.
+        if (offset + 1 === suffix.offset) {
+          add([...path, item, ...suffix.path]);
+        } else {
+          visit(offset + 1, [...path, item], ownValue(value, String(key)));
+        }
       }
     }
   }
-  visit(0, [], data);
-}
-
-function itemValueBeforeSuffix(
-  offset: number,
-  suffixOffset: number,
-  value: unknown,
-  key: string | number,
-): unknown {
-  return offset + 1 < suffixOffset ? ownValue(value, String(key)) : undefined;
+  // Dynamic traversal stops at its last item, so only a fully static pattern
+  // needs this direct case. Every recursive visit precedes the static suffix.
+  if (suffix.offset === 0) add([...suffix.path]);
+  else visit(0, [], data);
 }
 
 function staticSuffix(pattern: SchemaPath): {

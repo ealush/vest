@@ -47,3 +47,15 @@ it('recomputes schema-only validity after a failed or focused run', () => {
   expect(suite.only('a').run({ a: 'x', b: 'x' }).valid).toBe(false);
   expect(suite.run({ a: 'x', b: 'x' }).valid).toBe(true);
 });
+
+it('keeps schema-only validity when the result is rebuilt', () => {
+  const suite = create(() => {}, enforce.shape({ a: enforce.isString() }));
+  expect(suite.run({ a: 'x' }).valid).toBe(true);
+
+  suite.resetField('unrelated' as never);
+  expect(suite.get().valid).toBe(true);
+  expect(suite.isValid()).toBe(true);
+
+  suite.reset();
+  expect(suite.get().valid).toBe(false);
+});

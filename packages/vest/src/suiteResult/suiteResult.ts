@@ -30,14 +30,11 @@ export function useCreateSuiteResult<
   runTime: Date = new Date(),
   parsedData?: Partial<InferSchemaOutput<S>>,
   focus?: SuiteModifiers<F, G>,
-  schemaPassed?: boolean,
 ): SuiteResult<F, G, S, D> {
   return useSuiteResultCache<F, G, S, D>(() => {
     // @vx-allow use-use
     const summary = useProduceSuiteSummary<F, G, D, S>();
-    if (schemaPassed && Object.keys(summary.tests).length === 0) {
-      summary.valid = true;
-    }
+    if (useSchemaOnlyPassed(summary.tests)) summary.valid = true;
     summary.run = {
       data: {
         raw: inputData,
@@ -70,6 +67,20 @@ export function useCreateSuiteResult<
 
     return Object.freeze(result);
   });
+}
+
+/** A test-free suite is valid when its last run passed the whole schema. */
+function useSchemaOnlyPassed(tests: object): boolean {
+  return (
+    !!useSchemaIsolate()?.data?.schemaPassed && Object.keys(tests).length === 0
+  );
+}
+
+/** The isolate holding the last run's schema results. */
+export function useSchemaIsolate() {
+  return VestRuntime.useAvailableRoot()?.children?.find(
+    child => child?.data?.schemaValidation,
+  );
 }
 
 export function constructSuiteResultObject<

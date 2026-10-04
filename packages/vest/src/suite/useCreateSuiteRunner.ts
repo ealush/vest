@@ -180,7 +180,6 @@ export function useCreateSuiteRunner<
             runTime,
             parsedData,
             snapshotFocus(transformedModifiers),
-            schemaPassed,
           );
 
           if (!result.isPending()) {
@@ -196,6 +195,7 @@ export function useCreateSuiteRunner<
             modifiers: transformedModifiers,
             retainedSchemaFailures,
             schema,
+            schemaPassed,
             schemaRunResult,
             suiteCallback,
             useResolver,
@@ -290,6 +290,7 @@ function useRunSuiteCallback<
   args: any[];
   modifiers: ReturnType<typeof useTransformedModifiers<F, G>>;
   schema: S | undefined;
+  schemaPassed: boolean;
   schemaRunResult?: SchemaRunResult[];
   retainedSchemaFailures: RetainedSchemaFailure[];
   suiteCallback: SuiteCallbackWithSchema<S, T>;
@@ -300,6 +301,7 @@ function useRunSuiteCallback<
     modifiers,
     retainedSchemaFailures,
     schema,
+    schemaPassed,
     schemaRunResult,
     suiteCallback,
     useResolver,
@@ -316,7 +318,8 @@ function useRunSuiteCallback<
       runSchemaValidation(schema, schemaRunResult, retainedSchemaFailures),
       undefined,
       {
-        ...(schema ? { schemaValidation: true } : {}),
+        // Kept in the tree so rebuilt results still see a complete schema pass.
+        ...(schema ? { schemaPassed, schemaValidation: true } : {}),
         tests: [],
       },
     );

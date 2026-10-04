@@ -47,6 +47,6 @@ export function validateResult(result: any): void {
   invariant(
     booleanRules.isBoolean(result) ||
       (result && booleanRules.isBoolean(result.pass)),
-    'Incorrect return value for rule: ' + JSON.stringify(result),
+    () => 'Incorrect return value for rule: ' + JSON.stringify(result),
   );
 }

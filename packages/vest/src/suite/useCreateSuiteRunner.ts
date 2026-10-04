@@ -27,7 +27,12 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 import { useCreateSuiteResult } from '../suiteResult/suiteResult';
 
-import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
+import {
+  SuiteModifiers,
+  SuiteRuntimeModifiers,
+  SuiteCallbackWithSchema,
+} from './SuiteTypes';
+import { planChanged, type ChangedPlan } from './changedHandler';
 import {
   RetainedSchemaFailure,
   ROOT_SCHEMA_FIELD,
@@ -35,7 +40,7 @@ import {
   useRetainedSchemaFailures,
 } from './retainedSchemaFailures';
 
-type SchemaRunResult = {
+export type SchemaRunResult = {
   readonly message?: string;
   readonly pass: boolean;
   readonly path?: readonly string[];
@@ -111,7 +116,7 @@ export function useCreateSuiteRunner<
   S extends TSchema = undefined,
 >(
   suiteCallback: SuiteCallbackWithSchema<S, T>,
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: SuiteRuntimeModifiers<F, G>,
   schema?: S,
 ) {
   const transformedModifiers = useTransformedModifiers<F, G>(modifiers);
@@ -138,11 +143,13 @@ export function useCreateSuiteRunner<
     };
 
     const schemaInput = args[0];
-    const schemaRunResult = shouldRunSchema(schema)
-      ? runSchemaWithParse(schema, schemaInput, transformedModifiers)
-      : undefined;
+    const { runModifiers, schemaRunResult, evaluated, value } = prepareRun(
+      schema,
+      schemaInput,
+      transformedModifiers,
+    );
 
-    const parsedDataChunk = getParsedDataChunk(schemaRunResult);
+    const parsedDataChunk = value ?? getParsedDataChunk(schemaRunResult);
 
     const parsedData = (
       schema ? snapshotParsedData(parsedDataChunk) : undefined
@@ -151,9 +158,7 @@ export function useCreateSuiteRunner<
     // Schema failures outside this run's focus keep their previous verdict,
     // like user tests that focus leaves out. Read before the new root exists.
     const retainedSchemaFailures = shouldRunSchema(schema)
-      ? useRetainedSchemaFailures(
-          schemaFocusOf(transformedModifiers, isN4sSchema(schema)),
-        )
+      ? useRetainedSchemaFailures(evaluated)
       : [];
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
@@ -164,7 +169,7 @@ export function useCreateSuiteRunner<
       {
         suiteParams: callbackArgs,
         schema,
-        modifiers: transformedModifiers,
+        modifiers: runModifiers,
       },
       () => {
         useEmit('SUITE_RUN_STARTED');
@@ -172,11 +177,11 @@ export function useCreateSuiteRunner<
         const useResolver = () => {
           const result = useCreateSuiteResult<F, G, S>(
             schema,
-            callbackInput,
+            value === undefined ? callbackInput : parsedData,
             runData,
             runTime,
             parsedData,
-            snapshotFocus(transformedModifiers),
+            snapshotFocus(runModifiers),
           );
 
           if (!result.isPending()) {
@@ -189,7 +194,7 @@ export function useCreateSuiteRunner<
         return IsolateSuite(
           useRunSuiteCallback<F, T, S, G>({
             args: callbackArgs,
-            modifiers: transformedModifiers,
+            modifiers: runModifiers,
             retainedSchemaFailures,
             schema,
             schemaRunResult,
@@ -215,6 +220,42 @@ export function useCreateSuiteRunner<
     );
     if (!suiteResult.isPending()) forgetPendingRun();
     return boundResult;
+  };
+}
+
+function prepareRun<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+>(
+  schema: S | undefined,
+  data: unknown,
+  modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
+): {
+  runModifiers: typeof modifiers;
+  schemaRunResult?: SchemaRunResult[];
+  evaluated: ChangedPlan['evaluated'];
+  value?: unknown;
+} {
+  if (modifiers.changed === undefined) {
+    return {
+      runModifiers: modifiers,
+      schemaRunResult: shouldRunSchema(schema)
+        ? runSchemaWithParse(schema, data, modifiers)
+        : undefined,
+      evaluated: schemaFocusOf(modifiers, isN4sSchema(schema)),
+    };
+  }
+  const plan = planChanged(schema, modifiers.changed, data, modifiers);
+  return {
+    runModifiers: {
+      ...modifiers,
+      only: plan.only as F[],
+      schemaFocus: plan.schemaFocus,
+    },
+    schemaRunResult: plan.schemaResults,
+    evaluated: plan.evaluated,
+    value: plan.value,
   };
 }
 
@@ -297,7 +338,12 @@ function useRunSuiteCallback<
     (suiteCallback as CB)(...args);
 
     IsolateReorderable(
-      runSchemaValidation(schema, schemaRunResult, retainedSchemaFailures),
+      runSchemaValidation(
+        schema,
+        schemaRunResult,
+        retainedSchemaFailures,
+        modifiers.schemaFocus,
+      ),
       undefined,
       {
         ...(schema ? { schemaValidation: true } : {}),
@@ -314,7 +360,7 @@ function useRunSuiteCallback<
  * Normalizes user-provided modifiers into deterministic sets for O(1) membership checks.
  */
 function useTransformedModifiers<F extends TFieldName, G extends TGroupName>(
-  modifiers: SuiteModifiers<F, G>,
+  modifiers: SuiteRuntimeModifiers<F, G>,
 ) {
   return {
     ...modifiers,
@@ -367,12 +413,17 @@ function runSchemaValidation<S extends TSchema = undefined>(
   schema: S | undefined,
   schemaRunResult?: SchemaRunResult[],
   retainedSchemaFailures: RetainedSchemaFailure[] = [],
+  schemaFocus?: string[],
 ) {
   // eslint-disable-next-line complexity
   return () => {
     if (!shouldRunSchema(schema) || !schemaRunResult) {
       return;
     }
+
+    // Reports schema failures outside the run's focus without running
+    // the user tests that share their field names.
+    only(schemaFocus);
 
     for (let i = 0; i < schemaRunResult.length; i++) {
       const error = schemaRunResult[i];
@@ -428,7 +479,7 @@ function tryParseSchema(
  * 2) if parse succeeds, treat it as the authoritative validation output
  * 3) on expected parse validation failures, fallback to run(raw)
  */
-function runSchemaWithParse(
+export function runSchemaWithParse(
   schema: any,
   data: unknown,
   modifiers: { only?: unknown; skip?: unknown },

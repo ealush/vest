@@ -47,6 +47,9 @@ jobs:
       - name: Run interlaced benchmarks and generate report
         run: npx tsx vx/scripts/benchmark-reporter.ts --interlace .benchmark-baseline
 
+      - name: Verify relationship performance budgets
+        run: yarn relationships:bench --baseline .benchmark-baseline
+
       - name: Comment Benchmark Results
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request'

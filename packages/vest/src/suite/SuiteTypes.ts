@@ -31,6 +31,15 @@ export type Suite<
 > = SuiteMethods<F, G, T, S> &
   StandardSchemaV1<InferSchemaData<S>, InferSchemaOutput<S>>;
 
+export type SuiteRuntimeModifiers<
+  F extends TFieldName,
+  G extends TGroupName,
+> = SuiteModifiers<F, G> & {
+  changed?: readonly string[];
+  /** Set by a changed plan: schema failures reported outside `only`. */
+  schemaFocus?: string[];
+};
+
 type SuiteMethods<
   F extends TFieldName,
   G extends TGroupName,
@@ -39,7 +48,7 @@ type SuiteMethods<
 > = {
   dump: CB<TIsolateSuite>;
 
-  get: CB<SuiteResult<F, G, S>>;
+  get: CB<ObservedSuiteResult<F, G, S>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
@@ -69,18 +78,20 @@ type FocusedMethods<
   G extends TGroupName,
   T extends CB,
   S extends TSchema,
+  R = ObservedSuiteResult<F, G, S>,
 > = {
-  afterEach: CB<FocusedMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
-  focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
-  only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
+  afterEach: CB<FocusedMethods<F, G, T, S, R>, [callback: CB]>;
+  afterField: CB<FocusedMethods<F, G, T, S, R>, [fieldName: F, callback: CB]>;
+  focus: CB<FocusedMethods<F, G, T, S, R>, [config: SuiteModifiers<F, G>]>;
+  only: CB<FocusedMethods<F, G, T, S, R>, [onlyField: FieldExclusion<F>]>;
+  changed: ChangedMethod<F, G, T, S>;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
   run: (
     ...args: S extends undefined
       ? Parameters<T>
       : [data: Partial<InferSchemaData<S>>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
+  ) => R;
 };
 
 type AfterMethods<
@@ -93,11 +104,81 @@ type AfterMethods<
   afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
+  changed: ChangedMethod<F, G, T, S>;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
   ) => SuiteResult<F, G, S>;
+};
+
+type PartialSuiteResult<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+  Output = PartialSchemaOutput<InferSchemaOutput<S>>,
+> = SuiteResult<
+  F,
+  G,
+  S extends undefined
+    ? undefined
+    : {
+        '~standard': {
+          types: {
+            input: InferSchemaData<S>;
+            output: Output;
+          };
+        };
+      }
+>;
+
+// Ordinary focus keeps unchecked input fields. Observing accumulated state
+// cannot prove that a present field has already been parsed.
+type ObservedSuiteResult<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+> = PartialSuiteResult<
+  F,
+  G,
+  S,
+  ObservedSchemaOutput<InferSchemaData<S>, InferSchemaOutput<S>>
+>;
+
+type ObservedSchemaOutput<Input, Output> = Output extends readonly unknown[]
+  ? PartialSchemaOutput<Output>
+  : Output extends object
+    ? {
+        [K in keyof Output]?:
+          | Output[K]
+          | (K extends keyof Input ? Input[K] : never);
+      }
+    : PartialSchemaOutput<Output>;
+
+// An empty selection produces an empty record. Unlike object schemas,
+// primitive and array outputs cannot represent that state with Partial alone.
+type PartialSchemaOutput<T> = T extends readonly unknown[]
+  ? Partial<T> | Record<never, never>
+  : T extends object
+    ? Partial<T>
+    : T | Record<never, never>;
+
+type ChangedMethods<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB,
+  S extends TSchema,
+> = FocusedMethods<F, G, T, S, PartialSuiteResult<F, G, S>>;
+
+type ChangedMethod<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB,
+  S extends TSchema,
+> = {
+  (fields: string | readonly string[]): ChangedMethods<F, G, T, S>;
+  (fields?: undefined): FocusedMethods<F, G, T, S>;
+  (fields?: string | readonly string[]): FocusedMethods<F, G, T, S>;
 };
 
 /**

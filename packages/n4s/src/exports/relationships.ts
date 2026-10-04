@@ -5,6 +5,8 @@ import { installDescribe } from '../ruleMeta';
 installDescribe(describeSchema);
 
 export { EnforceSchemaError } from '../relationshipGraph';
+/** @internal Package integration contract used by `vest/relationships`. */
+export { validateRelationshipFields } from '../relationshipValidation';
 export { resolveAffected } from '../relationshipPlanner';
 export type { ConcretePath } from '../relationshipPlanner';
 export { FIELD } from '../ruleMeta';

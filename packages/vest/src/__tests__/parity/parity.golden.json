@@ -445,7 +445,7 @@
       "issues": [
         {
           "message": "required",
-          "path": ["rows.0.v"]
+          "path": ["rows", "0", "v"]
         }
       ],
       "isValid": false,
@@ -499,7 +499,7 @@
       "issues": [
         {
           "message": "required",
-          "path": ["rows.1.v"]
+          "path": ["rows", "1", "v"]
         }
       ],
       "isValid": false,
@@ -553,7 +553,7 @@
       "issues": [
         {
           "message": "required",
-          "path": ["rows.0.v"]
+          "path": ["rows", "0", "v"]
         }
       ],
       "isValid": false,
@@ -2492,7 +2492,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["a"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x"
@@ -2515,8 +2520,10 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": false,
-      "issues": [],
+      "valid": true,
+      "value": {
+        "a": 1
+      },
       "types": {
         "input": {
           "a": 1
@@ -2525,9 +2532,8 @@
           "a": 1
         }
       },
-      "isValid": false,
-      "isPending": false,
-      "value": "<undefined>"
+      "isValid": true,
+      "isPending": false
     }
   ],
   "schema: focus({ skip }) after a failing full run": [
@@ -2556,7 +2562,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["b"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x",
@@ -2596,7 +2607,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["b"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x",
@@ -2623,8 +2639,11 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": false,
-      "issues": [],
+      "valid": true,
+      "value": {
+        "name": "a",
+        "age": 7
+      },
       "types": {
         "input": {
           "name": "a",
@@ -2635,9 +2654,8 @@
           "age": 7
         }
       },
-      "isValid": false,
-      "isPending": false,
-      "value": "<undefined>"
+      "isValid": true,
+      "isPending": false
     },
     {
       "label": "invalid name",
@@ -2664,7 +2682,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["name"]
+        }
+      ],
       "types": {
         "input": {
           "name": 1,
@@ -2691,8 +2714,15 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": false,
-      "issues": [],
+      "valid": true,
+      "value": {
+        "meta": {
+          "id": "x",
+          "extra": 1
+        },
+        "prefs": {},
+        "tags": ["a"]
+      },
       "types": {
         "input": {
           "meta": {
@@ -2711,9 +2741,8 @@
           "tags": ["a"]
         }
       },
-      "isValid": false,
-      "isPending": false,
-      "value": "<undefined>"
+      "isValid": true,
+      "isPending": false
     },
     {
       "label": "bad tag",
@@ -2740,7 +2769,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["tags", "1"]
+        }
+      ],
       "types": {
         "input": {
           "meta": {
@@ -2788,7 +2822,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["profile", "name"]
+        }
+      ],
       "types": {
         "input": {
           "profile": {
@@ -2873,7 +2912,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["b"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x",
@@ -2922,7 +2966,12 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed",
+          "path": ["b"]
+        }
+      ],
       "types": {
         "input": {
           "a": "x",
@@ -3002,7 +3051,11 @@
         }
       },
       "valid": false,
-      "issues": [],
+      "issues": [
+        {
+          "message": "Validation failed"
+        }
+      ],
       "types": {
         "input": null,
         "output": null
@@ -3021,8 +3074,10 @@
       "warnings": [],
       "groups": {},
       "tests": {},
-      "valid": false,
-      "issues": [],
+      "valid": true,
+      "value": {
+        "a": "x"
+      },
       "types": {
         "input": {
           "a": "x"
@@ -3031,9 +3086,8 @@
           "a": "x"
         }
       },
-      "isValid": false,
-      "isPending": false,
-      "value": "<undefined>"
+      "isValid": true,
+      "isPending": false
     }
   ],
   "serialization: resume restores verdicts": [

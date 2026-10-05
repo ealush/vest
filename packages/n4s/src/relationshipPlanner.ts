@@ -37,17 +37,19 @@ function expandSelection(
 ): ConcretePath[] {
   const selected = new Map<string, ConcretePath>();
   const affected = new Map<string, ConcretePath>();
-
-  function include(path: ConcretePath): void {
-    affected.set(JSON.stringify(path), path);
-  }
+  const plan: Plan = {
+    data,
+    expanded: new Set(),
+    include: path => void affected.set(JSON.stringify(path), path),
+    index,
+  };
 
   function add(path: ConcretePath, pattern: SchemaPath): void {
     const key = JSON.stringify(path);
     if (selected.has(key)) return;
     selected.set(key, path);
     affected.set(key, path);
-    invalidateSources(pattern, path, index, data, include);
+    invalidateSources(pattern, path, plan);
   }
 
   for (const name of changed) {
@@ -62,20 +64,41 @@ function expandSelection(
   return [...affected.values()];
 }
 
+type Plan = {
+  data: unknown;
+  /**
+   * Every descendant of a selected container shares its ancestors' edges.
+   * Each (source, bindings) pair is instantiated once per plan instead of
+   * re-expanding the same fan-out for each of the container's members.
+   */
+  expanded: Set<string>;
+  include: (path: ConcretePath) => void;
+  index: Index;
+};
+
 function invalidateSources(
   pattern: SchemaPath,
   path: ConcretePath,
-  index: Index,
-  data: unknown,
-  include: (path: ConcretePath) => void,
+  plan: Plan,
 ): void {
   for (let length = 1; length <= pattern.length; length++) {
     const source = pattern.slice(0, length);
-    const bindings = bindingsFor(source, path);
-    for (const edge of index.get(JSON.stringify(source)) ?? []) {
-      if (edge.concrete) include([...edge.concrete]);
-      else instantiate(edge.target, data, bindings, include);
-    }
+    const edges = plan.index.get(JSON.stringify(source));
+    if (edges) instantiateEdges(edges, bindingsFor(source, path), plan);
+  }
+}
+
+function instantiateEdges(
+  edges: Edge[],
+  bindings: Map<string, string | number>,
+  { data, expanded, include }: Plan,
+): void {
+  const key = JSON.stringify([edges[0].source, [...bindings.values()]]);
+  if (expanded.has(key)) return;
+  expanded.add(key);
+  for (const edge of edges) {
+    if (edge.concrete) include([...edge.concrete]);
+    else instantiate(edge.target, data, bindings, include);
   }
 }
 

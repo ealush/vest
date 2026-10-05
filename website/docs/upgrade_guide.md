@@ -43,6 +43,14 @@ Import `vest/relationships` to use `suite.changed(field).run(data)`. Rules can d
 
 `dependsOn()` returns an independent rule, including its validation chain and message. A changed result contains only validated output fields. Changed results are typed with partial parsed output. Ordinary focused results and `suite.get()` now make fields optional and allow input or parsed forms, because unchecked parser fields retain their input. Clearing changed focus returns those ordinary focused types. Complete `run()` and `runStatic()` output types remain available. Resolve schemas once their definitions and dependency callbacks are finalized.
 
+## Schema-only validity
+
+A complete passing schema can now make a suite valid even when its callback declares no user tests. Passing a focused subset is insufficient for a schema-only suite.
+
+## Complete and consistent validation issues
+
+Schema and user-test failures without a message are included in `result.issues` with `Validation failed`. Nested issue paths use the same segments as the Standard Schema adapter. A failure of the input as a whole (for example, a non-object passed to an object schema) is reported in `errors` under the `__root__` test name as before, but its issue now has no `path` instead of the internal `['__root__']` segment. A user test that reuses the `__root__` name reports its issue the same way.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

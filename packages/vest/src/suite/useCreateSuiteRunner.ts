@@ -35,7 +35,7 @@ import {
 import { planChanged, type ChangedPlan } from './changedHandler';
 import {
   RetainedSchemaFailure,
-  ROOT_SCHEMA_FIELD,
+  schemaFieldName,
   schemaFocusOf,
   useRetainedSchemaFailures,
 } from './retainedSchemaFailures';
@@ -157,6 +157,7 @@ export function useCreateSuiteRunner<
     const retainedSchemaFailures = shouldRunSchema(schema)
       ? useRetainedSchemaFailures(evaluated)
       : [];
+    const schemaPassed = isCompleteSchemaPass(evaluated, schemaRunResult);
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
@@ -194,6 +195,7 @@ export function useCreateSuiteRunner<
             modifiers: runModifiers,
             retainedSchemaFailures,
             schema,
+            schemaPassed,
             schemaRunResult,
             suiteCallback,
             useResolver,
@@ -260,6 +262,16 @@ function prepareRun<
 }
 
 /**
+ * Only a schema run that covered every field can make a test-free suite valid.
+ */
+function isCompleteSchemaPass(
+  evaluated: ChangedPlan['evaluated'],
+  schemaRunResult: SchemaRunResult[] | undefined,
+): boolean {
+  return evaluated === null && !!schemaRunResult?.every(result => result.pass);
+}
+
+/**
  * Resolves the partial parsed data chunk from the schema run payload.
  */
 function getParsedDataChunk(
@@ -315,6 +327,7 @@ function useRunSuiteCallback<
   args: any[];
   modifiers: ReturnType<typeof useTransformedModifiers<F, G>>;
   schema: S | undefined;
+  schemaPassed: boolean;
   schemaRunResult?: SchemaRunResult[];
   retainedSchemaFailures: RetainedSchemaFailure[];
   suiteCallback: SuiteCallbackWithSchema<S, T>;
@@ -325,6 +338,7 @@ function useRunSuiteCallback<
     modifiers,
     retainedSchemaFailures,
     schema,
+    schemaPassed,
     schemaRunResult,
     suiteCallback,
     useResolver,
@@ -346,7 +360,8 @@ function useRunSuiteCallback<
       ),
       undefined,
       {
-        ...(schema ? { schemaValidation: true } : {}),
+        // Kept in the tree so rebuilt results still see a complete schema pass.
+        ...(schema ? { schemaPassed, schemaValidation: true } : {}),
         tests: [],
       },
     );
@@ -446,8 +461,7 @@ function emitSchemaFailure(
   { path, message }: { path?: readonly string[]; message?: string },
   key: string,
 ) {
-  const fieldName = path?.length ? path.join('.') : ROOT_SCHEMA_FIELD;
-  const schemaTest = test(fieldName, message, () => false, key);
+  const schemaTest = test(schemaFieldName(path), message, () => false, key);
   (schemaTest.data as { schemaPath?: readonly string[] }).schemaPath = path;
 }
 

@@ -50,3 +50,5 @@ This preserves dependency correctness without showing an error before the user r
 Keep the dependency next to the rules it affects. Repeating this logic in component event handlers makes it easy for different screens to validate the same data differently.
 
 Read the complete [`include` reference](../writing_your_suite/including_and_excluding/include.md).
+
+For schemas that declare dependencies with `dependsOn()`, see [Schema Relationships and Changed Runs](./schema-relationships.md).

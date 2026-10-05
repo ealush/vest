@@ -143,11 +143,8 @@ export function useCreateSuiteRunner<
     };
 
     const schemaInput = args[0];
-    const { runModifiers, schemaRunResult, evaluated, value } = prepareRun(
-      schema,
-      schemaInput,
-      transformedModifiers,
-    );
+    const { focus, runModifiers, schemaRunResult, evaluated, value } =
+      prepareRun(schema, schemaInput, transformedModifiers);
 
     const parsedDataChunk = value ?? getParsedDataChunk(schemaRunResult);
 
@@ -181,7 +178,7 @@ export function useCreateSuiteRunner<
             runData,
             runTime,
             parsedData,
-            snapshotFocus(runModifiers),
+            snapshotFocus(focus ?? runModifiers),
           );
 
           if (!result.isPending()) {
@@ -232,6 +229,8 @@ function prepareRun<
   data: unknown,
   modifiers: ReturnType<typeof useTransformedModifiers<F, G>>,
 ): {
+  /** The modifiers reported as the run's focus, when not runModifiers. */
+  focus?: typeof modifiers;
   runModifiers: typeof modifiers;
   schemaRunResult?: SchemaRunResult[];
   evaluated: ChangedPlan['evaluated'];
@@ -248,6 +247,7 @@ function prepareRun<
   }
   const plan = planChanged(schema, modifiers.changed, data, modifiers);
   return {
+    focus: { ...modifiers, only: plan.focus as F[] },
     runModifiers: {
       ...modifiers,
       only: plan.only as F[],

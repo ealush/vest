@@ -133,7 +133,7 @@ After `import 'vest/relationships'`, prepares a focused run for the named fields
 - Schema validation checks affected top-level fields; nested member selection does not yet narrow schema execution.
 - Use canonical dotted data paths for dependent test names. Explicitly named fields run unless skipped, even when they are not schema fields. Dependencies on a container also respond to changes in its descendants.
 - Schema failures outside the affected names are reported without running those fields' user tests.
-- A successful changed result's `value` contains only the validated fields and is typed as a partial schema output. Ordinary focused results and `suite.get()` make fields optional and allow unchecked input forms as well as parsed output. Clearing changed focus returns those ordinary focused types. Its `valid` does not cover unchecked fields, so run the full suite before submitting. Await the result when tests are async.
+- A successful changed result's `value` contains only the validated fields and is typed as a partial schema output. Ordinary focused results and `suite.get()` keep their complete output types, and clearing changed focus returns those types. Its `valid` does not cover unchecked fields, so run the full suite before submitting. Await the result when tests are async.
 - Without the opt-in import, the first changed run throws a setup error.
 - [Read the relationships guide](./guides/schema-relationships.md).
 

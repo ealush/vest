@@ -52,7 +52,7 @@ export function createPasswordRelationshipAdapter(
 }
 
 function isPasswordField(name: string): name is PasswordField {
-  return name === 'password' || name === 'confirm';
+  return (passwordFields as readonly string[]).includes(name);
 }
 
 /** Report dependent errors; return this field's error to its native validator. */

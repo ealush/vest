@@ -35,7 +35,7 @@ import {
 import { planChanged, type ChangedPlan } from './changedHandler';
 import {
   RetainedSchemaFailure,
-  ROOT_SCHEMA_FIELD,
+  schemaFieldName,
   schemaFocusOf,
   useRetainedSchemaFailures,
 } from './retainedSchemaFailures';
@@ -461,8 +461,7 @@ function emitSchemaFailure(
   { path, message }: { path?: readonly string[]; message?: string },
   key: string,
 ) {
-  const fieldName = path?.length ? path.join('.') : ROOT_SCHEMA_FIELD;
-  const schemaTest = test(fieldName, message, () => false, key);
+  const schemaTest = test(schemaFieldName(path), message, () => false, key);
   (schemaTest.data as { schemaPath?: readonly string[] }).schemaPath = path;
 }
 

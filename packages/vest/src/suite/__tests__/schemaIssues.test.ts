@@ -36,3 +36,13 @@ it('uses the same nested paths in SuiteResult and Standard Schema issues', () =>
   ]);
   expect(suite['~standard'].validate(data)).toEqual({ issues: result.issues });
 });
+
+it('reports a failure of the whole input without a path', () => {
+  const suite = create(() => {}, enforce.shape({ name: enforce.isString() }));
+  const result = suite.run(null as never);
+  expect(result.errors.map(error => error.fieldName)).toEqual(['__root__']);
+  expect(result.issues).toEqual([
+    { message: 'Validation failed', path: undefined },
+  ]);
+  expect(suite['~standard'].validate(null)).toEqual({ issues: result.issues });
+});

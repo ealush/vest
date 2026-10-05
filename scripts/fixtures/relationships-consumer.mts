@@ -1,4 +1,8 @@
-import 'vest/relationships';
+import {
+  EnforceSchemaError,
+  FIELD as vestField,
+  resolveAffected as vestResolveAffected,
+} from 'vest/relationships';
 import { create, enforce, test } from 'vest';
 import {
   FIELD,
@@ -29,6 +33,19 @@ if (schema.describe().relationships.length !== 1)
   throw new Error('graph entry registration');
 if (resolveAffected(schema, ['password'], {}).length !== 2)
   throw new Error('planner export');
+// vest/relationships re-exports the same n4s instance the suite plans with.
+if (vestField !== FIELD || vestResolveAffected !== resolveAffected)
+  throw new Error('vest/relationships re-exports');
+try {
+  enforce
+    .shape({ a: enforce.isString() })
+    .dependsOn($ => $.a)
+    .describe();
+  throw new Error('root declaration accepted');
+} catch (error) {
+  if (!(error instanceof EnforceSchemaError))
+    throw new Error('root declaration error class');
+}
 const complete = suite.run({ password: 'a', confirm: 'a', age: '42' });
 if (!complete.valid || complete.value.age !== 42)
   throw new Error('parsed complete output');

@@ -35,6 +35,7 @@ export function createPackageConfig({
 }: PackageConfigOptions): UserConfig {
   const packageName = readPackageName(packageDir);
   const mainEntry = vxPath.packageSrc(packageName, `${packageName}.ts`);
+  const dependencies = readDependencies(packageDir);
 
   return defineConfig({
     alias: {
@@ -48,7 +49,12 @@ export function createPackageConfig({
       resolver: 'oxc',
     },
     entry: [mainEntry, vxPath.packageSrcExports(packageName, '*.ts')],
-    external: [packageName],
+    // Subpath imports of a dependency (n4s/relationships) must stay external
+    // in the declaration bundle too, or its unique symbols get re-declared.
+    external: [
+      packageName,
+      ...dependencies.map(name => new RegExp(`^${name}(/|$)`)),
+    ],
     exports: {
       all: true,
       devExports,
@@ -208,6 +214,18 @@ function readPackageName(packageDir: string): string {
   const pkgJsonPath = vxPath.packageJson(path.basename(packageDir));
   const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
   return pkgJson.name;
+}
+
+/**
+ * Reads the runtime dependency names from the package.json file.
+ *
+ * @param packageDir - Absolute path to the package directory
+ * @returns The dependency names declared by the package
+ */
+function readDependencies(packageDir: string): string[] {
+  const pkgJsonPath = vxPath.packageJson(path.basename(packageDir));
+  const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+  return Object.keys(pkgJson.dependencies ?? {});
 }
 
 /**

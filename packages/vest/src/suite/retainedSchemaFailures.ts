@@ -1,9 +1,15 @@
 import { asArray, isStringValue, makeResult } from 'vest-utils';
-import { VestRuntime, Walker } from 'vestjs-runtime';
+import { Walker } from 'vestjs-runtime';
 
 import { VestTest } from '../core/isolate/IsolateTest/VestTest';
+import { useSchemaIsolate } from '../suiteResult/suiteResult';
 
 export const ROOT_SCHEMA_FIELD = '__root__';
+
+/** The test name under which a schema failure at `path` is reported. */
+export function schemaFieldName(path: readonly string[] | undefined): string {
+  return path?.length ? path.join('.') : ROOT_SCHEMA_FIELD;
+}
 
 export type RetainedSchemaFailure = {
   readonly path?: readonly string[];
@@ -57,9 +63,7 @@ export function useRetainedSchemaFailures(
   isEvaluated: ((path: readonly string[] | undefined) => boolean) | null,
 ): RetainedSchemaFailure[] {
   if (isEvaluated === null) return [];
-  const container = VestRuntime.useAvailableRoot()?.children?.find(
-    child => child?.data?.schemaValidation,
-  );
+  const container = useSchemaIsolate();
   if (!container) return [];
 
   const retained: RetainedSchemaFailure[] = [];

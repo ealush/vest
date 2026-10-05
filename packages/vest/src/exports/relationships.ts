@@ -13,11 +13,23 @@ import {
   installChangedHandler,
   type ChangedPlan,
 } from '../suite/changedHandler';
-import { ROOT_SCHEMA_FIELD } from '../suite/retainedSchemaFailures';
+import { schemaFieldName } from '../suite/retainedSchemaFailures';
 import {
   runSchemaWithParse,
   type SchemaRunResult,
 } from '../suite/useCreateSuiteRunner';
+
+// Vest consumers declare and inspect relationships through this entry, so an
+// application does not need its own dependency on n4s.
+export { EnforceSchemaError, FIELD, resolveAffected } from 'n4s/relationships';
+export type {
+  ConcretePath,
+  DependencyResolver,
+  Description,
+  Relationship,
+  SchemaPath,
+  Scope,
+} from 'n4s/relationships';
 
 // An empty changed selection runs no user test; an empty only() runs them all.
 const NO_FIELD = '\0vest.changed.none';
@@ -148,7 +160,7 @@ function fullSchemaPlan(
     schemaFocus: failurePaths(schemaResults, skip),
     schemaResults,
     evaluated: skip.size
-      ? path => !isSkipped(path?.join('.') ?? ROOT_SCHEMA_FIELD, skip)
+      ? path => !isSkipped(schemaFieldName(path), skip)
       : null,
   };
 }
@@ -184,7 +196,7 @@ function synchronousMethod(receiver: unknown, method: unknown) {
 function failurePaths(results: SchemaRunResult[], skip: Set<string>): string[] {
   const paths = results
     .filter(result => !result.pass)
-    .map(result => result.path?.join('.') ?? ROOT_SCHEMA_FIELD);
+    .map(result => schemaFieldName(result.path));
   return [...new Set(paths)].filter(path => !isSkipped(path, skip));
 }
 

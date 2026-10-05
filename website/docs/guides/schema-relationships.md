@@ -73,21 +73,21 @@ Relationships are **direct**: if `c` depends on `b` and `b` depends on `a`, chan
 
 A dependency on an object or array is also affected by a change inside it. For example, a rule that depends on `$.address` is selected by `changed('address.city')`. Naming the entire object selects its declared descendants as well. Dependents use canonical dotted test names such as `rows.5.state`; numeric brackets are accepted in changed names and skip comparisons.
 
-`$.root` and `$.parent` are reserved, and `then` cannot be read from a proxy. Use `FIELD` from `n4s/relationships` to reference a field with one of those names:
+`$.root` and `$.parent` are reserved, and `then` cannot be read from a proxy. Use `FIELD` from `vest/relationships` (or `n4s/relationships` in n4s-only code) to reference a field with one of those names:
 
 ```ts
-import { FIELD } from 'n4s/relationships';
+import { FIELD } from 'vest/relationships';
 
 enforce.isString().dependsOn($ => $[FIELD]('root'));
 ```
 
-Declarations and references work inside `shape`, `loose`, `partial`, `pick`, `omit`, `optional`, `compose`, `isArrayOf`, `record`, `tuple`, the compound rules (`anyOf`, `allOf`, `oneOf`, `noneOf`) and `lazy()`. A schema path cannot describe unbounded depth, so `dependsOn()` inside a recursive `lazy()` schema throws an `EnforceSchemaError`. Recursive schemas without declarations must reuse a schema instance. Graph discovery supports at most 32 nested `lazy()` expansions; exceeding this limit throws instead of silently omitting deeper dependencies.
+Declarations and references work inside `shape`, `loose`, `partial`, `pick`, `omit`, `optional`, `compose`, `isArrayOf`, `record`, `tuple`, the compound rules (`anyOf`, `allOf`, `oneOf`, `noneOf`) and `lazy()`. A declaration belongs to a field: the root schema itself cannot call `dependsOn()`, because it has no name to focus and every change already reaches it. Declare the dependency on the field whose result changes; describing a root declaration throws an `EnforceSchemaError`. A schema path cannot describe unbounded depth, so `dependsOn()` inside a recursive `lazy()` schema throws an `EnforceSchemaError`. Recursive schemas without declarations must reuse a schema instance. Graph discovery supports at most 32 nested `lazy()` expansions; exceeding this limit throws instead of silently omitting deeper dependencies.
 
 Finalize schema definitions and dependency resolvers before the first `describe()` or changed run. Graphs are cached for that schema instance; create a new schema when its structure or declarations need to change. Use own enumerable data properties for schema definitions; accessor-defined rules cannot be inspected for dependencies. Resolver callbacks describe configuration and should be pure. Describing a graph resolves `lazy()` factories once, but executes no validation rules, parsers or input getters.
 
 ## Focus and schema results
 
-`changed()` accepts a field name or an array of names. It composes with `only()` and `focus()` in either order. Explicit `only()` fields join the affected set; `skip` excludes a field and its descendants even when a dependency selects them. `changed([])` selects no fields itself and keeps previous results, including for schemas that otherwise require whole-schema validation. The suite callback still executes, and explicit `include()` hooks keep their ordinary focus behavior. `changed(undefined)` clears the changed focus.
+`changed()` accepts a field name or an array of names. It composes with `only()` and `focus()` in either order, and a later `changed()` call replaces the earlier selection rather than adding to it. Explicit `only()` fields join the affected set; `skip` excludes a field and its descendants even when a dependency selects them. `changed([])` selects no fields itself and keeps previous results, including for schemas that otherwise require whole-schema validation. The suite callback still executes, and explicit `include()` hooks keep their ordinary focus behavior. `changed(undefined)` clears the changed focus.
 
 User tests run for the affected names. Schema validation currently runs each affected **top-level field** separately, with n4s's usual parent context and parsing behavior. For example, `changed('rows.5.country')` can also report an invalid sibling in `rows`, because the `rows` schema rule validates the whole array. A schema that cannot be safely split into fields, such as a composed or `partial()` root, runs as a whole. Schema errors found outside the affected names are reported, but the user tests for those fields do not run. Skipped schema errors keep their prior verdict. The schemas inside each selected top-level field still fail fast, so this does not promise an exhaustive list of failing descendants.
 
@@ -95,7 +95,7 @@ Group focus keeps Vest's ordinary reporting rules. Schema failure tests have no 
 
 Other suite schemas must provide synchronous `parse()` or `run()` methods. A foreign object implementing only Standard Schema's `~standard.validate` is not a supported suite schema, and asynchronous schema parsing is unsupported. Vest's own Standard Schema export remains available for complete submission validation.
 
-The passing `value` from a changed run contains only the fields it validated, parsed by their schema rules. Changed results are typed as partial parsed schema output. A changed selection that might be undefined uses the same partial type. An empty selection returns `{}`, including for an array or scalar root; the partial output types include the empty object and require narrowing. Ordinary `only()`, `focus()`, `suite.get()`, `run()` and `runStatic()` keep their existing output types, and clearing changed focus with `changed(undefined)` returns the ordinary focused types. As with `only()`, a passing schema run gives the suite callback the input with the validated fields parsed and the other fields as they were passed in; when schema validation fails, the callback receives the raw input. Validated output is a shallow snapshot taken before the callback runs; treat nested parsed objects as immutable.
+The passing `value` from a changed run contains only the fields it validated, parsed by their schema rules. Changed results are typed as partial parsed schema output. Ordinary `only()` and `focus()` keep unchecked input fields, so their result types and `suite.get()` allow each object field to contain its input or parsed output form, with fields optional. Clearing changed focus with `changed(undefined)` returns those ordinary focused types; a changed selection that might be undefined also uses that conservative type. An empty selection returns `{}`, including for an array or scalar root; those focused output types include the empty object and require narrowing. Full `run()` and `runStatic()` retain their complete output types. As with `only()`, a passing schema run gives the suite callback the input with the validated fields parsed and the other fields as they were passed in; when schema validation fails, the callback receives the raw input. Validated output is a shallow snapshot taken before the callback runs; treat nested parsed objects as immutable.
 
 Field and test names use dotted paths. Literal dots in object keys are ambiguous with nested names for focus and issue paths; prefer keys without dots.
 
@@ -103,7 +103,7 @@ Async changed runs use the usual suite lifecycle: await the returned result befo
 
 ## Inspect the graph
 
-For n4s-only code, import `n4s/relationships` to enable `schema.describe()` and `resolveAffected()`:
+`vest/relationships` re-exports `FIELD`, `resolveAffected`, `EnforceSchemaError` and the graph types, so an application that depends on `vest` alone can declare and inspect relationships. For n4s-only code, import `n4s/relationships` to enable `schema.describe()` and `resolveAffected()`:
 
 ```ts
 import 'n4s/relationships';
@@ -127,4 +127,4 @@ export const affected = resolveAffected(schema, ['password'], {
 
 `import 'vest/relationships'` also enables the n4s graph for Vest suites. Without the relevant opt-in import, calling `suite.changed(...).run(...)` or `schema.describe()` throws a setup error naming the required entry. Load `vest` and `vest/relationships` in the same module format (both ESM or both CommonJS); a mixed setup loads two copies of Vest and the import does not reach the suite.
 
-`resolveAffected()` ignores unknown or unsafe schema paths. `suite.changed()` still selects user tests whose names were explicitly passed, including names absent from the schema. It does not check that every requested user-test name exists.
+`resolveAffected()` ignores unknown or unsafe schema paths. `suite.changed()` still selects user tests whose names were explicitly passed, including names absent from the schema. It does not check that every requested user-test name exists. Planning expands each dependency edge once per run, so naming a large container (or a member of one whose dependents depend on the container) costs a single pass over the current data.

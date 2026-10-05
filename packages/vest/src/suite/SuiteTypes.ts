@@ -48,7 +48,7 @@ type SuiteMethods<
 > = {
   dump: CB<TIsolateSuite>;
 
-  get: CB<SuiteResult<F, G, S>>;
+  get: CB<ObservedSuiteResult<F, G, S>>;
   resume: CB<void, [TIsolateSuite]>;
   reset: CB<void>;
   remove: CB<void, [fieldName: F]>;
@@ -78,7 +78,7 @@ type FocusedMethods<
   G extends TGroupName,
   T extends CB,
   S extends TSchema,
-  R = SuiteResult<F, G, S>,
+  R = ObservedSuiteResult<F, G, S>,
 > = {
   afterEach: CB<FocusedMethods<F, G, T, S, R>, [callback: CB]>;
   afterField: CB<FocusedMethods<F, G, T, S, R>, [fieldName: F, callback: CB]>;
@@ -112,12 +112,11 @@ type AfterMethods<
   ) => SuiteResult<F, G, S>;
 };
 
-// changed() validates only the selected fields, so its output is partial.
-// only(), focus() and get() keep their complete result types.
 type PartialSuiteResult<
   F extends TFieldName,
   G extends TGroupName,
   S extends TSchema,
+  Output = PartialSchemaOutput<InferSchemaOutput<S>>,
 > = SuiteResult<
   F,
   G,
@@ -127,11 +126,34 @@ type PartialSuiteResult<
         '~standard': {
           types: {
             input: InferSchemaData<S>;
-            output: PartialSchemaOutput<InferSchemaOutput<S>>;
+            output: Output;
           };
         };
       }
 >;
+
+// Ordinary focus keeps unchecked input fields. Observing accumulated state
+// cannot prove that a present field has already been parsed.
+type ObservedSuiteResult<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+> = PartialSuiteResult<
+  F,
+  G,
+  S,
+  ObservedSchemaOutput<InferSchemaData<S>, InferSchemaOutput<S>>
+>;
+
+type ObservedSchemaOutput<Input, Output> = Output extends readonly unknown[]
+  ? PartialSchemaOutput<Output>
+  : Output extends object
+    ? {
+        [K in keyof Output]?:
+          | Output[K]
+          | (K extends keyof Input ? Input[K] : never);
+      }
+    : PartialSchemaOutput<Output>;
 
 // An empty selection produces an empty record. Unlike object schemas,
 // primitive and array outputs cannot represent that state with Partial alone.
@@ -154,9 +176,9 @@ type ChangedMethod<
   T extends CB,
   S extends TSchema,
 > = {
+  (fields: string | readonly string[]): ChangedMethods<F, G, T, S>;
   (fields?: undefined): FocusedMethods<F, G, T, S>;
-  // A selection that may be defined can validate only part of the data.
-  (fields?: string | readonly string[]): ChangedMethods<F, G, T, S>;
+  (fields?: string | readonly string[]): FocusedMethods<F, G, T, S>;
 };
 
 /**

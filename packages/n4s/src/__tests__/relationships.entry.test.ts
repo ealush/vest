@@ -366,3 +366,31 @@ it('rejects an unsupported parent reference with dependent field context', () =>
   });
   expect(() => schema.describe()).toThrow(/b.*parent is not supported/);
 });
+
+it('rejects a dependency declared on the root schema', () => {
+  const fields = { a: enforce.isString(), b: enforce.isString() };
+  const root = enforce.shape(fields).dependsOn($ => $.a);
+  expect(() => root.describe()).toThrow(
+    /root schema cannot depend on "a".*dependsOn on the field/,
+  );
+  expect(() =>
+    compose(enforce.shape(fields))
+      .dependsOn($ => $.b)
+      .describe(),
+  ).toThrow(/root schema cannot depend on "b"/);
+  // Unknown references are still reported first.
+  expect(() =>
+    enforce
+      .shape(fields)
+      .dependsOn($ => $.c)
+      .describe(),
+  ).toThrow(/unknown field "c"/);
+  // A container inside the schema is a field and may declare dependencies.
+  const schema = enforce.shape({
+    ...fields,
+    box: enforce.shape({ c: enforce.isString() }).dependsOn($ => $.a),
+  });
+  expect(schema.describe().relationships).toEqual([
+    { source: ['a'], target: ['box'], effect: 'invalidate' },
+  ]);
+});

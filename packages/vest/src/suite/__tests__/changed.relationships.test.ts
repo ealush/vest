@@ -140,6 +140,23 @@ it('treats an empty changed list as running no fields', () => {
   expect(called).not.toHaveBeenCalled();
 });
 
+it('reports the selected fields as the run focus', () => {
+  const schema = enforce.shape({
+    a: enforce.isString(),
+    b: enforce.isString().dependsOn($ => $.a),
+  });
+  const suite = create(() => {}, schema);
+  const data = { a: 'a', b: 'b' };
+
+  expect(suite.changed('a').run(data).run.focus).toEqual({ only: ['a', 'b'] });
+  expect(suite.changed([]).run(data).run.focus).toEqual({});
+  expect(
+    create(() => {})
+      .changed([])
+      .run().run.focus,
+  ).toEqual({});
+});
+
 it('keeps previous schema errors when changed([]) runs', () => {
   const schema = enforce.shape({ a: enforce.isString() });
   const suite = create(() => test('a', () => true), schema);
@@ -299,4 +316,17 @@ it('never makes a partially validated schema-only suite valid', () => {
   );
   expect(suite.changed('a').run({ a: 'ok', b: 1 } as never).valid).toBe(false);
   expect(suite.changed([]).run({ a: 1, b: 1 } as never).valid).toBe(false);
+});
+
+it('runs dependents of a cleared lazy container', () => {
+  const profile = enforce.shape({ name: enforce.isString() });
+  const schema = enforce.shape({
+    profile: enforce.optional(enforce.lazy(() => profile)),
+    greeting: enforce.isString().dependsOn($ => $.root.profile.name),
+  });
+  const greeting = vi.fn();
+  const suite = create(() => test('greeting', greeting), schema);
+
+  suite.changed('profile').run({ profile: null, greeting: 'hi' } as never);
+  expect(greeting).toHaveBeenCalledOnce();
 });

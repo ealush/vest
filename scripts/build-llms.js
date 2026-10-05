@@ -77,7 +77,20 @@ function buildDocEntry(file) {
   };
 }
 
+// Fenced code blocks and inline code spans are not markdown links, even when
+// they contain `[x](y)` (for example `$[FIELD]('root')`).
+const CODE_SEGMENT = /(```[\s\S]*?```|`[^`\n]*`)/;
+
 function makeLinksAbsolute(content, file) {
+  return content
+    .split(CODE_SEGMENT)
+    .map((segment, index) =>
+      index % 2 ? segment : makeProseLinksAbsolute(segment, file),
+    )
+    .join('');
+}
+
+function makeProseLinksAbsolute(content, file) {
   return content.replace(
     /(\]\()(<[^>\n]+>|[^)\s]+)(\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\)/g,
     (match, prefix, destination, title = '') =>

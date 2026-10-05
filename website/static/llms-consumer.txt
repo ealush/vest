@@ -131,6 +131,35 @@ const suite = create(data => {
 
 Now `suite.only('password').run(data)` also reevaluates `confirmPassword`.
 
+## Schema relationships and changed runs
+
+When the suite has an Enforce schema, declare the dependency on the schema rule and let Vest plan the affected fields. This is opt-in: import `vest/relationships` once, then use `suite.changed(field).run(data)` at the event boundary.
+
+```js
+import 'vest/relationships';
+import { create, enforce, test } from 'vest';
+
+const schema = enforce.shape({
+  password: enforce.isString(),
+  confirm: enforce.isString().dependsOn($ => $.password),
+});
+
+const suite = create(data => {
+  test('confirm', 'Passwords do not match', () => {
+    enforce(data.confirm).equals(data.password);
+  });
+}, schema);
+
+const result = suite.changed('password').run(formData); // checks password and confirm
+```
+
+- `rule.dependsOn($ => $.other)` returns a new rule; the original is unchanged. Use `$.root.other` for a top-level field from inside an array item or nested shape, and `$[FIELD]('root')` (`FIELD` from `vest/relationships`) for fields named `root`, `parent` or `then`. Declare dependencies on fields, never on the root schema.
+- Relationships are direct, not transitive. A dependency on an object or array also reacts to changes inside it.
+- A changed run checks the named fields and their direct dependents, retains the other results, and types its `value` as a partial parsed output. Run the whole suite before submission.
+- `schema.describe()` returns the declared graph as JSON, and `resolveAffected(schema, changed, data)` (from `vest/relationships`) returns the concrete affected paths. Neither executes validation rules.
+
+Read the [Schema Relationships guide](https://vestjs.dev/docs/guides/schema-relationships) for focus composition, nested paths and limits.
+
 ## Groups and multi-step workflows
 
 ```js

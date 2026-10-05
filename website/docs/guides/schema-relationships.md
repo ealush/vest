@@ -73,15 +73,15 @@ Relationships are **direct**: if `c` depends on `b` and `b` depends on `a`, chan
 
 A dependency on an object or array is also affected by a change inside it. For example, a rule that depends on `$.address` is selected by `changed('address.city')`. Naming the entire object selects its declared descendants as well. Dependents use canonical dotted test names such as `rows.5.state`; numeric brackets are accepted in changed names and skip comparisons.
 
-`$.root` and `$.parent` are reserved, and `then` cannot be read from a proxy. Use `FIELD` from `n4s/relationships` to reference a field with one of those names:
+`$.root` and `$.parent` are reserved, and `then` cannot be read from a proxy. Use `FIELD` from `vest/relationships` (or `n4s/relationships` in n4s-only code) to reference a field with one of those names:
 
 ```ts
-import { FIELD } from 'n4s/relationships';
+import { FIELD } from 'vest/relationships';
 
 enforce.isString().dependsOn($ => $[FIELD]('root'));
 ```
 
-Declarations and references work inside `shape`, `loose`, `partial`, `pick`, `omit`, `optional`, `compose`, `isArrayOf`, `record`, `tuple`, the compound rules (`anyOf`, `allOf`, `oneOf`, `noneOf`) and `lazy()`. A schema path cannot describe unbounded depth, so `dependsOn()` inside a recursive `lazy()` schema throws an `EnforceSchemaError`. Recursive schemas without declarations must reuse a schema instance. Graph discovery supports at most 32 nested `lazy()` expansions; exceeding this limit throws instead of silently omitting deeper dependencies.
+Declarations and references work inside `shape`, `loose`, `partial`, `pick`, `omit`, `optional`, `compose`, `isArrayOf`, `record`, `tuple`, the compound rules (`anyOf`, `allOf`, `oneOf`, `noneOf`) and `lazy()`. A declaration belongs to a field: the root schema itself cannot call `dependsOn()`, because it has no name to focus and every change already reaches it. Declare the dependency on the field whose result changes; describing a root declaration throws an `EnforceSchemaError`. A schema path cannot describe unbounded depth, so `dependsOn()` inside a recursive `lazy()` schema throws an `EnforceSchemaError`. Recursive schemas without declarations must reuse a schema instance. Graph discovery supports at most 32 nested `lazy()` expansions; exceeding this limit throws instead of silently omitting deeper dependencies.
 
 Finalize schema definitions and dependency resolvers before the first `describe()` or changed run. Graphs are cached for that schema instance; create a new schema when its structure or declarations need to change. Use own enumerable data properties for schema definitions; accessor-defined rules cannot be inspected for dependencies. Resolver callbacks describe configuration and should be pure. Describing a graph resolves `lazy()` factories once, but executes no validation rules, parsers or input getters.
 
@@ -103,7 +103,7 @@ Async changed runs use the usual suite lifecycle: await the returned result befo
 
 ## Inspect the graph
 
-For n4s-only code, import `n4s/relationships` to enable `schema.describe()` and `resolveAffected()`:
+`vest/relationships` re-exports `FIELD`, `resolveAffected`, `EnforceSchemaError` and the graph types, so an application that depends on `vest` alone can declare and inspect relationships. For n4s-only code, import `n4s/relationships` to enable `schema.describe()` and `resolveAffected()`:
 
 ```ts
 import 'n4s/relationships';
@@ -127,4 +127,4 @@ export const affected = resolveAffected(schema, ['password'], {
 
 `import 'vest/relationships'` also enables the n4s graph for Vest suites. Without the relevant opt-in import, calling `suite.changed(...).run(...)` or `schema.describe()` throws a setup error naming the required entry. Load `vest` and `vest/relationships` in the same module format (both ESM or both CommonJS); a mixed setup loads two copies of Vest and the import does not reach the suite.
 
-`resolveAffected()` ignores unknown or unsafe schema paths. `suite.changed()` still selects user tests whose names were explicitly passed, including names absent from the schema. It does not check that every requested user-test name exists.
+`resolveAffected()` ignores unknown or unsafe schema paths. `suite.changed()` still selects user tests whose names were explicitly passed, including names absent from the schema. It does not check that every requested user-test name exists. Planning expands each dependency edge once per run, so naming a large container (or a member of one whose dependents depend on the container) costs a single pass over the current data.

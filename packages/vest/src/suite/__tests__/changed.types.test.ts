@@ -20,17 +20,20 @@ it('types changed input and passing value as partial schema data', () => {
   }
   const current = suite.get();
   if (current.valid)
-    expectTypeOf(current.value).toEqualTypeOf<
-      Partial<{ first: string; second: number }>
-    >();
+    expectTypeOf(current.value).toEqualTypeOf<{
+      first: string;
+      second: number;
+    }>();
   const focused = suite.only('first').run({ first: 'a' });
   if (focused.valid) {
-    expectTypeOf(focused.value).toEqualTypeOf<
-      Partial<{ first: string; second: number }>
-    >();
-    expectTypeOf(focused.types.output).toEqualTypeOf<
-      Partial<{ first: string; second: number }>
-    >();
+    expectTypeOf(focused.value).toEqualTypeOf<{
+      first: string;
+      second: number;
+    }>();
+    expectTypeOf(focused.types.output).toEqualTypeOf<{
+      first: string;
+      second: number;
+    }>();
   }
 });
 
@@ -54,37 +57,28 @@ it('includes the empty output state for array and primitive schemas', () => {
     >();
 });
 
-it('types legacy focus and observed state with independent raw/parsed fields', () => {
+it('keeps complete types outside a selection that may be defined', () => {
   const schema = enforce.shape({
     age: enforce.isNumeric().toNumber(),
     active: enforce.isNumeric().toBoolean(),
   });
   const suite = create(() => test('active', () => true), schema);
   const input = { age: '42', active: '1' };
-  type Observed = {
-    age?: string | number;
-    active?: string | number | boolean;
-  };
+  type Complete = { age: number; active: boolean };
   const focused = suite.only('active').run(input);
-  if (focused.valid) {
-    expectTypeOf(focused.value).toEqualTypeOf<Observed>();
-    expectTypeOf(focused.types.output).toEqualTypeOf<Observed>();
-  }
-  const latest = suite.get();
-  if (latest.valid) expectTypeOf(latest.value).toEqualTypeOf<Observed>();
+  if (focused.valid) expectTypeOf(focused.value).toEqualTypeOf<Complete>();
   const changed = suite.changed('active').only('active').run(input);
   if (changed.valid)
-    expectTypeOf(changed.value).toEqualTypeOf<
-      Partial<{ age: number; active: boolean }>
-    >();
+    expectTypeOf(changed.value).toEqualTypeOf<Partial<Complete>>();
   const cleared = suite.changed('active').only('active').changed().run(input);
-  if (cleared.valid) expectTypeOf(cleared.value).toEqualTypeOf<Observed>();
+  if (cleared.valid) expectTypeOf(cleared.value).toEqualTypeOf<Complete>();
   const undefinedSelection = suite.changed(undefined).run(input);
   if (undefinedSelection.valid)
-    expectTypeOf(undefinedSelection.value).toEqualTypeOf<Observed>();
+    expectTypeOf(undefinedSelection.value).toEqualTypeOf<Complete>();
   function dynamicSelection(fields: string | readonly string[] | undefined) {
     return suite.changed(fields).run(input);
   }
   const dynamic = dynamicSelection('active');
-  if (dynamic.valid) expectTypeOf(dynamic.value).toEqualTypeOf<Observed>();
+  if (dynamic.valid)
+    expectTypeOf(dynamic.value).toEqualTypeOf<Partial<Complete>>();
 });

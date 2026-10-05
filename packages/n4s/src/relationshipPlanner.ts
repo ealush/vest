@@ -274,7 +274,12 @@ function expand(
   walk.add(path, pattern);
   const info = meta(rule);
   if (info.kind === 'lazy') {
-    expandLazy(info, { kind: info.kind, path, pattern, value }, walk);
+    expandLazy(
+      info,
+      { kind: info.kind, path, pattern, value },
+      walk,
+      ancestors,
+    );
     return;
   }
   const parent = { kind: info.kind, path, pattern, value };
@@ -305,12 +310,35 @@ function expandChild(
   }
 }
 
-/** Recursion through lazy() is bounded by the data rather than the schema. */
-function expandLazy(info: RuleMeta, parent: Parent, walk: Expansion): void {
+/**
+ * Recursion through lazy() is bounded by the data rather than the schema.
+ * A missing value still selects its declared descendants, like any other
+ * container, but schema recursion then stops at the first repeated rule.
+ */
+function expandLazy(
+  info: RuleMeta,
+  parent: Parent,
+  walk: Expansion,
+  ancestors: Set<object>,
+): void {
   const { path, pattern, value } = parent;
-  if (!isNode(value) || walk.values.has(value)) return;
   const [[child]] = childrenOf(info.kind, info.children, pattern);
   if (!isNode(child)) return;
+  if (isNode(value)) {
+    expandLazyValue(child, value, parent, walk);
+  } else if (tryEnter(ancestors, child)) {
+    expand(child, path, pattern, value, walk, ancestors);
+    ancestors.delete(child);
+  }
+}
+
+function expandLazyValue(
+  child: object,
+  value: object,
+  { path, pattern }: Parent,
+  walk: Expansion,
+): void {
+  if (walk.values.has(value)) return;
   walk.values.add(value);
   expand(child, path, pattern, value, walk, new Set([child]));
   walk.values.delete(value);

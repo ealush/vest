@@ -1,18 +1,18 @@
 {
   "minimal suite (create, test, enforce)": {
-    "minified": 63002,
-    "gzip": 20662
+    "minified": 64613,
+    "gzip": 21227
   },
   "schema suite (create, test, enforce.shape)": {
-    "minified": 63035,
-    "gzip": 20678
+    "minified": 64646,
+    "gzip": 21242
   },
   "n4s only (enforce)": {
-    "minified": 20407,
-    "gzip": 6881
+    "minified": 21159,
+    "gzip": 7196
   },
   "relationships suite (vest/relationships)": {
-    "minified": 75855,
-    "gzip": 25406
+    "minified": 78032,
+    "gzip": 25992
   }
 }

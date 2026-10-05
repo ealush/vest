@@ -236,3 +236,33 @@ it('ignores unsafe and unknown names and never reads data getters', () => {
     ),
   ).toEqual([]);
 });
+
+it('expands shared ancestor edges once when a large container is selected', () => {
+  const schema = enforce.shape({
+    rows: enforce.isArrayOf(
+      enforce.shape({
+        name: enforce.isString(),
+        summary: enforce.isString().dependsOn($ => $.root.rows),
+      }),
+    ),
+    total: enforce.isNumber().dependsOn($ => $.rows),
+  });
+  const rows = Array.from({ length: 2000 }, () => ({ name: 'x' }));
+  const data = { total: 0, rows };
+  const start = performance.now();
+  const paths = resolveAffected(schema, ['rows'], data);
+  expect(performance.now() - start).toBeLessThan(1000);
+  const names = new Set(paths.map(path => path.join('.')));
+  expect(names.size).toBe(paths.length);
+  expect(names.has('total')).toBe(true);
+  expect(names.has('rows.1999.summary')).toBe(true);
+  expect(names.has('rows.1999.name')).toBe(true);
+  expect(paths).toHaveLength(2 + 2000 * 3);
+
+  // A change inside rows reaches every summary that depends on the container.
+  const member = resolveAffected(schema, ['rows.3.name'], { rows });
+  expect(member).toHaveLength(2 + 2000);
+  expect(member[0]).toEqual(['rows', 3, 'name']);
+  expect(member).toContainEqual(['total']);
+  expect(member).toContainEqual(['rows', 1999, 'summary']);
+});

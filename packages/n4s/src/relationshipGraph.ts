@@ -129,16 +129,32 @@ function appendRelationship(
   reference: Reference,
   context: GraphContext,
 ): void {
-  const source = reference.rooted
-    ? reference.path
-    : [...target.slice(0, -1), ...reference.path];
+  const source = sourceOf(target, reference);
   if (isSamePath(source, target)) return;
   const checked = checkedReference(context, source);
   if (!checked.found) unknownReference(target, source, checked);
+  if (!target.length) rootTarget(source);
   const key = JSON.stringify([source, target]);
   if (context.seen.has(key)) return;
   context.seen.add(key);
   context.relationships.push({ source, target, effect: 'invalidate' });
+}
+
+/** Sibling references resolve inside the target's containing shape. */
+function sourceOf(target: SchemaPath, reference: Reference): SchemaPath {
+  return reference.rooted
+    ? reference.path
+    : [...target.slice(0, -1), ...reference.path];
+}
+
+/**
+ * The root is not a field: it has no name to focus and a change anywhere
+ * already reaches it. Declare the dependency on the affected field instead.
+ */
+function rootTarget(source: SchemaPath): never {
+  throw new EnforceSchemaError(
+    `The root schema cannot depend on "${renderPath(source)}"; declare dependsOn on the field whose result changes`,
+  );
 }
 
 function checkedReference(context: GraphContext, source: SchemaPath): Walk {

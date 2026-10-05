@@ -52,16 +52,27 @@ function typeContracts() {
     const guaranteed: number = result.value.age;
     void guaranteed;
   }
-  // Only changed() results are partial; ordinary focus keeps complete types.
   const latest = suite.get();
   if (latest.valid) {
-    const age: number = latest.value.age;
+    const age: string | number | undefined = latest.value.age;
     void age;
+    // @ts-expect-error a present observed field can still contain unparsed input
+    const parsed: number | undefined = latest.value.age;
+    void parsed;
+    // @ts-expect-error observing the current state does not prove a complete run
+    const guaranteed: number = latest.value.age;
+    void guaranteed;
   }
   const focused = suite.only('password').run({ password: 'a', age: '42' });
   if (focused.valid) {
-    const age: number = focused.value.age;
+    const age: string | number | undefined = focused.value.age;
     void age;
+    // @ts-expect-error unchecked focused parser fields can contain raw input
+    const parsed: number | undefined = focused.value.age;
+    void parsed;
+    // @ts-expect-error a focused output can omit age
+    const guaranteed: number = focused.value.age;
+    void guaranteed;
   }
   const cleared = suite
     .changed('password')
@@ -69,8 +80,9 @@ function typeContracts() {
     .changed(undefined)
     .run({ password: 'a', age: '42' });
   if (cleared.valid) {
-    const age: number = cleared.value.age;
-    void age;
+    // @ts-expect-error clearing changed focus restores unchecked focused output
+    const parsed: number | undefined = cleared.value.age;
+    void parsed;
   }
   const scalar = create(() => {}, enforce.isNumber())
     .changed([])

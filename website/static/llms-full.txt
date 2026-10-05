@@ -5912,6 +5912,10 @@ Import `vest/relationships` to use `suite.changed(field).run(data)`. Rules can d
 
 A complete passing schema can now make a suite valid even when its callback declares no user tests. Passing a focused subset is insufficient for a schema-only suite.
 
+## Complete and consistent validation issues
+
+Schema and user-test failures without a message are included in `result.issues` with `Validation failed`. Nested issue paths use the same segments as the Standard Schema adapter.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

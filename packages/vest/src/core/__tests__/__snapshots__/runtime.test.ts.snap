@@ -2063,9 +2063,27 @@ IsolateInstance {
     "isValidByGroup": [Function],
     "issues": [
       {
+        "message": "Validation failed",
+        "path": [
+          "t1",
+        ],
+      },
+      {
         "message": "t2 message",
         "path": [
           "t2",
+        ],
+      },
+      {
+        "message": "Validation failed",
+        "path": [
+          "t6",
+        ],
+      },
+      {
+        "message": "Validation failed",
+        "path": [
+          "t6",
         ],
       },
     ],
@@ -2222,9 +2240,27 @@ exports[`useLoadSuite > Calling useLoadSuite should resume from loaded state 2`]
   "isValidByGroup": [Function],
   "issues": [
     {
+      "message": "Validation failed",
+      "path": [
+        "t1",
+      ],
+    },
+    {
       "message": "t2 message",
       "path": [
         "t2",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "t6",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "t6",
       ],
     },
   ],

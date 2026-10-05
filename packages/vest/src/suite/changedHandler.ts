@@ -1,6 +1,8 @@
 /** The opt-in relationships entry installs the planner used by changed(). */
 export type ChangedPlan = {
-  /** Fields whose user tests run. */
+  /** The selected fields, reported as the run's focus. */
+  focus: string[];
+  /** The `only` modifier that runs exactly the selected user tests. */
   only: string[];
   /** Schema failure fields to report without running their user tests. */
   schemaFocus: string[];

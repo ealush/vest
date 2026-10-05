@@ -19,6 +19,7 @@ import {
   type SchemaRunResult,
 } from '../suite/useCreateSuiteRunner';
 
+// An empty changed selection runs no user test; an empty only() runs them all.
 const NO_FIELD = '\0vest.changed.none';
 
 installChangedHandler(planRelationshipRun);
@@ -30,11 +31,12 @@ function planRelationshipRun(
   modifiers: { only?: unknown; skip?: unknown },
 ): ChangedPlan {
   const selection = selectFields(schema, fields, data, modifiers);
-  const selected = selection.focus.length ? selection.focus : [NO_FIELD];
-  if (!schema) return { only: selected, schemaFocus: [], evaluated: null };
-  if (!selection.focus.length) {
+  const { focus } = selection;
+  const targets = { focus, only: focus.length ? focus : [NO_FIELD] };
+  if (!schema) return { ...targets, schemaFocus: [], evaluated: null };
+  if (!focus.length) {
     return {
-      only: selected,
+      ...targets,
       schemaFocus: [],
       schemaResults: [],
       value: {},
@@ -46,12 +48,10 @@ function planRelationshipRun(
     selection.schemaKeys,
     data,
   );
-  if (!validation)
-    return fullSchemaPlan(schema, data, selected, selection.skip);
-  const { results, value, evaluatedKeys } = validation;
-  const checked = evaluatedKeys;
+  if (!validation) return fullSchemaPlan(schema, data, targets, selection.skip);
+  const { results, value, evaluatedKeys: checked } = validation;
   return {
-    only: selected,
+    ...targets,
     schemaFocus: failurePaths(results, selection.skip),
     schemaResults: results,
     value,
@@ -120,7 +120,7 @@ function isEvaluated(
 function fullSchemaPlan(
   schema: unknown,
   data: unknown,
-  only: string[],
+  targets: Pick<ChangedPlan, 'focus' | 'only'>,
   skip: Set<string>,
 ): ChangedPlan {
   const executable = schema as { parse?: unknown; run?: unknown };
@@ -144,7 +144,7 @@ function fullSchemaPlan(
     );
   }
   return {
-    only,
+    ...targets,
     schemaFocus: failurePaths(schemaResults, skip),
     schemaResults,
     evaluated: skip.size

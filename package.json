@@ -27,7 +27,8 @@
     "size:check": "node scripts/check-bundle-size.mjs",
     "size:update": "node scripts/check-bundle-size.mjs --update",
     "postinstall": "husky install",
-    "relationships:bench": "node scripts/check-relationships-performance.mjs"
+    "relationships:bench": "node scripts/check-relationships-performance.mjs",
+    "test:packed": "node scripts/check-packed-consumers.mjs"
   },
   "homepage": "https://vestjs.dev",
   "prettier": {

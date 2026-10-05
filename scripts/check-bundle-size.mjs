@@ -45,6 +45,18 @@ const ENTRIES = {
     import { enforce } from 'n4s';
     globalThis.result = enforce.isString().test('x');
   `,
+  'relationships suite (vest/relationships)': `
+    import 'vest/relationships';
+    import { create, enforce, test } from 'vest';
+    const schema = enforce.shape({
+      password: enforce.isString(),
+      confirm: enforce.isString().dependsOn($ => $.password),
+    });
+    const suite = create(data => {
+      test('confirm', () => enforce(data.confirm).isString());
+    }, schema);
+    globalThis.result = suite.changed('password').run({ password: 'a', confirm: 'a' });
+  `,
 };
 
 /**
@@ -65,9 +77,12 @@ function workspaceSourcePlugin() {
       pluginBuild.onResolve({ filter }, args => {
         const [, name, subpath = ''] = args.path.match(filter);
         const sourceDir = path.join(ROOT, paths[name][0]);
-        const entry = subpath
-          ? subpathEntry(sourceDir, subpath.slice(1))
-          : path.join(sourceDir, `${name}.ts`);
+        const entry =
+          path.extname(sourceDir) === '.ts'
+            ? sourceDir
+            : subpath
+              ? subpathEntry(sourceDir, subpath.slice(1))
+              : path.join(sourceDir, `${name}.ts`);
         return { path: entry };
       });
     },

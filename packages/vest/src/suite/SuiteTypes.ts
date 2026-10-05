@@ -31,6 +31,15 @@ export type Suite<
 > = SuiteMethods<F, G, T, S> &
   StandardSchemaV1<InferSchemaData<S>, InferSchemaOutput<S>>;
 
+export type SuiteRuntimeModifiers<
+  F extends TFieldName,
+  G extends TGroupName,
+> = SuiteModifiers<F, G> & {
+  changed?: readonly string[];
+  /** Set by a changed plan: schema failures reported outside `only`. */
+  schemaFocus?: string[];
+};
+
 type SuiteMethods<
   F extends TFieldName,
   G extends TGroupName,
@@ -69,18 +78,20 @@ type FocusedMethods<
   G extends TGroupName,
   T extends CB,
   S extends TSchema,
+  R = SuiteResult<F, G, S>,
 > = {
-  afterEach: CB<FocusedMethods<F, G, T, S>, [callback: CB]>;
-  afterField: CB<FocusedMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
-  focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
-  only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
+  afterEach: CB<FocusedMethods<F, G, T, S, R>, [callback: CB]>;
+  afterField: CB<FocusedMethods<F, G, T, S, R>, [fieldName: F, callback: CB]>;
+  focus: CB<FocusedMethods<F, G, T, S, R>, [config: SuiteModifiers<F, G>]>;
+  only: CB<FocusedMethods<F, G, T, S, R>, [onlyField: FieldExclusion<F>]>;
+  changed: ChangedMethod<F, G, T, S>;
   // run is included but runStatic is intentionally omitted: runStatic is stateless
   // and does not carry focus modifiers, so it is not part of the focused API surface.
   run: (
     ...args: S extends undefined
       ? Parameters<T>
       : [data: Partial<InferSchemaData<S>>, ...args: any[]]
-  ) => SuiteResult<F, G, S>;
+  ) => R;
 };
 
 type AfterMethods<
@@ -93,11 +104,59 @@ type AfterMethods<
   afterField: CB<AfterMethods<F, G, T, S>, [fieldName: F, callback: CB]>;
   focus: CB<FocusedMethods<F, G, T, S>, [config: SuiteModifiers<F, G>]>;
   only: CB<FocusedMethods<F, G, T, S>, [onlyField: FieldExclusion<F>]>;
+  changed: ChangedMethod<F, G, T, S>;
   run: (
     ...args: S extends undefined
       ? Parameters<T>
       : [data: InferSchemaData<S>, ...args: any[]]
   ) => SuiteResult<F, G, S>;
+};
+
+// changed() validates only the selected fields, so its output is partial.
+// only(), focus() and get() keep their complete result types.
+type PartialSuiteResult<
+  F extends TFieldName,
+  G extends TGroupName,
+  S extends TSchema,
+> = SuiteResult<
+  F,
+  G,
+  S extends undefined
+    ? undefined
+    : {
+        '~standard': {
+          types: {
+            input: InferSchemaData<S>;
+            output: PartialSchemaOutput<InferSchemaOutput<S>>;
+          };
+        };
+      }
+>;
+
+// An empty selection produces an empty record. Unlike object schemas,
+// primitive and array outputs cannot represent that state with Partial alone.
+type PartialSchemaOutput<T> = T extends readonly unknown[]
+  ? Partial<T> | Record<never, never>
+  : T extends object
+    ? Partial<T>
+    : T | Record<never, never>;
+
+type ChangedMethods<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB,
+  S extends TSchema,
+> = FocusedMethods<F, G, T, S, PartialSuiteResult<F, G, S>>;
+
+type ChangedMethod<
+  F extends TFieldName,
+  G extends TGroupName,
+  T extends CB,
+  S extends TSchema,
+> = {
+  (fields?: undefined): FocusedMethods<F, G, T, S>;
+  // A selection that may be defined can validate only part of the data.
+  (fields?: string | readonly string[]): ChangedMethods<F, G, T, S>;
 };
 
 /**

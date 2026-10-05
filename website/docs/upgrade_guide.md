@@ -37,6 +37,10 @@ The `n4s` package now includes `@types/validator` as a regular dependency becaus
 
 Focused runs retain schema errors outside their focus. After a failing full run, `only()` on another field still reports the failing field and keeps `valid: false` until that error is cleared. Repeated parent skips preserve nested schema failures.
 
+## Schema relationships
+
+Import `vest/relationships` to use `suite.changed(field).run(data)`. Rules can declare direct dependencies with `.dependsOn($ => $.other)`, so a changed run checks the named field and its dependents while keeping unrelated results. `schema.describe()` is available after importing `n4s/relationships`. Without the opt-in imports, `changed()` and `describe()` give a setup error when called.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

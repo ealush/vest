@@ -26,7 +26,8 @@
     "ai:eval": "node scripts/score-ai-eval.js",
     "size:check": "node scripts/check-bundle-size.mjs",
     "size:update": "node scripts/check-bundle-size.mjs --update",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "relationships:bench": "node scripts/check-relationships-performance.mjs"
   },
   "homepage": "https://vestjs.dev",
   "prettier": {

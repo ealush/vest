@@ -173,6 +173,32 @@ it('follows recursive lazy schemas as deep as the data goes', () => {
   );
 });
 
+it('selects descendants of a missing lazy container like any other container', () => {
+  const profile = enforce.shape({ name: enforce.isString() });
+  const greet = enforce.isString().dependsOn($ => $.root.profile.name);
+  const plain = enforce.shape({ profile: enforce.optional(profile), greet });
+  const lazy = enforce.shape({
+    profile: enforce.optional(enforce.lazy(() => profile)),
+    greet,
+  });
+  const expected = [['profile'], ['profile', 'name'], ['greet']];
+
+  for (const value of [undefined, null, {}]) {
+    expect(resolveAffected(plain, ['profile'], { profile: value })).toEqual(
+      expected,
+    );
+    expect(resolveAffected(lazy, ['profile'], { profile: value })).toEqual(
+      expected,
+    );
+  }
+
+  const node: any = enforce.shape({
+    next: enforce.optional(enforce.lazy(() => node)),
+  });
+  // Without data, schema recursion stops at the first repeated rule.
+  expect(resolveAffected(node, ['next'], { next: null })).toEqual([['next']]);
+});
+
 it('keeps a literal dotted key separate from nested paths', () => {
   const schema = enforce.shape({
     'a.b': enforce.isString(),

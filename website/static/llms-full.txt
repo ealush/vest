@@ -4452,7 +4452,7 @@ Finalize schema definitions and dependency resolvers before the first `describe(
 
 ## Focus and schema results
 
-`changed()` accepts a field name or an array of names. It composes with `only()` and `focus()` in either order. Explicit `only()` fields join the affected set; `skip` excludes a field and its descendants even when a dependency selects them. `changed([])` selects no fields itself and keeps previous results, including for schemas that otherwise require whole-schema validation. The suite callback still executes, and explicit `include()` hooks keep their ordinary focus behavior. `changed(undefined)` clears the changed focus.
+`changed()` accepts a field name or an array of names. It composes with `only()` and `focus()` in either order, and a later `changed()` call replaces the earlier selection rather than adding to it. Explicit `only()` fields join the affected set; `skip` excludes a field and its descendants even when a dependency selects them. `changed([])` selects no fields itself and keeps previous results, including for schemas that otherwise require whole-schema validation. The suite callback still executes, and explicit `include()` hooks keep their ordinary focus behavior. `changed(undefined)` clears the changed focus.
 
 User tests run for the affected names. Schema validation currently runs each affected **top-level field** separately, with n4s's usual parent context and parsing behavior. For example, `changed('rows.5.country')` can also report an invalid sibling in `rows`, because the `rows` schema rule validates the whole array. A schema that cannot be safely split into fields, such as a composed or `partial()` root, runs as a whole. Schema errors found outside the affected names are reported, but the user tests for those fields do not run. Skipped schema errors keep their prior verdict. The schemas inside each selected top-level field still fail fast, so this does not promise an exhaustive list of failing descendants.
 
@@ -5914,7 +5914,7 @@ A complete passing schema can now make a suite valid even when its callback decl
 
 ## Complete and consistent validation issues
 
-Schema and user-test failures without a message are included in `result.issues` with `Validation failed`. Nested issue paths use the same segments as the Standard Schema adapter. A failure of the input as a whole (for example, a non-object passed to an object schema) is reported in `errors` under the `__root__` test name as before, but its issue now has no `path` instead of the internal `['__root__']` segment.
+Schema and user-test failures without a message are included in `result.issues` with `Validation failed`. Nested issue paths use the same segments as the Standard Schema adapter. A failure of the input as a whole (for example, a non-object passed to an object schema) is reported in `errors` under the `__root__` test name as before, but its issue now has no `path` instead of the internal `['__root__']` segment. A user test that reuses the `__root__` name reports its issue the same way.
 
 # Upgrading from V5 to V6
 

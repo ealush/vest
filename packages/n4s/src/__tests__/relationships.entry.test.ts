@@ -474,3 +474,19 @@ it('reports a failing lazy() factory with its path and cause', () => {
   );
   expect((error as Error).cause).toBe(cause);
 });
+
+it('reports a reference to a key that pick() or omit() leaves out', () => {
+  const fields = { email: enforce.isString(), phone: enforce.isString() };
+  const picked = enforce.shape({
+    contact: enforce.pick(fields, 'email'),
+    note: enforce.isString().dependsOn($ => $('contact', 'phone')),
+  } as never) as { describe(): unknown };
+  expect(() => picked.describe()).toThrow(
+    /"note" depends on unknown field "contact.phone"/,
+  );
+  const omitted = enforce.shape({
+    contact: enforce.omit(fields, 'phone'),
+    note: enforce.isString().dependsOn($ => $('contact', 'phone')),
+  } as never) as { describe(): unknown };
+  expect(() => omitted.describe()).toThrow(/unknown field "contact.phone"/);
+});

@@ -5,9 +5,9 @@ import { enforce } from '../n4s';
 
 it('selects one hop, deduplicates paths and terminates cycles', () => {
   const schema = enforce.shape({
-    a: enforce.isString().dependsOn($ => $.c),
-    b: enforce.isString().dependsOn($ => $.a),
-    c: enforce.isString().dependsOn($ => $.b),
+    a: enforce.isString().dependsOn($ => $('c')),
+    b: enforce.isString().dependsOn($ => $('a')),
+    c: enforce.isString().dependsOn($ => $('b')),
   });
   expect(resolveAffected(schema, ['a', 'a'], {})).toEqual([['a'], ['b']]);
   expect(resolveAffected(schema, ['a', 'b'], {})).toEqual([
@@ -20,8 +20,8 @@ it('selects one hop, deduplicates paths and terminates cycles', () => {
 it('binds dependencies to an array index and fans root references out', () => {
   const item = enforce.shape({
     country: enforce.isString(),
-    state: enforce.isString().dependsOn($ => $.country),
-    price: enforce.isNumber().dependsOn($ => $.root.currency),
+    state: enforce.isString().dependsOn($ => $('country')),
+    price: enforce.isNumber().dependsOn($ => $.root('currency')),
   });
   const schema = enforce.shape({
     currency: enforce.isString(),
@@ -46,7 +46,7 @@ it('binds dependencies to an array index and fans root references out', () => {
 it('expands a named whole object through declared fields and current items', () => {
   const item = enforce.shape({
     a: enforce.isString(),
-    b: enforce.isString().dependsOn($ => $.a),
+    b: enforce.isString().dependsOn($ => $('a')),
   });
   const schema = enforce.shape({ rows: enforce.isArrayOf(item) });
   expect(resolveAffected(schema, ['rows'], { rows: [{}, {}] })).toEqual([
@@ -63,12 +63,12 @@ it('expands a named whole object through declared fields and current items', () 
 it('invalidates direct dependencies on an ancestor of a changed field', () => {
   const item = enforce.shape({
     details: enforce.shape({ name: enforce.isString() }),
-    summary: enforce.isString().dependsOn($ => $.details),
+    summary: enforce.isString().dependsOn($ => $('details')),
   });
   const schema = enforce.shape({
     rows: enforce.isArrayOf(item),
-    total: enforce.isNumber().dependsOn($ => $.rows),
-    next: enforce.isString().dependsOn($ => $.total),
+    total: enforce.isNumber().dependsOn($ => $('rows')),
+    next: enforce.isString().dependsOn($ => $('total')),
   });
   expect(
     resolveAffected(schema, ['rows.1.details.name'], { rows: [{}, {}] }),
@@ -82,8 +82,10 @@ it('invalidates direct dependencies on an ancestor of a changed field', () => {
 it('does not cache fan-out against an earlier array or record value', () => {
   const schema = enforce.shape({
     source: enforce.isString(),
-    rows: enforce.isArrayOf(enforce.isString().dependsOn($ => $.root.source)),
-    dict: enforce.record(enforce.isString().dependsOn($ => $.root.source)),
+    rows: enforce.isArrayOf(
+      enforce.isString().dependsOn($ => $.root('source')),
+    ),
+    dict: enforce.record(enforce.isString().dependsOn($ => $.root('source'))),
   });
   expect(
     resolveAffected(schema, ['source'], { rows: ['a'], dict: { a: 'x' } }),
@@ -105,7 +107,7 @@ it('does not cache fan-out against an earlier array or record value', () => {
 it('returns cache results that cannot mutate later selections', () => {
   const schema = enforce.shape({
     a: enforce.isString(),
-    b: enforce.isString().dependsOn($ => $.a),
+    b: enforce.isString().dependsOn($ => $('a')),
   });
   const first = resolveAffected(schema, ['a'], {});
   first.pop();
@@ -115,7 +117,7 @@ it('returns cache results that cannot mutate later selections', () => {
 it('binds a record dependency to its own key', () => {
   const item = enforce.shape({
     a: enforce.isString(),
-    b: enforce.isString().dependsOn($ => $.a),
+    b: enforce.isString().dependsOn($ => $('a')),
   });
   const schema = enforce.shape({ dict: enforce.record(item) });
   expect(
@@ -131,7 +133,7 @@ it('fans a root field out to every record key', () => {
     locale: enforce.isString(),
     dict: enforce.record(
       enforce.shape({
-        value: enforce.isString().dependsOn($ => $.root.locale),
+        value: enforce.isString().dependsOn($ => $.root('locale')),
       }),
     ),
   });
@@ -175,7 +177,7 @@ it('follows recursive lazy schemas as deep as the data goes', () => {
 
 it('selects descendants of a missing lazy container like any other container', () => {
   const profile = enforce.shape({ name: enforce.isString() });
-  const greet = enforce.isString().dependsOn($ => $.root.profile.name);
+  const greet = enforce.isString().dependsOn($ => $.root('profile', 'name'));
   const plain = enforce.shape({ profile: enforce.optional(profile), greet });
   const lazy = enforce.shape({
     profile: enforce.optional(enforce.lazy(() => profile)),
@@ -204,9 +206,9 @@ it('keeps a literal dotted key separate from nested paths', () => {
     'a.b': enforce.isString(),
     a: enforce.shape({
       b: enforce.isString(),
-      c: enforce.isString().dependsOn($ => $.b),
+      c: enforce.isString().dependsOn($ => $('b')),
     }),
-    d: enforce.isString().dependsOn($ => $.root['a.b']),
+    d: enforce.isString().dependsOn($ => $.root('a.b')),
   });
   expect(resolveAffected(schema, ['a.b'], { 'a.b': '', a: {} })).toEqual([
     ['a.b'],
@@ -219,7 +221,7 @@ it('keeps a literal dotted key separate from nested paths', () => {
 it('ignores unsafe and unknown names and never reads data getters', () => {
   const schema = enforce.shape({
     a: enforce.isString(),
-    b: enforce.isString().dependsOn($ => $.a),
+    b: enforce.isString().dependsOn($ => $('a')),
   });
   const data = Object.defineProperty({}, 'a', {
     enumerable: true,
@@ -242,10 +244,10 @@ it('expands shared ancestor edges once when a large container is selected', () =
     rows: enforce.isArrayOf(
       enforce.shape({
         name: enforce.isString(),
-        summary: enforce.isString().dependsOn($ => $.root.rows),
+        summary: enforce.isString().dependsOn($ => $.root('rows')),
       }),
     ),
-    total: enforce.isNumber().dependsOn($ => $.rows),
+    total: enforce.isNumber().dependsOn($ => $('rows')),
   });
   const rows = Array.from({ length: 2000 }, () => ({ name: 'x' }));
   const data = { total: 0, rows };
@@ -270,7 +272,7 @@ it('expands shared ancestor edges once when a large container is selected', () =
 it('accepts a single name like suite.changed()', () => {
   const schema = enforce.shape({
     password: enforce.isString(),
-    confirm: enforce.isString().dependsOn($ => $.password),
+    confirm: enforce.isString().dependsOn($ => $('password')),
   });
   expect(resolveAffected(schema, 'password', {})).toEqual(
     resolveAffected(schema, ['password'], {}),
@@ -286,7 +288,7 @@ it('keeps tuple positions as static string segments, selected or dependent', () 
     password: enforce.isString(),
     pair: enforce.tuple(
       enforce.isString(),
-      enforce.isString().dependsOn($ => $.root.password),
+      enforce.isString().dependsOn($ => $.root('password')),
     ),
   });
   const data = { pair: ['a', 'b'] };

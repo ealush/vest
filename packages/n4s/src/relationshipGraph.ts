@@ -132,7 +132,14 @@ function appendRelationship(
   const source = sourceOf(target, reference);
   if (isSamePath(source, target)) return;
   const checked = checkedReference(context, source);
-  if (!checked.found) unknownReference(target, source, checked);
+  if (!checked.found) {
+    unknownReference(
+      target,
+      source,
+      checked,
+      rootAlternative(reference, context),
+    );
+  }
   if (!target.length) rootTarget(source);
   const key = JSON.stringify([source, target]);
   if (context.seen.has(key)) return;
@@ -171,15 +178,37 @@ function unknownReference(
   target: SchemaPath,
   source: SchemaPath,
   checked: Walk,
+  rootPath: SchemaPath | undefined,
 ): never {
   const suggestion = suggest(
     checked.missing,
     checked.keys,
     String(target[target.length - 1]),
   );
+  const hint = rootPath
+    ? `. "${renderPath(rootPath)}" is a top-level field: use $.root(${rootPath
+        .map(segment => `'${String(segment)}'`)
+        .join(', ')})`
+    : suggestion
+      ? `. Did you mean "${suggestion}"?`
+      : '';
   throw new EnforceSchemaError(
-    `"${renderPath(target)}" depends on unknown field "${renderPath(source)}"${suggestion ? `. Did you mean "${suggestion}"?` : ''}`,
+    `"${renderPath(target)}" depends on unknown field "${renderPath(source)}"${hint}`,
   );
+}
+
+/**
+ * A local reference that names a top-level field was most likely meant as
+ * $.root(...), for example from inside an array item or record value.
+ */
+function rootAlternative(
+  reference: Reference,
+  context: GraphContext,
+): SchemaPath | undefined {
+  if (reference.rooted) return undefined;
+  return checkedReference(context, reference.path).found
+    ? reference.path
+    : undefined;
 }
 
 export function childrenOf(

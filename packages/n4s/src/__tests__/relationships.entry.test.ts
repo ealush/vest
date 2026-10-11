@@ -436,3 +436,20 @@ it('reports a non-function or throwing resolver with the dependent path', () => 
   expect((error as Error).message).toBe('"b" dependency resolver failed: boom');
   expect((error as Error).cause).toBe(cause);
 });
+
+it('suggests $.root() when a local reference names a top-level field', () => {
+  const schema = enforce.shape({
+    currency: enforce.isString(),
+    prices: enforce.record(enforce.isNumber().dependsOn($ => $('currency'))),
+  });
+  expect(() => schema.describe()).toThrow(
+    `"prices.*" depends on unknown field "prices.currency". "currency" is a top-level field: use $.root('currency')`,
+  );
+  const fixed = enforce.shape({
+    currency: enforce.isString(),
+    prices: enforce.record(
+      enforce.isNumber().dependsOn($ => $.root('currency')),
+    ),
+  });
+  expect(fixed.describe().relationships).toHaveLength(1);
+});

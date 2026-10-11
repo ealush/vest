@@ -59,3 +59,19 @@ it('keeps schema-only validity when the result is rebuilt', () => {
   suite.reset();
   expect(suite.get().valid).toBe(false);
 });
+
+it('keeps an earlier complete pass through passing focused runs', () => {
+  const suite = create(
+    () => {},
+    enforce.shape({ a: enforce.isString(), b: enforce.isString() }),
+  );
+  expect(suite.run({ a: 'x', b: 'y' }).valid).toBe(true);
+  expect(suite.only('a').run({ a: 'z', b: 'y' }).valid).toBe(true);
+  expect(suite.focus({ skip: 'a' }).run({ a: 'z', b: 'w' }).valid).toBe(true);
+  expect(suite.get().valid).toBe(true);
+
+  // A failing focused run drops it; a passing focused run cannot restore it.
+  expect(suite.only('a').run({ a: 1, b: 'y' } as never).valid).toBe(false);
+  expect(suite.only('a').run({ a: 'x', b: 'y' }).valid).toBe(false);
+  expect(suite.run({ a: 'x', b: 'y' }).valid).toBe(true);
+});

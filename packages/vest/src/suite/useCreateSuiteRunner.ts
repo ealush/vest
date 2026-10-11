@@ -25,7 +25,10 @@ import {
   TSchema,
   InferSchemaOutput,
 } from '../suiteResult/SuiteResultTypes';
-import { useCreateSuiteResult } from '../suiteResult/suiteResult';
+import {
+  useCreateSuiteResult,
+  useSchemaIsolate,
+} from '../suiteResult/suiteResult';
 
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 import {
@@ -157,7 +160,7 @@ export function useCreateSuiteRunner<
     const retainedSchemaFailures = shouldRunSchema(schema)
       ? useRetainedSchemaFailures(schemaFocus)
       : [];
-    const schemaPassed = isCompleteSchemaPass(schemaFocus, schemaRunResult);
+    const schemaPassed = useCompleteSchemaPass(schemaFocus, schemaRunResult);
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
@@ -224,14 +227,19 @@ export function useCreateSuiteRunner<
 
 /**
  * Only a schema run that covered every field can make a test-free suite valid.
+ * A passing focused run keeps an earlier complete pass, as focus keeps the
+ * verdicts of the tests it leaves out. Read before the new root exists.
  */
-function isCompleteSchemaPass(
+function useCompleteSchemaPass(
   schemaFocus: ReturnType<typeof schemaFocusOf>,
   schemaRunResult: SchemaRunResult[] | undefined,
 ): boolean {
-  return (
-    schemaFocus === null && !!schemaRunResult?.every(result => result.pass)
-  );
+  if (!schemaRunResult?.every(result => result.pass)) return false;
+  return schemaFocus === null || useEarlierSchemaPass();
+}
+
+function useEarlierSchemaPass(): boolean {
+  return !!useSchemaIsolate()?.data?.schemaPassed;
 }
 
 /**

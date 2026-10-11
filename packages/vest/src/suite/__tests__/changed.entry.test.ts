@@ -9,6 +9,7 @@ import { create, enforce, test } from '../../vest';
 
 it('exposes the n4s relationship helpers to Vest consumers', () => {
   expect(relationships).not.toHaveProperty('validateRelationshipFields');
+  expect(relationships).not.toHaveProperty('resolveRelationships');
   expect(relationships).not.toHaveProperty('FIELD');
 
   const schema = enforce.shape({

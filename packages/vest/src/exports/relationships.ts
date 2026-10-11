@@ -1,5 +1,9 @@
 /** Opt-in suite.changed() support. */
-import { validateRelationshipFields, resolveAffected } from 'n4s/relationships';
+import {
+  resolveAffected,
+  resolveRelationships,
+  validateRelationshipFields,
+} from 'n4s/relationships';
 import {
   asArray,
   isFunction,
@@ -70,9 +74,10 @@ function planRun<
 }
 
 // Resolving the graph at create() reports an unknown reference before any
-// run. describe() runs no validators and caches the graph for later plans.
+// run. It runs no validators, caches the graph for later plans, and skips
+// the copy that describe() returns.
 function checkSchemaRelationships(schema: unknown, suite: object): void {
-  if (isN4sRule(schema)) (schema as { describe(): unknown }).describe();
+  if (isN4sRule(schema)) resolveRelationships(schema);
   rememberSuite(suite, isN4sRule(schema) ? schema : undefined);
 }
 

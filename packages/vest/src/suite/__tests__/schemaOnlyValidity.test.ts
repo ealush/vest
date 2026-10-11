@@ -1,6 +1,7 @@
 import { expect, it } from 'vitest';
 
-import { create, enforce } from '../../vest';
+import { SuiteSerializer } from '../../exports/SuiteSerializer';
+import { create, enforce, omitWhen, test } from '../../vest';
 
 it('treats a passing schema-only suite as valid and exposes its parsed value', () => {
   const schema = enforce.shape({ age: enforce.isNumeric().toNumber() });
@@ -74,4 +75,25 @@ it('keeps an earlier complete pass through passing focused runs', () => {
   expect(suite.only('a').run({ a: 1, b: 'y' } as never).valid).toBe(false);
   expect(suite.only('a').run({ a: 'x', b: 'y' }).valid).toBe(false);
   expect(suite.run({ a: 'x', b: 'y' }).valid).toBe(true);
+});
+
+it('keeps schema-only validity through serialize and resume', () => {
+  const schema = enforce.shape({ a: enforce.isString() });
+  const suite = create(() => {}, schema);
+  suite.run({ a: 'x' });
+
+  const resumed = create(() => {}, schema);
+  SuiteSerializer.resume(resumed, SuiteSerializer.serialize(suite));
+  expect(resumed.get().valid).toBe(true);
+});
+
+it('treats omitted user tests like a test-free suite', () => {
+  const schema = enforce.shape({ a: enforce.isString() });
+  const suite = create(() => {
+    omitWhen(true, () => {
+      test('a', () => false);
+    });
+  }, schema);
+  expect(suite.run({ a: 'x' }).valid).toBe(true);
+  expect(suite.run({ a: 1 } as never).valid).toBe(false);
 });

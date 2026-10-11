@@ -1,7 +1,11 @@
 import { expect, it } from 'vitest';
 
 import '../exports/relationships';
-import { FIELD, type Scope } from '../exports/relationships';
+import {
+  EnforceSchemaError,
+  FIELD,
+  type Scope,
+} from '../exports/relationships';
 import { compose, enforce } from '../n4s';
 
 it('resolves single, multiple, chained and repeated dependencies', () => {
@@ -362,6 +366,7 @@ it('tracks a dependency added to a composed rule', () => {
 
 it('rejects an unsupported parent reference with dependent field context', () => {
   const schema = enforce.shape({
+    // @ts-expect-error $.parent is typed never so this fails at compile time too
     b: enforce.isString().dependsOn($ => $.parent.a),
   });
   expect(() => schema.describe()).toThrow(/b.*parent is not supported/);
@@ -393,4 +398,31 @@ it('rejects a dependency declared on the root schema', () => {
   expect(schema.describe().relationships).toEqual([
     { source: ['a'], target: ['box'], effect: 'invalidate' },
   ]);
+});
+
+it('reports a non-function or throwing resolver with the dependent path', () => {
+  const notFunction = enforce.shape({
+    a: enforce.isString(),
+    b: enforce.isString().dependsOn('a' as never),
+  });
+  expect(() => notFunction.describe()).toThrow(
+    /"b" dependsOn expects a function/,
+  );
+
+  const cause = new Error('boom');
+  const throwing = enforce.shape({
+    a: enforce.isString(),
+    b: enforce.isString().dependsOn(() => {
+      throw cause;
+    }),
+  });
+  let error: unknown;
+  try {
+    throwing.describe();
+  } catch (caught) {
+    error = caught;
+  }
+  expect(error).toBeInstanceOf(EnforceSchemaError);
+  expect((error as Error).message).toBe('"b" dependency resolver failed: boom');
+  expect((error as Error).cause).toBe(cause);
 });

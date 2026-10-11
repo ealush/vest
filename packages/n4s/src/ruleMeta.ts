@@ -11,6 +11,8 @@ export type Description = { relationships: Relationship[] };
 
 export type Scope = {
   readonly root: Scope;
+  /** Unsupported: use `$.root` or `$[FIELD]('parent')` for a field named parent. */
+  readonly parent: never;
   [FIELD]: (name: string) => Scope;
   [field: string]: Scope;
 };

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { describeSuite } from '../../exports/relationships';
-import { create, enforce, group, include, test } from '../../vest';
+import { create, each, enforce, group, include, test } from '../../vest';
 
 const item = { type: 'item', binding: 'isArrayOf' } as const;
 
@@ -67,6 +67,32 @@ describe('describeSuite', () => {
         effect: 'invalidate',
       },
     ]);
+  });
+
+  it('matches record members and tests registered inside each()', () => {
+    const suite = create(
+      (data: { prices: Record<string, number> }) => {
+        each(Object.keys(data.prices), key => {
+          test(`prices.${key}`, () => true, key);
+        });
+      },
+      enforce.shape({
+        currency: enforce.isString(),
+        prices: enforce.record(
+          enforce.isNumber().dependsOn($ => $.root('currency')),
+        ),
+        total: enforce.isNumber().dependsOn($ => $('currency')),
+      }),
+    );
+    suite.run({ currency: 'USD', prices: { a: 1, b: 2 }, total: 3 });
+
+    const description = describeSuite(suite);
+    expect(description.tests).toEqual([
+      { fieldName: 'prices.a' },
+      { fieldName: 'prices.b' },
+    ]);
+    // Every record member has a test; total has none.
+    expect(description.untested).toEqual([['total']]);
   });
 
   it('describes a suite without a schema, and before its first run', () => {

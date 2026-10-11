@@ -72,8 +72,8 @@ function planRun<
 // Resolving the graph at create() reports an unknown reference before any
 // run. describe() runs no validators and caches the graph for later plans.
 function checkSchemaRelationships(schema: unknown, suite: object): void {
-  if (isN4sSchema(schema)) (schema as { describe(): unknown }).describe();
-  rememberSuite(suite, isN4sSchema(schema) ? schema : undefined);
+  if (isN4sRule(schema)) (schema as { describe(): unknown }).describe();
+  rememberSuite(suite, isN4sRule(schema) ? schema : undefined);
 }
 
 function planRelationshipRun(
@@ -140,7 +140,7 @@ function selectFields(
 }
 
 function affectedPaths(schema: unknown, names: string[], data: unknown) {
-  return isN4sSchema(schema) ? resolveAffected(schema, names, data) : [];
+  return isN4sRule(schema) ? resolveAffected(schema, names, data) : [];
 }
 
 function topLevelKey(field: string): string {
@@ -150,9 +150,11 @@ function topLevelKey(field: string): string {
 function isSkipped(name: string, skip: Set<string>): boolean {
   if (skip.size === 0) return false;
   const normalized = normalizeName(name);
-  return [...skip].some(
-    field => normalized === field || normalized.startsWith(`${field}.`),
-  );
+  // Called for every affected path, so iterate the set without copying it.
+  for (const field of skip) {
+    if (normalized === field || normalized.startsWith(`${field}.`)) return true;
+  }
+  return false;
 }
 
 function normalizeName(name: string): string {
@@ -209,7 +211,7 @@ function synchronousSchema(
   schema: unknown,
   executable: { parse?: unknown; run?: unknown },
 ) {
-  return isN4sSchema(schema)
+  return isN4sRule(schema)
     ? schema
     : {
         parse: synchronousMethod(schema, executable.parse),
@@ -240,7 +242,9 @@ function failurePaths(results: SchemaRunResult[], skip: Set<string>): string[] {
   return [...new Set(paths)].filter(path => !isSkipped(path, skip));
 }
 
-function isN4sSchema(value: unknown): value is object {
+// Any n4s rule, including composed roots; the runner's isN4sSchema only
+// accepts shapes it can focus.
+function isN4sRule(value: unknown): value is object {
   if (!isObject(value) && !isFunction(value)) return false;
   return (
     (value as { '~standard'?: { vendor?: string } })['~standard']?.vendor ===

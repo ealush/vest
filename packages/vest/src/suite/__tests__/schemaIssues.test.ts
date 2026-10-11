@@ -46,3 +46,25 @@ it('reports a failure of the whole input without a path', () => {
   ]);
   expect(suite['~standard'].validate(null)).toEqual({ issues: result.issues });
 });
+
+it('splits dotted user-test names into issue path segments', () => {
+  const suite = create(() => {
+    test('profile.name', 'Name is required', () => false);
+  });
+  const result = suite.run();
+  expect(result.issues).toEqual([
+    { message: 'Name is required', path: ['profile', 'name'] },
+  ]);
+  expect(suite['~standard'].validate(undefined)).toEqual({
+    issues: result.issues,
+  });
+});
+
+it('reports a user test named after the root sentinel without a path', () => {
+  const result = create(() => {
+    test('__root__', 'Whole form is invalid', () => false);
+  }).run();
+  expect(result.issues).toEqual([
+    { message: 'Whole form is invalid', path: undefined },
+  ]);
+});

@@ -32,7 +32,7 @@ it('preserves sibling context, root context and field metadata', () => {
         ]);
         return value === context?.parent()?.value.password;
       })
-      .dependsOn($ => $.password),
+      .dependsOn($ => $('password')),
     nested: enforce
       .shape({
         confirm: enforce.condition(
@@ -40,7 +40,7 @@ it('preserves sibling context, root context and field metadata', () => {
             value === enforce.context()?.parent()?.parent()?.value.password,
         ),
       })
-      .dependsOn($ => $.password),
+      .dependsOn($ => $('password')),
   });
   const suite = create(() => test('password', () => true), schema);
   const data = { password: 'x', confirm: 'x', nested: { confirm: 'x' } };
@@ -70,7 +70,7 @@ it.each([Modes.EAGER, Modes.ALL, Modes.ONE])(
       },
       enforce.shape({
         a: enforce.isString(),
-        b: enforce.isString().dependsOn($ => $.a),
+        b: enforce.isString().dependsOn($ => $('a')),
         c: enforce.isString(),
       }),
     );
@@ -101,7 +101,7 @@ it('retains memo verdicts until their declared inputs change', () => {
     },
     enforce.shape({
       a: enforce.isString(),
-      b: enforce.isString().dependsOn($ => $.a),
+      b: enforce.isString().dependsOn($ => $('a')),
     }),
   );
   suite.run({ a: 'x', b: 'x' });
@@ -129,7 +129,7 @@ it('cancels superseded dependent tests while unrelated pending tests and complet
     },
     enforce.shape({
       a: enforce.isString(),
-      b: enforce.isString().dependsOn($ => $.a),
+      b: enforce.isString().dependsOn($ => $('a')),
       c: enforce.isString(),
     }),
   );
@@ -169,7 +169,7 @@ it('runs composed-root dependent user tests as well as schema validation', () =>
   const schema = compose(
     enforce.loose({
       a: enforce.isString(),
-      b: enforce.isString().dependsOn($ => $.a),
+      b: enforce.isString().dependsOn($ => $('a')),
     }),
   );
   const suite = create(() => {
@@ -219,7 +219,7 @@ it('applies bracket skip to a canonical dotted dependent name', () => {
       rows: enforce.isArrayOf(
         enforce.shape({
           a: enforce.isString(),
-          b: enforce.isString().dependsOn($ => $.a),
+          b: enforce.isString().dependsOn($ => $('a')),
         }),
       ),
     }),
@@ -369,8 +369,8 @@ it('uses ancestor relationships without making expansion transitive', () => {
     },
     enforce.shape({
       box: enforce.shape({ a: enforce.isString() }),
-      summary: enforce.isString().dependsOn($ => $.box),
-      next: enforce.isString().dependsOn($ => $.summary),
+      summary: enforce.isString().dependsOn($ => $('box')),
+      next: enforce.isString().dependsOn($ => $('summary')),
     }),
   );
   suite.changed('box.a').run({ box: { a: 'x' }, summary: 'x', next: 'x' });

@@ -18,11 +18,14 @@ import {
 
 // Vest consumers declare and inspect relationships through this entry, so an
 // application does not need its own dependency on n4s.
-export { EnforceSchemaError, FIELD, resolveAffected } from 'n4s/relationships';
+export { EnforceSchemaError, resolveAffected } from 'n4s/relationships';
 export type {
+  CheckDependencies,
   ConcretePath,
+  DeclaredDependencies,
   DependencyResolver,
   Description,
+  FieldReference,
   Relationship,
   SchemaPath,
   Scope,

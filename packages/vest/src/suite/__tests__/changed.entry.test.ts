@@ -3,24 +3,23 @@ import { expect, it } from 'vitest';
 import * as relationships from '../../exports/relationships';
 import {
   EnforceSchemaError,
-  FIELD,
   resolveAffected,
 } from '../../exports/relationships';
 import { create, enforce, test } from '../../vest';
 
 it('exposes the n4s relationship helpers to Vest consumers', () => {
-  expect(typeof FIELD).toBe('symbol');
   expect(relationships).not.toHaveProperty('validateRelationshipFields');
+  expect(relationships).not.toHaveProperty('FIELD');
 
   const schema = enforce.shape({
     root: enforce.isString(),
-    mirror: enforce.isString().dependsOn($ => $[FIELD]('root')),
+    mirror: enforce.isString().dependsOn($ => $('root')),
   });
   expect(resolveAffected(schema, ['root'], {})).toEqual([['root'], ['mirror']]);
   expect(() =>
     create(
       () => {},
-      enforce.shape({ a: enforce.isString() }).dependsOn($ => $.a),
+      enforce.shape({ a: enforce.isString() }).dependsOn($ => $('a')),
     )
       .changed('a')
       .run({ a: 'x' }),
@@ -45,7 +44,8 @@ it('reports an unknown reference when the suite is created', () => {
       validated++;
       return true;
     }),
-    confirm: enforce.isString().dependsOn($ => $.pasword),
+    // @ts-expect-error the shape also reports the typo at compile time
+    confirm: enforce.isString().dependsOn($ => $('pasword')),
   });
   expect(() => create(() => {}, schema)).toThrow(EnforceSchemaError);
   expect(() => create(() => {}, schema)).toThrow(
@@ -59,7 +59,7 @@ it('reports a root declaration when the suite is created', () => {
   expect(() =>
     create(
       () => {},
-      enforce.shape({ a: enforce.isString() }).dependsOn($ => $.a),
+      enforce.shape({ a: enforce.isString() }).dependsOn($ => $('a')),
     ),
   ).toThrow(/root schema cannot depend on "a"/);
 });

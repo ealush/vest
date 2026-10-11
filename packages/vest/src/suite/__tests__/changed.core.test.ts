@@ -11,7 +11,8 @@ it('names the opt-in entry when changed() is run without it', () => {
 
 it('does not resolve relationships at create() without the opt-in entry', () => {
   const schema = enforce.shape({
-    a: enforce.isString().dependsOn($ => $.missing),
+    // @ts-expect-error the shape also reports this at compile time
+    a: enforce.isString().dependsOn($ => $('missing')),
   });
   expect(() => create(() => {}, schema)).not.toThrow();
 });

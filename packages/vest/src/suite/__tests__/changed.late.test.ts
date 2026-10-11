@@ -5,7 +5,7 @@ import { create, enforce, test } from '../../vest';
 it('activates relationships after the schema and suite were created', async () => {
   const schema = enforce.shape({
     source: enforce.isString(),
-    dependent: enforce.isString().dependsOn($ => $.source),
+    dependent: enforce.isString().dependsOn($ => $('source')),
   });
   const suite = create(() => test('source', () => true), schema);
   await import('../../exports/relationships');

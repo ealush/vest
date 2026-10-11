@@ -10,7 +10,7 @@ import { resolveAffected } from 'n4s/relationships';
 function wideSchema() {
   const fields = { source: enforce.isString() };
   for (let i = 0; i < 2000; i++)
-    fields['dependent' + i] = enforce.isString().dependsOn($ => $.source);
+    fields['dependent' + i] = enforce.isString().dependsOn($ => $('source'));
   return enforce.shape(fields);
 }
 
@@ -61,7 +61,7 @@ const rowSchema = enforce.shape({
   currency: enforce.isString(),
   rows: enforce.isArrayOf(
     enforce.shape({
-      price: enforce.isNumber().dependsOn($ => $.root.currency),
+      price: enforce.isNumber().dependsOn($ => $.root('currency')),
     }),
   ),
 });

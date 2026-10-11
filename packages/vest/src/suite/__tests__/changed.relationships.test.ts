@@ -83,7 +83,7 @@ it('validates a composed root as a whole when it cannot be picked', () => {
   const schema = compose(
     enforce.shape({ source: enforce.isString() }),
     enforce.shape({
-      dependent: enforce.isString().dependsOn($ => $.root.source),
+      dependent: enforce.isString().dependsOn($ => $.root('source')),
     }),
   );
   const suite = create(() => test('source', () => true), schema);
@@ -100,7 +100,7 @@ it('runs a changed field and its direct dependents, retaining other errors', () 
   const third = vi.fn();
   const schema = enforce.shape({
     first: enforce.isString(),
-    second: enforce.isString().dependsOn($ => $.first),
+    second: enforce.isString().dependsOn($ => $('first')),
     third: enforce.isString(),
   });
   const suite = create(() => {
@@ -143,7 +143,7 @@ it('treats an empty changed list as running no fields', () => {
 it('reports the selected fields as the run focus', () => {
   const schema = enforce.shape({
     a: enforce.isString(),
-    b: enforce.isString().dependsOn($ => $.a),
+    b: enforce.isString().dependsOn($ => $('a')),
   });
   const suite = create(() => {}, schema);
   const data = { a: 'a', b: 'b' };
@@ -168,7 +168,7 @@ it('unions explicit only fields and lets skip exclude a dependent', () => {
   const calls = { first: vi.fn(), second: vi.fn(), third: vi.fn() };
   const schema = enforce.shape({
     first: enforce.isString(),
-    second: enforce.isString().dependsOn($ => $.first),
+    second: enforce.isString().dependsOn($ => $('first')),
     third: enforce.isString(),
   });
   const suite = create(() => {
@@ -205,7 +205,7 @@ it('passes the same parsed callback input as only() for the selected fields', ()
 it('does not throw for missing or malformed data', () => {
   const schema = enforce.shape({
     first: enforce.isString(),
-    second: enforce.isString().dependsOn($ => $.first),
+    second: enforce.isString().dependsOn($ => $('first')),
   });
   const suite = create(() => test('first', () => true), schema);
   expect(() => suite.changed('first').run(null as never)).not.toThrow();
@@ -217,7 +217,7 @@ it('selects many direct dependents without losing fields', () => {
     source: enforce.isString(),
   };
   for (let i = 0; i < 2000; i++) {
-    fields[`dependent${i}`] = enforce.isString().dependsOn($ => $.source);
+    fields[`dependent${i}`] = enforce.isString().dependsOn($ => $('source'));
   }
   const data = Object.fromEntries(Object.keys(fields).map(key => [key, 'ok']));
   const suite = create(() => test('source', () => true), enforce.shape(fields));
@@ -260,7 +260,7 @@ it('reports a failing array sibling without running its user test', () => {
     rows: enforce.isArrayOf(
       enforce.shape({
         a: enforce.isString(),
-        b: enforce.isString().dependsOn($ => $.a),
+        b: enforce.isString().dependsOn($ => $('a')),
       }),
     ),
   });
@@ -322,7 +322,7 @@ it('runs dependents of a cleared lazy container', () => {
   const profile = enforce.shape({ name: enforce.isString() });
   const schema = enforce.shape({
     profile: enforce.optional(enforce.lazy(() => profile)),
-    greeting: enforce.isString().dependsOn($ => $.root.profile.name),
+    greeting: enforce.isString().dependsOn($ => $.root('profile', 'name')),
   });
   const greeting = vi.fn();
   const suite = create(() => test('greeting', greeting), schema);

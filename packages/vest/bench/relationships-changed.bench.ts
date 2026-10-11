@@ -7,7 +7,7 @@ const wideFields: Record<string, ReturnType<typeof enforce.isString>> = {
   source: enforce.isString(),
 };
 for (let i = 0; i < 2000; i++) {
-  wideFields[`dependent${i}`] = enforce.isString().dependsOn($ => $.source);
+  wideFields[`dependent${i}`] = enforce.isString().dependsOn($ => $('source'));
 }
 const wideData = Object.fromEntries(
   Object.keys(wideFields).map(key => [key, 'ok']),
@@ -27,7 +27,7 @@ const rowsSuite = create(
     currency: enforce.isString(),
     rows: enforce.isArrayOf(
       enforce.shape({
-        price: enforce.isNumber().dependsOn($ => $.root.currency),
+        price: enforce.isNumber().dependsOn($ => $.root('currency')),
       }),
     ),
   }),

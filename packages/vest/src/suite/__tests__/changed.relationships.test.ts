@@ -330,3 +330,13 @@ it('runs dependents of a cleared lazy container', () => {
   suite.changed('profile').run({ profile: null, greeting: 'hi' } as never);
   expect(greeting).toHaveBeenCalledOnce();
 });
+
+it('replaces an earlier changed() selection with a later one', () => {
+  const ran: string[] = [];
+  const suite = create(() => {
+    test('a', () => void ran.push('a'));
+    test('b', () => void ran.push('b'));
+  });
+  suite.changed('a').changed('b').run();
+  expect(ran).toEqual(['b']);
+});

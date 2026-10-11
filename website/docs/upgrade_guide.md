@@ -39,7 +39,7 @@ Focused runs retain schema errors outside their focus. After a failing full run,
 
 ## Schema relationships
 
-Import `vest/relationships` to use `suite.changed(field).run(data)`. Rules can declare direct dependencies with `.dependsOn($ => $.other)`, so a changed run checks the named field and its dependents while keeping unrelated results. `schema.describe()` is available after importing `n4s/relationships`. Without the opt-in imports, `changed()` and `describe()` give a setup error when called. With `vest/relationships` imported, `create()` resolves the schema's relationships, so an unknown or misplaced reference throws an `EnforceSchemaError` when the suite is created.
+Import `vest/relationships` to use `suite.changed(field).run(data)`. Rules can declare direct dependencies with `.dependsOn($ => $('other'))`, checked against the containing shape at compile time, so a changed run checks the named field and its dependents while keeping unrelated results. `schema.describe()` is available after importing `n4s/relationships`. Without the opt-in imports, `changed()` and `describe()` give a setup error when called. With `vest/relationships` imported, `create()` resolves the schema's relationships, so an unknown or misplaced reference throws an `EnforceSchemaError` when the suite is created. `describeSuite(suite)` from `vest/relationships` returns a suite's full invalidation graph: its schema relationships, the tests and `include().when()` declarations of its last run, and relationship targets no test covers.
 
 # Upgrading from V5 to V6
 

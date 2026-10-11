@@ -54,6 +54,16 @@ function typeContracts() {
   const resolver: DependencyResolver = $ =>
     [$.password, $[FIELD]('confirm')] as const;
   enforce.isString().dependsOn(resolver);
+  // The vest re-export is the same unique symbol in the emitted declarations.
+  enforce.isString().dependsOn($ => $[vestField]('confirm'));
+  const single: readonly (string | number)[][] = vestResolveAffected(
+    schema,
+    'password',
+    {},
+  ).map(path => [...path]);
+  void single;
+  // @ts-expect-error $.parent is unsupported
+  enforce.isString().dependsOn($ => $.parent.password);
   // @ts-expect-error a resolver must return references
   enforce.isString().dependsOn(() => 'password');
   // @ts-expect-error a complete run still requires all input fields

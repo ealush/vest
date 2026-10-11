@@ -1,11 +1,11 @@
 import {
   EnforceSchemaError,
-  FIELD as vestField,
+  describeSuite,
   resolveAffected as vestResolveAffected,
 } from 'vest/relationships';
 import { create, enforce, test } from 'vest';
 import {
-  FIELD,
+  EnforceSchemaError as N4sSchemaError,
   resolveAffected,
   type DependencyResolver,
 } from 'n4s/relationships';
@@ -18,7 +18,7 @@ export const schema = enforce.shape({
     .condition(
       (value: unknown) => value === enforce.context()?.parent()?.value.password,
     )
-    .dependsOn($ => $.password),
+    .dependsOn($ => $('password')),
   age: enforce.isNumeric().toNumber(),
 });
 export const nested = enforce.shape({ user: schema });
@@ -34,12 +34,21 @@ if (schema.describe().relationships.length !== 1)
 if (resolveAffected(schema, ['password'], {}).length !== 2)
   throw new Error('planner export');
 // vest/relationships re-exports the same n4s instance the suite plans with.
-if (vestField !== FIELD || vestResolveAffected !== resolveAffected)
+if (
+  vestResolveAffected !== resolveAffected ||
+  EnforceSchemaError !== N4sSchemaError
+)
   throw new Error('vest/relationships re-exports');
+const description = describeSuite(suite);
+if (
+  description.relationships.length !== 1 ||
+  description.tests[0]?.fieldName !== 'confirm'
+)
+  throw new Error('describeSuite');
 try {
   enforce
     .shape({ a: enforce.isString() })
-    .dependsOn($ => $.a)
+    .dependsOn($ => $('a'))
     .describe();
   throw new Error('root declaration accepted');
 } catch (error) {
@@ -51,7 +60,8 @@ try {
     () => {},
     enforce.shape({
       a: enforce.isString(),
-      b: enforce.isString().dependsOn($ => $.missing),
+      // @ts-expect-error the shape reports the unknown reference at compile time
+      b: enforce.isString().dependsOn($ => $('missing')),
     }),
   );
   throw new Error('unknown reference accepted at create()');
@@ -64,19 +74,34 @@ if (!complete.valid || complete.value.age !== 42)
   throw new Error('parsed complete output');
 
 function typeContracts() {
-  const resolver: DependencyResolver = $ =>
-    [$.password, $[FIELD]('confirm')] as const;
+  const resolver: DependencyResolver = $ => [$('password'), $.root('confirm')];
   enforce.isString().dependsOn(resolver);
-  // The vest re-export is the same unique symbol in the emitted declarations.
-  enforce.isString().dependsOn($ => $[vestField]('confirm'));
+  // The published declarations carry literal paths to the shape check.
+  enforce.shape({
+    password: enforce.isString(),
+    address: enforce.shape({ city: enforce.isString() }),
+    confirm: enforce
+      .isString()
+      .dependsOn($ => [$('password'), $('address', 'city'), $.root('x')]),
+  });
+  enforce.shape({
+    password: enforce.isString(),
+    // @ts-expect-error unknown local reference
+    confirm: enforce.isString().dependsOn($ => $('pasword')),
+  });
+  enforce.shape({
+    address: enforce.shape({ city: enforce.isString() }),
+    // @ts-expect-error unknown nested key
+    zip: enforce.isString().dependsOn($ => $('address', 'citee')),
+  });
   const single: readonly (string | number)[][] = vestResolveAffected(
     schema,
     'password',
     {},
   ).map(path => [...path]);
   void single;
-  // @ts-expect-error $.parent is unsupported
-  enforce.isString().dependsOn($ => $.parent.password);
+  // @ts-expect-error the scope has no parent
+  enforce.isString().dependsOn($ => $.parent('password'));
   // @ts-expect-error a resolver must return references
   enforce.isString().dependsOn(() => 'password');
   // @ts-expect-error a complete run still requires all input fields

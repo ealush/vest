@@ -1,4 +1,4 @@
-import { assign } from 'vest-utils';
+import { assign, isEmpty } from 'vest-utils';
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 import { VestRuntime } from 'vestjs-runtime';
 
@@ -69,11 +69,12 @@ export function useCreateSuiteResult<
   });
 }
 
-/** A test-free suite is valid when its last run passed the whole schema. */
+/**
+ * A test-free suite is valid when its last run passed the whole schema.
+ * Most suites have tests, so that cheaper check comes first.
+ */
 function useSchemaOnlyPassed(tests: object): boolean {
-  return (
-    !!useSchemaIsolate()?.data?.schemaPassed && Object.keys(tests).length === 0
-  );
+  return isEmpty(tests) && !!useSchemaIsolate()?.data?.schemaPassed;
 }
 
 /** The isolate holding the last run's schema results. */

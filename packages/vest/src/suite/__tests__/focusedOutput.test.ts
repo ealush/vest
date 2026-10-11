@@ -101,3 +101,16 @@ it('keeps a retained unfocused failure when the complete parse now passes', () =
   expect(focused.hasErrors('age')).toBe(true);
   expect(focused.valid).toBe(false);
 });
+
+it('parses a schema that is not an Enforce schema once, as before', () => {
+  let parses = 0;
+  const schema = {
+    parse: (data: { a: string }) => {
+      parses++;
+      return data;
+    },
+  };
+  const suite = create(() => test('a', () => true), schema);
+  suite.only('a').run({ a: 'x' } as never);
+  expect(parses).toBe(1);
+});

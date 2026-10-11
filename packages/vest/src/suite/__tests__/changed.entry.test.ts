@@ -37,3 +37,36 @@ it('reports a root schema failure from a changed fallback run under the root nam
     expect(result.errors.map(error => error.fieldName)).toEqual(['__root__']);
   }
 });
+
+it('reports an unknown reference when the suite is created', () => {
+  let validated = 0;
+  const schema = enforce.shape({
+    password: enforce.condition(() => {
+      validated++;
+      return true;
+    }),
+    confirm: enforce.isString().dependsOn($ => $.pasword),
+  });
+  expect(() => create(() => {}, schema)).toThrow(EnforceSchemaError);
+  expect(() => create(() => {}, schema)).toThrow(
+    '"confirm" depends on unknown field "pasword". Did you mean "password"?',
+  );
+  // Resolving the graph runs no validation rule.
+  expect(validated).toBe(0);
+});
+
+it('reports a root declaration when the suite is created', () => {
+  expect(() =>
+    create(
+      () => {},
+      enforce.shape({ a: enforce.isString() }).dependsOn($ => $.a),
+    ),
+  ).toThrow(/root schema cannot depend on "a"/);
+});
+
+it('creates suites without a schema or with a foreign schema as before', () => {
+  expect(() => create(() => {})).not.toThrow();
+  expect(() =>
+    create(() => {}, { run: () => ({ pass: true }) } as never),
+  ).not.toThrow();
+});

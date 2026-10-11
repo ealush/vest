@@ -44,7 +44,11 @@ type ChangedPlan = {
   evaluated: ((path: readonly string[] | undefined) => boolean) | null;
 };
 
-installChangedHandler((schema, data, modifiers) => {
+installChangedHandler(planRun, checkSchemaRelationships);
+
+function planRun<
+  M extends { changed?: unknown; only?: unknown; skip?: unknown },
+>(schema: unknown, data: unknown, modifiers: M) {
   const plan = planRelationshipRun(schema, modifiers.changed, data, modifiers);
   return {
     focus: { ...modifiers, only: plan.focus },
@@ -57,7 +61,13 @@ installChangedHandler((schema, data, modifiers) => {
     evaluated: plan.evaluated,
     value: plan.value,
   };
-});
+}
+
+// Resolving the graph at create() reports an unknown reference before any
+// run. describe() runs no validators and caches the graph for later plans.
+function checkSchemaRelationships(schema: unknown): void {
+  if (isN4sSchema(schema)) (schema as { describe(): unknown }).describe();
+}
 
 function planRelationshipRun(
   schema: unknown,

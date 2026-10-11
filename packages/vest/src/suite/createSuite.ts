@@ -12,6 +12,7 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 
 import { Suite, SuiteCallbackWithSchema } from './SuiteTypes';
+import { checkRelationships } from './changedHandler';
 import {
   useBindSuiteLifecycle,
   useCreateSuiteMethods,
@@ -71,6 +72,7 @@ function createSuite<
   S extends TSchema = undefined,
 >(suiteCallback: T, schema?: S): Suite<F, G, T, S> {
   const suiteCallbackResult = validateSuiteCallback(suiteCallback).unwrap();
+  checkRelationships(schema);
 
   const stateRef = useCreateVestState({ VestReconciler });
 

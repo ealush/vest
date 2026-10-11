@@ -1,3 +1,5 @@
+import { noop } from 'vest-utils';
+
 /** The opt-in relationships entry installs the planner used by changed(). */
 type Modifiers = {
   changed?: string | readonly string[];
@@ -38,6 +40,17 @@ export let planChanged: Handler = () => {
   );
 };
 
-export function installChangedHandler(value: Handler): void {
+/**
+ * Resolves a suite schema's relationship graph when the suite is created, so
+ * an unknown reference fails before any run rather than on the first
+ * changed() call. A no-op until vest/relationships is imported.
+ */
+export let checkRelationships: (schema: unknown) => void = noop;
+
+export function installChangedHandler(
+  value: Handler,
+  check: (schema: unknown) => void,
+): void {
   planChanged = value;
+  checkRelationships = check;
 }

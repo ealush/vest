@@ -299,3 +299,27 @@ it('keeps tuple positions as static string segments, selected or dependent', () 
     ['pair', '1'],
   ]);
 });
+
+it('selects only canonical, in-range array indexes', () => {
+  const schema = enforce.shape({
+    rows: enforce.isArrayOf(
+      enforce.shape({
+        country: enforce.isString(),
+        state: enforce.isString().dependsOn($ => $('country')),
+      }),
+    ),
+  });
+  const data = { rows: [{}, {}] };
+  expect(resolveAffected(schema, 'rows.1.country', data)).toEqual([
+    ['rows', 1, 'country'],
+    ['rows', 1, 'state'],
+  ]);
+  for (const name of [
+    'rows.-1.country',
+    'rows.1.5.country',
+    'rows.01.country',
+    'rows.2.country',
+  ]) {
+    expect(resolveAffected(schema, name, data)).toEqual([]);
+  }
+});

@@ -87,10 +87,12 @@ function invalidateSources(
   path: ConcretePath,
   plan: Plan,
 ): void {
+  const keys = prefixKeys(pattern);
   for (let length = 1; length <= pattern.length; length++) {
-    const source = pattern.slice(0, length);
-    const edges = plan.index.get(JSON.stringify(source));
-    if (edges) instantiateEdges(edges, bindingsFor(source, path), plan);
+    const edges = plan.index.get(keys[length - 1]);
+    if (edges) {
+      instantiateEdges(edges, bindingsFor(pattern, keys, length, path), plan);
+    }
   }
 }
 
@@ -99,7 +101,7 @@ function instantiateEdges(
   bindings: Map<string, string | number>,
   { data, expanded, include }: Plan,
 ): void {
-  const key = JSON.stringify([edges[0].source, [...bindings.values()]]);
+  const key = `${patternKey(edges[0].source)}|${JSON.stringify([...bindings.values()])}`;
   if (expanded.has(key)) return;
   expanded.add(key);
   for (const edge of edges) {
@@ -132,7 +134,7 @@ function singleDynamicTarget(
   index: Index,
   data: unknown,
 ): ConcretePath[] | undefined {
-  const edges = index.get(JSON.stringify([name]));
+  const edges = index.get(patternKey([name]));
   if (edges?.length !== 1) return;
   const paths: ConcretePath[] = [[name]];
   instantiate(edges[0].target, data, new Map(), path => paths.push(path));
@@ -160,7 +162,7 @@ function isScalarSelection(
 }
 
 function staticPaths(name: string, index: Index): ConcretePath[] | undefined {
-  const edges = index.get(JSON.stringify([name])) ?? [];
+  const edges = index.get(patternKey([name])) ?? [];
   if (edges.some(edge => !edge.concrete)) return;
   return [[name], ...edges.map(edge => edge.concrete!)];
 }
@@ -184,7 +186,7 @@ function reverseIndex(schema: object): Index {
   if (!edges) {
     edges = new Map();
     for (const edge of describeSchema(schema).relationships) {
-      const key = JSON.stringify(edge.source);
+      const key = patternKey(edge.source);
       const list = edges.get(key) ?? [];
       list.push({ ...edge, concrete: concreteTarget(edge.target) });
       edges.set(key, list);
@@ -271,7 +273,7 @@ function matchChild(
     };
   }
   const key = segments[node.offset];
-  if (!itemKeys(node.value, tail[0].binding).includes(key)) return;
+  if (!hasItemKey(node.value, tail[0].binding, key)) return;
   return {
     ...node,
     offset: node.offset + 1,
@@ -308,15 +310,36 @@ function expand(
     return;
   }
   const parent = { kind: info.kind, path, pattern, value };
-  for (const [child, childPattern] of childrenOf(
-    info.kind,
-    info.children,
-    pattern,
-  )) {
+  for (const [child, childPattern] of patternChildren(info, pattern)) {
     if (!tryEnter(ancestors, child)) continue;
     expandChild(child, childPattern, parent, walk, ancestors);
     ancestors.delete(child);
   }
+}
+
+// Every member of a collection shares its pattern, so its children's
+// patterns are built once and reused. Stable patterns also let prefixKeys()
+// reuse their keys.
+const childPatterns = new WeakMap<
+  SchemaPath,
+  WeakMap<RuleMeta, Array<[unknown, SchemaPath]>>
+>();
+
+function patternChildren(
+  info: RuleMeta,
+  pattern: SchemaPath,
+): Array<[unknown, SchemaPath]> {
+  let byRule = childPatterns.get(pattern);
+  if (!byRule) {
+    byRule = new WeakMap();
+    childPatterns.set(pattern, byRule);
+  }
+  let children = byRule.get(info);
+  if (!children) {
+    children = childrenOf(info.kind, info.children, pattern);
+    byRule.set(info, children);
+  }
+  return children;
 }
 
 function expandChild(
@@ -328,9 +351,9 @@ function expandChild(
 ): void {
   const tail = childPattern.slice(parent.pattern.length);
   for (const key of expansionKeys(tail, parent.value)) {
-    const nextPath = pathWithKey(parent.path, key, tail[0]);
+    const nextPath = pathWithKey(parent.path, key);
     const nextValue =
-      key === undefined ? parent.value : ownValue(parent.value, key);
+      key === undefined ? parent.value : ownValue(parent.value, String(key));
     expand(child, nextPath, childPattern, nextValue, walk, ancestors);
   }
 }
@@ -372,21 +395,17 @@ function expandLazyValue(
 function expansionKeys(
   tail: SchemaPath,
   value: unknown,
-): Array<string | undefined> {
+): Array<string | number | undefined> {
   if (!tail.length) return [undefined];
   return isStringValue(tail[0]) ? [tail[0]] : itemKeys(value, tail[0].binding);
 }
 
 function pathWithKey(
   path: ConcretePath,
-  key: string | undefined,
-  segment: SchemaPath[number],
+  key: string | number | undefined,
 ): ConcretePath {
-  if (key === undefined) return path;
-  return [
-    ...path,
-    isStringValue(segment) ? key : concreteKey(key, segment.binding),
-  ];
+  // Expansion keys are already concrete: numbers for array items.
+  return key === undefined ? path : [...path, key];
 }
 
 function tryEnter(ancestors: Set<object>, rule: unknown): rule is object {
@@ -397,15 +416,40 @@ function tryEnter(ancestors: Set<object>, rule: unknown): rule is object {
 
 function bindingsFor(
   pattern: SchemaPath,
+  keys: readonly string[],
+  length: number,
   path: ConcretePath,
 ): Map<string, string | number> {
   const bindings = new Map<string, string | number>();
-  for (let i = 0; i < pattern.length; i++) {
-    if (!isStringValue(pattern[i])) {
-      bindings.set(JSON.stringify(pattern.slice(0, i + 1)), path[i]);
-    }
+  for (let i = 0; i < length; i++) {
+    if (!isStringValue(pattern[i])) bindings.set(keys[i], path[i]);
   }
   return bindings;
+}
+
+// Keys for every prefix of a pattern, built in one pass. Each segment is
+// JSON-encoded, so the joined keys stay unambiguous. Schema patterns from the
+// graph are stable objects and reuse their keys across plans.
+const prefixKeyCache = new WeakMap<SchemaPath, readonly string[]>();
+
+function prefixKeys(pattern: SchemaPath): readonly string[] {
+  let keys = prefixKeyCache.get(pattern);
+  if (!keys) {
+    const built: string[] = [];
+    for (const segment of pattern) {
+      const encoded = JSON.stringify(segment);
+      built.push(
+        built.length ? `${built[built.length - 1]},${encoded}` : encoded,
+      );
+    }
+    keys = built;
+    prefixKeyCache.set(pattern, keys);
+  }
+  return keys;
+}
+
+function patternKey(pattern: SchemaPath): string {
+  return prefixKeys(pattern)[pattern.length - 1] ?? '';
 }
 
 function instantiate(
@@ -420,17 +464,16 @@ function instantiate(
     if (isStringValue(segment)) {
       visit(offset + 1, [...path, segment], ownValue(value, segment));
     } else {
-      const bound = bindings.get(JSON.stringify(pattern.slice(0, offset + 1)));
+      const bound = bindings.get(prefixKeys(pattern)[offset]);
       const keys =
         bound === undefined ? itemKeys(value, segment.binding) : [bound];
-      for (const key of keys) {
-        const item = concreteKey(key, segment.binding);
+      for (const item of keys) {
         // Emit the final item and static tail together, without another path
         // allocation or reading the item value. Earlier items still need data.
         if (offset + 1 === suffix.offset) {
           add([...path, item, ...suffix.path]);
         } else {
-          visit(offset + 1, [...path, item], ownValue(value, String(key)));
+          visit(offset + 1, [...path, item], ownValue(value, String(item)));
         }
       }
     }
@@ -450,15 +493,42 @@ function staticSuffix(pattern: SchemaPath): {
   return { offset, path: pattern.slice(offset) as readonly string[] };
 }
 
-function itemKeys(value: unknown, kind: string): string[] {
+/** The concrete member keys: array indexes as numbers, record keys as strings. */
+function itemKeys(value: unknown, kind: string): Array<string | number> {
   if (kind === 'isArrayOf') {
     return isArray(value)
-      ? Array.from({ length: value.length }, (_, i) => String(i))
+      ? Array.from({ length: value.length }, (_, i) => i)
       : [];
   }
-  return isNode(value) && !isArray(value)
+  return isRecordValue(value)
     ? Object.keys(value).filter(key => !isUnsafeKey(key))
     : [];
+}
+
+/** Whether a name segment is a member of the collection, without listing it. */
+function hasItemKey(value: unknown, kind: string, key: string): boolean {
+  return kind === 'isArrayOf'
+    ? isArrayIndex(value, key)
+    : isRecordKey(value, key);
+}
+
+// A canonical array index: no sign, fraction or leading zero.
+const ARRAY_INDEX = /^(?:0|[1-9]\d*)$/;
+
+function isArrayIndex(value: unknown, key: string): boolean {
+  return isArray(value) && ARRAY_INDEX.test(key) && Number(key) < value.length;
+}
+
+function isRecordKey(value: unknown, key: string): boolean {
+  return (
+    isRecordValue(value) &&
+    !isUnsafeKey(key) &&
+    !!Object.getOwnPropertyDescriptor(value, key)?.enumerable
+  );
+}
+
+function isRecordValue(value: unknown): value is object {
+  return isNode(value) && !isArray(value);
 }
 
 function concreteKey(key: string | number, kind: string): string | number {

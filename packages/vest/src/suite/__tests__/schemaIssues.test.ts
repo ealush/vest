@@ -68,3 +68,16 @@ it('reports a user test named after the root sentinel without a path', () => {
     { message: 'Whole form is invalid', path: undefined },
   ]);
 });
+
+it('uses the default message for an empty failure message', () => {
+  const suite = create(() => {
+    test('name', '', () => false);
+  });
+  const result = suite.run();
+  expect(result.issues).toEqual([
+    { message: 'Validation failed', path: ['name'] },
+  ]);
+  expect(suite['~standard'].validate(undefined)).toEqual({
+    issues: result.issues,
+  });
+});

@@ -323,3 +323,25 @@ it('selects only canonical, in-range array indexes', () => {
     expect(resolveAffected(schema, name, data)).toEqual([]);
   }
 });
+
+it('fans a root reference out through nested collections', () => {
+  const schema = enforce.shape({
+    promoCode: enforce.isString(),
+    orders: enforce.isArrayOf(
+      enforce.shape({
+        items: enforce.isArrayOf(
+          enforce.shape({
+            discount: enforce.isNumber().dependsOn($ => $.root('promoCode')),
+          }),
+        ),
+      }),
+    ),
+  });
+  const data = { orders: [{ items: [{}, {}] }, { items: [{}] }, {}] };
+  expect(resolveAffected(schema, 'promoCode', data)).toEqual([
+    ['promoCode'],
+    ['orders', 0, 'items', 0, 'discount'],
+    ['orders', 0, 'items', 1, 'discount'],
+    ['orders', 1, 'items', 0, 'discount'],
+  ]);
+});

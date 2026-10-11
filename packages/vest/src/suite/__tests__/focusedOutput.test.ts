@@ -56,3 +56,48 @@ describe('focused runs output the complete parsed data', () => {
     expect(seen.at(-1)).toEqual({ name: 1, age: 'x' });
   });
 });
+
+// docs/focus.md specifies how often a focused run parses the input.
+describe('focused schema cost', () => {
+  function countingSuite() {
+    const calls = { name: 0 };
+    const suite = create(
+      () => test('name', () => true),
+      enforce.shape({
+        name: enforce.condition((value: unknown) => {
+          calls.name++;
+          return typeof value === 'string';
+        }),
+        age: enforce.isNumeric().toNumber(),
+      }),
+    );
+    return { calls, suite };
+  }
+
+  it('parses the whole input once when it passes', () => {
+    const { calls, suite } = countingSuite();
+    suite.only('name').run({ name: 'Ann', age: '42' });
+    expect(calls.name).toBe(1);
+  });
+
+  it('parses again for the focused fields when an unfocused field fails', () => {
+    const { calls, suite } = countingSuite();
+    suite.only('name').run({ name: 'Ann', age: 'x' } as never);
+    expect(calls.name).toBe(2);
+  });
+
+  it('parses, then runs for failure details, without focus', () => {
+    const { calls, suite } = countingSuite();
+    suite.run({ name: 'Ann', age: 'x' } as never);
+    expect(calls.name).toBe(2);
+  });
+});
+
+it('keeps a retained unfocused failure when the complete parse now passes', () => {
+  const suite = createSuite();
+  suite.run({ name: 'Ann', age: 'x' } as never);
+  const focused = suite.only('name').run({ name: 'Bob', age: '43' });
+  // The unfocused field is not revalidated, so its earlier error stays.
+  expect(focused.hasErrors('age')).toBe(true);
+  expect(focused.valid).toBe(false);
+});

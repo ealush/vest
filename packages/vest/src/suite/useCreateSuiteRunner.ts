@@ -237,7 +237,9 @@ export function useCreateSuiteRunner<
  *   previous verdict, and sanitizing them is the application's concern.
  *
  * Cost: a passing focused run parses the whole input once, as a full run
- * does, so focus no longer narrows schema work. A failing one parses twice.
+ * does, so focus no longer narrows schema work. When the complete parse
+ * fails, the focused parse runs too: the complete attempt stops at its first
+ * failure and skips run()'s failure details.
  * Reusing the output of unchanged fields could narrow it again (#1362).
  */
 function runFocusedSchema(
@@ -247,14 +249,15 @@ function runFocusedSchema(
   schemaFocus: ReturnType<typeof schemaFocusOf>,
 ): SchemaRunResult[] {
   if (schemaFocus !== null) {
-    const complete = runSchemaWithParse(schema, data, {});
+    // Only the output is needed, so a failure skips run()'s failure details.
+    const complete = tryParseSchema(schema, data);
     if (isPassing(complete)) return complete;
   }
   return runSchemaWithParse(schema, data, modifiers);
 }
 
 function isPassing(
-  results: SchemaRunResult[] | undefined,
+  results: SchemaRunResult[] | null | undefined,
 ): results is SchemaRunResult[] {
   return !!results?.every(result => result.pass);
 }

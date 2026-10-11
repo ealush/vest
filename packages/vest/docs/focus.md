@@ -103,7 +103,7 @@ Two optimizations can narrow this work later without changing the contract:
 
 When the schema rejects the input, the suite callback receives the input as it was passed in, so its tests can still run and report messages. The callback's parameter type still describes the parsed output; inside tests, values of fields that failed parsing are best effort as well.
 
-**Cost.** A passing focused run parses the whole input once, the same schema work as a full run, so focus no longer narrows schema execution. Focus still narrows user tests. A focused run where the complete parse fails parses twice: once completely, until the first failure, and once for the focused fields. Schemas without focus, and schemas other than Enforce schemas, are parsed once as before.
+**Cost.** A passing focused run parses the whole input once, the same schema work as a full run, so focus no longer narrows schema execution. Focus still narrows user tests. When the complete parse fails, the focused parse runs too, so the input is parsed twice. The complete attempt stops at its first failure and skips the `run()` that a failing parse otherwise uses to collect failure details; the focused parse does that for the focused fields. Runs without focus, and schemas other than Enforce schemas, are unchanged.
 
 ## 🛠️ Precedence Mapping
 

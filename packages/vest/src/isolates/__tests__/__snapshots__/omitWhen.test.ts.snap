@@ -273,7 +273,14 @@ exports[`omitWhen > when conditional is truthy > boolean conditional > should av
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -330,7 +337,14 @@ exports[`omitWhen > when conditional is truthy > boolean conditional > should sk
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -387,7 +401,14 @@ exports[`omitWhen > when conditional is truthy > function conditional > should a
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {
@@ -444,7 +465,14 @@ exports[`omitWhen > when conditional is truthy > function conditional > should s
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "field_2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {

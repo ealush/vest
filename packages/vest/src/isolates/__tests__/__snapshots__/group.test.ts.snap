@@ -101,7 +101,32 @@ exports[`named group > focus behavior > only > group only > should run only test
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f3",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 4,
   "tests": {
@@ -236,7 +261,26 @@ exports[`named group > focus behavior > only > top level only > should run only 
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -333,7 +377,26 @@ exports[`named group > focus behavior > skip inside the group > should skip the 
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -432,7 +495,26 @@ exports[`named group > focus behavior > skip inside the group > should skip the 
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -550,7 +632,38 @@ exports[`named group > focus behavior > skip inside the group > skip(true) > sho
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f3",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f3",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 5,
   "tests": {
@@ -637,7 +750,14 @@ exports[`named group > focus behavior > skip outside of group > should skip test
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -773,7 +893,38 @@ exports[`named group > multiple named groups > should run the tests inside each 
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 7,
   "tests": {
@@ -879,7 +1030,26 @@ exports[`named group > should run the tests inside the named group 1`] = `
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 4,
   "tests": {
@@ -955,7 +1125,26 @@ exports[`unnamed groups > should not add the unnamed group to the results object
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f3",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -1031,7 +1220,26 @@ exports[`unnamed groups > should run tests inside the unnamed group normally 1`]
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f3",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 3,
   "tests": {
@@ -1097,7 +1305,14 @@ exports[`unnamed groups > with only > should run only tests for the focused fiel
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f1",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 1,
   "tests": {
@@ -1168,7 +1383,20 @@ exports[`unnamed groups > with skip > should skip tests for the specified field 
   "isTested": [Function],
   "isValid": [Function],
   "isValidByGroup": [Function],
-  "issues": [],
+  "issues": [
+    {
+      "message": "Validation failed",
+      "path": [
+        "f2",
+      ],
+    },
+    {
+      "message": "Validation failed",
+      "path": [
+        "f3",
+      ],
+    },
+  ],
   "pendingCount": 0,
   "testCount": 2,
   "tests": {

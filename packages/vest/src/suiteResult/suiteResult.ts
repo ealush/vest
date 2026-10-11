@@ -1,5 +1,4 @@
 import { assign } from 'vest-utils';
-import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
 import { VestRuntime } from 'vestjs-runtime';
 
 import { useSuiteResultCache } from '../core/Runtime';
@@ -17,6 +16,7 @@ import {
 } from './SuiteResultTypes';
 import { suiteSelectors } from './selectors/suiteSelectors';
 import { useProduceSuiteSummary } from './selectors/useProduceSuiteSummary';
+import { standardSchemaIssues } from './standardSchemaIssues';
 
 export function useCreateSuiteResult<
   F extends TFieldName,
@@ -89,15 +89,7 @@ export function constructSuiteResultObject<
       value: outputData,
     };
   } else if (valid === false) {
-    const issues = summary[Severity.ERRORS].reduce((acc, failure) => {
-      if (failure.message) {
-        acc.push({
-          message: failure.message,
-          path: [failure.fieldName],
-        });
-      }
-      return acc;
-    }, [] as StandardSchemaV1.Issue[]);
+    const issues = standardSchemaIssues(summary[Severity.ERRORS]);
 
     return {
       ...common,

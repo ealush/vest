@@ -8,7 +8,7 @@ it('stores declarations without evaluating them or changing validation', () => {
     a: enforce.isString(),
     b: enforce.isString().dependsOn($ => {
       calls++;
-      return $.a;
+      return $('a');
     }),
   });
   expect(schema.test({ a: 'a', b: 'b' })).toBe(true);

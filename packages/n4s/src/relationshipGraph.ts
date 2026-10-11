@@ -2,7 +2,6 @@
 import { isFunction, isObject } from 'vest-utils';
 
 import {
-  FIELD,
   meta,
   type Description,
   type Relationship,
@@ -16,7 +15,8 @@ export class EnforceSchemaError extends Error {
 
 type Reference = { path: SchemaPath; rooted: boolean };
 const REF = Symbol('n4s.relationships.ref');
-const FIELD_HINT = "Use $[FIELD]('name') for fields named root, parent or then";
+const REFERENCE_HINT =
+  "Use $('name') for a field in the same shape and $.root('name') for a top-level field";
 // Recursive lazy() factories may build a fresh schema per level.
 const MAX_LAZY_DEPTH = 32;
 // dependsOn() never mutates a rule, so a schema's graph never changes.
@@ -263,7 +263,7 @@ function resolve(
   }
   let result: unknown;
   try {
-    result = resolver(scopeProxy());
+    result = resolver(scope());
   } catch (cause) {
     const detail = cause instanceof Error ? `: ${cause.message}` : '';
     throw new EnforceSchemaError(
@@ -278,52 +278,29 @@ function resolve(
     const reference = isNode(value) ? Reflect.get(value, REF) : undefined;
     if (!reference || !reference.path.length) {
       throw new EnforceSchemaError(
-        `"${renderPath(target)}" dependsOn must return a field reference or an array of references. ${FIELD_HINT}`,
+        `"${renderPath(target)}" dependsOn must return a field reference or an array of references. ${REFERENCE_HINT}`,
       );
     }
     return reference as Reference;
   });
 }
 
-function scopeProxy(): Scope {
-  const root = new Proxy(
-    {},
-    {
-      get(_target, key) {
-        if (key === FIELD) return (name: string) => ref([name], true);
-        if (typeof key === 'symbol' || key === 'then') return undefined;
-        return ref([String(key)], true);
-      },
-    },
-  );
-  return new Proxy({} as Scope, {
-    get(_target, key) {
-      if (key === 'root') return root;
-      if (key === 'parent') {
-        throw new Error(`$.parent is not supported. ${FIELD_HINT}`);
-      }
-      return refProperty([], false, key);
-    },
-  });
+function scope(): Scope {
+  const local = (...path: unknown[]) => reference(path, false);
+  return Object.assign(local, {
+    root: (...path: unknown[]) => reference(path, true),
+  }) as unknown as Scope;
 }
 
-function ref(path: SchemaPath, rooted: boolean): Scope {
-  return new Proxy({} as Scope, {
-    get(_target, key) {
-      return refProperty(path, rooted, key);
-    },
-  });
+function reference(path: unknown[], rooted: boolean): object {
+  if (!path.length || !path.every(isFieldName)) {
+    throw new Error(`references take field names. ${REFERENCE_HINT}`);
+  }
+  return { [REF]: { path, rooted } };
 }
 
-function refProperty(
-  path: SchemaPath,
-  rooted: boolean,
-  key: PropertyKey,
-): unknown {
-  if (key === REF) return { path, rooted };
-  if (key === FIELD) return (name: string) => ref([...path, name], rooted);
-  if (typeof key === 'symbol' || key === 'then') return undefined;
-  return ref([...path, String(key)], rooted);
+function isFieldName(segment: unknown): segment is string {
+  return typeof segment === 'string' && segment.length > 0;
 }
 
 type Walk = { found: boolean; missing: string; keys: string[] };

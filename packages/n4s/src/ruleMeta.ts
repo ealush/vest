@@ -31,22 +31,117 @@ export type Relationship = {
 /** The relationship graph of a schema, as returned by `schema.describe()`. */
 export type Description = { relationships: Relationship[] };
 
+declare const FIELD_REFERENCE: unique symbol;
+declare const DECLARED_DEPENDENCIES: unique symbol;
+
+type FieldPath = readonly [string, ...string[]];
+
 /**
- * Field references for a `dependsOn()` resolver, scoped to the shape that
- * contains the field. References are checked when the graph is resolved,
- * not by the type system: an unknown field throws an `EnforceSchemaError`.
+ * A reference returned from a `dependsOn()` resolver. It carries its literal
+ * path, so `enforce.shape()` can check local references against its keys.
+ */
+export type FieldReference<
+  P extends FieldPath = FieldPath,
+  Rooted extends boolean = boolean,
+> = { readonly [FIELD_REFERENCE]: { path: P; rooted: Rooted } };
+
+/**
+ * The scope a `dependsOn()` resolver receives.
+ *
+ * - `$('name')` references a field in the shape that contains the rule, and
+ *   `$('address', 'city')` a path below it. The shape checks the first
+ *   segment, and deeper segments against that field's data type, at compile
+ *   time.
+ * - `$.root('name')` references a top-level field. Root references are
+ *   checked when the graph is resolved, not by the type system.
+ *
+ * Any field name works, including `root`, `parent` and `then`.
  */
 export type Scope = {
-  readonly root: Scope;
-  /** Unsupported: use `$.root` or `$[FIELD]('parent')` for a field named parent. */
-  readonly parent: never;
-  [FIELD]: (name: string) => Scope;
-  [field: string]: Scope;
+  <const P extends FieldPath>(...path: P): FieldReference<P, false>;
+  readonly root: <const P extends FieldPath>(
+    ...path: P
+  ) => FieldReference<P, true>;
 };
 
-export type DependencyResolver = (scope: Scope) => Scope | readonly Scope[];
+export type DependencyResolver = (
+  scope: Scope,
+) => FieldReference | readonly FieldReference[];
 
-export const FIELD = Symbol('n4s.relationships.field');
+/**
+ * The local paths a rule declares with `dependsOn()`, carried in its type so
+ * the containing shape can check them. Rules chained after `dependsOn()`
+ * return their own types without these paths, so declare `dependsOn()` last
+ * to have the shape check it; `create()` checks every reference at runtime.
+ */
+export type DeclaredDependencies<R> = {
+  readonly [DECLARED_DEPENDENCIES]?: {
+    [P in LocalPath<R> as JoinPath<P>]: P;
+  };
+};
+
+type LocalPath<R> = R extends FieldReference<infer P, false> ? P : never;
+
+type JoinPath<P> = P extends readonly [
+  infer H extends string,
+  ...infer Rest extends string[],
+]
+  ? Rest extends []
+    ? H
+    : `${H}.${JoinPath<Rest>}`
+  : never;
+
+type DeclaredPaths<R> = R extends {
+  readonly [DECLARED_DEPENDENCIES]?: infer M;
+}
+  ? NonNullable<M>[keyof NonNullable<M>]
+  : never;
+
+type FieldData<S> = {
+  [K in keyof S]: S[K] extends { infer: infer T } ? T : unknown;
+};
+
+// A path is valid when each segment is a key of the data type at that level.
+// Unions (from compound rules) accept a key of any member. Unknown data,
+// arrays (numeric segments) and records stay permissive.
+type InvalidPath<P, D> = P extends readonly [
+  infer H extends string,
+  ...infer Rest extends string[],
+]
+  ? unknown extends D
+    ? never
+    : H extends KeyOf<D>
+      ? InvalidPath<Rest, NonNullable<ValueAt<D, H>>>
+      : P
+  : never;
+
+type KeyOf<D> = D extends readonly unknown[]
+  ? `${number}`
+  : D extends object
+    ? keyof D & string
+    : never;
+
+type ValueAt<D, H extends string> = D extends readonly unknown[]
+  ? D[number]
+  : D extends object
+    ? H extends keyof D
+      ? D[H]
+      : never
+    : never;
+
+/**
+ * Checks every field's local `dependsOn()` references against the shape's
+ * own keys. A field with an unknown reference is reported on that field.
+ */
+export type CheckDependencies<S> = {
+  [F in keyof S]: [InvalidPath<DeclaredPaths<S[F]>, FieldData<S>>] extends [
+    never,
+  ]
+    ? S[F]
+    : `"${F & string}" depends on unknown field "${JoinPath<
+        InvalidPath<DeclaredPaths<S[F]>, FieldData<S>>
+      >}"`;
+};
 
 export type RuleMeta = {
   kind?: string;

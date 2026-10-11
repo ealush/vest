@@ -1,5 +1,11 @@
 import { StandardSchemaV1 } from 'vest-utils/standardSchemaSpec';
-import type { DependencyResolver, Description } from '../ruleMeta';
+import type {
+  DeclaredDependencies,
+  DependencyResolver,
+  Description,
+  FieldReference,
+  Scope,
+} from '../ruleMeta';
 import { deriveDependency, describeRule } from '../ruleMeta';
 
 import { RuleRunReturn } from './RuleRunReturn';
@@ -46,7 +52,16 @@ export class RuleInstance<T, Args extends any[] = any[]> {
   // Type-only declaration for parse helper that throws on issues
   parse!: (...args: Args) => T;
 
-  dependsOn!: (resolver: DependencyResolver) => this;
+  /**
+   * Returns a new rule that declares a direct dependency: when a referenced
+   * field changes, this rule's result may be stale. The resolver returns
+   * `$('field')` or an array of references; see `Scope`. Declare it last in
+   * the chain so the containing shape can check the references at compile
+   * time.
+   */
+  dependsOn!: <const R extends FieldReference>(
+    resolver: (scope: Scope) => R | readonly R[],
+  ) => this & DeclaredDependencies<R>;
   describe!: () => Description;
 
   // Type-only declaration for StandardSchema property.

@@ -5,10 +5,12 @@ import { installDescribe } from '../ruleMeta';
 installDescribe(describeSchema);
 
 export { EnforceSchemaError } from '../relationshipGraph';
-export { FIELD } from '../ruleMeta';
 export type {
+  CheckDependencies,
+  DeclaredDependencies,
   DependencyResolver,
   Description,
+  FieldReference,
   Relationship,
   SchemaPath,
   Scope,

@@ -1,11 +1,7 @@
 import { expect, it } from 'vitest';
 
 import '../exports/relationships';
-import {
-  EnforceSchemaError,
-  FIELD,
-  type Scope,
-} from '../exports/relationships';
+import { EnforceSchemaError, type Scope } from '../exports/relationships';
 import { compose, enforce } from '../n4s';
 
 it('resolves single, multiple, chained and repeated dependencies', () => {
@@ -14,8 +10,8 @@ it('resolves single, multiple, chained and repeated dependencies', () => {
     b: enforce.isString(),
     c: enforce
       .isString()
-      .dependsOn($ => $.a)
-      .dependsOn($ => [$.a, $.b]),
+      .dependsOn($ => $('a'))
+      .dependsOn($ => [$('a'), $('b')]),
   });
   expect(schema.describe()).toEqual({
     relationships: [
@@ -28,22 +24,26 @@ it('resolves single, multiple, chained and repeated dependencies', () => {
 it('catches typos on first describe with the full path and useful suggestion', () => {
   const schema = enforce.shape({
     password: enforce.isString(),
-    confirm: enforce.isString().dependsOn($ => $.pasword),
+    // @ts-expect-error the shape reports an unknown local reference
+    confirm: enforce.isString().dependsOn($ => $('pasword')),
   });
   expect(() => schema.describe()).toThrow(/confirm.*pasword.*password/);
   expect(schema.test({ password: 'a', confirm: 'a' })).toBe(true);
 });
 
 it('does not suggest the dependent field itself', () => {
-  const schema = enforce.shape({ b: enforce.isString().dependsOn($ => $.a) });
+  const schema = enforce.shape({
+    // @ts-expect-error the shape reports an unknown local reference
+    b: enforce.isString().dependsOn($ => $('a')),
+  });
   expect(() => schema.describe()).toThrow(/unknown field "a"/);
   expect(() => schema.describe()).not.toThrow(/Did you mean "b"/);
 });
 
-it('rejects invalid resolver returns and handles the reserved then field', () => {
+it('rejects invalid resolver returns and references a field named then', () => {
   const schema = enforce.shape({
     then: enforce.isString(),
-    target: enforce.isString().dependsOn($ => $[FIELD]('then')),
+    target: enforce.isString().dependsOn($ => $('then')),
   });
   expect(schema.describe().relationships[0].source).toEqual(['then']);
   for (const resolver of [
@@ -51,17 +51,22 @@ it('rejects invalid resolver returns and handles the reserved then field', () =>
     () => 'then',
     ($: Scope) => $,
     () => Promise.resolve('then'),
+    ($: Scope) => $.root,
+    ($: Scope) => ($ as unknown as (name: unknown) => unknown)(1),
+    ($: Scope) => ($ as unknown as () => unknown)(),
   ]) {
     const invalid = enforce.shape({
       target: enforce.isString().dependsOn(resolver as never),
     });
-    expect(() => invalid.describe()).toThrow(/target.*field reference/);
+    expect(() => invalid.describe()).toThrow(
+      /"target" .*field (reference|names)/,
+    );
   }
 });
 
 it('defers validation of rooted references and names the full missing path', () => {
   const item = enforce.shape({
-    state: enforce.isString().dependsOn($ => $.root.account.countree),
+    state: enforce.isString().dependsOn($ => $.root('account', 'countree')),
   });
   const schema = enforce.shape({
     account: enforce.shape({ country: enforce.isString() }),
@@ -75,7 +80,7 @@ it('defers validation of rooted references and names the full missing path', () 
 it('does not execute an accessor while inspecting structure', () => {
   const shape = {
     a: enforce.isString(),
-    b: enforce.isString().dependsOn($ => $.a),
+    b: enforce.isString().dependsOn($ => $('a')),
   };
   const schema = enforce.shape(shape);
   Object.defineProperty(shape, 'unused', {
@@ -90,7 +95,7 @@ it('does not execute an accessor while inspecting structure', () => {
 it('rebases a shared nested shape separately for both mounts', () => {
   const address = enforce.shape({
     country: enforce.isString(),
-    state: enforce.isString().dependsOn($ => $.country),
+    state: enforce.isString().dependsOn($ => $('country')),
   });
   const schema = enforce.shape({ bill: address, ship: address });
   expect(schema.describe().relationships).toEqual([
@@ -110,7 +115,7 @@ it('rebases a shared nested shape separately for both mounts', () => {
 it('scopes dependencies to the same array item or record key', () => {
   const item = enforce.shape({
     country: enforce.isString(),
-    state: enforce.isString().dependsOn($ => $.country),
+    state: enforce.isString().dependsOn($ => $('country')),
   });
   const schema = enforce.shape({
     rows: enforce.isArrayOf(item),
@@ -141,17 +146,17 @@ it('records tuple positions and resolves a lazy factory once', () => {
       enforce.isString(),
       enforce.shape({
         a: enforce.isString(),
-        b: enforce.isString().dependsOn($ => $.a),
+        b: enforce.isString().dependsOn($ => $('a')),
       }),
     ),
     deferred: enforce.lazy(() => {
       calls++;
       return enforce.shape({
         value: enforce.isString(),
-        copy: enforce.isString().dependsOn($ => $.value),
+        copy: enforce.isString().dependsOn($ => $('value')),
       });
     }),
-    mirror: enforce.isString().dependsOn($ => $.deferred.value),
+    mirror: enforce.isString().dependsOn($ => $('deferred', 'value')),
   });
   expect(schema.describe().relationships).toEqual([
     {
@@ -183,7 +188,7 @@ it('records tuple positions and resolves a lazy factory once', () => {
 it('rejects dependsOn inside a recursive lazy schema', () => {
   const category: any = enforce.shape({
     name: enforce.isString(),
-    title: enforce.isString().dependsOn($ => $.name),
+    title: enforce.isString().dependsOn($ => $('name')),
     children: enforce.isArrayOf(enforce.lazy(() => category)),
   });
   expect(() => category.describe()).toThrow(
@@ -206,7 +211,7 @@ it('allows recursive lazy schemas without declarations', () => {
 it('rejects excessive lazy depth instead of silently omitting deeper dependencies', () => {
   let rule: any = enforce.shape({
     a: enforce.isString(),
-    b: enforce.isString().dependsOn($ => $.a),
+    b: enforce.isString().dependsOn($ => $('a')),
   });
   for (let i = 0; i < 34; i++) {
     const child = rule;
@@ -219,14 +224,14 @@ it('describes declarations and references inside compound rules', () => {
   const schema = enforce.shape({
     a: enforce.isString(),
     b: enforce.anyOf(
-      enforce.isString().dependsOn($ => $.a),
+      enforce.isString().dependsOn($ => $('a')),
       enforce.isNumber(),
     ),
     contact: enforce.oneOf(
       enforce.shape({ email: enforce.isString() }),
       enforce.shape({ phone: enforce.isString() }),
     ),
-    c: enforce.isString().dependsOn($ => $.contact.phone),
+    c: enforce.isString().dependsOn($ => $('contact', 'phone')),
   });
   expect(schema.describe().relationships).toEqual([
     { source: ['a'], target: ['b'], effect: 'invalidate' },
@@ -236,7 +241,7 @@ it('describes declarations and references inside compound rules', () => {
 
 it('resolves root references against the mounted schema and composed shapes', () => {
   const item = enforce.shape({
-    price: enforce.isNumber().dependsOn($ => $.root.currency),
+    price: enforce.isNumber().dependsOn($ => $.root('currency')),
   });
   const schema = compose(
     enforce.shape({ currency: enforce.isString() }),
@@ -253,7 +258,7 @@ it('resolves root references against the mounted schema and composed shapes', ()
 
 it('returns a new rule and leaves a shared rule unchanged', () => {
   const text = enforce.isString();
-  const confirm = text.dependsOn($ => $.password);
+  const confirm = text.dependsOn($ => $('password'));
   expect(confirm).not.toBe(text);
 
   const schema = enforce.shape({
@@ -273,7 +278,7 @@ it('keeps a derived rule validating like its base and chainable', () => {
     a: enforce.isString(),
     b: enforce
       .isString()
-      .dependsOn($ => $.a)
+      .dependsOn($ => $('a'))
       .minLength(2),
   });
   expect(schema.test({ a: 'a', b: 'bb' })).toBe(true);
@@ -286,11 +291,11 @@ it('keeps a derived rule validating like its base and chainable', () => {
 it('isolates validation chains and messages when deriving a shared rule', () => {
   const text = enforce.isString();
   const short = text
-    .dependsOn($ => $.a)
+    .dependsOn($ => $('a'))
     .maxLength(2)
     .message('short');
   const long = text
-    .dependsOn($ => $.a)
+    .dependsOn($ => $('a'))
     .minLength(3)
     .message('long');
   expect(text.test('x')).toBe(true);
@@ -306,7 +311,7 @@ it('isolates validation chains and messages when deriving a shared rule', () => 
 
 it('keeps a derived composed rule callable and describes its own metadata', () => {
   const base = compose(enforce.isString());
-  const derived = base.dependsOn($ => $.a);
+  const derived = base.dependsOn($ => $('a'));
   expect(() => derived('x')).not.toThrow();
   expect(() => derived(1 as never)).toThrow();
   // Describing this rule alone has no sibling a; its declaration must be seen.
@@ -314,17 +319,22 @@ it('keeps a derived composed rule callable and describes its own metadata', () =
   expect(base.describe().relationships).toEqual([]);
 });
 
-it('hints at FIELD for a field named root', () => {
+it('references fields named root and parent like any other field', () => {
   const schema = enforce.shape({
     root: enforce.isString(),
-    x: enforce.isString().dependsOn($ => $.root),
+    parent: enforce.isString(),
+    x: enforce.isString().dependsOn($ => [$('root'), $('parent')]),
   });
-  expect(() => schema.describe()).toThrow(/\$\[FIELD\]\('name'\).*root/);
-  const fixed = enforce.shape({
+  expect(schema.describe().relationships.map(r => r.source)).toEqual([
+    ['root'],
+    ['parent'],
+  ]);
+  // Returning the root scope itself is not a reference.
+  const invalid = enforce.shape({
     root: enforce.isString(),
-    x: enforce.isString().dependsOn($ => $[FIELD]('root')),
+    x: enforce.isString().dependsOn($ => $.root as never),
   });
-  expect(fixed.describe().relationships[0].source).toEqual(['root']);
+  expect(() => invalid.describe()).toThrow(/\$\('name'\)/);
 });
 
 it('runs no validators or getters and returns independent JSON data', () => {
@@ -335,7 +345,7 @@ it('runs no validators or getters and returns independent JSON data', () => {
   });
   const schema = enforce.shape({
     a,
-    b: enforce.isString().dependsOn($ => $.a),
+    b: enforce.isString().dependsOn($ => $('a')),
   });
   const first = schema.describe();
   expect(calls).toBe(0);
@@ -347,8 +357,8 @@ it('runs no validators or getters and returns independent JSON data', () => {
 it('does not expose relationships from omitted or unpicked fields', () => {
   const fields = {
     a: enforce.isString(),
-    b: enforce.isString().dependsOn($ => $.a),
-    c: enforce.isString().dependsOn($ => $.a),
+    b: enforce.isString().dependsOn($ => $('a')),
+    c: enforce.isString().dependsOn($ => $('a')),
   };
   expect(enforce.pick(fields, ['a', 'b']).describe().relationships).toEqual([
     { source: ['a'], target: ['b'], effect: 'invalidate' },
@@ -357,43 +367,43 @@ it('does not expose relationships from omitted or unpicked fields', () => {
 });
 
 it('tracks a dependency added to a composed rule', () => {
-  const composed = compose(enforce.isString()).dependsOn($ => $.a);
+  const composed = compose(enforce.isString()).dependsOn($ => $('a'));
   const schema = enforce.shape({ a: enforce.isString(), b: composed });
   expect(schema.describe().relationships).toEqual([
     { source: ['a'], target: ['b'], effect: 'invalidate' },
   ]);
 });
 
-it('rejects an unsupported parent reference with dependent field context', () => {
+it('rejects an unsupported parent scope with dependent field context', () => {
   const schema = enforce.shape({
-    // @ts-expect-error $.parent is typed never so this fails at compile time too
-    b: enforce.isString().dependsOn($ => $.parent.a),
+    // @ts-expect-error the scope has no parent; use $.root for outer fields
+    b: enforce.isString().dependsOn($ => $.parent('a')),
   });
-  expect(() => schema.describe()).toThrow(/b.*parent is not supported/);
+  expect(() => schema.describe()).toThrow(/"b" dependency resolver failed/);
 });
 
 it('rejects a dependency declared on the root schema', () => {
   const fields = { a: enforce.isString(), b: enforce.isString() };
-  const root = enforce.shape(fields).dependsOn($ => $.a);
+  const root = enforce.shape(fields).dependsOn($ => $('a'));
   expect(() => root.describe()).toThrow(
     /root schema cannot depend on "a".*dependsOn on the field/,
   );
   expect(() =>
     compose(enforce.shape(fields))
-      .dependsOn($ => $.b)
+      .dependsOn($ => $('b'))
       .describe(),
   ).toThrow(/root schema cannot depend on "b"/);
   // Unknown references are still reported first.
   expect(() =>
     enforce
       .shape(fields)
-      .dependsOn($ => $.c)
+      .dependsOn($ => $('c'))
       .describe(),
   ).toThrow(/unknown field "c"/);
   // A container inside the schema is a field and may declare dependencies.
   const schema = enforce.shape({
     ...fields,
-    box: enforce.shape({ c: enforce.isString() }).dependsOn($ => $.a),
+    box: enforce.shape({ c: enforce.isString() }).dependsOn($ => $('a')),
   });
   expect(schema.describe().relationships).toEqual([
     { source: ['a'], target: ['box'], effect: 'invalidate' },

@@ -1,28 +1,36 @@
 /** The opt-in relationships entry installs the planner used by changed(). */
-export type ChangedPlan = {
-  /** The selected fields, reported as the run's focus. */
-  focus: string[];
-  /** The `only` modifier that runs exactly the selected user tests. */
-  only: string[];
-  /** Schema failure fields to report without running their user tests. */
-  schemaFocus: string[];
-  /** Parsed output of the validated fields, when it differs from schemaResults. */
-  value?: unknown;
-  schemaResults?: Array<{
+type Modifiers = {
+  changed?: string | readonly string[];
+  only?: unknown;
+  skip?: unknown;
+};
+
+export type ChangedRun<M> = {
+  /** The modifiers reported as the run's focus: the selected fields. */
+  focus: M;
+  /**
+   * The modifiers the run executes with: `only` runs exactly the selected
+   * user tests, and `schemaFocus` names schema failures to report outside it.
+   */
+  runModifiers: M;
+  schemaRunResult?: Array<{
     pass: boolean;
     message?: string;
     path?: readonly string[];
     type?: unknown;
   }>;
   evaluated: ((path: readonly string[] | undefined) => boolean) | null;
+  /** Parsed output of the validated fields, when it differs from schemaRunResult. */
+  value?: unknown;
 };
 
-type Handler = (
+// The planner builds the run's modifiers itself, so this code stays out of
+// the core bundle.
+type Handler = <M extends Modifiers>(
   schema: unknown,
-  fields: readonly string[],
   data: unknown,
-  modifiers: { only?: unknown; skip?: unknown },
-) => ChangedPlan;
+  modifiers: M,
+) => ChangedRun<M>;
 
 export let planChanged: Handler = () => {
   throw new Error(

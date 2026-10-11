@@ -112,7 +112,8 @@ function useGetSuiteMethods<
         suiteCallback,
         {
           ...modifiers,
-          changed: typeof fields === 'string' ? [fields] : fields,
+          // The opt-in planner normalizes a single name.
+          changed: fields,
         },
         subscribe,
         schema,

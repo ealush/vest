@@ -9,10 +9,7 @@ import {
   noop,
 } from 'vest-utils';
 
-import {
-  installChangedHandler,
-  type ChangedPlan,
-} from '../suite/changedHandler';
+import { installChangedHandler } from '../suite/changedHandler';
 import { schemaFieldName } from '../suite/retainedSchemaFailures';
 import {
   runSchemaWithParse,
@@ -34,11 +31,37 @@ export type {
 // An empty changed selection runs no user test; an empty only() runs them all.
 const NO_FIELD = '\0vest.changed.none';
 
-installChangedHandler(planRelationshipRun);
+type ChangedPlan = {
+  /** The selected fields, reported as the run's focus. */
+  focus: string[];
+  /** The `only` modifier that runs exactly the selected user tests. */
+  only: string[];
+  /** Schema failure fields to report without running their user tests. */
+  schemaFocus: string[];
+  /** Parsed output of the validated fields, when it differs from schemaResults. */
+  value?: unknown;
+  schemaResults?: SchemaRunResult[];
+  evaluated: ((path: readonly string[] | undefined) => boolean) | null;
+};
+
+installChangedHandler((schema, data, modifiers) => {
+  const plan = planRelationshipRun(schema, modifiers.changed, data, modifiers);
+  return {
+    focus: { ...modifiers, only: plan.focus },
+    runModifiers: {
+      ...modifiers,
+      only: plan.only,
+      schemaFocus: plan.schemaFocus,
+    },
+    schemaRunResult: plan.schemaResults,
+    evaluated: plan.evaluated,
+    value: plan.value,
+  };
+});
 
 function planRelationshipRun(
   schema: unknown,
-  fields: readonly string[],
+  fields: unknown,
   data: unknown,
   modifiers: { only?: unknown; skip?: unknown },
 ): ChangedPlan {
@@ -75,7 +98,7 @@ type Selection = { focus: string[]; schemaKeys: string[]; skip: Set<string> };
 
 function selectFields(
   schema: unknown,
-  fields: readonly string[],
+  fields: unknown,
   data: unknown,
   modifiers: { only?: unknown; skip?: unknown },
 ): Selection {

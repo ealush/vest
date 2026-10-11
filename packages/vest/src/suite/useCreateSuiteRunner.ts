@@ -32,7 +32,7 @@ import {
   SuiteRuntimeModifiers,
   SuiteCallbackWithSchema,
 } from './SuiteTypes';
-import { planChanged, type ChangedPlan } from './changedHandler';
+import { planChanged, type ChangedRun } from './changedHandler';
 import {
   RetainedSchemaFailure,
   schemaFieldName,
@@ -233,7 +233,7 @@ function prepareRun<
   focus?: typeof modifiers;
   runModifiers: typeof modifiers;
   schemaRunResult?: SchemaRunResult[];
-  evaluated: ChangedPlan['evaluated'];
+  evaluated: ChangedRun<unknown>['evaluated'];
   value?: unknown;
 } {
   if (modifiers.changed === undefined) {
@@ -245,18 +245,7 @@ function prepareRun<
       evaluated: schemaFocusOf(modifiers, isN4sSchema(schema)),
     };
   }
-  const plan = planChanged(schema, modifiers.changed, data, modifiers);
-  return {
-    focus: { ...modifiers, only: plan.focus as F[] },
-    runModifiers: {
-      ...modifiers,
-      only: plan.only as F[],
-      schemaFocus: plan.schemaFocus,
-    },
-    schemaRunResult: plan.schemaResults,
-    evaluated: plan.evaluated,
-    value: plan.value,
-  };
+  return planChanged(schema, data, modifiers);
 }
 
 /**

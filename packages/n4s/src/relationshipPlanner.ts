@@ -1,4 +1,4 @@
-import { asArray, isUnsafeKey } from 'vest-utils';
+import { asArray, isArray, isStringValue, isUnsafeKey } from 'vest-utils';
 
 import { childrenOf, describeSchema, isNode } from './relationshipGraph';
 import { meta, type RuleMeta, type SchemaPath } from './ruleMeta';
@@ -195,13 +195,11 @@ function reverseIndex(schema: object): Index {
 }
 
 function concreteTarget(path: SchemaPath): readonly string[] | undefined {
-  return path.every(segment => typeof segment === 'string')
-    ? (path as readonly string[])
-    : undefined;
+  return path.every(isStringValue) ? (path as readonly string[]) : undefined;
 }
 
 function parseName(name: string): string[] | undefined {
-  if (!name || typeof name !== 'string') return undefined;
+  if (!isStringValue(name) || !name) return undefined;
   const normalized = name.replace(/\[(\d+)\]/g, '.$1');
   if (/[\[\]]/.test(normalized)) return undefined;
   const parts = normalized.split('.');
@@ -261,7 +259,7 @@ function matchChild(
 ): Node | undefined {
   const tail = node.pattern.slice(parentLength);
   if (!tail.length) return node;
-  if (typeof tail[0] === 'string') {
+  if (isStringValue(tail[0])) {
     const key = tail[0];
     const parts = key.split('.');
     if (!parts.every((part, i) => segments[node.offset + i] === part)) return;
@@ -376,9 +374,7 @@ function expansionKeys(
   value: unknown,
 ): Array<string | undefined> {
   if (!tail.length) return [undefined];
-  return typeof tail[0] === 'string'
-    ? [tail[0]]
-    : itemKeys(value, tail[0].binding);
+  return isStringValue(tail[0]) ? [tail[0]] : itemKeys(value, tail[0].binding);
 }
 
 function pathWithKey(
@@ -389,7 +385,7 @@ function pathWithKey(
   if (key === undefined) return path;
   return [
     ...path,
-    typeof segment === 'string' ? key : concreteKey(key, segment.binding),
+    isStringValue(segment) ? key : concreteKey(key, segment.binding),
   ];
 }
 
@@ -405,7 +401,7 @@ function bindingsFor(
 ): Map<string, string | number> {
   const bindings = new Map<string, string | number>();
   for (let i = 0; i < pattern.length; i++) {
-    if (typeof pattern[i] !== 'string') {
+    if (!isStringValue(pattern[i])) {
       bindings.set(JSON.stringify(pattern.slice(0, i + 1)), path[i]);
     }
   }
@@ -421,7 +417,7 @@ function instantiate(
   const suffix = staticSuffix(pattern);
   function visit(offset: number, path: ConcretePath, value: unknown): void {
     const segment = pattern[offset];
-    if (typeof segment === 'string') {
+    if (isStringValue(segment)) {
       visit(offset + 1, [...path, segment], ownValue(value, segment));
     } else {
       const bound = bindings.get(JSON.stringify(pattern.slice(0, offset + 1)));
@@ -450,17 +446,17 @@ function staticSuffix(pattern: SchemaPath): {
   path: readonly string[];
 } {
   let offset = pattern.length;
-  while (offset > 0 && typeof pattern[offset - 1] === 'string') offset--;
+  while (offset > 0 && isStringValue(pattern[offset - 1])) offset--;
   return { offset, path: pattern.slice(offset) as readonly string[] };
 }
 
 function itemKeys(value: unknown, kind: string): string[] {
   if (kind === 'isArrayOf') {
-    return Array.isArray(value)
+    return isArray(value)
       ? Array.from({ length: value.length }, (_, i) => String(i))
       : [];
   }
-  return isNode(value) && !Array.isArray(value)
+  return isNode(value) && !isArray(value)
     ? Object.keys(value).filter(key => !isUnsafeKey(key))
     : [];
 }

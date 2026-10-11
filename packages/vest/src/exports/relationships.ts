@@ -10,6 +10,7 @@ import {
 } from 'vest-utils';
 
 import { installChangedHandler } from '../suite/changedHandler';
+import { rememberSuite } from '../suite/describeSuite';
 import { schemaFieldName } from '../suite/retainedSchemaFailures';
 import {
   runSchemaWithParse,
@@ -19,6 +20,8 @@ import {
 // Vest consumers declare and inspect relationships through this entry, so an
 // application does not need its own dependency on n4s.
 export { EnforceSchemaError, resolveAffected } from 'n4s/relationships';
+export { describeSuite } from '../suite/describeSuite';
+export type { SuiteDescription } from '../suite/describeSuite';
 export type {
   CheckDependencies,
   ConcretePath,
@@ -68,8 +71,9 @@ function planRun<
 
 // Resolving the graph at create() reports an unknown reference before any
 // run. describe() runs no validators and caches the graph for later plans.
-function checkSchemaRelationships(schema: unknown): void {
+function checkSchemaRelationships(schema: unknown, suite: object): void {
   if (isN4sSchema(schema)) (schema as { describe(): unknown }).describe();
+  rememberSuite(suite, isN4sSchema(schema) ? schema : undefined);
 }
 
 function planRelationshipRun(

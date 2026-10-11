@@ -72,7 +72,6 @@ function createSuite<
   S extends TSchema = undefined,
 >(suiteCallback: T, schema?: S): Suite<F, G, T, S> {
   const suiteCallbackResult = validateSuiteCallback(suiteCallback).unwrap();
-  checkRelationships(schema);
 
   const stateRef = useCreateVestState({ VestReconciler });
 
@@ -89,7 +88,9 @@ function createSuite<
         schema,
       );
 
-      return makeResult.Ok(useBindSuiteLifecycle(methods));
+      const suite = useBindSuiteLifecycle(methods);
+      checkRelationships(schema, suite);
+      return makeResult.Ok(suite);
     }
   });
 }

@@ -43,13 +43,14 @@ export let planChanged: Handler = () => {
 /**
  * Resolves a suite schema's relationship graph when the suite is created, so
  * an unknown reference fails before any run rather than on the first
- * changed() call. A no-op until vest/relationships is imported.
+ * changed() call, and lets the entry describe the suite later. A no-op until
+ * vest/relationships is imported.
  */
-export let checkRelationships: (schema: unknown) => void = noop;
+export let checkRelationships: (schema: unknown, suite: object) => void = noop;
 
 export function installChangedHandler(
   value: Handler,
-  check: (schema: unknown) => void,
+  check: (schema: unknown, suite: object) => void,
 ): void {
   planChanged = value;
   checkRelationships = check;

@@ -1,6 +1,6 @@
 import { asArray, isArray, isStringValue, isUnsafeKey } from 'vest-utils';
 
-import { childrenOf, describeSchema, isNode } from './relationshipGraph';
+import { childrenOf, isNode, resolveGraph } from './relationshipGraph';
 import { meta, type RuleMeta, type SchemaPath } from './ruleMeta';
 
 export type ConcretePath = readonly (string | number)[];
@@ -185,7 +185,8 @@ function reverseIndex(schema: object): Index {
   let edges = indexes.get(schema);
   if (!edges) {
     edges = new Map();
-    for (const edge of describeSchema(schema).relationships) {
+    // The index only reads the cached graph, so it needs no defensive copy.
+    for (const edge of resolveGraph(schema).relationships) {
       const key = patternKey(edge.source);
       const list = edges.get(key) ?? [];
       list.push({ ...edge, concrete: concreteTarget(edge.target) });

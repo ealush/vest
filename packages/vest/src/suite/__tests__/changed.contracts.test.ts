@@ -488,3 +488,30 @@ it('returns an empty validated output for an empty selection with array or scala
   expect(array.changed([]).run(['x']).value).toEqual({});
   expect(scalar.changed([]).run(1).value).toEqual({});
 });
+
+it('validates a selected field that is missing from the data', () => {
+  const suite = create(
+    () => test('b', () => true),
+    enforce.shape({
+      a: enforce.isString(),
+      b: enforce.optional(enforce.isString()).dependsOn($ => $('a')),
+    }),
+  );
+  const result = suite.changed('a').run({ a: 'x' } as never);
+  expect(result.hasErrors()).toBe(false);
+  expect(result.value).toEqual({ a: 'x', b: undefined });
+});
+
+it('falls back to the whole schema when its fields include a dangerous key', () => {
+  const fields = JSON.parse('{"__proto__": null}');
+  delete fields.__proto__;
+  Object.defineProperty(fields, '__proto__', {
+    value: enforce.isString(),
+    enumerable: true,
+  });
+  fields.a = enforce.isString();
+  const suite = create(() => test('a', () => true), enforce.shape(fields));
+  const result = suite.changed('a').run({ a: 'x' } as never);
+  // The whole schema runs, so the run is not limited to the selected field.
+  expect(result.errors.map(error => error.fieldName)).toContain('__proto__');
+});

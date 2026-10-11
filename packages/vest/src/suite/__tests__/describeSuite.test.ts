@@ -113,3 +113,16 @@ describe('describeSuite', () => {
     ]);
   });
 });
+
+it('lists a repeated test name once per group', () => {
+  const suite = create(() => {
+    test('a', () => true);
+    test('a', () => true);
+    group('g', () => test('a', () => true));
+  });
+  suite.run();
+  expect(describeSuite(suite).tests).toEqual([
+    { fieldName: 'a' },
+    { fieldName: 'a', groupName: 'g' },
+  ]);
+});

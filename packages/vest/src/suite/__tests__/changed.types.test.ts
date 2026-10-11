@@ -82,3 +82,15 @@ it('keeps complete types outside a selection that may be defined', () => {
   if (dynamic.valid)
     expectTypeOf(dynamic.value).toEqualTypeOf<Partial<Complete>>();
 });
+
+it('suggests the suite field names and accepts any other name', () => {
+  const suite = create(
+    () => test('first', () => true),
+    enforce.shape({ first: enforce.isString(), second: enforce.isString() }),
+  );
+  type Fields = Parameters<typeof suite.changed>[0];
+  expectTypeOf<'first'>().toMatchTypeOf<Fields>();
+  expectTypeOf<'second'>().toMatchTypeOf<Fields>();
+  expectTypeOf<'rows.0.state'>().toMatchTypeOf<Fields>();
+  expectTypeOf<readonly ('first' | 'other')[]>().toMatchTypeOf<Fields>();
+});

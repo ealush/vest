@@ -156,8 +156,14 @@ type ChangedMethod<
 > = {
   (fields?: undefined): FocusedMethods<F, G, T, S>;
   // A selection that may be defined can validate only part of the data.
-  (fields?: string | readonly string[]): ChangedMethods<F, G, T, S>;
+  (
+    fields?: ChangedFieldName<F> | readonly ChangedFieldName<F>[],
+  ): ChangedMethods<F, G, T, S>;
 };
+
+// The suite's field names are suggested, but any name is accepted: changed
+// names always run, including tests for fields outside the schema.
+type ChangedFieldName<F extends TFieldName> = F | (string & {});
 
 /**
  * Modifiers that control which fields and groups are included or excluded

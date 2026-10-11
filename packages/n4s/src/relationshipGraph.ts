@@ -23,18 +23,26 @@ const MAX_LAZY_DEPTH = 32;
 const graphCache = new WeakMap<object, Description>();
 
 export function describeSchema(schema: object): Description {
-  let graph = graphCache.get(schema);
-  if (!graph) {
-    graph = buildGraph(schema);
-    graphCache.set(schema, graph);
-  }
   return {
-    relationships: graph.relationships.map(relationship => ({
+    relationships: resolveGraph(schema).relationships.map(relationship => ({
       source: clonePath(relationship.source),
       target: clonePath(relationship.target),
       effect: 'invalidate',
     })),
   };
+}
+
+/**
+ * Resolves and caches a schema's graph, throwing for invalid declarations.
+ * Unlike describeSchema(), it returns the cached graph without copying it.
+ */
+export function resolveGraph(schema: object): Description {
+  let graph = graphCache.get(schema);
+  if (!graph) {
+    graph = buildGraph(schema);
+    graphCache.set(schema, graph);
+  }
+  return graph;
 }
 
 function buildGraph(root: object): Description {

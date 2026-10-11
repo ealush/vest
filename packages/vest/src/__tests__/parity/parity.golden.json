@@ -3044,8 +3044,7 @@
       "valid": false,
       "issues": [
         {
-          "message": "Validation failed",
-          "path": ["__root__"]
+          "message": "Validation failed"
         }
       ],
       "types": {

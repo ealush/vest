@@ -39,7 +39,9 @@ Focused runs retain schema errors outside their focus. After a failing full run,
 
 ## Complete and consistent validation issues
 
-Schema and user-test failures without a message are included in `result.issues` with `Validation failed`. Nested issue paths use the same segments as the Standard Schema adapter.
+Schema and user-test failures without a message are included in `result.issues` with `Validation failed`. Nested issue paths use the same segments as the Standard Schema adapter: a failure named `rows.0.name`, whether from the schema or a user test, now has the path `['rows', '0', 'name']` instead of `['rows.0.name']`. Prefer ordinary keys over field names that contain literal dots.
+
+A failure of the input as a whole (for example, a non-object passed to an object schema) is still reported in `errors` under the `__root__` test name, but its issue now has no `path` instead of the internal `['__root__']` segment. A user test or schema key that reuses the `__root__` name is reported the same way.
 
 # Upgrading from V5 to V6
 

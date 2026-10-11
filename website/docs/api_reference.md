@@ -196,7 +196,7 @@ Returns a new rule with a direct dependency declared; the original rule is uncha
 
 #### `schema.describe()` and `resolveAffected(schema, changed, data)`
 
-After `import 'n4s/relationships'`, `schema.describe()` returns the declared graph as `relationships` with `source`, `target`, and `effect: 'invalidate'` entries. Import `resolveAffected` from `n4s/relationships` to compute concrete affected paths for the current data. `import 'vest/relationships'` also loads this graph implementation and re-exports `FIELD`, `resolveAffected`, `EnforceSchemaError` and the graph types for applications that depend on `vest` only. Calling `describe()` without either entry throws a setup error.
+After `import 'n4s/relationships'`, `schema.describe()` returns the declared graph as `relationships` with `source`, `target`, and `effect: 'invalidate'` entries. Import `resolveAffected` from `n4s/relationships` to compute concrete affected paths for the current data; `changed` is a field name or an array of names, as in `suite.changed()`. Array items are numeric path segments, while shape keys and tuple positions are strings, as in `describe()`. `import 'vest/relationships'` also loads this graph implementation and re-exports `FIELD`, `resolveAffected`, `EnforceSchemaError` and the graph types for applications that depend on `vest` only. Calling `describe()` without either entry throws a setup error.
 
 - [Read the relationships guide](./guides/schema-relationships.md).
 

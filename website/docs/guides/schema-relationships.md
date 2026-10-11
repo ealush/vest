@@ -73,7 +73,7 @@ Relationships are **direct**: if `c` depends on `b` and `b` depends on `a`, chan
 
 A dependency on an object or array is also affected by a change inside it. For example, a rule that depends on `$.address` is selected by `changed('address.city')`. Naming the entire object selects its declared descendants as well. Dependents use canonical dotted test names such as `rows.5.state`; numeric brackets are accepted in changed names and skip comparisons.
 
-`$.root` and `$.parent` are reserved, and `then` cannot be read from a proxy. Use `FIELD` from `vest/relationships` (or `n4s/relationships` in n4s-only code) to reference a field with one of those names:
+`$.root` and `$.parent` are reserved (`$.parent` is a type error and throws when the graph is described), and `then` cannot be read from a proxy. Use `FIELD` from `vest/relationships` (or `n4s/relationships` in n4s-only code) to reference a field with one of those names:
 
 ```ts
 import { FIELD } from 'vest/relationships';
@@ -127,4 +127,4 @@ export const affected = resolveAffected(schema, ['password'], {
 
 `import 'vest/relationships'` also enables the n4s graph for Vest suites. Without the relevant opt-in import, calling `suite.changed(...).run(...)` or `schema.describe()` throws a setup error naming the required entry. Load `vest` and `vest/relationships` in the same module format (both ESM or both CommonJS); a mixed setup loads two copies of Vest and the import does not reach the suite.
 
-`resolveAffected()` ignores unknown or unsafe schema paths. `suite.changed()` still selects user tests whose names were explicitly passed, including names absent from the schema. It does not check that every requested user-test name exists. Planning expands each dependency edge once per run, so naming a large container (or a member of one whose dependents depend on the container) costs a single pass over the current data.
+`resolveAffected()` accepts a field name or an array of names and ignores unknown or unsafe schema paths. In its paths, array items are numbers, while shape keys and tuple positions are strings, as in `describe()`. `suite.changed()` still selects user tests whose names were explicitly passed, including names absent from the schema. It does not check that every requested user-test name exists. Planning expands each dependency edge once per run, so naming a large container (or a member of one whose dependents depend on the container) costs a single pass over the current data.

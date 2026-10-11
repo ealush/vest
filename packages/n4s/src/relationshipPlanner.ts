@@ -1,4 +1,4 @@
-import { isUnsafeKey } from 'vest-utils';
+import { asArray, isUnsafeKey } from 'vest-utils';
 
 import { childrenOf, describeSchema, isNode } from './relationshipGraph';
 import { meta, type RuleMeta, type SchemaPath } from './ruleMeta';
@@ -17,12 +17,18 @@ const indexes = new WeakMap<object, Index>();
 // item paths always expand against this run's data, and returned paths are fresh.
 const scalarSelections = new WeakMap<object, Map<string, ConcretePath[]>>();
 
-/** Plan one hop of invalidation without running rules or reading data getters. */
+/**
+ * Plan one hop of invalidation without running rules or reading data getters.
+ * Array items are numeric path segments; tuple positions, like shape keys, are
+ * static schema segments and stay strings, as in `describe()`.
+ */
 export function resolveAffected(
   schema: object,
-  changed: readonly string[],
+  fields: string | readonly string[],
   data: unknown,
 ): ConcretePath[] {
+  // Like suite.changed(), a single name is accepted on its own.
+  const changed: readonly string[] = asArray(fields);
   const index = reverseIndex(schema);
   const cached = scalarSelection(schema, changed, index, data);
   if (cached) return cached;
@@ -237,7 +243,6 @@ function select(
         const next = matchChild(
           { rule: child, offset, path, pattern: childPattern, value },
           pattern.length,
-          info.kind,
           segments,
         );
         if (next) visit(next);
@@ -252,7 +257,6 @@ function select(
 function matchChild(
   node: Node,
   parentLength: number,
-  kind: string | undefined,
   segments: string[],
 ): Node | undefined {
   const tail = node.pattern.slice(parentLength);
@@ -264,7 +268,7 @@ function matchChild(
     return {
       ...node,
       offset: node.offset + parts.length,
-      path: [...node.path, concreteKey(key, tupleBinding(kind))],
+      path: [...node.path, key],
       value: ownValue(node.value, key),
     };
   }
@@ -326,7 +330,7 @@ function expandChild(
 ): void {
   const tail = childPattern.slice(parent.pattern.length);
   for (const key of expansionKeys(tail, parent.value)) {
-    const nextPath = pathWithKey(parent.path, key, tail[0], parent.kind);
+    const nextPath = pathWithKey(parent.path, key, tail[0]);
     const nextValue =
       key === undefined ? parent.value : ownValue(parent.value, key);
     expand(child, nextPath, childPattern, nextValue, walk, ancestors);
@@ -381,20 +385,12 @@ function pathWithKey(
   path: ConcretePath,
   key: string | undefined,
   segment: SchemaPath[number],
-  kind: string | undefined,
 ): ConcretePath {
   if (key === undefined) return path;
-  const binding =
-    typeof segment === 'string'
-      ? kind === 'tuple'
-        ? 'isArrayOf'
-        : ''
-      : segment.binding;
-  return [...path, concreteKey(key, binding)];
-}
-
-function tupleBinding(kind: string | undefined): string {
-  return kind === 'tuple' ? 'isArrayOf' : '';
+  return [
+    ...path,
+    typeof segment === 'string' ? key : concreteKey(key, segment.binding),
+  ];
 }
 
 function tryEnter(ancestors: Set<object>, rule: unknown): rule is object {

@@ -266,3 +266,34 @@ it('expands shared ancestor edges once when a large container is selected', () =
   expect(member).toContainEqual(['total']);
   expect(member).toContainEqual(['rows', 1999, 'summary']);
 });
+
+it('accepts a single name like suite.changed()', () => {
+  const schema = enforce.shape({
+    password: enforce.isString(),
+    confirm: enforce.isString().dependsOn($ => $.password),
+  });
+  expect(resolveAffected(schema, 'password', {})).toEqual(
+    resolveAffected(schema, ['password'], {}),
+  );
+  expect(resolveAffected(schema, 'password', {})).toEqual([
+    ['password'],
+    ['confirm'],
+  ]);
+});
+
+it('keeps tuple positions as static string segments, selected or dependent', () => {
+  const schema = enforce.shape({
+    password: enforce.isString(),
+    pair: enforce.tuple(
+      enforce.isString(),
+      enforce.isString().dependsOn($ => $.root.password),
+    ),
+  });
+  const data = { pair: ['a', 'b'] };
+  expect(resolveAffected(schema, ['pair[1]'], data)).toEqual([['pair', '1']]);
+  // The dependent and the selected position are the same path, listed once.
+  expect(resolveAffected(schema, ['password', 'pair.1'], data)).toEqual([
+    ['password'],
+    ['pair', '1'],
+  ]);
+});

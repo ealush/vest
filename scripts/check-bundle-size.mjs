@@ -75,18 +75,29 @@ function workspaceSourcePlugin() {
     name: 'workspace-source',
     setup(pluginBuild) {
       pluginBuild.onResolve({ filter }, args => {
-        const [, name, subpath = ''] = args.path.match(filter);
-        const sourceDir = path.join(ROOT, paths[name][0]);
-        const entry =
-          path.extname(sourceDir) === '.ts'
-            ? sourceDir
-            : subpath
-              ? subpathEntry(sourceDir, subpath.slice(1))
-              : path.join(sourceDir, `${name}.ts`);
-        return { path: entry };
+        // An explicit mapping (n4s/relationships) wins over its package's.
+        const exact = paths[args.path];
+        if (exact) return { path: packageEntry(exact[0], args.path) };
+        const [, name, subpath] = args.path.match(filter);
+        return {
+          path: subpathEntry(packageSource(paths[name][0]), subpath.slice(1)),
+        };
       });
     },
   };
+}
+
+// A mapping names either the entry file or the package's source directory.
+function packageEntry(mapped, name) {
+  const resolved = path.join(ROOT, mapped);
+  return path.extname(resolved) === '.ts'
+    ? resolved
+    : path.join(resolved, `${name}.ts`);
+}
+
+function packageSource(mapped) {
+  const resolved = path.join(ROOT, mapped);
+  return path.extname(resolved) === '.ts' ? path.dirname(resolved) : resolved;
 }
 
 // `pkg/x` maps to src/x.ts (tsconfig `pkg/*`) or to the published

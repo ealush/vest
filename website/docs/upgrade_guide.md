@@ -37,6 +37,10 @@ The `n4s` package now includes `@types/validator` as a regular dependency becaus
 
 Focused runs retain schema errors outside their focus. After a failing full run, `only()` on another field still reports the failing field and keeps `valid: false` until that error is cleared. Repeated parent skips preserve nested schema failures.
 
+## Complete parsed output from focused runs
+
+`only()` and `focus()` runs now give the suite callback and `result.value` the complete parsed output when the whole input passes the schema, matching their types. Previously, fields outside the focus kept their input form, so a field parsed with `toNumber()` could still be a string. When a field outside the focus fails the schema, the output stays best effort, as before: focused fields parsed and the others as they were passed in. A passing focused run now parses the whole input once.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

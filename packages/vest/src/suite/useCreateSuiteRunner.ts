@@ -138,8 +138,12 @@ export function useCreateSuiteRunner<
     };
 
     const schemaInput = args[0];
+    const schemaFocus = schemaFocusOf(
+      transformedModifiers,
+      isN4sSchema(schema),
+    );
     const schemaRunResult = shouldRunSchema(schema)
-      ? runSchemaWithParse(schema, schemaInput, transformedModifiers)
+      ? runFocusedSchema(schema, schemaInput, transformedModifiers, schemaFocus)
       : undefined;
 
     const parsedDataChunk = getParsedDataChunk(schemaRunResult);
@@ -151,9 +155,7 @@ export function useCreateSuiteRunner<
     // Schema failures outside this run's focus keep their previous verdict,
     // like user tests that focus leaves out. Read before the new root exists.
     const retainedSchemaFailures = shouldRunSchema(schema)
-      ? useRetainedSchemaFailures(
-          schemaFocusOf(transformedModifiers, isN4sSchema(schema)),
-        )
+      ? useRetainedSchemaFailures(schemaFocus)
       : [];
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
@@ -219,12 +221,51 @@ export function useCreateSuiteRunner<
 }
 
 /**
+ * Runs the schema for a focused (only/skip) run. See docs/focus.md.
+ *
+ * Contract: the callback input and result value are typed as the complete
+ * parsed output, while reporting covers only the focused fields. A field's
+ * parsed form exists only after its rule has run on it, and the focused parse
+ * runs only the focused fields' rules, so the complete output needs a full
+ * parse.
+ * - The complete parse runs first. When it passes there is nothing to report,
+ *   and its output has the complete parsed shape.
+ * - When it fails, its failures cannot be reported: n4s fails fast, so a
+ *   failure outside the focus may hide a focused one. The focused parse then
+ *   reports the focused fields, and the output is best effort: focused fields
+ *   parsed and the others as they were passed in. Unfocused fields keep their
+ *   previous verdict, and sanitizing them is the application's concern.
+ *
+ * Cost: a passing focused run parses the whole input once, as a full run
+ * does, so focus no longer narrows schema work. A failing one parses twice.
+ * Reusing the output of unchanged fields could narrow it again (#1362).
+ */
+function runFocusedSchema(
+  schema: unknown,
+  data: unknown,
+  modifiers: { only?: unknown; skip?: unknown },
+  schemaFocus: ReturnType<typeof schemaFocusOf>,
+): SchemaRunResult[] {
+  if (schemaFocus !== null) {
+    const complete = runSchemaWithParse(schema, data, {});
+    if (isPassing(complete)) return complete;
+  }
+  return runSchemaWithParse(schema, data, modifiers);
+}
+
+function isPassing(
+  results: SchemaRunResult[] | undefined,
+): results is SchemaRunResult[] {
+  return !!results?.every(result => result.pass);
+}
+
+/**
  * Resolves the partial parsed data chunk from the schema run payload.
  */
 function getParsedDataChunk(
   schemaRunResult: SchemaRunResult[] | undefined,
 ): unknown {
-  if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
+  if (!isPassing(schemaRunResult)) {
     return {};
   }
 
@@ -253,7 +294,7 @@ function getCallbackInput(
   schemaRunResult: SchemaRunResult[] | undefined,
   fallback: unknown,
 ): unknown {
-  if (!schemaRunResult || schemaRunResult.some(result => !result.pass)) {
+  if (!isPassing(schemaRunResult)) {
     return fallback;
   }
 

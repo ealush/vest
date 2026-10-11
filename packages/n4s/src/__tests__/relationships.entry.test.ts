@@ -453,3 +453,24 @@ it('suggests $.root() when a local reference names a top-level field', () => {
   });
   expect(fixed.describe().relationships).toHaveLength(1);
 });
+
+it('reports a failing lazy() factory with its path and cause', () => {
+  const cause = new Error('not ready');
+  const schema = enforce.shape({
+    a: enforce.isString(),
+    tree: enforce.lazy(() => {
+      throw cause;
+    }),
+  });
+  let error: unknown;
+  try {
+    schema.describe();
+  } catch (caught) {
+    error = caught;
+  }
+  expect(error).toBeInstanceOf(EnforceSchemaError);
+  expect((error as Error).message).toBe(
+    '"tree" lazy() factory failed: not ready',
+  );
+  expect((error as Error).cause).toBe(cause);
+});

@@ -266,7 +266,7 @@ const memberChildren: Record<string, ChildrenHandler> = {
   anyOf: samePath,
   compose: samePath,
   isArrayOf: (args, path) => itemChildren('isArrayOf', args, path),
-  lazy: (resolve, path) => [[resolveLazy(resolve), path]],
+  lazy: (resolve, path) => [[resolveLazy(resolve, path), path]],
   noneOf: samePath,
   oneOf: samePath,
   optional: samePath,
@@ -275,8 +275,19 @@ const memberChildren: Record<string, ChildrenHandler> = {
     args.map((child, index) => [child, [...path, String(index)]]),
 };
 
-function resolveLazy(resolve: unknown): unknown {
-  return isFunction(resolve) ? resolve() : undefined;
+// Resolving the graph runs lazy() factories, possibly at create(), so a
+// failing factory is reported with the path it describes.
+function resolveLazy(resolve: unknown, path: SchemaPath): unknown {
+  if (!isFunction(resolve)) return undefined;
+  try {
+    return resolve();
+  } catch (cause) {
+    const detail = cause instanceof Error ? `: ${cause.message}` : '';
+    throw new EnforceSchemaError(
+      `${path.length ? `"${renderPath(path)}"` : 'The schema root'} lazy() factory failed${detail}`,
+      { cause },
+    );
+  }
 }
 
 function isShapeKind(kind: string | undefined): boolean {

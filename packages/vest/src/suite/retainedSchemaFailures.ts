@@ -5,6 +5,11 @@ import { VestTest } from '../core/isolate/IsolateTest/VestTest';
 
 export const ROOT_SCHEMA_FIELD = '__root__';
 
+/** The test name under which a schema failure at `path` is reported. */
+export function schemaFieldName(path: readonly string[] | undefined): string {
+  return path?.length ? path.join('.') : ROOT_SCHEMA_FIELD;
+}
+
 export type RetainedSchemaFailure = {
   readonly path?: readonly string[];
   readonly message: string | undefined;

@@ -25,7 +25,10 @@ import {
   TSchema,
   InferSchemaOutput,
 } from '../suiteResult/SuiteResultTypes';
-import { useCreateSuiteResult } from '../suiteResult/suiteResult';
+import {
+  useCreateSuiteResult,
+  useSchemaIsolate,
+} from '../suiteResult/suiteResult';
 
 import { SuiteModifiers, SuiteCallbackWithSchema } from './SuiteTypes';
 import {
@@ -150,11 +153,14 @@ export function useCreateSuiteRunner<
 
     // Schema failures outside this run's focus keep their previous verdict,
     // like user tests that focus leaves out. Read before the new root exists.
+    const schemaFocus = schemaFocusOf(
+      transformedModifiers,
+      isN4sSchema(schema),
+    );
     const retainedSchemaFailures = shouldRunSchema(schema)
-      ? useRetainedSchemaFailures(
-          schemaFocusOf(transformedModifiers, isN4sSchema(schema)),
-        )
+      ? useRetainedSchemaFailures(schemaFocus)
       : [];
+    const schemaPassed = useCompleteSchemaPass(schemaFocus, schemaRunResult);
 
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
@@ -192,6 +198,7 @@ export function useCreateSuiteRunner<
             modifiers: transformedModifiers,
             retainedSchemaFailures,
             schema,
+            schemaPassed,
             schemaRunResult,
             suiteCallback,
             useResolver,
@@ -216,6 +223,23 @@ export function useCreateSuiteRunner<
     if (!suiteResult.isPending()) forgetPendingRun();
     return boundResult;
   };
+}
+
+/**
+ * Only a schema run that covered every field can make a test-free suite valid.
+ * A passing focused run keeps an earlier complete pass, as focus keeps the
+ * verdicts of the tests it leaves out. Read before the new root exists.
+ */
+function useCompleteSchemaPass(
+  schemaFocus: ReturnType<typeof schemaFocusOf>,
+  schemaRunResult: SchemaRunResult[] | undefined,
+): boolean {
+  if (!schemaRunResult?.every(result => result.pass)) return false;
+  return schemaFocus === null || useEarlierSchemaPass();
+}
+
+function useEarlierSchemaPass(): boolean {
+  return !!useSchemaIsolate()?.data?.schemaPassed;
 }
 
 /**
@@ -274,6 +298,7 @@ function useRunSuiteCallback<
   args: any[];
   modifiers: ReturnType<typeof useTransformedModifiers<F, G>>;
   schema: S | undefined;
+  schemaPassed: boolean;
   schemaRunResult?: SchemaRunResult[];
   retainedSchemaFailures: RetainedSchemaFailure[];
   suiteCallback: SuiteCallbackWithSchema<S, T>;
@@ -284,6 +309,7 @@ function useRunSuiteCallback<
     modifiers,
     retainedSchemaFailures,
     schema,
+    schemaPassed,
     schemaRunResult,
     suiteCallback,
     useResolver,
@@ -300,7 +326,8 @@ function useRunSuiteCallback<
       runSchemaValidation(schema, schemaRunResult, retainedSchemaFailures),
       undefined,
       {
-        ...(schema ? { schemaValidation: true } : {}),
+        // Kept in the tree so rebuilt results still see a complete schema pass.
+        ...(schema ? { schemaPassed, schemaValidation: true } : {}),
         tests: [],
       },
     );

@@ -1,5 +1,5 @@
 /** Relationship graph internals behind the opt-in `n4s/relationships` entry. */
-import { isFunction, isObject } from 'vest-utils';
+import { asArray, isFunction, isObject, isStringValue } from 'vest-utils';
 
 import {
   meta,
@@ -239,7 +239,7 @@ const memberChildren: Record<string, ChildrenHandler> = {
 };
 
 function resolveLazy(resolve: unknown): unknown {
-  return typeof resolve === 'function' ? resolve() : undefined;
+  return isFunction(resolve) ? resolve() : undefined;
 }
 
 function isShapeKind(kind: string | undefined): boolean {
@@ -256,7 +256,7 @@ function resolve(
   resolver: (scope: Scope) => unknown,
   target: SchemaPath,
 ): Reference[] {
-  if (typeof resolver !== 'function') {
+  if (!isFunction(resolver)) {
     throw new EnforceSchemaError(
       `"${renderPath(target)}" dependsOn expects a function`,
     );
@@ -273,7 +273,7 @@ function resolve(
       },
     );
   }
-  const refs = Array.isArray(result) ? result : [result];
+  const refs = asArray(result);
   return refs.map(value => {
     const reference = isNode(value) ? Reflect.get(value, REF) : undefined;
     if (!reference || !reference.path.length) {
@@ -300,7 +300,7 @@ function reference(path: unknown[], rooted: boolean): object {
 }
 
 function isFieldName(segment: unknown): segment is string {
-  return typeof segment === 'string' && segment.length > 0;
+  return isStringValue(segment) && segment !== '';
 }
 
 type Walk = { found: boolean; missing: string; keys: string[] };
@@ -345,7 +345,7 @@ function stepRule(
 } {
   const info = meta(rule);
   const args = (info.children as unknown[]) ?? [];
-  if (typeof segment !== 'string') return itemStep(info.kind, args);
+  if (!isStringValue(segment)) return itemStep(info.kind, args);
   if (info.kind === 'tuple') return tupleStep(args, segment);
   if (!isShapeKind(info.kind)) return { next: [], keys: [] };
   return shapeStep(info.kind, args, segment);
@@ -415,9 +415,14 @@ function isSelectedKey(
   args: unknown[],
   key: string,
 ): boolean {
-  if (kind !== 'pick' && kind !== 'omit') return true;
-  const selected = new Set(Array.isArray(args[1]) ? args[1] : [args[1]]);
-  return kind === 'pick' ? selected.has(key) : !selected.has(key);
+  return kind !== 'pick' && kind !== 'omit'
+    ? true
+    : isPicked(kind, new Set(asArray(args[1])), key);
+}
+
+/** pick() keeps the listed keys; omit() keeps every other key. */
+function isPicked(kind: 'pick' | 'omit', keys: Set<unknown>, key: string) {
+  return kind === 'pick' ? keys.has(key) : !keys.has(key);
 }
 
 function isTransparent(kind: string | undefined): boolean {
@@ -456,18 +461,16 @@ function selectedEntries(
 ): Array<[string, unknown]> {
   const all = entries(shape);
   if (kind !== 'pick' && kind !== 'omit') return all;
-  const selected = new Set(Array.isArray(args[1]) ? args[1] : [args[1]]);
-  return all.filter(([name]) =>
-    kind === 'pick' ? selected.has(name) : !selected.has(name),
-  );
+  const keys = new Set(asArray(args[1]));
+  return all.filter(([name]) => isPicked(kind, keys, name));
 }
 
 function clonePath(path: SchemaPath): SchemaPath {
-  return path.map(part => (typeof part === 'string' ? part : { ...part }));
+  return path.map(part => (isStringValue(part) ? part : { ...part }));
 }
 
 function renderPath(path: SchemaPath): string {
-  return path.map(part => (typeof part === 'string' ? part : '*')).join('.');
+  return path.map(part => (isStringValue(part) ? part : '*')).join('.');
 }
 
 function isSamePath(left: SchemaPath, right: SchemaPath): boolean {

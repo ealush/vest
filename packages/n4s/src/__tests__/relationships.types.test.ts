@@ -1,5 +1,6 @@
 import { it } from 'vitest';
 
+import type { DependencyResolver } from '../exports/relationships';
 import { compose, enforce } from '../n4s';
 
 it('type-checks local dependency references against the shape', () => {
@@ -117,5 +118,15 @@ it('checks dependsOn() when it is declared last in the chain', () => {
       .isString()
       .dependsOn($ => $('zzz'))
       .longerThan(1),
+  });
+});
+
+it('leaves dynamic names and prebuilt resolvers to the runtime check', () => {
+  const resolver: DependencyResolver = $ => $('password');
+  const name: string = 'password';
+  enforce.shape({
+    password: enforce.isString(),
+    a: enforce.isString().dependsOn(resolver),
+    b: enforce.isString().dependsOn($ => $(name)),
   });
 });

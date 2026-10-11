@@ -1,3 +1,5 @@
+import { isFunction } from 'vest-utils';
+
 /**
  * A structural, JSON-serializable location in a schema.
  *
@@ -103,16 +105,19 @@ type FieldData<S> = {
 
 // A path is valid when each segment is a key of the data type at that level.
 // Unions (from compound rules) accept a key of any member. Unknown data,
-// arrays (numeric segments) and records stay permissive.
+// arrays (numeric segments), records and dynamic names (`string`) cannot be
+// checked here and are left to the runtime check.
 type InvalidPath<P, D> = P extends readonly [
   infer H extends string,
   ...infer Rest extends string[],
 ]
   ? unknown extends D
     ? never
-    : H extends KeyOf<D>
-      ? InvalidPath<Rest, NonNullable<ValueAt<D, H>>>
-      : P
+    : string extends H
+      ? never
+      : H extends KeyOf<D>
+        ? InvalidPath<Rest, NonNullable<ValueAt<D, H>>>
+        : P
   : never;
 
 type KeyOf<D> = D extends readonly unknown[]
@@ -192,10 +197,9 @@ export function deriveDependency<T extends object>(
 }
 
 function copyRule<T extends object>(base: T): T {
-  const target =
-    typeof base === 'function'
-      ? (...args: unknown[]) => Reflect.apply(base, undefined, args)
-      : {};
+  const target = isFunction(base)
+    ? (...args: unknown[]) => Reflect.apply(base, undefined, args)
+    : {};
   return Object.assign(target, base);
 }
 

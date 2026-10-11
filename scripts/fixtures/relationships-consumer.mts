@@ -46,6 +46,19 @@ try {
   if (!(error instanceof EnforceSchemaError))
     throw new Error('root declaration error class');
 }
+try {
+  create(
+    () => {},
+    enforce.shape({
+      a: enforce.isString(),
+      b: enforce.isString().dependsOn($ => $.missing),
+    }),
+  );
+  throw new Error('unknown reference accepted at create()');
+} catch (error) {
+  if (!(error instanceof EnforceSchemaError))
+    throw new Error('create() relationship error class');
+}
 const complete = suite.run({ password: 'a', confirm: 'a', age: '42' });
 if (!complete.valid || complete.value.age !== 42)
   throw new Error('parsed complete output');

@@ -161,7 +161,7 @@ describe('executable documentation examples', () => {
 
     const graph = executeCodeBlock(
       'website/docs/guides/schema-relationships.md',
-      5,
+      9,
     );
     expect(graph.description).toEqual({
       relationships: [
@@ -169,6 +169,47 @@ describe('executable documentation examples', () => {
       ],
     });
     expect(graph.affected).toEqual([['password'], ['confirm']]);
+  });
+
+  it('describes the exact relationship pattern examples', () => {
+    const item = (binding: string) => ({ type: 'item', binding });
+    const describe = (index: number, name: string) =>
+      (
+        executeCodeBlock('website/docs/guides/schema-relationships.md', index)[
+          name
+        ] as { describe(): unknown }
+      ).describe();
+    const invalidate = (source: unknown[], target: unknown[]) => ({
+      source,
+      target,
+      effect: 'invalidate',
+    });
+
+    expect(describe(5, 'checkout')).toEqual({
+      relationships: [
+        invalidate(['billing', 'country'], ['billing', 'state']),
+        invalidate(['shipping', 'country'], ['shipping', 'state']),
+      ],
+    });
+    const items = ['orders', item('isArrayOf'), 'items', item('isArrayOf')];
+    expect(describe(6, 'cart')).toEqual({
+      relationships: [
+        invalidate([...items, 'price'], [...items, 'discount']),
+        invalidate(['promoCode'], [...items, 'discount']),
+      ],
+    });
+    expect(describe(7, 'stay')).toEqual({
+      relationships: [
+        invalidate(['checkOut'], ['checkIn']),
+        invalidate(['checkIn'], ['checkOut']),
+      ],
+    });
+    expect(describe(8, 'account')).toEqual({
+      relationships: [
+        invalidate(['company', 'country'], ['company', 'taxId']),
+        invalidate(['accountType'], ['company', 'taxId']),
+      ],
+    });
   });
 
   it('runs the exact root and array relationship example', () => {

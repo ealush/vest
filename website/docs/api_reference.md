@@ -134,7 +134,7 @@ After `import 'vest/relationships'`, prepares a focused run for the named fields
 - Use canonical dotted data paths for dependent test names. Explicitly named fields run unless skipped, even when they are not schema fields. Dependencies on a container also respond to changes in its descendants.
 - Schema failures outside the affected names are reported without running those fields' user tests.
 - A successful changed result's `value` contains only the validated fields and is typed as a partial schema output. Ordinary focused results and `suite.get()` keep their complete output types, and clearing changed focus returns those types. Its `valid` does not cover unchecked fields, so run the full suite before submitting. Await the result when tests are async.
-- Without the opt-in import, the first changed run throws a setup error.
+- Without the opt-in import, the first changed run throws a setup error. With it, `create()` resolves the schema's relationships and throws an `EnforceSchemaError` for an unknown or misplaced reference.
 - [Read the relationships guide](./guides/schema-relationships.md).
 
 #### `suite.afterEach(callback)`
@@ -196,7 +196,7 @@ Returns a new rule with a direct dependency declared; the original rule is uncha
 
 #### `schema.describe()` and `resolveAffected(schema, changed, data)`
 
-After `import 'n4s/relationships'`, `schema.describe()` returns the declared graph as `relationships` with `source`, `target`, and `effect: 'invalidate'` entries. Import `resolveAffected` from `n4s/relationships` to compute concrete affected paths for the current data; `changed` is a field name or an array of names, as in `suite.changed()`. Array items are numeric path segments, while shape keys and tuple positions are strings, as in `describe()`. `import 'vest/relationships'` also loads this graph implementation and re-exports `FIELD`, `resolveAffected`, `EnforceSchemaError` and the graph types for applications that depend on `vest` only. Calling `describe()` without either entry throws a setup error.
+After `import 'n4s/relationships'`, `schema.describe()` returns the declared graph as JSON: `relationships` with `source`, `target`, and `effect: 'invalidate'` entries. A path segment is a string (a shape key or tuple position) or `{ type: 'item', binding }` for every member of an `isArrayOf` or `record` collection; a source and target sharing a path up to an item segment refer to the same member. Import `resolveAffected` from `n4s/relationships` to compute concrete affected paths for the current data; `changed` is a field name or an array of names, as in `suite.changed()`. Array items are numeric path segments, while shape keys and tuple positions are strings, as in `describe()`. `import 'vest/relationships'` also loads this graph implementation and re-exports `FIELD`, `resolveAffected`, `EnforceSchemaError` and the graph types for applications that depend on `vest` only. Calling `describe()` without either entry throws a setup error.
 
 - [Read the relationships guide](./guides/schema-relationships.md).
 

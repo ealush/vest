@@ -16,7 +16,7 @@ import { create, enforce, test } from 'vest';
 
 export const schema = enforce.shape({
   password: enforce.isString(),
-  confirm: enforce.isString().dependsOn($ => $.password),
+  confirm: enforce.isString().dependsOn($ => $('password')),
 });
 
 export const suite = create(data => {
@@ -48,8 +48,8 @@ export const schema = enforce.shape({
   rows: enforce.isArrayOf(
     enforce.shape({
       country: enforce.isString(),
-      state: enforce.isString().dependsOn($ => $.country),
-      price: enforce.isNumber().dependsOn($ => $.root.currency),
+      state: enforce.isString().dependsOn($ => $('country')),
+      price: enforce.isNumber().dependsOn($ => $.root('currency')),
     }),
   ),
 });
@@ -67,20 +67,25 @@ const text = enforce.isString();
 const schema = enforce.shape({
   password: text,
   username: text, // no dependency
-  confirm: text.dependsOn($ => $.password),
+  confirm: text.dependsOn($ => $('password')),
 });
 ```
 
-Relationships are **direct**: if `c` depends on `b` and `b` depends on `a`, changing `a` checks `a` and `b`. Declare a direct dependency from `c` to `a` when that change can affect `c` too. A dependency resolver must return a field reference (or an array of references). References are checked when the graph is resolved, not by the type system: with `vest/relationships` imported, `create()` resolves the schema's graph and throws an `EnforceSchemaError` for an unknown field, with a suggestion when the name looks like a typo. Suites created before the entry was imported report it on their first changed run.
+Relationships are **direct**: if `c` depends on `b` and `b` depends on `a`, changing `a` checks `a` and `b`. Declare a direct dependency from `c` to `a` when that change can affect `c` too. A dependency resolver must return a field reference (or an array of references). References are checked twice:
 
-A dependency on an object or array is also affected by a change inside it. For example, a rule that depends on `$.address` is selected by `changed('address.city')`. Naming the entire object selects its declared descendants as well. Dependents use canonical dotted test names such as `rows.5.state`; numeric brackets are accepted in changed names and skip comparisons.
+- **At compile time,** the shape that contains the rule checks each `$('name')` against its own keys, and deeper segments against that field's data. A typo is a type error on the offending field: `"confirm" depends on unknown field "pasword"`. Declare `dependsOn()` last in the rule's chain to keep this check, because rules chained after it return their own types. `$.root('name')` references are checked at runtime only, since a nested shape does not know its root.
+- **At runtime,** with `vest/relationships` imported, `create()` resolves the graph and throws an `EnforceSchemaError` for any unknown reference, with a suggestion when the name looks like a typo. Suites created before the entry was imported report it on their first changed run.
 
-`$.root` and `$.parent` are reserved (`$.parent` is a type error and throws when the graph is described), and `then` cannot be read from a proxy. Use `FIELD` from `vest/relationships` (or `n4s/relationships` in n4s-only code) to reference a field with one of those names:
+A dependency on an object or array is also affected by a change inside it. For example, a rule that depends on `$('address')` is selected by `changed('address.city')`. Naming the entire object selects its declared descendants as well. Dependents use canonical dotted test names such as `rows.5.state`; numeric brackets are accepted in changed names and skip comparisons.
+
+`$('name')` references a field in the same shape, `$('address', 'city')` a path below it, and `$.root('name')` a top-level field. Any field name works, including `root`, `parent` and `then`. There is no parent scope: use `$.root` for a field outside the current shape.
 
 ```ts
-import { FIELD } from 'vest/relationships';
-
-enforce.isString().dependsOn($ => $[FIELD]('root'));
+enforce.shape({
+  root: enforce.isString(),
+  address: enforce.shape({ city: enforce.isString() }),
+  zip: enforce.isString().dependsOn($ => [$('address', 'city'), $('root')]),
+});
 ```
 
 Declarations and references work inside `shape`, `loose`, `partial`, `pick`, `omit`, `optional`, `compose`, `isArrayOf`, `record`, `tuple`, the compound rules (`anyOf`, `allOf`, `oneOf`, `noneOf`) and `lazy()`. A declaration belongs to a field: the root schema itself cannot call `dependsOn()`, because it has no name to focus and every change already reaches it. Declare the dependency on the field whose result changes; describing a root declaration throws an `EnforceSchemaError`. A schema path cannot describe unbounded depth, so `dependsOn()` inside a recursive `lazy()` schema throws an `EnforceSchemaError`. Recursive schemas without declarations must reuse a schema instance. Graph discovery supports at most 32 nested `lazy()` expansions; exceeding this limit throws instead of silently omitting deeper dependencies.
@@ -97,7 +102,7 @@ import { enforce } from 'vest';
 
 const address = enforce.shape({
   country: enforce.isString(),
-  state: enforce.isString().dependsOn($ => $.country),
+  state: enforce.isString().dependsOn($ => $('country')),
 });
 
 export const checkout = enforce.shape({
@@ -122,7 +127,7 @@ export const cart = enforce.shape({
           price: enforce.isNumber(),
           discount: enforce
             .isNumber()
-            .dependsOn($ => [$.price, $.root.promoCode]),
+            .dependsOn($ => [$('price'), $.root('promoCode')]),
         }),
       ),
     }),
@@ -139,8 +144,8 @@ import 'vest/relationships';
 import { enforce } from 'vest';
 
 export const stay = enforce.shape({
-  checkIn: enforce.isString().dependsOn($ => $.checkOut),
-  checkOut: enforce.isString().dependsOn($ => $.checkIn),
+  checkIn: enforce.isString().dependsOn($ => $('checkOut')),
+  checkOut: enforce.isString().dependsOn($ => $('checkIn')),
 });
 // changed('checkIn') checks checkIn and checkOut, and so does changed('checkOut')
 ```
@@ -156,11 +161,36 @@ export const account = enforce.shape({
   company: enforce.optional(
     enforce.shape({
       country: enforce.isString(),
-      taxId: enforce.isString().dependsOn($ => [$.country, $.root.accountType]),
+      taxId: enforce
+        .isString()
+        .dependsOn($ => [$('country'), $.root('accountType')]),
     }),
   ),
 });
 // company.country → company.taxId, accountType → company.taxId
+```
+
+A relationship does not need a schema rule that reads the related field. Here the username's schema rule only checks its type, while an async suite test asks the server whether the name is free in the selected organization. The schema records that the result depends on the organization; the suite says how:
+
+```ts
+import 'vest/relationships';
+import { create, enforce, test } from 'vest';
+
+export const signup = enforce.shape({
+  organizationId: enforce.isString(),
+  username: enforce.isString().dependsOn($ => $('organizationId')),
+});
+
+export const signupSuite = create(data => {
+  test('username', 'Username is taken', async () => {
+    const { available } = await checkUsername(
+      data.organizationId,
+      data.username,
+    );
+    enforce(available).isTruthy();
+  });
+}, signup);
+// changed('organizationId') reruns the username availability check
 ```
 
 ## Focus and schema results
@@ -181,7 +211,7 @@ Async changed runs use the usual suite lifecycle: await the returned result befo
 
 ## Inspect the graph
 
-`vest/relationships` re-exports `FIELD`, `resolveAffected`, `EnforceSchemaError` and the graph types, so an application that depends on `vest` alone can declare and inspect relationships. For n4s-only code, import `n4s/relationships` to enable `schema.describe()` and `resolveAffected()`:
+`vest/relationships` re-exports `resolveAffected`, `EnforceSchemaError` and the graph and reference types, so an application that depends on `vest` alone can declare and inspect relationships. For n4s-only code, import `n4s/relationships` to enable `schema.describe()` and `resolveAffected()`:
 
 ```ts
 import 'n4s/relationships';
@@ -190,7 +220,7 @@ import { resolveAffected } from 'n4s/relationships';
 
 const schema = enforce.shape({
   password: enforce.isString(),
-  confirm: enforce.isString().dependsOn($ => $.password),
+  confirm: enforce.isString().dependsOn($ => $('password')),
 });
 
 export const description = schema.describe();
@@ -208,3 +238,28 @@ The description is plain JSON. Each relationship reads "when the value at `sourc
 `import 'vest/relationships'` also enables the n4s graph for Vest suites. Without the relevant opt-in import, calling `suite.changed(...).run(...)` or `schema.describe()` throws a setup error naming the required entry. Load `vest` and `vest/relationships` in the same module format (both ESM or both CommonJS); a mixed setup loads two copies of Vest and the import does not reach the suite.
 
 `resolveAffected()` accepts a field name or an array of names and ignores unknown or unsafe schema paths. In its paths, array items are numbers, while shape keys and tuple positions are strings, as in `describe()`. `suite.changed()` still selects user tests whose names were explicitly passed, including names absent from the schema. It does not check that every requested user-test name exists. Planning expands each dependency edge once per run, so naming a large container (or a member of one whose dependents depend on the container) costs a single pass over the current data.
+
+## Describe a suite
+
+`schema.describe()` covers the relationships declared on the schema. A suite adds its own: the tests it registers and the `include().when()` declarations in its callback. `describeSuite(suite)` from `vest/relationships` returns the whole picture as data, for tools, devtools and coding agents:
+
+```ts
+import { describeSuite } from 'vest/relationships';
+
+signupSuite.run(formData);
+export const description = describeSuite(signupSuite);
+// {
+//   relationships: [{ source: ['organizationId'], target: ['username'], effect: 'invalidate' }],
+//   tests: [{ fieldName: 'username' }],
+//   includes: [],
+//   dynamicIncludes: [],
+//   untested: [],
+// }
+```
+
+- `relationships` is the schema's graph, as `schema.describe()` returns it.
+- `tests` lists the tests of the last run, with the group each belongs to.
+- `includes` lists `include(target).when(source)` declarations; `dynamicIncludes` lists the targets of `include()` declarations whose condition is a function or value rather than a field name.
+- `untested` lists relationship targets that no test of the last run covers. Their schema rules still run, but no user test checks them.
+
+Suites register tests while they run, so `describeSuite()` describes the last run and runs no tests itself. Create the suite after importing `vest/relationships`; describing a suite created earlier throws a setup error.

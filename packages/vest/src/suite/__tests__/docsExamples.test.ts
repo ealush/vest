@@ -161,7 +161,7 @@ describe('executable documentation examples', () => {
 
     const graph = executeCodeBlock(
       'website/docs/guides/schema-relationships.md',
-      9,
+      10,
     );
     expect(graph.description).toEqual({
       relationships: [
@@ -209,6 +209,37 @@ describe('executable documentation examples', () => {
         invalidate(['company', 'country'], ['company', 'taxId']),
         invalidate(['accountType'], ['company', 'taxId']),
       ],
+    });
+  });
+
+  it('runs the exact suite-only dependency and suite description examples', async () => {
+    const checkUsername = vi.fn(async () => ({ available: true }));
+    const { signupSuite } = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      9,
+      { checkUsername },
+    ) as { signupSuite: ReturnType<typeof vest.create> };
+    const formData = { organizationId: 'acme', username: 'ada' };
+    await signupSuite.changed('organizationId').run(formData);
+    expect(checkUsername).toHaveBeenCalledWith('acme', 'ada');
+
+    const { description } = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      11,
+      { signupSuite, formData },
+    );
+    expect(description).toEqual({
+      relationships: [
+        {
+          source: ['organizationId'],
+          target: ['username'],
+          effect: 'invalidate',
+        },
+      ],
+      tests: [{ fieldName: 'username' }],
+      includes: [],
+      dynamicIncludes: [],
+      untested: [],
     });
   });
 

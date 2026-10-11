@@ -9,6 +9,7 @@ keywords:
     Reference,
     create,
     changed,
+    describeSuite,
     dependsOn,
     describe,
     resolveAffected,
@@ -137,6 +138,12 @@ After `import 'vest/relationships'`, prepares a focused run for the named fields
 - Without the opt-in import, the first changed run throws a setup error. With it, `create()` resolves the schema's relationships and throws an `EnforceSchemaError` for an unknown or misplaced reference.
 - [Read the relationships guide](./guides/schema-relationships.md).
 
+#### `describeSuite(suite)`
+
+From `vest/relationships`. Returns a suite's full invalidation graph as data: the schema's `relationships`, the `tests` (with groups) and `include().when()` declarations (`includes`, plus `dynamicIncludes` for non-field conditions) of the last run, and the relationship targets no test covers (`untested`). It runs no tests. The suite must be created after importing `vest/relationships`.
+
+- [Read more about describing a suite](./guides/schema-relationships.md#describe-a-suite).
+
 #### `suite.afterEach(callback)`
 
 Registers a callback to run after each test completes (including the initial sync run and every async completion). The callback receives **no arguments**; you should access the result using `suite.get()`.
@@ -192,11 +199,11 @@ Extends Vest's enforce with custom validation rules.
 
 #### `rule.dependsOn(resolver)`
 
-Returns a new rule with a direct dependency declared; the original rule is unchanged. The resolver receives a field-reference scope (`$`) and returns one reference or an array of references. Use `$.other` for a sibling field, `$.root.other` for a top-level field, and `$[FIELD]('name')` (from `vest/relationships` or `n4s/relationships`) for fields named `root`, `parent` or `then`. The declaration affects `suite.changed()` planning; ordinary schema validation runs the rule as before. Declare it on a field: the root schema cannot depend on its own fields, and `dependsOn()` on the root or inside a recursive `lazy()` schema throws when the graph is described.
+Returns a new rule with a direct dependency declared; the original rule is unchanged. The resolver receives a field-reference scope (`$`) and returns one reference or an array of references. Use `$('other')` for a field in the same shape, `$('address', 'city')` for a path below it, and `$.root('other')` for a top-level field; any name works, including `root`, `parent` and `then`. The containing shape checks local references at compile time when `dependsOn()` is the last call in the rule's chain, and `create()` checks every reference at runtime when `vest/relationships` is imported. The declaration affects `suite.changed()` planning; ordinary schema validation runs the rule as before. Declare it on a field: the root schema cannot depend on its own fields, and `dependsOn()` on the root or inside a recursive `lazy()` schema throws when the graph is described.
 
 #### `schema.describe()` and `resolveAffected(schema, changed, data)`
 
-After `import 'n4s/relationships'`, `schema.describe()` returns the declared graph as JSON: `relationships` with `source`, `target`, and `effect: 'invalidate'` entries. A path segment is a string (a shape key or tuple position) or `{ type: 'item', binding }` for every member of an `isArrayOf` or `record` collection; a source and target sharing a path up to an item segment refer to the same member. Import `resolveAffected` from `n4s/relationships` to compute concrete affected paths for the current data; `changed` is a field name or an array of names, as in `suite.changed()`. Array items are numeric path segments, while shape keys and tuple positions are strings, as in `describe()`. `import 'vest/relationships'` also loads this graph implementation and re-exports `FIELD`, `resolveAffected`, `EnforceSchemaError` and the graph types for applications that depend on `vest` only. Calling `describe()` without either entry throws a setup error.
+After `import 'n4s/relationships'`, `schema.describe()` returns the declared graph as JSON: `relationships` with `source`, `target`, and `effect: 'invalidate'` entries. A path segment is a string (a shape key or tuple position) or `{ type: 'item', binding }` for every member of an `isArrayOf` or `record` collection; a source and target sharing a path up to an item segment refer to the same member. Import `resolveAffected` from `n4s/relationships` to compute concrete affected paths for the current data; `changed` is a field name or an array of names, as in `suite.changed()`. Array items are numeric path segments, while shape keys and tuple positions are strings, as in `describe()`. `import 'vest/relationships'` also loads this graph implementation and re-exports `resolveAffected`, `EnforceSchemaError` and the graph and reference types for applications that depend on `vest` only. Calling `describe()` without either entry throws a setup error.
 
 - [Read the relationships guide](./guides/schema-relationships.md).
 

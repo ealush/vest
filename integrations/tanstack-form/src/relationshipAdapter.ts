@@ -3,7 +3,7 @@ import { create, enforce, test } from 'vest';
 
 export const passwordSchema = enforce.shape({
   password: enforce.isString(),
-  confirm: enforce.isString().dependsOn($ => $.password),
+  confirm: enforce.isString().dependsOn($ => $('password')),
 });
 
 export type PasswordInput = Parameters<typeof passwordSchema.parse>[0];

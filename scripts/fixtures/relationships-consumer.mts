@@ -94,6 +94,17 @@ function typeContracts() {
     // @ts-expect-error unknown nested key
     zip: enforce.isString().dependsOn($ => $('address', 'citee')),
   });
+  // A key of any alternative, and dynamic names, are accepted.
+  const dynamicName: string = 'password';
+  enforce.shape({
+    password: enforce.isString(),
+    contact: enforce.anyOf(
+      enforce.shape({ email: enforce.isString() }),
+      enforce.shape({ phone: enforce.isString() }),
+    ),
+    a: enforce.isString().dependsOn($ => $('contact', 'phone')),
+    b: enforce.isString().dependsOn($ => $(dynamicName)),
+  });
   const single: readonly (string | number)[][] = vestResolveAffected(
     schema,
     'password',

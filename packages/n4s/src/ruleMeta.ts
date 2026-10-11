@@ -1,14 +1,41 @@
+/**
+ * A structural, JSON-serializable location in a schema.
+ *
+ * - A string is a property key: a shape key or a tuple position (`'0'`).
+ * - An item segment stands for every member of a collection. `binding` names
+ *   the collection kind: `isArrayOf` members have numeric indexes, `record`
+ *   members have string keys.
+ *
+ * Item identity is positional: when a source and a target share the same
+ * path up to and including an item segment, they refer to the same member.
+ * `['rows', item, 'country'] → ['rows', item, 'state']` relates each row's
+ * country to the state of that same row.
+ */
 export type SchemaPath = readonly (
   | string
   | { type: 'item'; binding: 'isArrayOf' | 'record' }
 )[];
+
+/**
+ * A directed edge of the relationship graph: when the value at `source`
+ * changes, the current validation result at `target` may be stale.
+ * `invalidate` is the only effect today; other effects can join the same
+ * graph later.
+ */
 export type Relationship = {
   source: SchemaPath;
   target: SchemaPath;
   effect: 'invalidate';
 };
+
+/** The relationship graph of a schema, as returned by `schema.describe()`. */
 export type Description = { relationships: Relationship[] };
 
+/**
+ * Field references for a `dependsOn()` resolver, scoped to the shape that
+ * contains the field. References are checked when the graph is resolved,
+ * not by the type system: an unknown field throws an `EnforceSchemaError`.
+ */
 export type Scope = {
   readonly root: Scope;
   /** Unsupported: use `$.root` or `$[FIELD]('parent')` for a field named parent. */

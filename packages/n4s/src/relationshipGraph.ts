@@ -139,6 +139,9 @@ function appendRelationship(
 ): void {
   const source = sourceOf(target, reference);
   if (isSamePath(source, target)) return;
+  // A root declaration is misplaced whatever it names, so it is reported
+  // before its reference is checked.
+  if (!target.length) rootTarget(source);
   const checked = checkedReference(context, source);
   if (!checked.found) {
     unknownReference(
@@ -148,7 +151,6 @@ function appendRelationship(
       rootAlternative(reference, context),
     );
   }
-  if (!target.length) rootTarget(source);
   const key = JSON.stringify([source, target]);
   if (context.seen.has(key)) return;
   context.seen.add(key);

@@ -314,8 +314,8 @@ it('keeps a derived composed rule callable and describes its own metadata', () =
   const derived = base.dependsOn($ => $('a'));
   expect(() => derived('x')).not.toThrow();
   expect(() => derived(1 as never)).toThrow();
-  // Describing this rule alone has no sibling a; its declaration must be seen.
-  expect(() => derived.describe()).toThrow(/unknown field "a"/);
+  // Described alone, the derived rule is the root; its declaration must be seen.
+  expect(() => derived.describe()).toThrow(/root schema cannot depend on "a"/);
   expect(base.describe().relationships).toEqual([]);
 });
 
@@ -393,13 +393,20 @@ it('rejects a dependency declared on the root schema', () => {
       .dependsOn($ => $('b'))
       .describe(),
   ).toThrow(/root schema cannot depend on "b"/);
-  // Unknown references are still reported first.
+  // The misplaced declaration is reported before its reference is checked,
+  // including on a scalar root, which has no field name to report.
   expect(() =>
     enforce
       .shape(fields)
       .dependsOn($ => $('c'))
       .describe(),
-  ).toThrow(/unknown field "c"/);
+  ).toThrow(/root schema cannot depend on "c"/);
+  expect(() =>
+    enforce
+      .isString()
+      .dependsOn($ => $('a'))
+      .describe(),
+  ).toThrow(/root schema cannot depend on "a"/);
   // A container inside the schema is a field and may declare dependencies.
   const schema = enforce.shape({
     ...fields,

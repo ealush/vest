@@ -268,6 +268,8 @@ result.value; // { username: 'evyatar', age: 30 } when valid
 
 Schema-aware suites infer the run input, parsed callback data, result value, and field-oriented APIs.
 
+Focused runs (`only()`, `focus()`) report only the focused fields but still give the callback and `result.value` the complete parsed output when the whole input passes the schema. If a field outside the focus fails, the output is best effort: focused fields parsed and the others as passed in. Run the whole suite before relying on `result.value` for submission.
+
 Vest can also be used alongside Zod: use Vest for progressive interaction and Zod for a final submitted boundary.
 
 ## Server and SSR usage

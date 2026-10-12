@@ -110,6 +110,7 @@ Resets the state of a specific field (clears errors/warnings but keeps it in the
 Prepares a focused run with combined modifiers. Use this when you need to combine `only`, `skip`, `skipGroup`, or `onlyGroup` in a single call.
 
 - `config`: `{ only?: string | string[], skip?: string | string[], skipGroup?: string | string[], onlyGroup?: string | string[] }`
+- With an Enforce schema, the suite callback and a successful `value` get the complete parsed output when the whole input passes the schema; otherwise the output is best effort, with the focused fields parsed. See [focused runs and best-effort output](./guides/typed-schemas.md#focused-runs-and-best-effort-output). The same applies to `only()`.
 - [Read more about Focused Updates](./writing_your_suite/focused_updates.md)
 
 #### `suite.only(fieldName)`

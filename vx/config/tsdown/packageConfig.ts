@@ -35,6 +35,7 @@ export function createPackageConfig({
 }: PackageConfigOptions): UserConfig {
   const packageName = readPackageName(packageDir);
   const mainEntry = vxPath.packageSrc(packageName, `${packageName}.ts`);
+  const dependencies = readDependencies(packageDir);
 
   return defineConfig({
     alias: {
@@ -48,6 +49,12 @@ export function createPackageConfig({
       resolver: 'oxc',
     },
     entry: [mainEntry, vxPath.packageSrcExports(packageName, '*.ts')],
+    // Subpath imports of a dependency (n4s/relationships) must stay external
+    // in the declaration bundle too, or its unique symbols get re-declared.
+    external: [
+      packageName,
+      ...dependencies.map(name => new RegExp(`^${name}(/|$)`)),
+    ],
     exports: {
       all: true,
       devExports,
@@ -86,6 +93,20 @@ export function createPackageConfig({
       },
     },
     name: packageName,
+    // Keep n4s validation and its helpers together. The opt-in entry may use
+    // them, but normal CJS validators must not repeatedly cross chunk getters.
+    outputOptions: (options, _format, { cjsDts }) => {
+      if (packageName !== 'n4s' || cjsDts) return;
+      options.advancedChunks = {
+        groups: [
+          {
+            name: 'n4s-core',
+            // Declaration modules share the build graph but need separate chunks.
+            test: /[\\/]n4s[\\/]src[\\/](?!(?:exports[\\/]|n4s\.ts$|relationship))(?!.*\.d\.ts$).*\.ts$/,
+          },
+        ],
+      };
+    },
     outDir: dir.DIST,
     platform: 'node',
     shims: true,
@@ -193,6 +214,18 @@ function readPackageName(packageDir: string): string {
   const pkgJsonPath = vxPath.packageJson(path.basename(packageDir));
   const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
   return pkgJson.name;
+}
+
+/**
+ * Reads the runtime dependency names from the package.json file.
+ *
+ * @param packageDir - Absolute path to the package directory
+ * @returns The dependency names declared by the package
+ */
+function readDependencies(packageDir: string): string[] {
+  const pkgJsonPath = vxPath.packageJson(path.basename(packageDir));
+  const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+  return Object.keys(pkgJson.dependencies ?? {});
 }
 
 /**

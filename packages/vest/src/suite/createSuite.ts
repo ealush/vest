@@ -12,6 +12,7 @@ import {
 } from '../suiteResult/SuiteResultTypes';
 
 import { Suite, SuiteCallbackWithSchema } from './SuiteTypes';
+import { checkRelationships } from './changedHandler';
 import {
   useBindSuiteLifecycle,
   useCreateSuiteMethods,
@@ -87,7 +88,9 @@ function createSuite<
         schema,
       );
 
-      return makeResult.Ok(useBindSuiteLifecycle(methods));
+      const suite = useBindSuiteLifecycle(methods);
+      checkRelationships(schema, suite);
+      return makeResult.Ok(suite);
     }
   });
 }

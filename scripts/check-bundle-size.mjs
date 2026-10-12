@@ -50,7 +50,7 @@ const ENTRIES = {
     import { create, enforce, test } from 'vest';
     const schema = enforce.shape({
       password: enforce.isString(),
-      confirm: enforce.isString().dependsOn($ => $.password),
+      confirm: enforce.isString().dependsOn($ => $('password')),
     });
     const suite = create(data => {
       test('confirm', () => enforce(data.confirm).isString());

@@ -11,6 +11,7 @@ import './shape';
 import './record';
 import './tuple';
 
+import type { CheckDependencies } from '../../ruleMeta';
 import type { RuleInstance } from '../../utils/RuleInstance';
 import { MultiTypeInput, MultiTypeInputArgs } from './schemaRulesTypes';
 
@@ -39,13 +40,13 @@ export type SchemaRuleLazyTypes = {
   ) => IsArrayOfRuleInstance<MultiTypeInput<Rules>, MultiTypeInputArgs<Rules>>;
   lazy: <T>(factory: () => RuleInstance<T, any>) => LazyRuleInstance<T>;
   loose: <S extends Record<string, RuleInstance<any>>>(
-    schema: S,
+    schema: S & CheckDependencies<S>,
   ) => LooseRuleInstance<S>;
   optional: <R extends RuleInstance<any>>(
     rule: R,
   ) => OptionalRuleInstance<R['infer']>;
   partial: <S extends Record<string, RuleInstance<any>>>(
-    schema: S,
+    schema: S & CheckDependencies<S>,
   ) => PartialRuleInstance<S>;
   pick: <S extends Record<string, RuleInstance<any>>>(
     schema: S,
@@ -56,7 +57,7 @@ export type SchemaRuleLazyTypes = {
     keys: string[] | string,
   ) => OmitRuleInstance<S>;
   shape: <S extends Record<string, RuleInstance<any>>>(
-    schema: S,
+    schema: S & CheckDependencies<S>,
   ) => ShapeRuleInstance<S>;
   record: {
     <V extends RuleInstance<any, any>>(

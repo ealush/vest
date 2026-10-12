@@ -48,6 +48,11 @@
       "require": "./dist/exports/isURL.cjs",
       "import": "./dist/exports/isURL.mjs"
     },
+    "./exports/relationships": {
+      "types": "./types/exports/relationships.d.cts",
+      "require": "./dist/exports/relationships.cjs",
+      "import": "./dist/exports/relationships.mjs"
+    },
     "./n4s": {
       "types": "./types/n4s.d.cts",
       "require": "./dist/n4s.cjs",
@@ -77,6 +82,11 @@
       "types": "./types/exports/isURL.d.cts",
       "require": "./dist/exports/isURL.cjs",
       "import": "./dist/exports/isURL.mjs"
+    },
+    "./relationships": {
+      "types": "./types/exports/relationships.d.cts",
+      "require": "./dist/exports/relationships.cjs",
+      "import": "./dist/exports/relationships.mjs"
     },
     "./n4s.d.ts": "./types/n4s.d.ts",
     "./types/*": "./types/*",

@@ -9,7 +9,7 @@ import TanStackFormIntegration from '@site/src/components/Sandpack/TanStackFormI
 
 # Vest with TanStack Form
 
-TanStack Form owns field state while an instance-owned Vest suite provides focused change validation and Standard Schema submission validation.
+TanStack Form owns field state while an instance-owned Vest suite provides relationship-aware change validation and Standard Schema submission validation.
 
 ## Installation
 
@@ -21,7 +21,7 @@ The compatibility workspace pins @tanstack/react-form 1.33.3 and imports only pu
 
 ## Runnable demonstration
 
-The playground loads its tested source directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-form). Edit either field and use the file tabs to inspect focused change validation and full-form submission validation.
+The playground loads its tested source directly from the [local compatibility workspace](https://github.com/ealush/vest/tree/latest/integrations/tanstack-form). Edit name or email, then change the password and see its confirmation revalidate through the relationship adapter.
 
 <TanStackFormIntegration />
 
@@ -32,10 +32,12 @@ The playground loads its tested source directly from the [local compatibility wo
 
 ## Proven capabilities
 
+- asynchronous
 - focused execution
 - input inference
 - multiple issues
 - nested paths
+- race safety
 - retained state
 - synchronous
 

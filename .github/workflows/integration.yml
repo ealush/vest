@@ -52,6 +52,8 @@ jobs:
         run: yarn build
       - name: Verify n4s validator declaration dependency
         run: node scripts/check-validator-declarations.cjs
+      - name: Test packed ESM and CommonJS consumers
+        run: yarn test:packed
       - name: Test
         run: yarn test
       - name: Test executable documentation and demos

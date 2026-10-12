@@ -9,7 +9,9 @@ keywords:
 
 A focused run needs one extra rule when fields depend on each other: changing one value must invalidate conclusions derived from it.
 
-Use `include(...).when(...)` to express that relationship inside the suite:
+When your suite has an Enforce schema, declare the relationship on the schema with `dependsOn()` and validate changes with `suite.changed(field)`. The relationship then becomes part of the schema: Vest's runtime uses it to decide what a change invalidates, and tools can inspect it with `schema.describe()`. Read [Schema Relationships and Changed Runs](./schema-relationships.md).
+
+Without a schema, or for a dependency the schema does not describe, use `include(...).when(...)` to express the relationship inside the suite:
 
 ```ts
 import { create, enforce, include, test } from 'vest';

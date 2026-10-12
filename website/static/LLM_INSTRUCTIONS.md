@@ -129,6 +129,13 @@ This project uses a custom task runner called `vx` for package operations. **Do 
 
 11. **Reorderable Isolates**: For dynamic test lists (e.g., `each()`), use `IsolateReorderable` which allows children to be matched by key rather than position during reconciliation.
 
+12. **Opt-in entries (schema relationships)**: Feature code that the core path does not need lives behind a package export and installs itself on import, so `yarn size:check` keeps the core entries within their gzip tolerance.
+    - `n4s/relationships` (`packages/n4s/src/exports/relationships.ts`) installs the graph implementation through `installDescribe()`; core n4s only records rule metadata (`ruleMeta.ts`: kind, children, `dependsOn` declarations) and throws a setup error from `describe()` until the entry is imported.
+    - `vest/relationships` (`packages/vest/src/exports/relationships.ts`) installs the changed-run planner through `installChangedHandler()`; core vest only carries `suite.changed()`, the plan contract and a no-op `checkRelationships` in `changedHandler.ts`. The entry installs the planner, which builds the run's modifiers itself, and the check that resolves a suite schema's graph in `create()` and remembers the suite's schema for `describeSuite()` (`packages/vest/src/suite/describeSuite.ts`, which reads the last run's tree from `suite.dump()`). It re-exports the n4s helpers (`resolveAffected`, `EnforceSchemaError` and the reference types) so applications depend on `vest` alone.
+    - Keep package boundaries: vest never reads n4s rule representation. Selected-field validation goes through `validateRelationshipFields()`, and the `create()` check through `resolveRelationships()`; they are the entry's only `@internal` exports.
+    - Dependency subpaths (`n4s/relationships`) are external in the tsdown build, so emitted declarations reference the dependency instead of re-declaring its unique symbols. The root `tsconfig.json` maps `n4s` to its source entry for the same reason.
+    - Changing the core bundle size (for example a core bug fix) requires re-recording `scripts/bundle-size.baseline.json` with `yarn size:update` in a commit that states the reason.
+
 ### D. Naming Conventions
 
 - **Hooks**: All functions that interact with runtime state must be prefixed with `use` (e.g., `useEmit`, `useReprocessTree`, `useOnTestStart`).

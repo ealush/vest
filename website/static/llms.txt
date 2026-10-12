@@ -70,6 +70,7 @@ Vest composes with schema validators and form managers; these categories are not
 - [Validation for Multi-Step Forms](https://vestjs.dev/docs/guides/multi-step-workflows)
 - [Next.js Server Actions Without Double Validation](https://vestjs.dev/docs/guides/nextjs-server-actions)
 - [Complete Registration Example](https://vestjs.dev/docs/guides/production-architecture)
+- [Schema Relationships and Changed Runs](https://vestjs.dev/docs/guides/schema-relationships)
 - [Typed Schemas and Parsed Results](https://vestjs.dev/docs/guides/typed-schemas)
 - [Errors, Warnings, Pending, and Untested State](https://vestjs.dev/docs/guides/validation-status)
 - [When Not to Use Vest](https://vestjs.dev/docs/guides/when-not-to-use-vest)

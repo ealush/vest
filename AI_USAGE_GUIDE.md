@@ -131,6 +131,37 @@ const suite = create(data => {
 
 Now `suite.only('password').run(data)` also reevaluates `confirmPassword`.
 
+## Schema relationships and changed runs
+
+When the suite has an Enforce schema, declare the dependency on the schema rule and let Vest plan the affected fields. This is opt-in: import `vest/relationships` once, then use `suite.changed(field).run(data)` at the event boundary.
+
+```js
+import 'vest/relationships';
+import { create, enforce, test } from 'vest';
+
+const schema = enforce.shape({
+  password: enforce.isString(),
+  confirm: enforce.isString().dependsOn($ => $('password')),
+});
+
+const suite = create(data => {
+  test('confirm', 'Passwords do not match', () => {
+    enforce(data.confirm).equals(data.password);
+  });
+}, schema);
+
+const result = suite.changed('password').run(formData); // checks password and confirm
+```
+
+- `rule.dependsOn($ => $('other'))` returns a new rule; the original is unchanged. Use `$('address', 'city')` for a path below a field and `$.root('other')` for a top-level field from inside an array item or nested shape; any field name works. Declare dependencies on fields, never on the root schema.
+- Relationships are direct, not transitive. A dependency on an object or array also reacts to changes inside it.
+- A changed run checks the named fields and their direct dependents, retains the other results, and types its `value` as a partial parsed output. Run the whole suite before submission.
+- `schema.describe()` returns the declared graph as JSON, and `resolveAffected(schema, changed, data)` (from `vest/relationships`) returns the concrete affected paths. Neither executes validation rules. Read the graph to learn which fields relate instead of reverse-engineering test closures: each `{ source, target }` means a change at `source` may make the result at `target` stale, and `{ type: 'item' }` segments that share a path prefix refer to the same array or record member.
+- The containing shape type-checks `$('name')` references: an unknown field is a compile error on the field, as long as `dependsOn()` is last in the rule's chain. With `vest/relationships` imported, `create()` also throws an `EnforceSchemaError` for any unknown reference, including `$.root('name')` and dynamic names, which the type check skips.
+- `describeSuite(suite)` (from `vest/relationships`) returns the suite's whole invalidation graph after a run: schema `relationships`, the run's `tests`, `include().when()` declarations, and `untested` relationship targets. Use it to answer "what runs when this field changes?" without reading the suite's code.
+
+Read the [Schema Relationships guide](https://vestjs.dev/docs/guides/schema-relationships) for focus composition, nested paths and limits.
+
 ## Groups and multi-step workflows
 
 ```js

@@ -9,6 +9,9 @@ import debounce from '../../exports/debounce';
 import { memo } from '../../exports/memo';
 import { SuiteSerializer } from '../../exports/SuiteSerializer';
 import * as vest from '../../vest';
+import * as relationships from '../../exports/relationships';
+import * as n4s from 'n4s';
+import * as n4sRelationships from 'n4s/relationships';
 
 type Runtime = Record<string, unknown>;
 
@@ -22,6 +25,9 @@ const moduleMap: Runtime = {
   'vest/debounce': { __esModule: true, default: debounce },
   'vest/exports/SuiteSerializer': { SuiteSerializer },
   'vest/memo': { memo },
+  'vest/relationships': relationships,
+  n4s,
+  'n4s/relationships': n4sRelationships,
 };
 
 function throwOnTranspileDiagnostics(output: ts.TranspileOutput): void {
@@ -135,6 +141,129 @@ describe('executable documentation examples', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.useRealTimers();
+  });
+
+  it('runs the exact schema relationship and graph examples', () => {
+    const { suite, result } = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      0,
+      {
+        formData: { password: 'new', confirm: 'old' },
+      },
+    ) as { suite: ReturnType<typeof vest.create>; result: vest.SuiteResult };
+    expect(result.hasErrors('confirm')).toBe(true);
+    expect(
+      suite
+        .changed('confirm')
+        .run({ password: 'new', confirm: 'new' })
+        .hasErrors(),
+    ).toBe(false);
+
+    const graph = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      10,
+    );
+    expect(graph.description).toEqual({
+      relationships: [
+        { source: ['password'], target: ['confirm'], effect: 'invalidate' },
+      ],
+    });
+    expect(graph.affected).toEqual([['password'], ['confirm']]);
+  });
+
+  it('describes the exact relationship pattern examples', () => {
+    const item = (binding: string) => ({ type: 'item', binding });
+    const describe = (index: number, name: string) =>
+      (
+        executeCodeBlock('website/docs/guides/schema-relationships.md', index)[
+          name
+        ] as { describe(): unknown }
+      ).describe();
+    const invalidate = (source: unknown[], target: unknown[]) => ({
+      source,
+      target,
+      effect: 'invalidate',
+    });
+
+    expect(describe(5, 'checkout')).toEqual({
+      relationships: [
+        invalidate(['billing', 'country'], ['billing', 'state']),
+        invalidate(['shipping', 'country'], ['shipping', 'state']),
+      ],
+    });
+    const items = ['orders', item('isArrayOf'), 'items', item('isArrayOf')];
+    expect(describe(6, 'cart')).toEqual({
+      relationships: [
+        invalidate([...items, 'price'], [...items, 'discount']),
+        invalidate(['promoCode'], [...items, 'discount']),
+      ],
+    });
+    expect(describe(7, 'stay')).toEqual({
+      relationships: [
+        invalidate(['checkOut'], ['checkIn']),
+        invalidate(['checkIn'], ['checkOut']),
+      ],
+    });
+    expect(describe(8, 'account')).toEqual({
+      relationships: [
+        invalidate(['company', 'country'], ['company', 'taxId']),
+        invalidate(['accountType'], ['company', 'taxId']),
+      ],
+    });
+  });
+
+  it('runs the exact suite-only dependency and suite description examples', async () => {
+    const checkUsername = vi.fn(async () => ({ available: true }));
+    const { signupSuite } = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      9,
+      { checkUsername },
+    ) as { signupSuite: ReturnType<typeof vest.create> };
+    const formData = { organizationId: 'acme', username: 'ada' };
+    await signupSuite.changed('organizationId').run(formData);
+    expect(checkUsername).toHaveBeenCalledWith('acme', 'ada');
+
+    const { description } = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      11,
+      { signupSuite, formData },
+    );
+    expect(description).toEqual({
+      relationships: [
+        {
+          source: ['organizationId'],
+          target: ['username'],
+          effect: 'invalidate',
+        },
+      ],
+      tests: [{ fieldName: 'username' }],
+      includes: [],
+      dynamicIncludes: [],
+      untested: [],
+    });
+  });
+
+  it('runs the exact root and array relationship example', () => {
+    const { rowSuite } = executeCodeBlock(
+      'website/docs/guides/schema-relationships.md',
+      2,
+      {
+        create: vest.create,
+        enforce: vest.enforce,
+        data: {
+          currency: 'USD',
+          rows: Array.from({ length: 6 }, () => ({
+            country: 'US',
+            state: 'CA',
+            price: 1,
+          })),
+        },
+      },
+    ) as { rowSuite: ReturnType<typeof vest.create> };
+    expect(rowSuite.get().run.focus?.only).toEqual([
+      'currency',
+      ...Array.from({ length: 6 }, (_, i) => `rows.${i}.price`),
+    ]);
   });
 
   it('runs the Getting Started suite exactly as documented', async () => {

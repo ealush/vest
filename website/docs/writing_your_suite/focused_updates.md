@@ -13,6 +13,10 @@ Sometimes you want to run validation only for a specific field (e.g., on blur). 
 `suite.only()` and `suite.focus()` are the recommended ways to handle field-focused validation in Vest 6. They provide a cleaner API compared to using `only()` and `skip()` hooks inside your suite.
 :::
 
+:::tip Dependent fields
+When the suite has an Enforce schema, `suite.changed(field)` validates the field and the fields whose schema rules declare a dependency on it with `dependsOn()`, so a confirm-password check reruns when the password changes. See [Schema Relationships and Changed Runs](../guides/schema-relationships.md).
+:::
+
 ## Why Focus?
 
 In a large form, re-validating the entire suite on every keystroke can be inefficient and annoying for the user (e.g., showing errors for fields they haven't touched yet). Focused updates allow you to:

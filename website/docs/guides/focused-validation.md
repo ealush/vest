@@ -61,6 +61,8 @@ signupSuite.focus({ onlyGroup: 'shipping' }).run(formData);
 
 Focus belongs at the interaction call site because the UI knows what changed. Business-driven inclusion—such as a dependent field—belongs inside the suite.
 
+When the suite has an Enforce schema, declare the dependency on the schema with `dependsOn()` and use `suite.changed(field)`: the run then checks the field and its dependents, and the relationship stays inspectable as data. See [Schema Relationships and Changed Runs](./schema-relationships.md).
+
 ## Full validation still matters
 
 Before progressing through a guarded step, run the step group and await it. Before final submission, run the whole suite:

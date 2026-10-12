@@ -55,7 +55,7 @@ Use `result.value` only after a successful result. Invalid and pending results d
 
 `only()` and `focus()` run the user tests for the focused fields and report schema errors only for those fields. When the whole input passes the schema, the suite callback and a successful result still receive the complete parsed output, at the cost of parsing the whole input once.
 
-When a field outside the focus fails the schema, it keeps its previous verdict and is not reported. The output is then best effort: the focused fields are parsed and the others are kept as they were passed in. A focused run does not sanitize the fields it leaves out, so run the whole suite before relying on `result.value`, for example on submission.
+When a field outside the focus fails the schema, it keeps its previous verdict and is not reported. The output is then best effort: the focused fields are parsed and the others are kept as they were passed in. A focused run does not sanitize the fields it leaves out, so run the whole suite before relying on `result.value`, for example on submission. A retained failure stays until its field is checked again, even when a later focused run parsed the whole input successfully: focus keeps the verdicts of the fields it leaves out.
 
 When the schema rejects the input, the suite callback receives the input as it was passed in, so your tests can still run and report their messages. The callback's parameter type describes the parsed output, so a field that failed parsing can still hold its original form inside a test.
 

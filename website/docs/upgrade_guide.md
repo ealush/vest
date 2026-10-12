@@ -39,7 +39,7 @@ Focused runs retain schema errors outside their focus. After a failing full run,
 
 ## Complete parsed output from focused runs
 
-`only()` and `focus()` runs now give the suite callback and `result.value` the complete parsed output when the whole input passes the schema, matching their types. Previously, fields outside the focus kept their input form, so a field parsed with `toNumber()` could still be a string. When a field outside the focus fails the schema, the output stays best effort, as before: focused fields parsed and the others as they were passed in. A passing focused run now parses the whole input once.
+`only()` and `focus()` runs now give the suite callback and `result.value` the complete parsed output when the whole input passes the schema, matching their types. Previously, fields outside the focus kept their input form, so a field parsed with `toNumber()` could still be a string. When a field outside the focus fails the schema, the output stays best effort, as before: focused fields parsed and the others as they were passed in. A passing focused run now parses the whole input once. For wide schemas a focused run therefore costs about as much schema work as a complete run, and when the complete parse fails the focused fields are parsed again. Reusing the parsed output of unchanged fields is tracked in [#1362](https://github.com/ealush/vest/issues/1362).
 
 # Upgrading from V5 to V6
 

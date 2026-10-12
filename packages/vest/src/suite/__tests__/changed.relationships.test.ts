@@ -94,6 +94,52 @@ it('validates a composed root as a whole when it cannot be picked', () => {
   expect(result.hasErrors('dependent' as never)).toBe(true);
 });
 
+it.each(['pick', 'omit'] as const)(
+  'validates a %s() root field by field, like shape()',
+  kind => {
+    const fields = {
+      source: enforce.isString(),
+      dependent: enforce.isString().dependsOn($ => $('source')),
+      other: enforce.isNumber(),
+      dropped: enforce.isString(),
+    };
+    const schema =
+      kind === 'pick'
+        ? enforce.pick(fields, ['source', 'dependent', 'other'])
+        : enforce.omit(fields, 'dropped');
+    const suite = create(() => {
+      test('source', () => true);
+      test('dependent', () => true);
+    }, schema);
+    const changed = suite.changed('source').run({
+      source: 'ok',
+      dependent: 'ok',
+      other: 'bad',
+      dropped: 2,
+    } as never);
+    // Only the selected keys are validated; the dropped key never is.
+    expect(changed.isValid()).toBe(true);
+    expect(changed.value).toEqual({ source: 'ok', dependent: 'ok' });
+    expect(changed.hasErrors('other' as never)).toBe(false);
+    const failing = suite.changed('source').run({
+      source: 'ok',
+      dependent: 1,
+      other: 1,
+      dropped: 2,
+    } as never);
+    expect(failing.hasErrors('dependent' as never)).toBe(true);
+    expect(failing.hasErrors('other' as never)).toBe(false);
+    const complete = suite.run({
+      source: 'ok',
+      dependent: 'ok',
+      other: 'bad',
+      dropped: 2,
+    } as never);
+    expect(complete.hasErrors('other' as never)).toBe(true);
+    expect(complete.hasErrors('dropped' as never)).toBe(false);
+  },
+);
+
 it('runs a changed field and its direct dependents, retaining other errors', () => {
   const first = vi.fn();
   const second = vi.fn();

@@ -1,9 +1,10 @@
-import { hasOwnProperty } from 'vest-utils';
+import { asArray, hasOwnProperty } from 'vest-utils';
 import { ctx as n4sContext } from 'n4s';
 
 import { isNode } from './relationshipGraph';
 import { meta } from './ruleMeta';
 import {
+  filterSchemaKeys,
   findDangerousOwnKey,
   isValidSchemaInput,
   ownKeys,
@@ -17,15 +18,18 @@ export type RelationshipValidation = {
   value?: Record<string, unknown>;
   evaluatedKeys: ReadonlySet<string>;
 };
+type Fields = Record<string, RuleInstance<unknown>>;
 const fieldKeys = new WeakMap<object, Set<string>>();
+// pick() and omit() validate like loose() over the keys they keep.
+const keptFields = new WeakMap<object, Fields | null>();
 // Use the package's existing context instance without moving the normal
 // validator's context into a shared opt-in chunk (costly in CommonJS).
 const ctx = n4sContext;
 
 /**
  * n4s integration contract: validate selected top-level fields independently,
- * preserving the context and parsing semantics of shape()/loose(). Return
- * undefined when the complete schema must run instead.
+ * preserving the context and parsing semantics of shape(), loose(), pick()
+ * and omit(). Return undefined when the complete schema must run instead.
  */
 export function validateRelationshipFields(
   schema: unknown,
@@ -50,13 +54,43 @@ function availableFields(rules: object): Set<string> | undefined {
   return keys;
 }
 
-function selectableFields(
-  schema: unknown,
-): Record<string, RuleInstance<unknown>> | undefined {
+function selectableFields(schema: unknown): Fields | undefined {
   if (!isNode(schema)) return;
   const { kind, children, chained } = meta(schema);
-  if (chained || (kind !== 'shape' && kind !== 'loose')) return;
-  return (children as [Record<string, RuleInstance<unknown>>])[0];
+  if (chained) return;
+  return fieldsOf(schema, kind, (children as unknown[]) ?? []) ?? undefined;
+}
+
+function fieldsOf(
+  schema: object,
+  kind: string | undefined,
+  args: unknown[],
+): Fields | null | undefined {
+  if (kind === 'shape' || kind === 'loose') return args[0] as Fields;
+  if (kind === 'pick' || kind === 'omit')
+    return keptFieldsOf(schema, kind, args);
+}
+
+function keptFieldsOf(
+  schema: object,
+  kind: 'pick' | 'omit',
+  args: unknown[],
+): Fields | null {
+  let fields = keptFields.get(schema);
+  if (fields === undefined) {
+    const [shape, selection] = args;
+    const keys = new Set(asArray(selection));
+    // A dangerous key anywhere in the shape fails pick() and omit() as a
+    // whole, so such a schema keeps running as a whole.
+    fields =
+      isNode(shape) && !findDangerousOwnKey(shape)
+        ? filterSchemaKeys(shape as Fields, key =>
+            kind === 'pick' ? keys.has(key) : !keys.has(key),
+          )
+        : null;
+    keptFields.set(schema, fields);
+  }
+  return fields;
 }
 
 function canValidateFields(
@@ -67,7 +101,7 @@ function canValidateFields(
 }
 
 function validateFields(
-  rules: Record<string, RuleInstance<unknown>>,
+  rules: Fields,
   keys: Set<string>,
   data: Record<string, unknown>,
 ): RelationshipValidation {

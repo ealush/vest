@@ -116,7 +116,9 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     const targetFieldName = asFieldName(fieldName);
 
     return Boolean(
-      targetFieldName ? summary.tests[targetFieldName]?.valid : summary.valid,
+      isStringValue(targetFieldName)
+        ? summary.tests[targetFieldName]?.valid
+        : summary.valid,
     );
   }
 
@@ -144,7 +146,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     }
 
     // If checking a specific field within the group
-    if (safeFieldName) {
+    if (isStringValue(safeFieldName)) {
       const fieldSummary = group[safeFieldName];
       // If field doesn't exist in group, it's invalid (test was never run)
       if (!fieldSummary) {
@@ -184,7 +186,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
   function isTested(fieldName: InputFieldName<F>): boolean {
     const safeFieldName = asFieldName(fieldName);
 
-    return safeFieldName
+    return isStringValue(safeFieldName)
       ? isPositive(summary.tests[safeFieldName]?.testCount)
       : false;
   }
@@ -233,7 +235,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     const safeFieldName = asFieldName(fieldName);
 
     return (
-      safeFieldName
+      isStringValue(safeFieldName)
         ? getFailure<F, G>(Severity.WARNINGS, summary, safeFieldName)
         : getFailure<F, G>(Severity.WARNINGS, summary)
     ).unwrap();
@@ -257,7 +259,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
     const safeFieldName = asFieldName(fieldName);
 
     return (
-      safeFieldName
+      isStringValue(safeFieldName)
         ? getFailure<F, G>(Severity.ERRORS, summary, safeFieldName)
         : getFailure<F, G>(Severity.ERRORS, summary)
     ).unwrap();
@@ -304,7 +306,7 @@ export function suiteSelectors<F extends TFieldName, G extends TGroupName>(
   function isPending(fieldName?: InputFieldName<F>): boolean {
     const safeFieldName = asFieldName(fieldName);
 
-    return safeFieldName
+    return isStringValue(safeFieldName)
       ? greaterThan(summary.tests[safeFieldName]?.pendingCount, 0)
       : greaterThan(summary.pendingCount, 0);
   }
@@ -412,7 +414,7 @@ function hasFailuresByGroup<F extends TFieldName, G extends TGroupName>(
     return makeResult.Ok(false);
   }
 
-  if (fieldName) {
+  if (isStringValue(fieldName)) {
     return makeResult.Ok(isPositive(group[fieldName]?.[severityCount]));
   }
 
@@ -432,7 +434,7 @@ function hasFailures(
   countKey: SeverityCount,
   fieldName?: TFieldName,
 ): Result<boolean> {
-  const failureCount = fieldName
+  const failureCount = isStringValue(fieldName)
     ? summary.tests[fieldName]?.[countKey]
     : summary[countKey] || 0;
 
@@ -455,7 +457,7 @@ function getFailure<F extends TFieldName, G extends TGroupName>(
 ): Result<Maybe<SummaryFailure<F, G> | string>> {
   const summaryKey = summary[severity];
 
-  if (!fieldName) {
+  if (!isStringValue(fieldName)) {
     return makeResult.Ok(summaryKey[0]);
   }
 

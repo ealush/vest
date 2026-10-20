@@ -1,4 +1,5 @@
 import { CB } from 'vest-utils';
+import { FocusSelectors } from 'vestjs-runtime';
 import { describe, it, expect } from 'vitest';
 
 import * as vest from '../../../vest';
@@ -589,15 +590,6 @@ describe('No Focused node created for empty values', () => {
       expect(suite.dump()).not.toContain('Focused');
     });
 
-    it('only("") should not add a Focused node to the tree', () => {
-      const suite = createSuite(() => {
-        vest.only('');
-        vest.test(Fields.F1, 'F1 error', () => false);
-        vest.test(Fields.F2, 'F2 error', () => false);
-      });
-      expect(suite.dump()).not.toContain('Focused');
-    });
-
     it('only([]) should not add a Focused node to the tree', () => {
       const suite = createSuite(() => {
         vest.only([]);
@@ -626,15 +618,6 @@ describe('No Focused node created for empty values', () => {
       expect(suite.dump()).not.toContain('Focused');
     });
 
-    it('skip("") should not add a Focused node to the tree', () => {
-      const suite = createSuite(() => {
-        vest.skip('');
-        vest.test(Fields.F1, 'F1 error', () => false);
-        vest.test(Fields.F2, 'F2 error', () => false);
-      });
-      expect(suite.dump()).not.toContain('Focused');
-    });
-
     it('skip([]) should not add a Focused node to the tree', () => {
       const suite = createSuite(() => {
         vest.skip([]);
@@ -645,7 +628,34 @@ describe('No Focused node created for empty values', () => {
     });
   });
 
-  describe('Focused node IS created for non-empty values', () => {
+  describe('Focused node IS created for field names and true', () => {
+    // '' is a valid field name (#1349), so it creates a Focused node
+    it('only("") should add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        vest.only('');
+        vest.test('', 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(suite.dump().children?.some(FocusSelectors.isIsolateFocused)).toBe(
+        true,
+      );
+      expect(suite.get().tests[''].testCount).toBe(1);
+      expect(suite.get().tests.F1.testCount).toBe(0);
+    });
+
+    it('skip("") should add a Focused node to the tree', () => {
+      const suite = createSuite(() => {
+        vest.skip('');
+        vest.test('', 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(suite.dump().children?.some(FocusSelectors.isIsolateFocused)).toBe(
+        true,
+      );
+      expect(suite.get().tests[''].testCount).toBe(0);
+      expect(suite.get().tests.F1.testCount).toBe(1);
+    });
+
     it('only(fieldName) should focus and exclude other fields', () => {
       const result = testSuite(() => {
         vest.only(Fields.F1);
@@ -674,6 +684,136 @@ describe('No Focused node created for empty values', () => {
       });
       expect(result.tests.F1.testCount).toBe(0);
       expect(result.tests.F2.testCount).toBe(0);
+    });
+  });
+});
+
+// Regression tests for #1349: an empty string ('') is a valid field name
+// and must be matched by skip/only like any other field name.
+describe('Empty string field name', () => {
+  const EMPTY = '';
+
+  describe('skip("")', () => {
+    it('Should skip tests of the "" field', () => {
+      const result = testSuite(() => {
+        vest.skip(EMPTY);
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(0);
+      expect(result.tests.F1.testCount).toBe(1);
+      expect(result.hasErrors(Fields.F1)).toBe(true);
+    });
+
+    it('Should skip "" when passed in an array with other fields', () => {
+      const result = testSuite(() => {
+        vest.skip([EMPTY, Fields.F1]);
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(0);
+      expect(result.tests.F1.testCount).toBe(0);
+      expect(result.tests.F2.testCount).toBe(1);
+    });
+
+    it('skip(fieldName) should not skip the "" field', () => {
+      const result = testSuite(() => {
+        vest.skip(Fields.F1);
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(1);
+      expect(result.tests.F1.testCount).toBe(0);
+    });
+  });
+
+  describe('only("")', () => {
+    it('Should only run tests of the "" field', () => {
+      const result = testSuite(() => {
+        vest.only(EMPTY);
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(1);
+      expect(result.tests.F1.testCount).toBe(0);
+      expect(result.hasErrors(Fields.F1)).toBe(false);
+    });
+
+    it('Should include "" when passed in an array with other fields', () => {
+      const result = testSuite(() => {
+        vest.only([EMPTY, Fields.F1]);
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+        vest.test(Fields.F2, 'F2 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(1);
+      expect(result.tests.F1.testCount).toBe(1);
+      expect(result.tests.F2.testCount).toBe(0);
+    });
+
+    it('only(fieldName) should exclude the "" field', () => {
+      const result = testSuite(() => {
+        vest.only(Fields.F1);
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(0);
+      expect(result.tests.F1.testCount).toBe(1);
+    });
+  });
+
+  describe('Existing behavior is preserved', () => {
+    it('skip() with no args should run all tests, including ""', () => {
+      const result = testSuite(() => {
+        // @ts-expect-error - Testing empty skip call
+        vest.skip();
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(1);
+      expect(result.tests.F1.testCount).toBe(1);
+    });
+
+    it('only() with no args should run all tests, including ""', () => {
+      const result = testSuite(() => {
+        // @ts-expect-error - Testing empty only call
+        vest.only();
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(1);
+      expect(result.tests.F1.testCount).toBe(1);
+    });
+
+    it('skip(false) should run all tests, including ""', () => {
+      const result = testSuite(() => {
+        vest.skip(false);
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(1);
+      expect(result.tests.F1.testCount).toBe(1);
+    });
+
+    it('skip(true) should skip all tests, including ""', () => {
+      const result = testSuite(() => {
+        vest.skip(true);
+
+        vest.test(EMPTY, 'empty error', () => false);
+        vest.test(Fields.F1, 'F1 error', () => false);
+      });
+      expect(result.tests[EMPTY].testCount).toBe(0);
+      expect(result.tests.F1.testCount).toBe(0);
     });
   });
 });

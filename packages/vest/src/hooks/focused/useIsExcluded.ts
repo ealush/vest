@@ -86,6 +86,9 @@ function useIsExcludedByGroup(testObject: TIsolateTest): boolean {
  *    unless it has a matching `include()` rule.
  */
 function useIsExcludedByField(testObject: TIsolateTest): boolean {
+  // A pathless schema failure describes the input, not a focused field.
+  if (SuiteContext.useX().schemaRoot) return false;
+
   const { fieldName } = VestTest.getData(testObject);
   const focusMatch = useClosestMatchingFocus(testObject, fieldName);
 

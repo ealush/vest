@@ -38,7 +38,7 @@ export function IsolateFocused(
   focusMode: FocusModes,
   match?: true | FocusMatchExclusion,
 ): TIsolateFocused | undefined {
-  const matchedFields = asArray(match).filter(isStringValue).filter(isNotEmpty);
+  const matchedFields = asArray(match).filter(isStringValue);
 
   const matchAll = match === true;
 
@@ -89,5 +89,5 @@ function hasFocus(
   const match = asArray(focus?.data?.match);
   if (!match.length) return false;
 
-  return !fieldName || match.includes(fieldName as string);
+  return fieldName === undefined || match.includes(fieldName);
 }

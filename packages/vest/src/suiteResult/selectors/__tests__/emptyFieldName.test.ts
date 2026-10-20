@@ -66,9 +66,29 @@ describe('Selectors with an empty string field name', () => {
       expect(res.getErrors(EMPTY)).toEqual([]);
     });
 
+    it('getErrors("") should return only the "" field errors', () => {
+      const res = vest
+        .create(() => {
+          dummyTest.failing(OTHER, 'other error');
+          dummyTest.failing(EMPTY, 'empty error');
+        })
+        .run();
+      expect(res.getErrors(EMPTY)).toEqual(['empty error']);
+    });
+
     it('getError("") should return the first "" field error', () => {
       const res = errorSuite().run();
       expect(res.getError(EMPTY)).toBeUndefined();
+    });
+
+    it('getError("") should return the "" field error, not the suite first error', () => {
+      const res = vest
+        .create(() => {
+          dummyTest.failing(OTHER, 'other error');
+          dummyTest.failing(EMPTY, 'empty error');
+        })
+        .run();
+      expect(res.getError(EMPTY)).toBe('empty error');
     });
 
     it('hasWarnings("") should only check the "" field', () => {
@@ -81,9 +101,29 @@ describe('Selectors with an empty string field name', () => {
       expect(res.getWarnings(EMPTY)).toEqual([]);
     });
 
+    it('getWarnings("") should return only the "" field warnings', () => {
+      const res = vest
+        .create(() => {
+          dummyTest.failingWarning(OTHER, 'other warning');
+          dummyTest.failingWarning(EMPTY, 'empty warning');
+        })
+        .run();
+      expect(res.getWarnings(EMPTY)).toEqual(['empty warning']);
+    });
+
     it('getWarning("") should return the first "" field warning', () => {
       const res = warningSuite().run();
       expect(res.getWarning(EMPTY)).toBeUndefined();
+    });
+
+    it('getWarning("") should return the "" field warning, not the suite first warning', () => {
+      const res = vest
+        .create(() => {
+          dummyTest.failingWarning(OTHER, 'other warning');
+          dummyTest.failingWarning(EMPTY, 'empty warning');
+        })
+        .run();
+      expect(res.getWarning(EMPTY)).toBe('empty warning');
     });
 
     it('isPending("") should only check the "" field', () => {
@@ -121,9 +161,33 @@ describe('Selectors with an empty string field name', () => {
         expect(res.getErrorsByGroup(GROUP, EMPTY)).toEqual([]);
       });
 
+      it('getErrorsByGroup(group, "") should return only the "" field errors', () => {
+        const res = vest
+          .create(() => {
+            vest.group(GROUP, () => {
+              dummyTest.failing(OTHER, 'other error');
+              dummyTest.failing(EMPTY, 'empty error');
+            });
+          })
+          .run();
+        expect(res.getErrorsByGroup(GROUP, EMPTY)).toEqual(['empty error']);
+      });
+
       it('getWarningsByGroup(group, "") should return the "" field warnings array', () => {
         const res = groupSuite().run();
         expect(res.getWarningsByGroup(GROUP, EMPTY)).toEqual([]);
+      });
+
+      it('getWarningsByGroup(group, "") should return only the "" field warnings', () => {
+        const res = vest
+          .create(() => {
+            vest.group(GROUP, () => {
+              dummyTest.failingWarning(OTHER, 'other warning');
+              dummyTest.failingWarning(EMPTY, 'empty warning');
+            });
+          })
+          .run();
+        expect(res.getWarningsByGroup(GROUP, EMPTY)).toEqual(['empty warning']);
       });
     });
   });

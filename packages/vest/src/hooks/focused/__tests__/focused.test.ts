@@ -577,7 +577,9 @@ describe('No Focused node created for empty values', () => {
         vest.test(Fields.F1, 'F1 error', () => false);
         vest.test(Fields.F2, 'F2 error', () => false);
       });
-      expect(suite.dump()).not.toContain('Focused');
+      expect(suite.dump().children?.some(FocusSelectors.isIsolateFocused)).toBe(
+        false,
+      );
     });
 
     it('only(undefined) should not add a Focused node to the tree', () => {
@@ -587,7 +589,9 @@ describe('No Focused node created for empty values', () => {
         vest.test(Fields.F1, 'F1 error', () => false);
         vest.test(Fields.F2, 'F2 error', () => false);
       });
-      expect(suite.dump()).not.toContain('Focused');
+      expect(suite.dump().children?.some(FocusSelectors.isIsolateFocused)).toBe(
+        false,
+      );
     });
 
     it('only([]) should not add a Focused node to the tree', () => {
@@ -596,7 +600,9 @@ describe('No Focused node created for empty values', () => {
         vest.test(Fields.F1, 'F1 error', () => false);
         vest.test(Fields.F2, 'F2 error', () => false);
       });
-      expect(suite.dump()).not.toContain('Focused');
+      expect(suite.dump().children?.some(FocusSelectors.isIsolateFocused)).toBe(
+        false,
+      );
     });
 
     it('skip(false) should not add a Focused node to the tree', () => {
@@ -605,7 +611,9 @@ describe('No Focused node created for empty values', () => {
         vest.test(Fields.F1, 'F1 error', () => false);
         vest.test(Fields.F2, 'F2 error', () => false);
       });
-      expect(suite.dump()).not.toContain('Focused');
+      expect(suite.dump().children?.some(FocusSelectors.isIsolateFocused)).toBe(
+        false,
+      );
     });
 
     it('skip(undefined) should not add a Focused node to the tree', () => {
@@ -615,7 +623,9 @@ describe('No Focused node created for empty values', () => {
         vest.test(Fields.F1, 'F1 error', () => false);
         vest.test(Fields.F2, 'F2 error', () => false);
       });
-      expect(suite.dump()).not.toContain('Focused');
+      expect(suite.dump().children?.some(FocusSelectors.isIsolateFocused)).toBe(
+        false,
+      );
     });
 
     it('skip([]) should not add a Focused node to the tree', () => {
@@ -624,7 +634,9 @@ describe('No Focused node created for empty values', () => {
         vest.test(Fields.F1, 'F1 error', () => false);
         vest.test(Fields.F2, 'F2 error', () => false);
       });
-      expect(suite.dump()).not.toContain('Focused');
+      expect(suite.dump().children?.some(FocusSelectors.isIsolateFocused)).toBe(
+        false,
+      );
     });
   });
 

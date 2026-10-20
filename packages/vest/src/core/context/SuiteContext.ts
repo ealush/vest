@@ -31,6 +31,7 @@ type CTXType = {
   mode: TinyState<Modes>;
   suiteParams: any[];
   currentTest?: TIsolateTest;
+  schemaRoot?: boolean;
   skipped?: boolean;
   schema: TSchema;
   modifiers: TInternalModifiers<TFieldName>;

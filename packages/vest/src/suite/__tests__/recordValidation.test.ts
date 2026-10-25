@@ -42,10 +42,10 @@ describe('enforce.record() in Vest', () => {
       // @ts-expect-error - testing runtime with invalid value type
       .run({ name: '', permissions: { bad: 'value' } });
 
-    // permissions.bad should not be validated because we focused on name
+    // The excluded field remains incomplete without surfacing its schema error.
     // @ts-expect-error - dot-path field name
     expect(result.hasErrors('permissions.bad')).toBe(false);
-    expect(result.isValid()).toBe(true);
+    expect(result.isValid()).toBe(false);
   });
 
   it('propagates nested error paths to the result', () => {

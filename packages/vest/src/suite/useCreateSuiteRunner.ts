@@ -14,9 +14,13 @@ import { useEmit } from '../core/VestBus/VestBus';
 
 import { SuiteContext } from '../core/context/SuiteContext';
 import { IsolateReorderable, VestRuntime } from 'vestjs-runtime';
-import { IsolateSuite } from '../core/isolate/IsolateSuite/IsolateSuite';
+import {
+  IsolateSuite,
+  TIsolateSuite,
+} from '../core/isolate/IsolateSuite/IsolateSuite';
 import { test } from '../core/test/test';
 import { only, skip } from '../hooks/focused/focused';
+import { skipWhen } from '../isolates/skipWhen';
 import {
   SuiteResult,
   TFieldName,
@@ -156,6 +160,13 @@ export function useCreateSuiteRunner<
         )
       : [];
 
+    const schemaFieldState = useSchemaFieldState(
+      schema,
+      schemaInput,
+      transformedModifiers,
+      { results: schemaRunResult, retained: retainedSchemaFailures },
+    );
+
     const callbackInput = getCallbackInput(schemaRunResult, schemaInput);
     const callbackArgs = [callbackInput, ...args.slice(1)] as Parameters<T>;
     const runData = callbackInput;
@@ -194,9 +205,11 @@ export function useCreateSuiteRunner<
             schema,
             schemaRunResult,
             suiteCallback,
+            untestedSchemaField: schemaFieldState?.untested,
             useResolver,
           }),
           useResolver,
+          schemaFieldState?.fields,
         ).output;
       },
     );
@@ -276,6 +289,7 @@ function useRunSuiteCallback<
   schema: S | undefined;
   schemaRunResult?: SchemaRunResult[];
   retainedSchemaFailures: RetainedSchemaFailure[];
+  untestedSchemaField?: SchemaRunResult;
   suiteCallback: SuiteCallbackWithSchema<S, T>;
   useResolver: () => SuiteResult<F, G, S, D>;
 }) {
@@ -285,6 +299,7 @@ function useRunSuiteCallback<
     retainedSchemaFailures,
     schema,
     schemaRunResult,
+    untestedSchemaField,
     suiteCallback,
     useResolver,
   } = params;
@@ -297,7 +312,12 @@ function useRunSuiteCallback<
     (suiteCallback as CB)(...args);
 
     IsolateReorderable(
-      runSchemaValidation(schema, schemaRunResult, retainedSchemaFailures),
+      runSchemaValidation(
+        schema,
+        schemaRunResult,
+        retainedSchemaFailures,
+        untestedSchemaField,
+      ),
       undefined,
       {
         ...(schema ? { schemaValidation: true } : {}),
@@ -367,28 +387,95 @@ function runSchemaValidation<S extends TSchema = undefined>(
   schema: S | undefined,
   schemaRunResult?: SchemaRunResult[],
   retainedSchemaFailures: RetainedSchemaFailure[] = [],
+  untestedSchemaField?: SchemaRunResult,
 ) {
-  // eslint-disable-next-line complexity
   return () => {
     if (!shouldRunSchema(schema) || !schemaRunResult) {
       return;
     }
 
-    for (let i = 0; i < schemaRunResult.length; i++) {
-      const error = schemaRunResult[i];
-      if (error.pass) {
-        continue;
-      }
-
+    schemaRunResult.forEach((error, i) => {
+      if (error.pass) return;
       emitSchemaFailure(error, JSON.stringify([error.path, i]));
-    }
+    });
 
     // Retained tests keep both identity and source path, including when
     // focus causes the reconciler to create a replacement test.
     for (const failure of retainedSchemaFailures) {
       emitSchemaFailure(failure, failure.key);
     }
+
+    if (untestedSchemaField) {
+      skipWhen(true, () =>
+        emitSchemaFailure(
+          untestedSchemaField,
+          JSON.stringify(['untested', untestedSchemaField.path]),
+        ),
+      );
+    }
   };
+}
+
+/**
+ * Preserve known schema verdicts. An excluded field with no verdict must not
+ * make a suite valid just because focus suppressed its validation error.
+ * Probe only unknown excluded fields; their failure becomes a skipped test.
+ */
+function useSchemaFieldState(
+  schema: any,
+  data: unknown,
+  modifiers: { only?: unknown; skip?: unknown },
+  {
+    results,
+    retained,
+  }: {
+    results?: SchemaRunResult[];
+    retained: RetainedSchemaFailure[];
+  },
+): { fields: Record<string, boolean>; untested?: SchemaRunResult } | undefined {
+  if (!isN4sSchema(schema) || !results) return;
+
+  const isEvaluated = schemaFocusOf(modifiers, true);
+  const history = useSchemaFields();
+  const fields = new Set(Object.keys(history).filter(field => history[field]));
+  retained.forEach(({ path }) => {
+    if (path?.length) fields.add(path[0]);
+  });
+  if (!results.every(result => result.pass)) return { fields: history };
+
+  const keys = Object.keys(schema.__schema);
+  keys.forEach(field => {
+    if (isEvaluated === null || isEvaluated(field)) fields.add(field);
+  });
+  const unknown = keys.filter(
+    field => isEvaluated && !isEvaluated(field) && !fields.has(field),
+  );
+  const untested = checkUntestedSchemaFields(schema, data, unknown, fields);
+  return {
+    fields: Object.fromEntries(keys.map(field => [field, fields.has(field)])),
+    untested,
+  };
+}
+
+function useSchemaFields(): Record<string, boolean> {
+  return VestRuntime.useAvailableRoot<TIsolateSuite>()?.data.schemaFields ?? {};
+}
+
+function checkUntestedSchemaFields(
+  schema: any,
+  data: unknown,
+  fields: string[],
+  validated: Set<string>,
+): SchemaRunResult | undefined {
+  if (fields.length === 0) return;
+  const result = enforce
+    .pick(schema.__schema, fields)
+    .run(data as Record<string, unknown>);
+  if (result.pass) {
+    fields.forEach(field => validated.add(field));
+    return;
+  }
+  return result.path?.length ? result : undefined;
 }
 
 function emitSchemaFailure(

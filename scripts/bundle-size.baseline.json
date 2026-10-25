@@ -1,14 +1,14 @@
 {
   "minimal suite (create, test, enforce)": {
-    "minified": 61453,
-    "gzip": 20170
+    "minified": 64124,
+    "gzip": 21036
   },
   "schema suite (create, test, enforce.shape)": {
-    "minified": 61486,
-    "gzip": 20189
+    "minified": 64157,
+    "gzip": 21050
   },
   "n4s only (enforce)": {
-    "minified": 20256,
-    "gzip": 6819
+    "minified": 20407,
+    "gzip": 6881
   }
 }

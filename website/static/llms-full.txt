@@ -5749,6 +5749,10 @@ The `n4s` package now includes `@types/validator` as a regular dependency becaus
 
 Focused runs retain schema errors outside their focus. After a failing full run, `only()` on another field still reports the failing field and keeps `valid: false` until that error is cleared. Repeated parent skips preserve nested schema failures.
 
+## Unvalidated schema fields outside focused runs
+
+A fresh focused run no longer reports `valid: true` when an excluded Enforce schema field has invalid input and no prior schema verdict. The suite stays incomplete without showing an error for that field. Schema rules for unknown excluded fields may run to detect this case; excluded user tests still do not run. Previously recorded verdicts retain their existing behavior.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.
@@ -8423,6 +8427,10 @@ suite.focus({ skip: 'promoCode' }).run(formData);
 // Skip multiple fields
 suite.focus({ skip: ['promoCode', 'referralCode'] }).run(formData);
 ```
+
+With an Enforce object schema, an excluded field that has no previous schema verdict can keep the suite incomplete. If its current input fails, the result has `valid: false` without reporting an error for that field. Vest checks these unknown fields for completeness, so their schema rules may execute even though their errors are outside the focus. Excluded user tests remain skipped.
+
+Previously recorded schema verdicts are retained. `resetField()`, `remove()`, and `reset()` clear the relevant history. Run full validation before submitting the form.
 
 ### Skipping Entire Groups
 

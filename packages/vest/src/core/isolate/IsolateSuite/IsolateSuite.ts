@@ -19,6 +19,7 @@ import {
 export type TIsolateSuite = TVestIsolate<{
   optional: OptionalFields;
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>;
+  schemaFields?: Record<string, boolean>;
   // Registry indices (populated by IsolateRegistry)
   registry_all?: RegistryIndex;
   registry_failed?: RegistryIndex;
@@ -30,13 +31,18 @@ export type TIsolateSuite = TVestIsolate<{
   registry_warning?: RegistryIndex;
 }>;
 
+/**
+ * Create the suite root with its resolver and serializable schema verdict history.
+ */
 export function IsolateSuite<Callback extends CB = CB>(
   callback: Callback,
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>,
+  schemaFields?: Record<string, boolean>,
 ): TIsolateSuite {
   return createVestIsolate(VestIsolateType.Suite, callback, {
     optional: {},
     resolver,
+    ...(schemaFields ? { schemaFields } : {}),
   });
 }
 

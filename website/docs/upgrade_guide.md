@@ -37,6 +37,10 @@ The `n4s` package now includes `@types/validator` as a regular dependency becaus
 
 Focused runs retain schema errors outside their focus. After a failing full run, `only()` on another field still reports the failing field and keeps `valid: false` until that error is cleared. Repeated parent skips preserve nested schema failures.
 
+## Unvalidated schema fields outside focused runs
+
+A fresh focused run no longer reports `valid: true` when an excluded Enforce schema field has invalid input and no prior schema verdict. The suite stays incomplete without showing an error for that field. Schema rules for unknown excluded fields may run to detect this case; excluded user tests still do not run. Previously recorded verdicts retain their existing behavior.
+
 # Upgrading from V5 to V6
 
 Vest brings significant improvements to the API, focusing on better developer experience, type safety, and standard compliance.

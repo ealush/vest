@@ -110,19 +110,24 @@ export class TestWalker {
   }
 }
 
+/**
+ * Clear a literal field's verdict, or every schema key covering a nested path.
+ * Exact keys take precedence so a literal dotted key keeps its ancestors intact.
+ */
 function useForgetSchemaField(fieldName: TFieldName, root: MaybeRoot): void {
   if (!root) return;
   const fields: Record<string, boolean> | undefined = root.data.schemaFields;
   if (!fields) return;
 
   const keys = Object.keys(fields);
-  const field = keys.includes(fieldName)
-    ? fieldName
-    : keys.find(key => fieldName.startsWith(`${key}.`));
-  if (field === undefined) return;
+  const targets = keys.includes(fieldName)
+    ? [fieldName]
+    : keys.filter(key => fieldName.startsWith(`${key}.`));
+  if (targets.length === 0) return;
 
-  IsolateMutator.setData(root, {
-    ...root.data,
-    schemaFields: { ...fields, [field]: false },
+  const schemaFields = { ...fields };
+  targets.forEach(field => {
+    schemaFields[field] = false;
   });
+  IsolateMutator.setData(root, { ...root.data, schemaFields });
 }

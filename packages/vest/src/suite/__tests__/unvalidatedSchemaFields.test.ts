@@ -261,4 +261,42 @@ describe('unvalidated schema fields outside a focused run (#1367)', () => {
       expect(result.hasErrors()).toBe(false);
     },
   );
+
+  it.each([
+    { action: 'resetField', literalFirst: false },
+    { action: 'resetField', literalFirst: true },
+    { action: 'remove', literalFirst: false },
+    { action: 'remove', literalFirst: true },
+  ] as const)(
+    '$action clears every matching schema prefix (literal first: $literalFirst)',
+    ({ action, literalFirst }) => {
+      const nested = enforce.shape({
+        b: enforce.shape({ c: enforce.isNumeric() }),
+      });
+      const literal = enforce.shape({ c: enforce.isNumeric() });
+      const branches = literalFirst
+        ? { 'a.b': literal, a: nested }
+        : { a: nested, 'a.b': literal };
+      const suite = create(
+        () => test('other', () => true),
+        enforce.shape({ ...branches, other: enforce.isString() }),
+      );
+      const data = { a: { b: { c: '42' } }, 'a.b': { c: '7' }, other: 'x' };
+
+      suite.run(data);
+      suite.only('a').run({ ...data, a: { b: { c: 'bad' } } });
+      suite.only('a.b').run({ ...data, 'a.b': { c: 'bad' } });
+      // @ts-expect-error - Distinct nested schema paths share this displayed name.
+      suite[action]('a.b.c');
+
+      const current = literalFirst
+        ? { ...data, a: { b: { c: 'bad' } } }
+        : { ...data, 'a.b': { c: 'bad' } };
+      const result = suite.only('other').run(current);
+
+      expect(result.valid).toBe(false);
+      expect(result.hasErrors()).toBe(false);
+      expect(suite.only('other').run(data).valid).toBe(true);
+    },
+  );
 });

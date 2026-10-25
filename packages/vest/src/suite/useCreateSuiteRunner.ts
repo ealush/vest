@@ -457,10 +457,17 @@ function useSchemaFieldState(
   };
 }
 
+/**
+ * Read schema verdict history before the next suite root replaces it.
+ */
 function useSchemaFields(): Record<string, boolean> {
   return VestRuntime.useAvailableRoot<TIsolateSuite>()?.data.schemaFields ?? {};
 }
 
+/**
+ * Check excluded fields without verdicts, recording successful checks in history.
+ * Return a failure for skipped-test registration without exposing its error.
+ */
 function checkUntestedSchemaFields(
   schema: any,
   data: unknown,

@@ -31,6 +31,9 @@ export type TIsolateSuite = TVestIsolate<{
   registry_warning?: RegistryIndex;
 }>;
 
+/**
+ * Create the suite root with its resolver and serializable schema verdict history.
+ */
 export function IsolateSuite<Callback extends CB = CB>(
   callback: Callback,
   resolver: CB<SuiteResult<TFieldName, TGroupName, any>>,

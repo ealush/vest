@@ -49,6 +49,10 @@ suite.focus({ skip: 'promoCode' }).run(formData);
 suite.focus({ skip: ['promoCode', 'referralCode'] }).run(formData);
 ```
 
+With an Enforce object schema, an excluded field that has no previous schema verdict can keep the suite incomplete. If its current input fails, the result has `valid: false` without reporting an error for that field. Vest checks these unknown fields for completeness, so their schema rules may execute even though their errors are outside the focus. Excluded user tests remain skipped.
+
+Previously recorded schema verdicts are retained. `resetField()`, `remove()`, and `reset()` clear the relevant history. Run full validation before submitting the form.
+
 ### Skipping Entire Groups
 
 Use `focus({ skipGroup: ... })` to skip all tests inside a named group. Tests outside the group run normally.

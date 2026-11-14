@@ -1,5 +1,5 @@
 import { Nullable, makeResult } from 'vest-utils';
-import { Walker, VestRuntime, TIsolate } from 'vestjs-runtime';
+import { Walker, VestRuntime, TIsolate, IsolateMutator } from 'vestjs-runtime';
 
 import { TFieldName } from '../../../suiteResult/SuiteResultTypes';
 import matchingFieldName from '../../test/helpers/matchingFieldName';
@@ -68,6 +68,7 @@ export class TestWalker {
   }
 
   static resetField(fieldName: TFieldName): void {
+    useForgetSchemaField(fieldName, TestWalker.defaultRoot());
     TestWalker.walkTests(testObject => {
       if (matchingFieldName(VestTest.getData(testObject), fieldName).unwrap()) {
         if (VestTest.isCanceled(testObject).unwrap()) return;
@@ -88,6 +89,7 @@ export class TestWalker {
     fieldName: TFieldName,
     root: MaybeRoot = TestWalker.defaultRoot(),
   ): void {
+    useForgetSchemaField(fieldName, root);
     TestWalker.pluckTests(testObject => {
       return matchingFieldName(
         VestTest.getData(testObject),
@@ -106,4 +108,26 @@ export class TestWalker {
       }),
     );
   }
+}
+
+/**
+ * Clear a literal field's verdict, or every schema key covering a nested path.
+ * Exact keys take precedence so a literal dotted key keeps its ancestors intact.
+ */
+function useForgetSchemaField(fieldName: TFieldName, root: MaybeRoot): void {
+  if (!root) return;
+  const fields: Record<string, boolean> | undefined = root.data.schemaFields;
+  if (!fields) return;
+
+  const keys = Object.keys(fields);
+  const targets = keys.includes(fieldName)
+    ? [fieldName]
+    : keys.filter(key => fieldName.startsWith(`${key}.`));
+  if (targets.length === 0) return;
+
+  const schemaFields = { ...fields };
+  targets.forEach(field => {
+    schemaFields[field] = false;
+  });
+  IsolateMutator.setData(root, { ...root.data, schemaFields });
 }

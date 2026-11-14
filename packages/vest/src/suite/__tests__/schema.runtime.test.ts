@@ -37,14 +37,14 @@ describe('Schema Runtime Validation', () => {
       // Fresh suite: focused runs keep schema errors from earlier runs.
       const suite = createSuite();
       // Invalid data for schema (age is string), but we focus on 'name'
-      // The schema validation should pick 'name' and skip 'age'
+      // Focus suppresses age's error, but its missing verdict keeps the suite incomplete.
       const result = suite
         .focus({ only: 'name' })
         // @ts-expect-error - Invalid data
         .run({ name: 'John', age: '30' });
 
       expect(result.hasErrors('age')).toBe(false);
-      expect(result.isValid()).toBe(true);
+      expect(result.isValid()).toBe(false);
     });
 
     it('should validate only the focused fields when "only" is active via suite.focus().run()', () => {
@@ -57,14 +57,14 @@ describe('Schema Runtime Validation', () => {
         .run({ name: 'John', age: '30' });
 
       expect(result.hasErrors('age')).toBe(false);
-      expect(result.isValid()).toBe(true);
+      expect(result.isValid()).toBe(false);
     });
 
     it('should drop intersected fields and parse schemas securely when only and skip intersect', () => {
       // Fresh suite: focused runs keep schema errors from earlier runs.
       const suite = createSuite();
       // Only runs fields uniquely listed in `only` missing from `skip` natively.
-      // Expected execution: 'name' evaluates. 'age' and 'tags' bypass safely.
+      // Only name's errors are reported; unknown excluded schema fields can keep the suite incomplete.
       const result = suite
         .focus({ only: ['name', 'age'], skip: 'age' })
         // @ts-expect-error - Invalid data
@@ -75,7 +75,7 @@ describe('Schema Runtime Validation', () => {
       expect(result.hasErrors('age')).toBe(false); // Skipped cleanly
       expect(result.hasErrors('tags')).toBe(false); // Implicitly bypassed because it's missing from `only`
 
-      expect(result.isValid()).toBe(true);
+      expect(result.isValid()).toBe(false);
     });
   });
 
@@ -203,7 +203,7 @@ describe('Schema Runtime Validation', () => {
       expect(result.getErrors('price')).toEqual([]);
     });
 
-    it('should only validate focused schema fields with focus enabled', () => {
+    it('should only report focused schema errors while preserving completeness', () => {
       const schemaWithMessage = enforce.shape({
         price: enforce.isNumber().message('Price must be a number'),
         quantity: enforce.isNumber().message('Quantity must be a number'),
@@ -215,14 +215,14 @@ describe('Schema Runtime Validation', () => {
         });
       }, schemaWithMessage);
 
-      // Focus on quantity, invalid price should be ignored naturally by `pick`
+      // Focus hides price's error, but cannot establish a verdict for it.
       const result = testSuite.focus({ only: 'quantity' }).run({
-        price: 'invalid', // should be naturally dropped from validation
+        price: 'invalid',
         quantity: 10,
       });
 
       expect(result.hasErrors('price')).toBe(false);
-      expect(result.isValid()).toBe(true);
+      expect(result.isValid()).toBe(false);
     });
   });
 
@@ -419,14 +419,14 @@ describe('Schema Runtime Validation', () => {
       }, schema);
 
       // First run: Focused
-      // Schema validation should pick 'field' and ignore 'required'
+      // Focus reports no error for required, but its missing verdict keeps the suite incomplete.
       let res = suite.focus({ only: 'field' }).run({
         // @ts-expect-error - Invalid data skipped by focus filtering
         required: 123,
       });
 
       expect(res.hasErrors()).toBe(false);
-      expect(res.isValid()).toBe(true);
+      expect(res.isValid()).toBe(false);
 
       // Second run: Not focused
       // Schema validation should pick all fields intrinsically and fail

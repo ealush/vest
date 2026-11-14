@@ -1,4 +1,4 @@
-import { isPositive, makeResult, Result } from 'vest-utils';
+import { isPositive, isStringValue, makeResult, Result } from 'vest-utils';
 
 import { countKeyBySeverity, Severity } from '../Severity';
 import {
@@ -16,7 +16,7 @@ export function gatherFailures(
   fieldName?: TFieldName,
 ): string[] | FailureMessages {
   return (
-    fieldName
+    isStringValue(fieldName)
       ? getByFieldName(testGroup, severityKey, fieldName)
       : collectAll(testGroup, severityKey)
   ).unwrap();

@@ -5,17 +5,17 @@ Promise {
   "dump": [Function],
   "errorCount": 3,
   "errors": [
-    SummaryFailure {
+    SummaryItem {
       "fieldName": "F1",
       "groupName": undefined,
       "message": "F1 error",
     },
-    SummaryFailure {
+    SummaryItem {
       "fieldName": "F2",
       "groupName": undefined,
       "message": "F2 error",
     },
-    SummaryFailure {
+    SummaryItem {
       "fieldName": "F3",
       "groupName": undefined,
       "message": "F3 error",
@@ -25,12 +25,17 @@ Promise {
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getMessage": [Function],
+  "getSuccess": [Function],
+  "getSuccesses": [Function],
+  "getSuccessesByGroup": [Function],
   "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
+  "hasSuccesses": [Function],
+  "hasSuccessesByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isPending": [Function],
@@ -58,6 +63,8 @@ Promise {
     },
   ],
   "pendingCount": 0,
+  "success": [],
+  "successCount": 0,
   "testCount": 3,
   "tests": {
     "F1": SummaryBase {
@@ -66,6 +73,8 @@ Promise {
         "F1 error",
       ],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -77,6 +86,8 @@ Promise {
         "F2 error",
       ],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -88,6 +99,8 @@ Promise {
         "F3 error",
       ],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -106,17 +119,17 @@ Promise {
   "dump": [Function],
   "errorCount": 3,
   "errors": [
-    SummaryFailure {
+    SummaryItem {
       "fieldName": "F1",
       "groupName": undefined,
       "message": "F1 error",
     },
-    SummaryFailure {
+    SummaryItem {
       "fieldName": "F2",
       "groupName": undefined,
       "message": "F2 error",
     },
-    SummaryFailure {
+    SummaryItem {
       "fieldName": "F3",
       "groupName": undefined,
       "message": "F3 error",
@@ -126,12 +139,17 @@ Promise {
   "getErrors": [Function],
   "getErrorsByGroup": [Function],
   "getMessage": [Function],
+  "getSuccess": [Function],
+  "getSuccesses": [Function],
+  "getSuccessesByGroup": [Function],
   "getWarning": [Function],
   "getWarnings": [Function],
   "getWarningsByGroup": [Function],
   "groups": {},
   "hasErrors": [Function],
   "hasErrorsByGroup": [Function],
+  "hasSuccesses": [Function],
+  "hasSuccessesByGroup": [Function],
   "hasWarnings": [Function],
   "hasWarningsByGroup": [Function],
   "isPending": [Function],
@@ -159,6 +177,8 @@ Promise {
     },
   ],
   "pendingCount": 0,
+  "success": [],
+  "successCount": 0,
   "testCount": 3,
   "tests": {
     "F1": SummaryBase {
@@ -167,6 +187,8 @@ Promise {
         "F1 error",
       ],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -178,6 +200,8 @@ Promise {
         "F2 error",
       ],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,
@@ -189,6 +213,8 @@ Promise {
         "F3 error",
       ],
       "pendingCount": 0,
+      "success": [],
+      "successCount": 0,
       "testCount": 1,
       "valid": false,
       "warnCount": 0,

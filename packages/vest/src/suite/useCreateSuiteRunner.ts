@@ -396,7 +396,9 @@ function emitSchemaFailure(
   key: string,
 ) {
   const fieldName = path?.length ? path.join('.') : ROOT_SCHEMA_FIELD;
-  const schemaTest = test(fieldName, message, () => false, key);
+  const schemaTest = SuiteContext.run({ schemaRoot: !path?.length }, () =>
+    test(fieldName, message, () => false, key),
+  );
   (schemaTest.data as { schemaPath?: readonly string[] }).schemaPath = path;
 }
 

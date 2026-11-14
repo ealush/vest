@@ -17,4 +17,10 @@ describe('isOdd', () => {
     expect(enforce.isNumber().isOdd().run(-2).pass).toBe(false);
     expect(enforce.isNumber().isOdd().run(42).pass).toBe(false);
   });
+
+  it('fails for non-integer numbers', () => {
+    expect(enforce.isNumber().isOdd().run(1.5).pass).toBe(false);
+    expect(enforce.isNumber().isOdd().run(2.5).pass).toBe(false);
+    expect(enforce.isNumber().isOdd().run(-1.5).pass).toBe(false);
+  });
 });

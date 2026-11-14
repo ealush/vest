@@ -1,0 +1,89 @@
+:root {
+  color: #e8eefc;
+  background: #0c1220;
+  font-family: system-ui, sans-serif;
+}
+body {
+  margin: 0;
+}
+main {
+  width: min(620px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 40px 0;
+}
+.eyebrow {
+  color: #8eafff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+form,
+.field {
+  display: grid;
+  gap: 8px;
+}
+fieldset {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  border: 1px solid #334365;
+  border-radius: 9px;
+  padding: 16px;
+}
+legend {
+  padding: 0 6px;
+  font-weight: 650;
+}
+.contact {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+form {
+  gap: 18px;
+  margin-top: 28px;
+}
+label {
+  font-weight: 650;
+}
+input,
+button,
+pre {
+  border: 1px solid #334365;
+  border-radius: 9px;
+  padding: 12px;
+  color: inherit;
+  background: #141d30;
+}
+input:focus {
+  outline: 2px solid #8eafff;
+  outline-offset: 2px;
+}
+button {
+  background: #315dbd;
+  cursor: pointer;
+  font-weight: 700;
+}
+button.secondary {
+  background: #202b43;
+}
+button.compact {
+  margin-bottom: 1px;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+}
+.status {
+  min-height: 1.5em;
+  margin: 0;
+  color: #c4cee4;
+}
+span {
+  color: #ffb1b1;
+  font-size: 0.875rem;
+}
+pre {
+  white-space: pre-wrap;
+}
